@@ -29,6 +29,7 @@ import { VmModel } from '../../vms/state/vm.model';
 import { VmService } from '../../vms/state/vms.service';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
 import { ActivatedRoute, Router } from '@angular/router';
+import { VmMap, VmsService } from '../../generated/vm-api';
 
 @Component({
   selector: 'app-vm-list',
@@ -64,8 +65,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.vmModelDataSource.data = val;
   }
 
+  VmMaps: VmMap[];
+  selected;
+
   constructor(
     public vmService: VmService,
+    private vmsService: VmsService,
     private fileService: FileService,
     private dialogService: DialogService,
     private teamsService: TeamsService,
@@ -116,6 +121,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
           this.vmApiResponded = false;
         }
       );
+
+      this.getMaps();
   }
 
   ngAfterViewInit() {
@@ -224,6 +231,21 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   buildMap() {
     this.router.navigate(['map'], { relativeTo: this.route });
+  }
+
+  getMaps() {
+    let viewId: string;
+    this.route.params.subscribe(params => {
+      viewId = params['viewId']
+    })
+    this.vmsService.getViewMaps(viewId).subscribe(data => {
+      this.VmMaps = data;
+    })
+  }
+
+  goToMap() {
+    let teamId = this.selected.teamIds[0];
+    this.router.navigate(['map/' + teamId], { relativeTo:this.route} );
   }
 
   public getIpAddresses(vm: VmModel): string[] {
