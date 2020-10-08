@@ -28,6 +28,7 @@ import { take, switchMap, filter } from 'rxjs/operators';
 import { VmModel } from '../../vms/state/vm.model';
 import { VmService } from '../../vms/state/vms.service';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-vm-list',
@@ -67,7 +68,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
     public vmService: VmService,
     private fileService: FileService,
     private dialogService: DialogService,
-    private teamsService: TeamsService
+    private teamsService: TeamsService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -217,6 +220,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
         this.uploading = false;
       }
     );
+  }
+
+  buildMap() {
+    this.router.navigate(['map'], { relativeTo: this.route });
   }
 
   public getIpAddresses(vm: VmModel): string[] {

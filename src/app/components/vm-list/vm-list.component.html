@@ -86,6 +86,16 @@ DM20-0181
           [(ngModel)]="ipv4Only"
           >IPv4 Only</mat-checkbox
         >
+
+        <div style="margin-top: 10px; margin-left: 150px; margin-right: 5px">
+          <button
+            mat-stroked-button
+            (click)="buildMap()"
+          >
+          Build Map
+          </button>
+        </div>
+
         <div style="margin-top: 10px; margin-left: 200px;">
           <button
             mat-stroked-button
