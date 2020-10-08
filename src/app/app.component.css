@@ -8,36 +8,44 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-/* VENDER IMPORTS */
-@import '~@angular/material/theming';
-@import '~ngx-drag-to-select/ngx-drag-to-select.css';
-@include mat-core();
-/* END VENDER IMPORTS */
-
-/* LOCAL IMPORTS */
-@import 'theme';
-/* END LOCAL IMPORTS */
-
-.light-theme {
-  @include angular-material-theme($light-theme);
-  @include globals($light-theme);
+@font-face {
+  font-family: 'open_sansregular';
+  src: url('/assets/fonts/opensans-regular.woff2') format('woff2'),
+       url('/assets/fonts/opensans-regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
-.dark-theme {
-  @include angular-material-theme($dark-theme);
-  @include globals($dark-theme);
+@font-face {
+  font-family: 'open_sansbold';
+  src: url('/assets/fonts/opensans-bold.woff2') format('woff2'),
+       url('/assets/fonts/opensans-bold.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
-/* The following overrides transparent select options after upgrading to Angular 7 */
-.mat-select-panel {
-  background: #fff;
-}
-.mat-select-panel:not([class*='mat-elevation-z']) {
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
-    0 1px 10px 0 rgba(0, 0, 0, 0.12);
+@font-face {
+  font-family: 'open_sansitalic';
+  src: url('/assets/fonts/opensans-italic.woff2') format('woff2'),
+       url('/assets/fonts/opensans-italic.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
-html,
-body {
-  height: 100%;
+body, a {
+  font-family: 'open_sansregular';
+}
+
+b {
+  font-family: 'open_sansbold';
+}
+
+i {
+  font-family: 'open_sansitalic';
+}
+
+h1 {
+  color: #369;
+  font-family: 'open_sansregular';
+  font-size: 250%;
 }

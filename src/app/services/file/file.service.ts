@@ -8,38 +8,33 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { HttpClient, HttpRequest } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { ComnSettingsService } from '@crucible/common';
+import { HttpClient, HttpRequest, HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { SettingsService } from '../settings/settings.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Injectable()
 export class FileService {
-  private viewId: string;
 
-  constructor(
-    private http: HttpClient,
-    private settings: ComnSettingsService,
-    private router: Router
-  ) {
-    this.viewId = this.router.routerState.snapshot.root.firstChild.params[
-      'viewId'
-    ];
-  }
+    private viewId: string;
 
-  public uploadIso(isForAll: boolean, file: File) {
-    const scope = isForAll ? 'view' : 'team';
-    const payload: FormData = new FormData();
-    payload.append('size', file.size.toString());
-    payload.append('scope', scope);
-    payload.append(file.name, file);
-    return this.http.request(
-      new HttpRequest(
-        'POST',
-        `${this.settings.settings.ApiUrl}/views/${this.viewId}/isos`,
-        payload,
-        { reportProgress: true }
-      )
-    );
-  }
+    constructor(
+        private http: HttpClient,
+        private settings: SettingsService,
+        private router: Router,
+      ) {
+        this.viewId = this.router.routerState.snapshot.root.firstChild.params['viewId'];
+      }
+
+    public uploadIso(isForAll: boolean, file: File) {
+        const scope = isForAll ? 'view' : 'team';
+        const payload: FormData = new FormData();
+        payload.append('size', file.size.toString());
+        payload.append('scope', scope);
+        payload.append(file.name, file);
+        return this.http.request(
+            new HttpRequest('POST', `${this.settings.ApiUrl}/views/${this.viewId}/isos`, payload, { reportProgress: true }));
+    }
 }

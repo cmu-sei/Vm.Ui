@@ -8,21 +8,26 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { ComnSettingsService } from '@crucible/common';
+
 import { Observable } from 'rxjs';
+
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { SettingsService } from '../settings/settings.service';
 import { TeamData } from '../../models/team-data';
+
 
 @Injectable()
 export class TeamsService {
+
+
   constructor(
     private http: HttpClient,
-    private settings: ComnSettingsService
-  ) {}
+    private settings: SettingsService) { }
+
 
   public GetAllMyTeams(viewId: string): Observable<Array<TeamData>> {
-    const url = `${this.settings.settings.ApiPlayerUrl}/me/views/${viewId}/teams`;
+    const url = `${this.settings.ApiPlayerUrl}/me/views/${viewId}/teams`;
     return this.http.get<Array<TeamData>>(url);
   }
 }
