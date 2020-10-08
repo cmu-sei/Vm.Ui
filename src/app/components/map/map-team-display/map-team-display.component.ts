@@ -44,7 +44,11 @@ export class MapTeamDisplayComponent implements OnInit {
       err => console.log('Got an error: ' + err),
       () => console.log('Got a complete notification')
     );
+    
+    this.back();
+  }
 
+  back(): void {
     this.router.navigate(['../..'], { relativeTo:this.route });
   }
 

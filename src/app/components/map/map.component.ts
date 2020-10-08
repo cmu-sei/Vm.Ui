@@ -4,7 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
 import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { core } from '@angular/compiler';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -31,6 +31,7 @@ export class MapComponent implements OnInit {
     private dialog: MatDialog,
     private vmService: VmsService,
     private route: ActivatedRoute,
+    private router: Router,
     private formBuilder: FormBuilder
     ) { }
 
@@ -69,7 +70,7 @@ export class MapComponent implements OnInit {
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 
-  receiveMachine(machine) {
+  receiveMachine(machine): void {
     console.log('In receive');
     this.machines.push(machine);
     this.dialogRef.close();
@@ -102,5 +103,9 @@ export class MapComponent implements OnInit {
         () => console.log('Got a complete notification')
       );
     }
+  }
+
+  back(): void {
+    this.router.navigate(['../'], { relativeTo:this.route })
   }
 }
