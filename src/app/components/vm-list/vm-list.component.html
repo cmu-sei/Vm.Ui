@@ -88,6 +88,19 @@ DM20-0181
         >
 
         <div style="margin-top: 10px; margin-left: 150px; margin-right: 5px">
+          <mat-label>Select Map</mat-label>
+          <select [(ngModel)]="selected">
+            <option *ngFor="let vm of VmMaps" [ngValue]="vm">{{vm.name}}</option>
+          </select>
+          <button
+          mat-stroked-button
+          (click)="goToMap()"
+          >
+          Go
+          </button>
+        </div>
+
+        <div style="margin-top: 10px; margin-left: 150px; margin-right: 5px">
           <button
             mat-stroked-button
             (click)="buildMap()"

@@ -1,0 +1,2471 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Player VM API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/views/{uuid}/isos": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "operationId": "uploadFileAsIso",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms": {
+      "get": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Retrieve all Vms",
+        "operationId": "getAll",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Creates a new Virtual Machine",
+        "description": "Creates a new Virtual Machine with the attributes specified\r\n<para />\r\nAccessible to a User with management permissions on a team the Virtual Machine will be added to",
+        "operationId": "createVm",
+        "requestBody": {
+          "description": "The data to create the Team with",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmCreateForm"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmCreateForm"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmCreateForm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/{id}": {
+      "get": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Retrieve a single Vm by Id",
+        "operationId": "getVm",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The Id of the Vm",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Id of the Vm",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Updates a new Virtual Machine",
+        "description": "Updates a Virtual Machine with the attributes specified\r\n<para />\r\nAccessible to a User with management permissions on a team the Virtual Machine is in",
+        "operationId": "updateVm",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The data to update the Virtual Machine with",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmUpdateForm"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmUpdateForm"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmUpdateForm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vm"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Deletes a Vm",
+        "description": "Deletes a Vm with the specified id\r\n<para />\r\nAccessible to a User with management permission on a team the Virtual Machine is in",
+        "operationId": "deleteVm",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the Vm",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The id of the Vm",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/teams/{teamId}/vms": {
+      "get": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Gets all of the Vms in the specified Team",
+        "operationId": "getTeamVms",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "An optional search term for the vm's name",
+            "schema": {
+              "type": "string",
+              "description": "An optional search term for the vm's name",
+              "nullable": true
+            }
+          },
+          {
+            "name": "includePersonal",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "description": "",
+              "nullable": true
+            }
+          },
+          {
+            "name": "onlyMine",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "description": "",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/views/{viewId}/vms": {
+      "get": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Gets all of the Vms the calling user has access to in the specified View",
+        "operationId": "getViewVms",
+        "parameters": [
+          {
+            "name": "viewId",
+            "in": "path",
+            "description": "The Id of the View",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The Id of the View",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "An optional search term for the vm's name",
+            "schema": {
+              "type": "string",
+              "description": "An optional search term for the vm's name",
+              "nullable": true
+            }
+          },
+          {
+            "name": "includePersonal",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "description": "",
+              "nullable": true
+            }
+          },
+          {
+            "name": "onlyMine",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "description": "",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vm"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/teams/{teamId}/vms/{vmId}": {
+      "post": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Adds a Virtual Machine to a Team",
+        "description": "Creates a new Virtual Machine with the attributes specified\r\n<para />\r\nAccessible to a User with management permissions on a team the Virtual Machine will be added to",
+        "operationId": "addVmToTeam",
+        "parameters": [
+          {
+            "name": "vmId",
+            "in": "path",
+            "description": "The id of the Virtual Machine",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The id of the Virtual Machine",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "The id of the Team",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The id of the Team",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Removes a Virtual Machine from a Team",
+        "description": "Removes the specified Virtual Machine from the specified Team\r\n<para />\r\nAccessible to a User with management permissions on a team the Virtual Machine will be added to",
+        "operationId": "removeVmFromTeam",
+        "parameters": [
+          {
+            "name": "vmId",
+            "in": "path",
+            "description": "The id of the Virtual Machine",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The id of the Virtual Machine",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "The id of the Team",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The id of the Team",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/actions/power-on": {
+      "post": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Power on multiple Virtual Machines",
+        "operationId": "bulkPowerOn",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/actions/power-off": {
+      "post": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Power off multiple Virtual Machines",
+        "operationId": "bulkPowerOff",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/actions/shutdown": {
+      "post": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Shutdown multiple Virtual Machines",
+        "operationId": "bulkShutdown",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/views/{viewId}/map": {
+      "post": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Add a new map to a view",
+        "operationId": "createMap",
+        "parameters": [
+          {
+            "name": "viewId",
+            "in": "path",
+            "description": "The guid of the view to add the map to",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The guid of the view to add the map to",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The data of the map to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmMapCreateForm"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmMapCreateForm"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmMapCreateForm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/views/maps": {
+      "get": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Get all maps in the system",
+        "operationId": "getAllMaps",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VmMap"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VmMap"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VmMap"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/views/maps/viewmaps/{viewId}": {
+      "get": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Get all maps for a view",
+        "operationId": "getViewMaps",
+        "parameters": [
+          {
+            "name": "viewId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VmMap"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VmMap"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VmMap"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/views/maps/{mapId}": {
+      "get": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Get a specific map by id",
+        "operationId": "getMap",
+        "parameters": [
+          {
+            "name": "mapId",
+            "in": "path",
+            "description": "The guid of the map to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The guid of the map to retrieve",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Update a map",
+        "operationId": "updateMap",
+        "parameters": [
+          {
+            "name": "mapId",
+            "in": "path",
+            "description": "The guid of the map to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The guid of the map to update",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The data of the map to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmMapCreateForm"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmMapCreateForm"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VmMapCreateForm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Delete a map with the specified id",
+        "operationId": "deleteMap",
+        "parameters": [
+          {
+            "name": "mapId",
+            "in": "path",
+            "description": "The guid of the map to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The guid of the map to delete",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/teams/{teamId}/map": {
+      "get": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Get a map for a specific team",
+        "operationId": "getTeamMap",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "The guid of the team to consider",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The guid of the team to consider",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmMap"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}": {
+      "get": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Retrieve a single vsphere virtual machine by Id, including a ticket to access it's console",
+        "operationId": "getVsphereVirtualMachine",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/power-on": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Power on a vsphere virtual machine",
+        "operationId": "powerOnVsphereVirtualMachine",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/power-off": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Power off a vsphere virtual machine",
+        "operationId": "powerOffVsphereVirtualMachine",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/reboot": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Reboot a vsphere virtual machine",
+        "operationId": "rebootVsphereVirtualMachine",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/shutdown": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Shutdown a vsphere virtual machine",
+        "operationId": "shutdownVsphereVirtualMachine",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/tools": {
+      "get": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Get tools status of a vsphere virtual machine",
+        "operationId": "getVsphereVirtualMachineToolsStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VirtualMachineToolsStatus"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VirtualMachineToolsStatus"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VirtualMachineToolsStatus"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/change-network": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Change the network of a vsphere virtual machine's network adapter",
+        "operationId": "changeVsphereVirtualMachineNetwork",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeVsphereVirtualMachineNetwork"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeVsphereVirtualMachineNetwork"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeVsphereVirtualMachineNetwork"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/validate-credentials": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Validate credentials for a vsphere virtual machine",
+        "operationId": "validateVsphereVirtualMachineCredentials",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateVsphereVirtualMachineCredentials"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateVsphereVirtualMachineCredentials"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateVsphereVirtualMachineCredentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/upload-file": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Upload a file to a vsphere virtual machine",
+        "operationId": "uploadFileToVsphereVirtualMachine",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/isos": {
+      "get": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Get isos available to be mounted to a vsphere virtual machine",
+        "operationId": "getVsphereVirtualMachineIsos",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IsoResult"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IsoResult"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IsoResult"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/mount-iso": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Mount an iso to a vsphere virtual machine",
+        "operationId": "mountVsphereVirtualMachineIso",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MountVsphereIso"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MountVsphereIso"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MountVsphereIso"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VsphereVirtualMachine"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/vsphere/{id}/actions/set-resolution": {
+      "post": {
+        "tags": [
+          "Vsphere"
+        ],
+        "summary": "Set the resolution of a vsphere virtual machine",
+        "operationId": "setVsphereVirtualMachineResolution",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetVsphereVirtualMachineResolution"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetVsphereVirtualMachineResolution"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetVsphereVirtualMachineResolution"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {
+          "type": "object"
+        }
+      },
+      "PowerState": {
+        "enum": [
+          "Unknown",
+          "On",
+          "Off",
+          "Suspended"
+        ],
+        "type": "string"
+      },
+      "ConsoleConnectionInfo": {
+        "type": "object",
+        "properties": {
+          "hostname": {
+            "type": "string",
+            "description": "The hostname or address to use to connect",
+            "nullable": true
+          },
+          "port": {
+            "type": "string",
+            "description": "The port to use to connect",
+            "nullable": true
+          },
+          "protocol": {
+            "type": "string",
+            "description": "The protocol to use to connect, such as rdp, ssh, etc",
+            "nullable": true
+          },
+          "username": {
+            "type": "string",
+            "description": "The optional username to use to connect\r\nIf omitted, the user will be prompted on connection\r\nNote: This must be set to connect to a Windows machine using Network Level Authentication",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "description": "The optional password to use to connect\r\nIf omitted, the user will be prompted on connection\r\nNote: This must be set to connect to a Windows machine using Network Level Authentication",
+            "nullable": true
+          }
+        }
+      },
+      "Vm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Virtual Machine unique id",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "description": "Url to the Vm's console",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "The Vm's name",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "description": "Id of the Vm's owner if it is a personal Vm",
+            "format": "uuid",
+            "nullable": true
+          },
+          "allowedNetworks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of networks that a regular user can access",
+            "nullable": true
+          },
+          "powerState": {
+            "$ref": "#/components/schemas/PowerState"
+          },
+          "ipAddresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of IP addresses of the Vm",
+            "nullable": true
+          },
+          "teamIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The Ids of the Team's the Vm is a part of",
+            "nullable": true
+          },
+          "hasPendingTasks": {
+            "type": "boolean",
+            "description": "True if this Vm currently has pending tasks (power on, power off, etc)"
+          },
+          "consoleConnectionInfo": {
+            "$ref": "#/components/schemas/ConsoleConnectionInfo"
+          }
+        }
+      },
+      "VmCreateForm": {
+        "required": [
+          "id",
+          "name",
+          "teamIds"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "teamIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "allowedNetworks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "consoleConnectionInfo": {
+            "$ref": "#/components/schemas/ConsoleConnectionInfo"
+          }
+        }
+      },
+      "VmUpdateForm": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "allowedNetworks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "consoleConnectionInfo": {
+            "$ref": "#/components/schemas/ConsoleConnectionInfo"
+          }
+        }
+      },
+      "BulkPowerOperation": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "BulkPowerOperationResponse": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "CoordinateCreateForm": {
+        "type": "object",
+        "properties": {
+          "xPosition": {
+            "type": "number",
+            "format": "double"
+          },
+          "yPosition": {
+            "type": "number",
+            "format": "double"
+          },
+          "radius": {
+            "type": "number",
+            "format": "double"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "VmMapCreateForm": {
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CoordinateCreateForm"
+            },
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "teamIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Coordinate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "xPosition": {
+            "type": "number",
+            "format": "double"
+          },
+          "yPosition": {
+            "type": "number",
+            "format": "double"
+          },
+          "radius": {
+            "type": "number",
+            "format": "double"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "VmMap": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "viewId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "coordinates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Coordinate"
+            },
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "teamIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "NicOptions": {
+        "type": "object",
+        "properties": {
+          "availableNetworks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "currentNetworks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "VirtualMachineToolsStatus": {
+        "enum": [
+          "toolsNotInstalled",
+          "toolsNotRunning",
+          "toolsOld",
+          "toolsOk"
+        ],
+        "type": "string"
+      },
+      "VsphereVirtualMachine": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "isOwner": {
+            "type": "boolean"
+          },
+          "ticket": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "networkCards": {
+            "$ref": "#/components/schemas/NicOptions"
+          },
+          "canAccessNicConfiguration": {
+            "type": "boolean"
+          },
+          "allowedNetworks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "vmToolsStatus": {
+            "$ref": "#/components/schemas/VirtualMachineToolsStatus"
+          }
+        }
+      },
+      "ChangeVsphereVirtualMachineNetwork": {
+        "type": "object",
+        "properties": {
+          "adapter": {
+            "type": "string",
+            "nullable": true
+          },
+          "network": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ValidateVsphereVirtualMachineCredentials": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "filePath": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "IsoFile": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "nullable": true
+          },
+          "filename": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "TeamIsoResult": {
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "teamName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IsoFile"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "IsoResult": {
+        "type": "object",
+        "properties": {
+          "viewId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "viewName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IsoFile"
+            },
+            "nullable": true
+          },
+          "teamIsoResults": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamIsoResult"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "MountVsphereIso": {
+        "type": "object",
+        "properties": {
+          "iso": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SetVsphereVirtualMachineResolution": {
+        "type": "object",
+        "properties": {
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "http://localhost:5000/connect/authorize",
+            "scopes": {
+              "player-api vm-api": "public api access"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2": [
+        "player-api vm-api"
+      ]
+    }
+  ]
+}
