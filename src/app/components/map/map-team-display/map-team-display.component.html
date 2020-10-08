@@ -4,3 +4,9 @@
     <circle class="clickpoint" *ngFor="let m of machines" [attr.cx]="m.x" [attr.cy]="m.y" [attr.r]="m.r" (click)="redirect(m.url)" fill-opacity="0.0"></circle>
   </svg>
 </div>
+
+<div>
+  <button (click)="deleteMap()">
+    Delete Map
+  </button>
+</div>
