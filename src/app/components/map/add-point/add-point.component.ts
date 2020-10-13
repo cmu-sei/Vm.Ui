@@ -32,8 +32,6 @@ export class AddPointComponent implements OnInit {
   ngOnInit(): void {
     // Default values come from map component
     this.form = this.formBuilder.group({
-      x: [this.xPos],
-      y: [this.yPos],
       rad: [this.rad],
       url: [this.url],
     });
@@ -42,8 +40,8 @@ export class AddPointComponent implements OnInit {
   onSubmit(): void {
     console.log("form submitted");    
 
-    this.machineEmitter.emit(new Machine(+this.form.get("x").value, +this.form.get("y").value,
-      +this.form.get("rad").value, this.form.get("url").value, this.id));
+    this.machineEmitter.emit(new Machine(this.xPos, this.yPos, +this.form.get("rad").value, 
+      this.form.get("url").value, this.id));
   }
 }
 
