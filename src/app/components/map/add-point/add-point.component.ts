@@ -22,6 +22,7 @@ export class AddPointComponent implements OnInit {
   @Input() yPos: number;
   @Input() rad: number;
   @Input() url: string;
+  @Input() id: number;
 
   @Output() machineEmitter = new EventEmitter<Machine>();
   form: FormGroup;
@@ -42,7 +43,7 @@ export class AddPointComponent implements OnInit {
     console.log("form submitted");    
 
     this.machineEmitter.emit(new Machine(+this.form.get("x").value, +this.form.get("y").value,
-      +this.form.get("rad").value, this.form.get("url").value));
+      +this.form.get("rad").value, this.form.get("url").value, this.id));
   }
 }
 

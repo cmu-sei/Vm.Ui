@@ -42,7 +42,7 @@ export class MapTeamDisplayComponent implements OnInit {
     this.vmService.getTeamMap(this.teamId).subscribe(data => {
       this.id = data.id;
       for (let coord of data.coordinates) {
-        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url));
+        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, -1));
       }
       this.imageUrl = data.imageUrl;
     });

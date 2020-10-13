@@ -30,9 +30,11 @@ export class MapComponent implements OnInit {
   teamID: string;
   name: string;
   imageURL: string;
+  currentID: number;
 
   @Input() xActual: number;
   @Input() yActual: number;
+  @Input() idToSend: number;
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
@@ -56,6 +58,7 @@ export class MapComponent implements OnInit {
       imageURL: [''],
       teamID: [''],
     });
+    this.currentID = 0;
   }
 
   initMap(): void {
@@ -76,13 +79,31 @@ export class MapComponent implements OnInit {
     this.xActual = (100 * event.offsetX) / width;
     let height = target.getBoundingClientRect().height;
     this.yActual = (100 * event.offsetY) / height;
+    this.idToSend = this.currentID;
+    this.currentID++;
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 
-  receiveMachine(machine): void {
+  receiveMachine(machine: Machine): void {
     console.log('In receive');
-    this.machines.push(machine);
+    // Check if this is an edit or creation
+    let machineToEdit: Machine = null; 
+    for (let m of this.machines) {
+      // It's an edit
+      if (m.id == machine.id) {
+        machineToEdit = m;
+        break;
+      }
+    }
+
+    if (machineToEdit != null) {
+      const index = this.machines.indexOf(machineToEdit);
+      this.machines[index] = machine;
+    } else {
+      this.machines.push(machine);
+    }
+
     this.dialogRef.close();
   }
 
@@ -117,6 +138,12 @@ export class MapComponent implements OnInit {
 
   back(): void {
     this.router.navigate(['../'], { relativeTo:this.route })
+  }
+
+  edit(m: Machine): void {
+    console.log(m);
+    this.idToSend = m.id;
+    this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 }
 

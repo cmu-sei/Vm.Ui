@@ -13,10 +13,12 @@ export class Machine {
     y: number;
     r: number;
     url: string;
-    constructor(x: number, y:number, r:number, url:string) {
+    id: number;
+    constructor(x: number, y:number, r:number, url:string, id:number) {
         this.x = x;
         this.y = y;
         this.r = r;
         this.url = url;
+        this.id = id;
     }
 }
