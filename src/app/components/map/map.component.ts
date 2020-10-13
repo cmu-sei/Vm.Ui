@@ -159,5 +159,10 @@ export class MapComponent implements OnInit {
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
+
+  // This gets called a lot for some reason. May want to investigate
+  calcFontSize(radius: number): number {
+    return radius / 3;
+  }
 }
 
