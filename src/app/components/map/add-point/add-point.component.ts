@@ -74,5 +74,9 @@ export class AddPointComponent implements OnInit {
       this.vmMaps = data;
     })
   }
+
+  getMapUrl(m: VmMap): string {
+    return 'views/' + m.viewId + '/map/' + m.teamIds[0];
+  }
 }
 

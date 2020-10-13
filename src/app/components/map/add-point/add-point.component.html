@@ -19,7 +19,7 @@ DM20-0181
     <mat-label>URL</mat-label>
     <select matNativeControl formControlName="url">
       <option *ngFor="let vm of vms" [ngValue]="vm.url">{{vm.name}}</option>
-      <option *ngFor="let m of vmMaps" [ngValue]="m.url">{{m.name}}</option> 
+      <option *ngFor="let m of vmMaps" [ngValue]="getMapUrl(m)">{{m.name}}</option> 
     </select>
   </mat-form-field>
   <mat-form-field>
