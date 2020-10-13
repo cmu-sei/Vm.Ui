@@ -38,6 +38,7 @@ export class MapComponent implements OnInit {
   editing: boolean;
   selectedRad: number;
   selectedURL: string;
+  selectedLabel: string;
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
@@ -161,7 +162,8 @@ export class MapComponent implements OnInit {
     this.editing = true;
     this.selectedRad = m.r;
     this.selectedURL = m.url;
-
+    this.selectedLabel = m.label;
+    
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 

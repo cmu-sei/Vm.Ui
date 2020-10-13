@@ -24,6 +24,7 @@ export class AddPointComponent implements OnInit {
   @Input() url: string;
   @Input() id: string;
   @Input() editing: boolean;
+  @Input() label: string;
 
   @Output() machineEmitter = new EventEmitter<Machine>();
   form: FormGroup;
@@ -35,7 +36,7 @@ export class AddPointComponent implements OnInit {
     this.form = this.formBuilder.group({
       rad: [this.rad],
       url: [this.url],
-      label: ['']
+      label: [this.label]
     });
     console.log(this.editing);
   }
