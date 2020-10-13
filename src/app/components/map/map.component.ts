@@ -92,6 +92,7 @@ export class MapComponent implements OnInit {
 
   receiveMachine(machine: Machine): void {
     console.log('In receive');
+    console.log(machine);
     // Check if this is an edit or creation
     let machineToEdit: Machine = null; 
     for (let m of this.machines) {
@@ -104,11 +105,14 @@ export class MapComponent implements OnInit {
 
     if (machineToEdit != null) {
       const index = this.machines.indexOf(machineToEdit);
+      // Remove the machine
       if (machine.x == -1) {
         this.machines.splice(index, 1);
+      // Replace the machine with an edited version
       } else {
         this.machines[index] = machine;
       }
+    // Add the new machine
     } else {
       this.machines.push(machine);
     }
@@ -126,7 +130,8 @@ export class MapComponent implements OnInit {
         yPosition: machine.y,
         radius: machine.r,
         url: machine.url,
-        id: machine.id
+        id: machine.id,
+        label: machine.label
       }
       coords.push(coord);
       let payload = <VmMap>{

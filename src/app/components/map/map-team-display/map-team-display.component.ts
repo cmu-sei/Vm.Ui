@@ -42,7 +42,7 @@ export class MapTeamDisplayComponent implements OnInit {
     this.vmService.getTeamMap(this.teamId).subscribe(data => {
       this.id = data.id;
       for (let coord of data.coordinates) {
-        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id));
+        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
       }
       this.imageUrl = data.imageUrl;
     });
@@ -64,6 +64,11 @@ export class MapTeamDisplayComponent implements OnInit {
 
   redirect(url): void {
     window.open(url, '_blank')
+  }
+  
+  // This gets called a lot for some reason. May want to investigate
+  calcFontSize(radius: number): number {
+    return radius / 3;
   }
 }
 
