@@ -32,9 +32,10 @@ export class MapComponent implements OnInit {
   imageURL: string;
   currentID: number;
 
-  @Input() xActual: number;
-  @Input() yActual: number;
-  @Input() idToSend: number;
+  xActual: number;
+  yActual: number;
+  idToSend: number;
+  editing: boolean;
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
@@ -68,7 +69,7 @@ export class MapComponent implements OnInit {
     this.mapInitialzed = true;
   }
 
-  redirect(url): void {
+  redirect(url: string): void {
     window.open(url, '_blank')
   }
 
@@ -79,8 +80,10 @@ export class MapComponent implements OnInit {
     this.xActual = (100 * event.offsetX) / width;
     let height = target.getBoundingClientRect().height;
     this.yActual = (100 * event.offsetY) / height;
+
     this.idToSend = this.currentID;
     this.currentID++;
+    this.editing = false;
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
@@ -99,7 +102,11 @@ export class MapComponent implements OnInit {
 
     if (machineToEdit != null) {
       const index = this.machines.indexOf(machineToEdit);
-      this.machines[index] = machine;
+      if (machine.x == -1) {
+        this.machines.splice(index, 1);
+      } else {
+        this.machines[index] = machine;
+      }
     } else {
       this.machines.push(machine);
     }
@@ -143,6 +150,7 @@ export class MapComponent implements OnInit {
   edit(m: Machine): void {
     console.log(m);
     this.idToSend = m.id;
+    this.editing = true;
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 }

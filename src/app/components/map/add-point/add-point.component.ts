@@ -23,6 +23,7 @@ export class AddPointComponent implements OnInit {
   @Input() rad: number;
   @Input() url: string;
   @Input() id: number;
+  @Input() editing: boolean;
 
   @Output() machineEmitter = new EventEmitter<Machine>();
   form: FormGroup;
@@ -35,6 +36,7 @@ export class AddPointComponent implements OnInit {
       rad: [this.rad],
       url: [this.url],
     });
+    console.log(this.editing);
   }
 
   onSubmit(): void {
@@ -42,6 +44,11 @@ export class AddPointComponent implements OnInit {
 
     this.machineEmitter.emit(new Machine(this.xPos, this.yPos, +this.form.get("rad").value, 
       this.form.get("url").value, this.id));
+  }
+
+  onDelete(): void {
+    // Send a machine with fields set to -1 to signal that it should be deleted
+    this.machineEmitter.emit(new Machine(-1, -1, -1, '', this.id)); 
   }
 }
 
