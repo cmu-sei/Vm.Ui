@@ -17,7 +17,10 @@ DM20-0181
   </mat-form-field>
   <mat-form-field fxLayout="row">
     <mat-label>URL</mat-label>
-    <input matNativeControl formControlName="url">
+    <select matNativeControl formControlName="url">
+      <option *ngFor="let vm of vms" [ngValue]="vm.url">{{vm.name}}</option>
+      <option *ngFor="let m of vmMaps" [ngValue]="m.url">{{m.name}}</option> 
+    </select>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Label</mat-label>

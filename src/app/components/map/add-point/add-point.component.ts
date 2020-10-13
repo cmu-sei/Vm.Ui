@@ -10,6 +10,8 @@ DM20-0181
 
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { Vm, VmMap, VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
 
 @Component({
@@ -28,8 +30,13 @@ export class AddPointComponent implements OnInit {
 
   @Output() machineEmitter = new EventEmitter<Machine>();
   form: FormGroup;
+  vms: Vm[];
+  vmMaps: VmMap[];
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private vmService: VmsService,
+    ) {}
 
   ngOnInit(): void {
     // Default values come from map component
@@ -39,6 +46,8 @@ export class AddPointComponent implements OnInit {
       label: [this.label]
     });
     console.log(this.editing);
+    this.getVms();
+    this.getVmMaps();
   }
 
   onSubmit(): void {
@@ -51,6 +60,19 @@ export class AddPointComponent implements OnInit {
   onDelete(): void {
     // Send a machine with fields set to -1 to signal that it should be deleted
     this.machineEmitter.emit(new Machine(-1, -1, -1, '', this.id, '')); 
+  }
+
+  // TODO get only the relevant VMs/Maps
+  getVms(): void {
+    this.vmService.getAll().subscribe(data => {
+      this.vms = data;
+    })
+  }
+
+  getVmMaps(): void {
+    this.vmService.getAllMaps().subscribe(data => {
+      this.vmMaps = data;
+    })
   }
 }
 
