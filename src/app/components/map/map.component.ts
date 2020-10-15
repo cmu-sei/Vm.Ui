@@ -179,7 +179,7 @@ export class MapComponent implements OnInit {
     
     this.teamIDs.push(id);
     console.log(this.teamIDs);
-    this.form.setValue({teamID: [''], name: [name], imageURL: [image]});
+    this.form.setValue({teamID: [''], name: name, imageURL: image});
   }
 }
 

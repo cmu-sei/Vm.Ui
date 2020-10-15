@@ -58,8 +58,11 @@ export class AddPointComponent implements OnInit {
   onSubmit(): void {
     console.log("form submitted");    
 
-    this.machineEmitter.emit(new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, 
-      this.form.get("url").value, this.id, this.form.get('label').value));
+    const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, 
+      this.form.get("url").value, this.id, this.form.get('label').value);
+
+    console.log(machine);
+    this.machineEmitter.emit(machine);
   }
 
   onDelete(): void {
