@@ -32,10 +32,12 @@ export class AddPointComponent implements OnInit {
   form: FormGroup;
   vms: Vm[];
   vmMaps: VmMap[];
+  viewId: string;
 
   constructor(
     private formBuilder: FormBuilder,
     private vmService: VmsService,
+    private route: ActivatedRoute
     ) {}
 
   ngOnInit(): void {
@@ -45,7 +47,10 @@ export class AddPointComponent implements OnInit {
       url: [''],
       label: [this.label]
     });
-    console.log(this.editing);
+    this.route.params.subscribe(params => {
+      this.viewId = params['viewId'];
+    });
+    // console.log(this.editing);
     this.getVms();
     this.getVmMaps();
   }
@@ -62,15 +67,15 @@ export class AddPointComponent implements OnInit {
     this.machineEmitter.emit(new Machine(-1, -1, -1, '', this.id, '')); 
   }
 
-  // TODO get only the relevant VMs/Maps
+  // Currently getting all VMs/Maps in view. May need to get more granular
   getVms(): void {
-    this.vmService.getAll().subscribe(data => {
+    this.vmService.getViewVms(this.viewId).subscribe(data => {
       this.vms = data;
     })
   }
 
   getVmMaps(): void {
-    this.vmService.getAllMaps().subscribe(data => {
+    this.vmService.getViewMaps(this.viewId).subscribe(data => {
       this.vmMaps = data;
     })
   }
