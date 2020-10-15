@@ -62,6 +62,10 @@ DM20-0181
   </div>
 </div>
 
+<div *ngIf="mapInitialzed == false">
+  <button (click)="addTeam()">Add team to map</button>
+</div>
+
 <div>
   <button type="button" (click)="back()">
     Back to View

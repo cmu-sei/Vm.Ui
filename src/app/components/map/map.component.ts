@@ -28,7 +28,7 @@ export class MapComponent implements OnInit {
   viewId: string;
   mapInitialzed: boolean;
   form: FormGroup;
-  teamID: string;
+  teamIDs: string[];
   name: string;
   imageURL: string;
 
@@ -53,6 +53,7 @@ export class MapComponent implements OnInit {
 
   ngOnInit(): void {
     this.machines = new Array<Machine>();
+    this.teamIDs = new Array<string>();
     this.route.params.subscribe(params => {
       this.viewId = params['viewId'];
     });
@@ -65,7 +66,6 @@ export class MapComponent implements OnInit {
   }
 
   initMap(): void {
-    this.teamID = this.form.get('teamID').value;
     this.name = this.form.get('name').value;
     this.imageURL = this.form.get('imageURL').value;
     this.mapInitialzed = true;
@@ -139,7 +139,7 @@ export class MapComponent implements OnInit {
         coordinates: coords,
         name: this.name,
         imageUrl: this.imageURL,
-        teamIds: this.teamID == '' ? null : [this.teamID]
+        teamIds: this.teamIDs.length == 0 ? null : this.teamIDs
       }
 
       console.log(JSON.stringify(payload))
@@ -163,13 +163,23 @@ export class MapComponent implements OnInit {
     this.selectedRad = m.r;
     this.selectedURL = m.url;
     this.selectedLabel = m.label;
-    
+
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 
   // This gets called a lot for some reason. May want to investigate
   calcFontSize(radius: number): number {
     return radius / 3;
+  }
+
+  addTeam(): void {
+    const id = this.form.get('teamID').value as string;
+    const name = this.form.get('name').value as string;
+    const image = this.form.get('imageURL').value as string;
+    
+    this.teamIDs.push(id);
+    console.log(this.teamIDs);
+    this.form.setValue({teamID: [''], name: [name], imageURL: [image]});
   }
 }
 
