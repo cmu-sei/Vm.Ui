@@ -32,6 +32,7 @@ export const ROUTES: Routes = [
   { path: 'views/:viewId', component: VmMainComponent, canActivate: [AuthGuard] },
   { path: 'views/:viewId/map', component: MapComponent, canActivate: [AuthGuard]},
   { path: 'views/:viewId/map/:teamId', component: MapTeamDisplayComponent, canActivate: [AuthGuard] },
+  { path: 'views/:viewId/map/:teamId/edit', component: MapComponent, canActivate: [AuthGuard] },
   // TODO: deprecated, remove when safe to do so
   { path: 'exercises/:viewId/auto-deploy', component: AutoDeployComponent, canActivate: [AuthGuard] },
   { path: 'exercises/:viewName/:teamId/welder', component: WelderComponent, canActivate: [AuthGuard] },

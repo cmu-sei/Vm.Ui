@@ -8,7 +8,7 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 -->
 
-<form [formGroup]="form" (ngSubmit)="initMap()" *ngIf="mapInitialzed == false">
+<form [formGroup]="form" (ngSubmit)="initMap()" *ngIf="mapInitialzed == false && editMode == false">
   <mat-label>Name</mat-label>
   <mat-form-field fxLayout="row">
     <input type="string" matNativeControl formControlName="name">

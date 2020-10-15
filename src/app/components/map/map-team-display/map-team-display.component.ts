@@ -66,9 +66,9 @@ export class MapTeamDisplayComponent implements OnInit {
     window.open(url, '_blank')
   }
   
-  // This gets called a lot for some reason. May want to investigate
-  calcFontSize(radius: number): number {
-    return radius / 3;
-  }
+    // This gets called a lot for some reason. May want to investigate
+    calcFontSize(radius: number): number {
+      return radius / 3;
+    }
 }
 

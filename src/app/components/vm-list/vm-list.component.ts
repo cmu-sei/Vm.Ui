@@ -72,6 +72,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   VmMaps: VmMap[];
   selected;
+  editMode: boolean;
 
   constructor(
     public vmService: VmService,
@@ -250,7 +251,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   goToMap() {
     let teamId = this.selected.teamIds[0];
-    this.router.navigate(['map/' + teamId], { relativeTo:this.route} );
+    if (this.editMode) {
+      this.router.navigate(['map/' + teamId + '/edit'], { relativeTo:this.route} );
+    } else {
+      this.router.navigate(['map/' + teamId], { relativeTo:this.route} );
+    }
   }
 
   public getIpAddresses(vm: VmModel): string[] {

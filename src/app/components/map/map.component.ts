@@ -31,6 +31,8 @@ export class MapComponent implements OnInit {
   teamIDs: string[];
   name: string;
   imageURL: string;
+  editMode: boolean;
+  mapId: string;
 
   xActual: number;
   yActual: number;
@@ -57,17 +59,39 @@ export class MapComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.viewId = params['viewId'];
     });
-    this.mapInitialzed = false;
-    this.form = this.formBuilder.group({
-      name: [''],
-      imageURL: [''],
-      teamID: [''],
-    });
+    this.editMode = this.router.url.endsWith('edit');
+    if (this.editMode) {
+      this.initMapEdit();
+    } else {
+      this.mapInitialzed = false;
+      this.form = this.formBuilder.group({
+        name: [''],
+        imageURL: [''],
+        teamID: [''],
+      });
+    }
   }
 
   initMap(): void {
     this.name = this.form.get('name').value;
     this.imageURL = this.form.get('imageURL').value;
+    this.mapInitialzed = true;
+  }
+
+  initMapEdit(): void {
+    let teamId: string;
+    this.route.params.subscribe(params =>{
+      teamId = params['teamId'];
+    })
+    this.vmService.getTeamMap(teamId).subscribe(data => {
+      this.name = data.name;
+      this.mapId = data.id;
+      this.imageURL = data.imageUrl;
+      this.teamIDs = data.teamIds;
+      for (let coord of data.coordinates) {
+        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
+      }
+    })
     this.mapInitialzed = true;
   }
 
@@ -144,16 +168,24 @@ export class MapComponent implements OnInit {
 
       console.log(JSON.stringify(payload))
 
-      this.vmService.createMap(this.viewId, payload).subscribe(
-        x => console.log('Got a next value: ' + x),
-        err => console.log('Got an error: ' + err),
-        () => console.log('Got a complete notification')
-      );
+      if (this.editMode) {
+        this.vmService.updateMap(this.mapId, payload).subscribe(
+          x => console.log('Got a next value: ' + x),
+          err => console.log('Got an error: ' + err),
+          () => console.log('Got a complete notification')
+        );
+      } else {
+        this.vmService.createMap(this.viewId, payload).subscribe(
+          x => console.log('Got a next value: ' + x),
+          err => console.log('Got an error: ' + err),
+          () => console.log('Got a complete notification')
+        );
+      }
     }
   }
 
   back(): void {
-    this.router.navigate(['../'], { relativeTo:this.route })
+    this.router.navigate(['views/' + this.viewId]);
   }
 
   edit(m: Machine): void {
