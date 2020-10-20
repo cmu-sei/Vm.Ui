@@ -76,6 +76,7 @@ import { DragToSelectModule } from 'ngx-drag-to-select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AddPointComponent } from './components/map/add-point/add-point.component';
 import { MapTeamDisplayComponent } from './components/map/map-team-display/map-team-display.component';
+import { MapMainComponent } from './components/map/map-main/map-main.component';
 
 
 export function initConfig(settings: SettingsService) {
@@ -121,6 +122,7 @@ export class AngularMaterialModule {}
     ConfirmDialogComponent,
     SystemMessageComponent,
     WelderComponent,
+    MapMainComponent,
     MapComponent,
     MapTeamDisplayComponent,
     AddPointComponent

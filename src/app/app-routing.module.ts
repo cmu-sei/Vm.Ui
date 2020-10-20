@@ -21,6 +21,7 @@ import { AuthCallbackSilentComponent } from './components/auth/auth-callback-sil
 import { WelderComponent } from './components/welder/welder.component';
 import { MapComponent } from './components/map/map.component';
 import { MapTeamDisplayComponent } from './components/map/map-team-display/map-team-display.component';
+import { MapMainComponent } from './components/map/map-main/map-main.component';
 
 export const ROUTES: Routes = [
   { path: 'auth-callback', component: AuthCallbackComponent },
@@ -30,7 +31,8 @@ export const ROUTES: Routes = [
   { path: 'views/:viewName/:teamId/welder', component: WelderComponent, canActivate: [AuthGuard] },
   { path: 'views/:viewId/vms/:name/console', component: ConsoleComponent, canActivate: [AuthGuard] },
   { path: 'views/:viewId', component: VmMainComponent, canActivate: [AuthGuard] },
-  { path: 'views/:viewId/map', component: MapComponent, canActivate: [AuthGuard]},
+  { path: 'views/:viewId/map', component: MapMainComponent, canActivate: [AuthGuard]},
+  { path: 'views/:viewId/build-map', component: MapComponent, canActivate: [AuthGuard]},
   { path: 'views/:viewId/map/:teamId', component: MapTeamDisplayComponent, canActivate: [AuthGuard] },
   { path: 'views/:viewId/map/:teamId/edit', component: MapComponent, canActivate: [AuthGuard] },
   // TODO: deprecated, remove when safe to do so

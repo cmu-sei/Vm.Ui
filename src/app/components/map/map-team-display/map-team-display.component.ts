@@ -59,7 +59,7 @@ export class MapTeamDisplayComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['../..'], { relativeTo:this.route });
+    this.router.navigate(['../'], { relativeTo:this.route });
   }
 
   redirect(url): void {

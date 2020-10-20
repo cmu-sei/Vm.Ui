@@ -8,20 +8,28 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { AfterViewInit, Component, ElementRef, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Machine } from '../../models/machine'
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
+import { Machine } from '../../models/machine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
 import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { core } from '@angular/compiler';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+  styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit {
   machines: Machine[];
@@ -51,12 +59,12 @@ export class MapComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder
-    ) { }
+  ) {}
 
   ngOnInit(): void {
     this.machines = new Array<Machine>();
     this.teamIDs = new Array<string>();
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       this.viewId = params['viewId'];
     });
     this.editMode = this.router.url.endsWith('edit');
@@ -80,23 +88,32 @@ export class MapComponent implements OnInit {
 
   initMapEdit(): void {
     let teamId: string;
-    this.route.params.subscribe(params =>{
+    this.route.params.subscribe((params) => {
       teamId = params['teamId'];
-    })
-    this.vmService.getTeamMap(teamId).subscribe(data => {
+    });
+    this.vmService.getTeamMap(teamId).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
       this.imageURL = data.imageUrl;
       this.teamIDs = data.teamIds;
       for (let coord of data.coordinates) {
-        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
+        this.machines.push(
+          new Machine(
+            coord.xPosition,
+            coord.yPosition,
+            coord.radius,
+            coord.url,
+            coord.id,
+            coord.label
+          )
+        );
       }
-    })
+    });
     this.mapInitialzed = true;
   }
 
   redirect(url: string): void {
-    window.open(url, '_blank')
+    window.open(url, '_blank');
   }
 
   append(event): void {
@@ -119,7 +136,7 @@ export class MapComponent implements OnInit {
     console.log('In receive');
     console.log(machine);
     // Check if this is an edit or creation
-    let machineToEdit: Machine = null; 
+    let machineToEdit: Machine = null;
     for (let m of this.machines) {
       // It's an edit
       if (m.id == machine.id) {
@@ -133,11 +150,11 @@ export class MapComponent implements OnInit {
       // Remove the machine
       if (machine.x == -1) {
         this.machines.splice(index, 1);
-      // Replace the machine with an edited version
+        // Replace the machine with an edited version
       } else {
         this.machines[index] = machine;
       }
-    // Add the new machine
+      // Add the new machine
     } else {
       this.machines.push(machine);
     }
@@ -156,28 +173,28 @@ export class MapComponent implements OnInit {
         radius: machine.r,
         url: machine.url,
         id: machine.id,
-        label: machine.label
-      }
+        label: machine.label,
+      };
       coords.push(coord);
       let payload = <VmMap>{
         coordinates: coords,
         name: this.name,
         imageUrl: this.imageURL,
-        teamIds: this.teamIDs.length == 0 ? null : this.teamIDs
-      }
+        teamIds: this.teamIDs.length == 0 ? null : this.teamIDs,
+      };
 
-      console.log(JSON.stringify(payload))
+      console.log(JSON.stringify(payload));
 
       if (this.editMode) {
         this.vmService.updateMap(this.mapId, payload).subscribe(
-          x => console.log('Got a next value: ' + x),
-          err => console.log('Got an error: ' + err),
+          (x) => console.log('Got a next value: ' + x),
+          (err) => console.log('Got an error: ' + err),
           () => console.log('Got a complete notification')
         );
       } else {
         this.vmService.createMap(this.viewId, payload).subscribe(
-          x => console.log('Got a next value: ' + x),
-          err => console.log('Got an error: ' + err),
+          (x) => console.log('Got a next value: ' + x),
+          (err) => console.log('Got an error: ' + err),
           () => console.log('Got a complete notification')
         );
       }
@@ -185,7 +202,7 @@ export class MapComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['views/' + this.viewId]);
+    this.router.navigate(['views/' + this.viewId + '/map']);
   }
 
   edit(m: Machine): void {
@@ -208,10 +225,10 @@ export class MapComponent implements OnInit {
     const id = this.form.get('teamID').value as string;
     const name = this.form.get('name').value as string;
     const image = this.form.get('imageURL').value as string;
-    
+
     this.teamIDs.push(id);
     console.log(this.teamIDs);
-    this.form.setValue({teamID: [''], name: name, imageURL: image});
+    this.form.setValue({ teamID: [''], name: name, imageURL: image });
   }
 }
 

@@ -87,34 +87,6 @@ DM20-0181
           >IPv4 Only</mat-checkbox
         >
 
-        <div style="margin-top: 10px; margin-left: 150px; margin-right: 5px">
-          <mat-label>Select Map</mat-label>
-          <select [(ngModel)]="selected">
-            <option *ngFor="let vm of VmMaps" [ngValue]="vm">{{vm.name}}</option>
-          </select>
-          <button
-          mat-stroked-button
-          (click)="goToMap()"
-          >
-          Go
-          </button>
-        </div>
-
-        <div>
-          <mat-checkbox [(ngModel)]="editMode">
-            Edit Mode
-          </mat-checkbox>
-        </div>
-
-        <div style="margin-top: 10px; margin-left: 150px; margin-right: 5px">
-          <button
-            mat-stroked-button
-            (click)="buildMap()"
-          >
-          Build Map
-          </button>
-        </div>
-
         <div style="margin-top: 10px; margin-left: 200px;">
           <button
             mat-stroked-button
