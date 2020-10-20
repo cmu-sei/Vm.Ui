@@ -10,25 +10,20 @@ DM20-0181
 
 <div id="setupForm">
   <form [formGroup]="form" (ngSubmit)="initMap()" *ngIf="mapInitialzed == false && editMode == false">
-    <mat-label>Name</mat-label>
     <mat-form-field fxLayout="row">
+      <mat-label>Name</mat-label>
       <input type="string" matInput formControlName="name">
     </mat-form-field>
-    <mat-label>Image URL</mat-label>
     <mat-form-field fxLayout="row">
+      <mat-label>Image URL</mat-label>
       <input type="string" matInput formControlName="imageURL">
     </mat-form-field>
-    <mat-label>Team ID</mat-label>
     <mat-form-field fxLayout="row">
-      <!-- <input type="string" matInput formControlName="teamID">
-      TODO populate this with teams in current view -->
-      <select matNativeControl formControlName="teamID">
-        <option *ngFor="let team of teams" [ngValue]="team.Id">{{team.Name}}</option>
-      </select>
+      <mat-label>Teams</mat-label>
+      <mat-select multiple matNativeControl formControlName="teamIDs">
+        <mat-option *ngFor="let team of teams" [value]="team.id">{{team.name}}</mat-option>
+      </mat-select>
     </mat-form-field>
-    <div id="addTeam">
-      <button mat-flat-button color="primary" class="action-button" (click)="addTeam()">Add team to map</button>
-    </div>
   
     <div fxLayout="row" fxLayoutAlign="space-around center">
       <button mat-flat-button color="primary" class="action-button" type="submit">

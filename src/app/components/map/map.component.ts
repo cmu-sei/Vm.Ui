@@ -49,6 +49,7 @@ export class MapComponent implements OnInit {
   selectedRad: number;
   selectedURL: string;
   selectedLabel: string;
+  teams: SimpleTeam[];
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
@@ -67,6 +68,7 @@ export class MapComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.viewId = params['viewId'];
     });
+    this.getTeams();
     this.editMode = this.router.url.endsWith('edit');
     if (this.editMode) {
       this.initMapEdit();
@@ -75,7 +77,7 @@ export class MapComponent implements OnInit {
       this.form = this.formBuilder.group({
         name: [''],
         imageURL: [''],
-        teamID: [''],
+        teamIDs: [''],
       });
     }
   }
@@ -83,6 +85,7 @@ export class MapComponent implements OnInit {
   initMap(): void {
     this.name = this.form.get('name').value;
     this.imageURL = this.form.get('imageURL').value;
+    this.teamIDs = this.form.get('teamIDs').value;
     this.mapInitialzed = true;
   }
 
@@ -221,14 +224,11 @@ export class MapComponent implements OnInit {
     return radius / 3;
   }
 
-  addTeam(): void {
-    const id = this.form.get('teamID').value as string;
-    const name = this.form.get('name').value as string;
-    const image = this.form.get('imageURL').value as string;
-
-    this.teamIDs.push(id);
-    console.log(this.teamIDs);
-    this.form.setValue({ teamID: [''], name: name, imageURL: image });
+  getTeams(): void {
+    this.vmService.getTeams(this.viewId).subscribe(data => {
+      this.teams = data;
+      console.log(this.teams);
+    })
   }
 }
 
