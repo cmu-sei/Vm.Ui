@@ -35,7 +35,7 @@
     "@angular/router": "^9.1.11",
     "@crucible/common": "file:modules/crucible-common-0.0.3.tgz",
     "@datorama/akita": "^5.0.5",
-    "@microsoft/signalr": "^3.1.5",
+    "@microsoft/signalr": "^3.1.9",
     "babel-polyfill": "^6.26.0",
     "core-js": "^3.6.5",
     "ngx-drag-to-select": "^3.1.1",
