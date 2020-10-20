@@ -8,30 +8,32 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 -->
 
-<div>
-    <mat-label>Select Map</mat-label>
-    <select [(ngModel)]="selected">
-      <option *ngFor="let vm of VmMaps" [ngValue]="vm">{{vm.name}}</option>
-    </select>
-    <button
-    mat-stroked-button
-    (click)="goToMap()"
-    >
-    Go
-    </button>
-</div>
-
-<div>
-    <mat-checkbox [(ngModel)]="editMode">
-        Edit Mode
-    </mat-checkbox>
-</div>
-
-<div>
-    <button
+<div class="row">
+    <div class="block">
+        <mat-label>Select Map</mat-label>
+        <select [(ngModel)]="selected">
+          <option *ngFor="let vm of VmMaps" [ngValue]="vm">{{vm.name}}</option>
+        </select>
+        <button
         mat-stroked-button
-        (click)="buildMap()"
-    >
-    Build Map
-    </button>
+        (click)="goToMap()"
+        >
+        Go
+        </button>
+    </div>
+    
+    <div class="block">
+        <mat-checkbox [(ngModel)]="editMode">
+            Edit Mode
+        </mat-checkbox>
+    </div>
+    
+    <div class="block">
+        <button
+            mat-stroked-button
+            (click)="buildMap()"
+        >
+        Build Map
+        </button>
+    </div>
 </div>
