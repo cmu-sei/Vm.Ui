@@ -4,7 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-      time: "14:15"
+      time: "06:00"
       timezone: "America/New_York"
-    reviewers:
-      - "cmu-sei/crucible-team-developers"
+    assignees:
+      - "sei-aschlackman"
+      - "sei-noconnor"
+      - "sei-chershberger"
