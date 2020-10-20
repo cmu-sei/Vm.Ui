@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "s3.vm.web": {
+    "player.vm.ui": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -61,19 +61,19 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "s3.vm.web:build",
+            "browserTarget": "player.vm.ui:build",
             "port": 4303
           },
           "configurations": {
             "production": {
-              "browserTarget": "s3.vm.web:build:production"
+              "browserTarget": "player.vm.ui:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "s3.vm.web:build"
+            "browserTarget": "player.vm.ui:build"
           }
         },
         "test": {
@@ -97,7 +97,7 @@
         }
       }
     },
-    "s3.vm.web-e2e": {
+    "player.vm.ui-e2e": {
       "root": "e2e",
       "sourceRoot": "e2e",
       "projectType": "application",
@@ -106,7 +106,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "s3.vm.web:serve"
+            "devServerTarget": "player.vm.ui:serve"
           }
         },
         "lint": {
@@ -119,5 +119,5 @@
       }
     }
   },
-  "defaultProject": "s3.vm.web"
+  "defaultProject": "player.vm.ui"
 }
