@@ -193,14 +193,14 @@ export class MapComponent implements OnInit {
     if (this.editMode || this.timesSaved > 0) {
       this.vmService.updateMap(this.mapId, payload).subscribe(
         (x) => console.log('Got a next value: ' + x),
-        (err) => console.log('Got an error: ' + err),
-        () => console.log('Got a complete notification')
+        () => window.alert('Error saving map'),
+        () => window.alert('Map successfully saved!')
       );
     } else {
       this.vmService.createMap(this.viewId, payload).subscribe(
         (x) => {console.log('Got a next value: ' + x); this.mapId = x.id},
-        (err) => console.log('Got an error: ' + err),
-        () => console.log('Got a complete notification')
+        () => window.alert('Error saving map'),
+        () => window.alert('Map successfully saved!')
       );
     }
 
