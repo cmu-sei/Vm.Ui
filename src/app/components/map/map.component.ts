@@ -45,7 +45,6 @@ export class MapComponent implements OnInit {
   xActual: number;
   yActual: number;
   idToSend: string;
-  editing: boolean;
   selectedRad: number;
   selectedURL: string;
   selectedLabel: string;
@@ -128,7 +127,6 @@ export class MapComponent implements OnInit {
     this.yActual = (100 * event.offsetY) / height;
 
     this.idToSend = uuidv4();
-    this.editing = false;
     this.selectedRad = 3;
     this.selectedURL = 'https://example.com';
 
@@ -211,7 +209,6 @@ export class MapComponent implements OnInit {
   edit(m: Machine): void {
     console.log(m);
     this.idToSend = m.id;
-    this.editing = true;
     this.selectedRad = m.r;
     this.selectedURL = m.url;
     this.selectedLabel = m.label;

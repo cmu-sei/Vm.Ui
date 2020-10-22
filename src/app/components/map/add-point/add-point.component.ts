@@ -8,8 +8,8 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Vm, VmMap, VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
@@ -25,7 +25,6 @@ export class AddPointComponent implements OnInit {
   @Input() rad: number;
   @Input() url: string;
   @Input() id: string;
-  @Input() editing: boolean;
   @Input() label: string;
 
   @Output() machineEmitter = new EventEmitter<Machine>();
@@ -33,6 +32,7 @@ export class AddPointComponent implements OnInit {
   vms: Vm[];
   vmMaps: VmMap[];
   viewId: string;
+  custom: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -40,26 +40,31 @@ export class AddPointComponent implements OnInit {
     private route: ActivatedRoute
     ) {}
 
+  // TODO: A way to disable the custom url field when one is selected from drop down
   ngOnInit(): void {
+    this.custom = false;
     // Default values come from map component
     this.form = this.formBuilder.group({
       rad: [this.rad],
       url: [''],
-      label: [this.label]
+      label: [this.label],
+      customUrl: ['']
     });
+
     this.route.params.subscribe(params => {
       this.viewId = params['viewId'];
     });
-    // console.log(this.editing);
     this.getVms();
     this.getVmMaps();
   }
 
   onSubmit(): void {
-    console.log("form submitted");    
+    console.log("form submitted");   
+    console.log('url = ' + this.form.get('url').value); 
+    const url = this.form.get('url').value == '' ? this.form.get('customUrl').value : this.form.get('url').value;
 
-    const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, 
-      this.form.get("url").value, this.id, this.form.get('label').value);
+    const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, url, 
+      this.id, this.form.get('label').value);
 
     console.log(machine);
     this.machineEmitter.emit(machine);
