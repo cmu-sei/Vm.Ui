@@ -11,7 +11,7 @@ DM20-0181
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ComnAuthGuardService } from '@crucible/common';
+import { ComnAuthGuardService } from '@cmusei/crucible-common';
 import { AutoDeployComponent } from './components/auto-deploy/auto-deploy.component';
 import { ConsoleComponent } from './components/console/console.component';
 import { VmMainComponent } from './components/vm-main/vm-main.component';
