@@ -61,7 +61,7 @@ export class AddPointComponent implements OnInit {
   onSubmit(): void {
     console.log("form submitted");   
     console.log('url = ' + this.form.get('url').value); 
-    const url = this.form.get('url').value == '' ? this.form.get('customUrl').value : this.form.get('url').value;
+    const url = this.custom ? this.form.get('customUrl').value : this.form.get('url').value;
 
     const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, url, 
       this.id, this.form.get('label').value);

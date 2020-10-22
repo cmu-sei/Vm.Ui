@@ -49,6 +49,7 @@ export class MapComponent implements OnInit {
   selectedURL: string;
   selectedLabel: string;
   teams: SimpleTeam[];
+  timesSaved: number;
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
@@ -62,6 +63,7 @@ export class MapComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.timesSaved = 0;
     this.machines = new Array<Machine>();
     this.teamIDs = new Array<string>();
     this.route.params.subscribe((params) => {
@@ -177,29 +179,32 @@ export class MapComponent implements OnInit {
         label: machine.label,
       };
       coords.push(coord);
-      let payload = <VmMap>{
-        coordinates: coords,
-        name: this.name,
-        imageUrl: this.imageURL,
-        teamIds: this.teamIDs.length == 0 ? null : this.teamIDs,
-      };
-
-      console.log(JSON.stringify(payload));
-
-      if (this.editMode) {
-        this.vmService.updateMap(this.mapId, payload).subscribe(
-          (x) => console.log('Got a next value: ' + x),
-          (err) => console.log('Got an error: ' + err),
-          () => console.log('Got a complete notification')
-        );
-      } else {
-        this.vmService.createMap(this.viewId, payload).subscribe(
-          (x) => console.log('Got a next value: ' + x),
-          (err) => console.log('Got an error: ' + err),
-          () => console.log('Got a complete notification')
-        );
-      }
     }
+
+    let payload = <VmMap>{
+      coordinates: coords,
+      name: this.name,
+      imageUrl: this.imageURL,
+      teamIds: this.teamIDs.length == 0 ? null : this.teamIDs,
+    };
+
+    console.log(JSON.stringify(payload));
+
+    if (this.editMode || this.timesSaved > 0) {
+      this.vmService.updateMap(this.mapId, payload).subscribe(
+        (x) => console.log('Got a next value: ' + x),
+        (err) => console.log('Got an error: ' + err),
+        () => console.log('Got a complete notification')
+      );
+    } else {
+      this.vmService.createMap(this.viewId, payload).subscribe(
+        (x) => {console.log('Got a next value: ' + x); this.mapId = x.id},
+        (err) => console.log('Got an error: ' + err),
+        () => console.log('Got a complete notification')
+      );
+    }
+
+    this.timesSaved++;
   }
 
   back(): void {
