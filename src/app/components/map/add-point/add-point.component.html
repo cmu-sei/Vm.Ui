@@ -31,7 +31,7 @@ DM20-0181
   </mat-checkbox>
   <mat-form-field fxLayout="row">
     <mat-label>Custom URL</mat-label>
-    <input matNativeControl formControlName="customUrl" #customUrlField [disabled]="!custom">
+    <input matNativeControl formControlName="customUrl" #customUrlField [attr.disabled]="!custom ? true : null">
   </mat-form-field>
   <mat-form-field fxLayout="row">
     <mat-label>Label</mat-label>

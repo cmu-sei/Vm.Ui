@@ -40,15 +40,14 @@ export class AddPointComponent implements OnInit {
     private route: ActivatedRoute
     ) {}
 
-  // TODO: A way to disable the custom url field when one is selected from drop down
   ngOnInit(): void {
     this.custom = false;
     // Default values come from map component
-    this.form = this.formBuilder.group({
-      rad: [this.rad],
-      url: [''],
-      label: [this.label],
-      customUrl: ['']
+    this.form = new FormGroup({
+      rad: new FormControl({value: this.rad}),
+      url: new FormControl({value: ''}),
+      label: new FormControl({value: this.label}),
+      customUrl: new FormControl({value: '', disabled: true})
     });
 
     this.route.params.subscribe(params => {
