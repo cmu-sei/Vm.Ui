@@ -9,7 +9,7 @@ DM20-0181
 */
 
 import { Injectable } from '@angular/core';
-import { ComnAuthService, ComnSettingsService } from '@crucible/common';
+import { ComnAuthService, ComnSettingsService } from '@cmusei/crucible-common';
 import * as signalR from '@microsoft/signalr';
 import { VmModel } from '../../../vms/state/vm.model';
 import { VmService } from '../../../vms/state/vms.service';
