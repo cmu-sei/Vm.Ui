@@ -44,11 +44,12 @@ export class AddPointComponent implements OnInit {
     this.custom = false;
     // Default values come from map component
     this.form = new FormGroup({
-      rad: new FormControl({value: this.rad}),
-      url: new FormControl({value: ''}),
-      label: new FormControl({value: this.label}),
+      rad: new FormControl({value: this.rad, disabled: false}),
+      url: new FormControl({value: '', disabled: false}),
+      label: new FormControl({value: '',disabled: false}),
       customUrl: new FormControl({value: '', disabled: true})
     });
+    console.log(this.form.get('label').value);
 
     this.route.params.subscribe(params => {
       this.viewId = params['viewId'];
