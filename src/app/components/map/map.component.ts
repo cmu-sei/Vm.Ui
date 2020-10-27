@@ -9,10 +9,7 @@ DM20-0181
 */
 
 import {
-  AfterViewInit,
   Component,
-  ElementRef,
-  Input,
   OnInit,
   TemplateRef,
   ViewChild,
@@ -21,7 +18,6 @@ import { Machine } from '../../models/machine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
 import { Coordinate, SimpleTeam, VmMap, VmsService } from '../../generated/vm-api';
-import { core } from '@angular/compiler';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
@@ -121,7 +117,6 @@ export class MapComponent implements OnInit {
   }
 
   append(event): void {
-    // TODO Don't do calculations if browser is firefox; just use offsetX and offsetY
     const isFirefox = 'InstallTrigger' in window
 
     if (!isFirefox) {

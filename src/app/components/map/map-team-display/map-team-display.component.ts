@@ -10,7 +10,7 @@ DM20-0181
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VmMap, VmsService } from '../../../generated/vm-api';
+import { VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
 
 @Component({
