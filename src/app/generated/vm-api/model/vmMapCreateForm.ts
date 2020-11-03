@@ -23,6 +23,7 @@ import { CoordinateCreateForm } from './coordinateCreateForm';
 
 
 export interface VmMapCreateForm { 
+    id?: string;
     coordinates?: Array<CoordinateCreateForm> | null;
     name?: string | null;
     imageUrl?: string | null;

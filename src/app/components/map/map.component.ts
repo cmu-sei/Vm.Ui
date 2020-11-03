@@ -16,6 +16,7 @@ import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { core } from '@angular/compiler';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import {v4 as uuidv4} from 'uuid';
 
 @Component({
   selector: 'app-map',
@@ -30,12 +31,13 @@ export class MapComponent implements OnInit {
   teamID: string;
   name: string;
   imageURL: string;
-  currentID: number;
 
   xActual: number;
   yActual: number;
-  idToSend: number;
+  idToSend: string;
   editing: boolean;
+  selectedRad: number;
+  selectedURL: string;
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
@@ -59,7 +61,6 @@ export class MapComponent implements OnInit {
       imageURL: [''],
       teamID: [''],
     });
-    this.currentID = 0;
   }
 
   initMap(): void {
@@ -81,9 +82,10 @@ export class MapComponent implements OnInit {
     let height = target.getBoundingClientRect().height;
     this.yActual = (100 * event.offsetY) / height;
 
-    this.idToSend = this.currentID;
-    this.currentID++;
+    this.idToSend = uuidv4();
     this.editing = false;
+    this.selectedRad = 3;
+    this.selectedURL = 'https://example.com';
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
@@ -123,7 +125,8 @@ export class MapComponent implements OnInit {
         xPosition: machine.x,
         yPosition: machine.y,
         radius: machine.r,
-        url: machine.url
+        url: machine.url,
+        id: machine.id
       }
       coords.push(coord);
       let payload = <VmMap>{
@@ -151,6 +154,9 @@ export class MapComponent implements OnInit {
     console.log(m);
     this.idToSend = m.id;
     this.editing = true;
+    this.selectedRad = m.r;
+    this.selectedURL = m.url;
+
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 }

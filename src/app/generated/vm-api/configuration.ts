@@ -8,9 +8,6 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { HttpParameterCodec } from '@angular/common/http';
-
-export interface ConfigurationParameters {
     apiKeys?: {[ key: string ]: string};
     username?: string;
     password?: string;

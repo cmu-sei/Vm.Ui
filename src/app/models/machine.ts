@@ -13,8 +13,8 @@ export class Machine {
     y: number;
     r: number;
     url: string;
-    id: number;
-    constructor(x: number, y:number, r:number, url:string, id:number) {
+    id: string;
+    constructor(x: number, y:number, r:number, url:string, id:string) {
         this.x = x;
         this.y = y;
         this.r = r;
