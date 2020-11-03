@@ -8,29 +8,42 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 -->
 
-<h2>Add Click Point</h2>
+<<h2>Add Click Point</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <mat-form-field fxLayout="row">
-    <mat-label>X Position</mat-label>
-    <input type="number" matNativeControl formControlName="x">
-  </mat-form-field>
-  <mat-form-field fxLayout="row">
-    <mat-label>Y Position</mat-label>
-    <input type="number" matNativeControl formControlName="y">
-  </mat-form-field>
   <mat-form-field fxLayout="row">
     <mat-label>Radius</mat-label>
     <input type="number" matNativeControl formControlName="rad">
   </mat-form-field>
   <mat-form-field fxLayout="row">
     <mat-label>URL</mat-label>
-    <input matNativeControl formControlName="url">
+    <mat-select formControlName="url" #urlSelect [disabled]="custom">
+      <mat-optgroup label="VMs">
+        <mat-option *ngFor="let vm of vms" [value]="vm.url">{{vm.name}}</mat-option>
+      </mat-optgroup>
+      <mat-optgroup label="Maps">
+        <mat-option *ngFor="let m of vmMaps" [value]="getMapUrl(m)">{{m.name}}</mat-option> 
+      </mat-optgroup>
+    </mat-select>
+  </mat-form-field>
+  <mat-checkbox [(ngModel)]="custom" [ngModelOptions]="{standalone: true}">
+    Enter Custom URL
+  </mat-checkbox>
+  <mat-form-field fxLayout="row">
+    <mat-label>Custom URL</mat-label>
+    <input matNativeControl formControlName="customUrl" #customUrlField [attr.disabled]="!custom ? true : null">
+  </mat-form-field>
+  <mat-form-field fxLayout="row">
+    <mat-label>Label</mat-label>
+    <input type="text" matNativeControl formControlName="label">
   </mat-form-field>
 
   <div fxLayout="row" fxLayoutAlign="space-around center">
-    <button type="submit">
-      Add
+    <button mat-flat-button color="primary" class="action-button" type="button" type="submit">
+      Save
+    </button>
+    <button type="button" mat-flat-button color="primary" class="action-button" type="button" (click)="onDelete()">
+      Delete 
     </button>
   </div>
 </form>

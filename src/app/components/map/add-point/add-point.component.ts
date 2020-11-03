@@ -8,8 +8,10 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { Vm, VmMap, VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
 
 @Component({
@@ -22,26 +24,71 @@ export class AddPointComponent implements OnInit {
   @Input() yPos: number;
   @Input() rad: number;
   @Input() url: string;
+  @Input() id: string;
+  @Input() label: string;
 
   @Output() machineEmitter = new EventEmitter<Machine>();
   form: FormGroup;
+  vms: Vm[];
+  vmMaps: VmMap[];
+  viewId: string;
+  custom: boolean;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private vmService: VmsService,
+    private route: ActivatedRoute
+    ) {}
 
   ngOnInit(): void {
+    this.custom = false;
     // Default values come from map component
-    this.form = this.formBuilder.group({
-      x: [this.xPos],
-      y: [this.yPos],
-      rad: [this.rad],
-      url: [this.url],
+    this.form = new FormGroup({
+      rad: new FormControl({value: this.rad, disabled: false}),
+      url: new FormControl({value: '', disabled: false}),
+      label: new FormControl({value: '',disabled: false}),
+      customUrl: new FormControl({value: '', disabled: true})
     });
+    console.log(this.form.get('label').value);
+
+    this.route.params.subscribe(params => {
+      this.viewId = params['viewId'];
+    });
+    this.getVms();
+    this.getVmMaps();
   }
 
   onSubmit(): void {
-    console.log("form submitted");    
+    console.log("form submitted");   
+    console.log('url = ' + this.form.get('url').value); 
+    const url = this.custom ? this.form.get('customUrl').value : this.form.get('url').value;
 
-    this.machineEmitter.emit(new Machine(+this.form.get("x").value, +this.form.get("y").value,
-      +this.form.get("rad").value, this.form.get("url").value));
+    const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, url, 
+      this.id, this.form.get('label').value);
+
+    console.log(machine);
+    this.machineEmitter.emit(machine);
+  }
+
+  onDelete(): void {
+    // Send a machine with fields set to -1 to signal that it should be deleted
+    this.machineEmitter.emit(new Machine(-1, -1, -1, '', this.id, '')); 
+  }
+
+  // Currently getting all VMs/Maps in view. May need to get more granular
+  getVms(): void {
+    this.vmService.getViewVms(this.viewId).subscribe(data => {
+      this.vms = data;
+    })
+  }
+
+  getVmMaps(): void {
+    this.vmService.getViewMaps(this.viewId).subscribe(data => {
+      this.vmMaps = data;
+    })
+  }
+
+  getMapUrl(m: VmMap): string {
+    return 'views/' + m.viewId + '/map/' + m.teamIds[0];
   }
 }

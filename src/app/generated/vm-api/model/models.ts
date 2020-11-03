@@ -21,6 +21,7 @@ export * from './nicOptions';
 export * from './powerState';
 export * from './problemDetails';
 export * from './setVsphereVirtualMachineResolution';
+export * from './simpleTeam';
 export * from './teamIsoResult';
 export * from './validateVsphereVirtualMachineCredentials';
 export * from './virtualMachineToolsStatus';

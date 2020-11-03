@@ -8,24 +8,28 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 -->
 
-<div>
-  <svg viewBox="0 0 100 100">
-    <image [attr.href]="imageUrl" width="100" height="100"/>
-    <g *ngFor="let m of machines" >
-      <circle class="clickpoint" [attr.cx]="m.x" [attr.cy]="m.y" [attr.r]="m.r" (click)="redirect(m.url)" fill-opacity="0.0"> </circle>
-      <text class="clickpoint" [attr.x]="m.x" [attr.y]="m.y" [attr.font-size]="calcFontSize(m.r)" fill="black" text-anchor="middle" (click)="redirect(m.url)">{{m.label}}</text>
-    </g>
-  </svg>
-</div>
+<div class="row">
+  <div class="block" id="form">
+    <mat-form-field>
+      <mat-label>Select Map</mat-label>
+      <mat-select [(value)]="selected">
+        <mat-option>Select Map</mat-option>
+        <mat-option *ngFor="let vm of VmMaps" [value]="vm">{{vm.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-<div>
-  <button (click)="deleteMap()">
-    Delete Map
-  </button>
-</div>
-
-<div>
-  <button (click)="back()">
-    Back to View
-  </button>
+  <div class="block">
+    <mat-checkbox [(ngModel)]="editMode">
+        Edit Mode
+    </mat-checkbox>
+  </div>
+    
+  <div class="block">
+    <button mat-flat-button color="primary" class="action-button" type="button" (click)="goToMap()"> Go </button>
+  </div>
+    
+  <div class="block">
+    <button mat-flat-button color="primary" class="action-button" type="button" (click)="buildMap()"> Build Map </button>
+  </div>
 </div>

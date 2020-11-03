@@ -27,5 +27,6 @@ export interface Coordinate {
     yPosition?: number;
     radius?: number;
     url?: string | null;
+    label?: string | null;
 }
 

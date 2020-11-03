@@ -8,33 +8,40 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 -->
 
-<form [formGroup]="form" (ngSubmit)="initMap()" *ngIf="mapInitialzed == false">
-  <mat-label>Name</mat-label>
-  <mat-form-field fxLayout="row">
-    <input type="string" matNativeControl formControlName="name">
-  </mat-form-field>
-  <mat-label>Image URL</mat-label>
-  <mat-form-field fxLayout="row">
-    <input type="string" matNativeControl formControlName="imageURL">
-  </mat-form-field>
-  <mat-label>Team ID</mat-label>
-  <mat-form-field fxLayout="row">
-    <input type="string" matNativeControl formControlName="teamID">
-  </mat-form-field>
-
-  <div fxLayout="row" fxLayoutAlign="space-around center">
-    <button type="submit">
-      Submit
-    </button>
-  </div>
-</form>
+<div id="setupForm">
+  <form [formGroup]="form" (ngSubmit)="initMap()" *ngIf="mapInitialzed == false && editMode == false">
+    <mat-form-field fxLayout="row">
+      <mat-label>Name</mat-label>
+      <input type="string" matInput formControlName="name">
+    </mat-form-field>
+    <mat-form-field fxLayout="row">
+      <mat-label>Image URL</mat-label>
+      <input type="string" matInput formControlName="imageURL">
+    </mat-form-field>
+    <mat-form-field fxLayout="row">
+      <mat-label>Teams</mat-label>
+      <mat-select multiple matNativeControl formControlName="teamIDs">
+        <mat-option *ngFor="let team of teams" [value]="team.id">{{team.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+      <button mat-flat-button color="primary" class="action-button" type="submit">
+        Submit
+      </button>
+    </div>
+  </form>
+</div>
 
 
 <div *ngIf="mapInitialzed == true">
   <div>
     <svg viewBox="0 0 100 100">
       <image [attr.href]="imageURL" width="100" height="100" (click)="append($event)"/>
-      <circle class="clickpoint" *ngFor="let m of machines" [attr.cx]="m.x" [attr.cy]="m.y" [attr.r]="m.r" (click)="redirect(m.url)" fill-opacity="0.0"></circle>
+      <g *ngFor="let m of machines" >
+        <circle class="clickpoint" [attr.cx]="m.x" [attr.cy]="m.y" [attr.r]="m.r" (click)="edit(m)" fill-opacity="1.0"> </circle>
+        <text class="clickpoint" [attr.x]="m.x" [attr.y]="m.y" [attr.font-size]="calcFontSize(m.r)" fill="white" text-anchor="middle" (click)="edit(m)">{{m.label}}</text>
+      </g>
     </svg>
   </div>
   
@@ -43,15 +50,29 @@ DM20-0181
       (machineEmitter)="receiveMachine($event)"
       xPos={{xActual}}
       yPos={{yActual}}
-      rad="3"
-      url="https://example.com"
+      rad={{selectedRad}}
+      url={{selectedURL}}
+      id={{idToSend}}
+      label={{selectedLabel}}
     >
     </app-add-point>
   </ng-template>
-  
-  <div>
-    <button type="button" (click)="save()">
+</div>
+
+<div class="btn_group">
+  <div class="block" *ngIf="mapInitialzed==true">
+    <button mat-flat-button color="primary" class="action-button" type="button" (click)="save()">
       Save
     </button>
   </div>
+</div>
+
+<div *ngIf="mapInitialzed == false">
+  <button (click)="addTeam()">Add team to map</button>
+</div>
+
+<div>
+  <button type="button" (click)="back()">
+    Back to View
+  </button>
 </div>

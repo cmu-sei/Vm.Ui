@@ -9,8 +9,8 @@ DM20-0181
 */
 
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { VmMap, VmsService } from '../../../generated/vm-api';
+import { ActivatedRoute, Router } from '@angular/router';
+import { VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
 
 @Component({
@@ -22,10 +22,12 @@ export class MapTeamDisplayComponent implements OnInit {
   machines: Machine[];
   teamId: string;
   imageUrl: string;
+  id: string;
 
   constructor(
     private vmService: VmsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
     ) { }
 
   ngOnInit(): void {
@@ -38,14 +40,37 @@ export class MapTeamDisplayComponent implements OnInit {
 
   getMapData(): void {
     this.vmService.getTeamMap(this.teamId).subscribe(data => {
+      this.id = data.id;
       for (let coord of data.coordinates) {
-        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url));
+        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
       }
       this.imageUrl = data.imageUrl;
+    });
+  }
+
+  deleteMap(): void {
+    this.vmService.deleteMap(this.id).subscribe(
+      x => console.log('Got a next value: ' + x),
+      err => console.log('Got an error: ' + err),
+      () => console.log('Got a complete notification')
+    );
+    
+    this.back();
+  }
+
+  back(): void {
+    this.router.navigate(['../'], { relativeTo:this.route })
+    .then(() => {
+      window.location.reload();
     });
   }
 
   redirect(url): void {
     window.open(url, '_blank')
   }
+  
+    // This gets called a lot for some reason. May want to investigate
+    calcFontSize(radius: number): number {
+      return radius / 3;
+    }
 }

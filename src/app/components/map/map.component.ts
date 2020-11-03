@@ -8,31 +8,44 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { AfterViewInit, Component, ElementRef, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Machine } from '../../models/machine'
+import {
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
+import { Machine } from '../../models/machine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
-import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
-import { core } from '@angular/compiler';
-import { ActivatedRoute } from '@angular/router';
+import { Coordinate, SimpleTeam, VmMap, VmsService } from '../../generated/vm-api';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+  styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit {
   machines: Machine[];
   viewId: string;
   mapInitialzed: boolean;
   form: FormGroup;
-  teamID: string;
+  teamIDs: string[];
   name: string;
   imageURL: string;
+  editMode: boolean;
+  mapId: string;
 
-  @Input() xActual: number;
-  @Input() yActual: number;
+  xActual: number;
+  yActual: number;
+  idToSend: string;
+  selectedRad: number;
+  selectedURL: string;
+  selectedLabel: string;
+  teams: SimpleTeam[];
+  timesSaved: number;
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
@@ -41,47 +54,117 @@ export class MapComponent implements OnInit {
     private dialog: MatDialog,
     private vmService: VmsService,
     private route: ActivatedRoute,
+    private router: Router,
     private formBuilder: FormBuilder
-    ) { }
+  ) {}
 
   ngOnInit(): void {
+    this.timesSaved = 0;
     this.machines = new Array<Machine>();
-    this.route.params.subscribe(params => {
+    this.teamIDs = new Array<string>();
+    this.route.params.subscribe((params) => {
       this.viewId = params['viewId'];
     });
-    this.mapInitialzed = false;
-    this.form = this.formBuilder.group({
-      name: [''],
-      imageURL: [''],
-      teamID: [''],
-    });
+    this.getTeams();
+    this.editMode = this.router.url.endsWith('edit');
+    if (this.editMode) {
+      this.initMapEdit();
+    } else {
+      this.mapInitialzed = false;
+      this.form = this.formBuilder.group({
+        name: [''],
+        imageURL: [''],
+        teamIDs: [''],
+      });
+    }
   }
 
   initMap(): void {
-    this.teamID = this.form.get('teamID').value;
     this.name = this.form.get('name').value;
     this.imageURL = this.form.get('imageURL').value;
+    this.teamIDs = this.form.get('teamIDs').value;
     this.mapInitialzed = true;
   }
 
-  redirect(url): void {
-    window.open(url, '_blank')
+  initMapEdit(): void {
+    let teamId: string;
+    this.route.params.subscribe((params) => {
+      teamId = params['teamId'];
+    });
+    this.vmService.getTeamMap(teamId).subscribe((data) => {
+      this.name = data.name;
+      this.mapId = data.id;
+      this.imageURL = data.imageUrl;
+      this.teamIDs = data.teamIds;
+      for (let coord of data.coordinates) {
+        this.machines.push(
+          new Machine(
+            coord.xPosition,
+            coord.yPosition,
+            coord.radius,
+            coord.url,
+            coord.id,
+            coord.label
+          )
+        );
+      }
+    });
+    this.mapInitialzed = true;
+  }
+
+  redirect(url: string): void {
+    window.open(url, '_blank');
   }
 
   append(event): void {
-    // Get the offsets relative to the image. Note that this assumes a 100x100 image
-    let target = event.target;
-    let width = target.getBoundingClientRect().width;
-    this.xActual = (100 * event.offsetX) / width;
-    let height = target.getBoundingClientRect().height;
-    this.yActual = (100 * event.offsetY) / height;
+    const isFirefox = 'InstallTrigger' in window
+
+    if (!isFirefox) {
+      // Get the offsets relative to the image. Note that this assumes a 100x100 image
+      let target = event.target;
+      let width = target.getBoundingClientRect().width;
+      this.xActual = (100 * event.offsetX) / width;
+      let height = target.getBoundingClientRect().height;
+      this.yActual = (100 * event.offsetY) / height;
+    } else {
+      this.xActual = event.offsetX;
+      this.yActual = event.offsetY;
+    }
+
+    this.idToSend = uuidv4();
+    this.selectedRad = 3;
+    this.selectedURL = 'https://example.com';
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 
-  receiveMachine(machine) {
+  receiveMachine(machine: Machine): void {
     console.log('In receive');
-    this.machines.push(machine);
+    console.log(machine);
+    // Check if this is an edit or creation
+    let machineToEdit: Machine = null;
+    for (let m of this.machines) {
+      // It's an edit
+      if (m.id == machine.id) {
+        machineToEdit = m;
+        break;
+      }
+    }
+
+    if (machineToEdit != null) {
+      const index = this.machines.indexOf(machineToEdit);
+      // Remove the machine
+      if (machine.x == -1) {
+        this.machines.splice(index, 1);
+        // Replace the machine with an edited version
+      } else {
+        this.machines[index] = machine;
+      }
+      // Add the new machine
+    } else {
+      this.machines.push(machine);
+    }
+
     this.dialogRef.close();
   }
 
@@ -94,23 +177,63 @@ export class MapComponent implements OnInit {
         xPosition: machine.x,
         yPosition: machine.y,
         radius: machine.r,
-        url: machine.url
-      }
+        url: machine.url,
+        id: machine.id,
+        label: machine.label,
+      };
       coords.push(coord);
-      let payload = <VmMap>{
-        coordinates: coords,
-        name: this.name,
-        imageUrl: this.imageURL,
-        teamIds: this.teamID == '' ? null : [this.teamID]
-      }
+    }
 
-      console.log(JSON.stringify(payload))
+    let payload = <VmMap>{
+      coordinates: coords,
+      name: this.name,
+      imageUrl: this.imageURL,
+      teamIds: this.teamIDs.length == 0 ? null : this.teamIDs,
+    };
 
+    console.log(JSON.stringify(payload));
+
+    if (this.editMode || this.timesSaved > 0) {
+      this.vmService.updateMap(this.mapId, payload).subscribe(
+        (x) => console.log('Got a next value: ' + x),
+        () => window.alert('Error saving map'),
+        () => window.alert('Map successfully saved!')
+      );
+    } else {
       this.vmService.createMap(this.viewId, payload).subscribe(
-        x => console.log('Got a next value: ' + x),
-        err => console.log('Got an error: ' + err),
-        () => console.log('Got a complete notification')
+        (x) => {console.log('Got a next value: ' + x); this.mapId = x.id},
+        () => window.alert('Error saving map'),
+        () => window.alert('Map successfully saved!')
       );
     }
+
+    this.timesSaved++;
+  }
+
+  back(): void {
+    this.router.navigate(['views/' + this.viewId + '/map']);
+  }
+
+  edit(m: Machine): void {
+    console.log(m);
+    this.idToSend = m.id;
+    this.selectedRad = m.r;
+    this.selectedURL = m.url;
+    this.selectedLabel = m.label;
+
+    this.dialogRef = this.dialog.open(this.addPointDialog);
+  }
+
+  // This gets called a lot for some reason. May want to investigate
+  calcFontSize(radius: number): number {
+    return radius / 3;
+  }
+
+  getTeams(): void {
+    this.vmService.getTeams(this.viewId).subscribe(data => {
+      this.teams = data;
+      console.log(this.teams);
+    })
   }
 }
+

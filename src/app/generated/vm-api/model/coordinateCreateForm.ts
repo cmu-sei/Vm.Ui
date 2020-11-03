@@ -22,9 +22,11 @@
 
 
 export interface CoordinateCreateForm { 
+    id?: string;
     xPosition?: number;
     yPosition?: number;
     radius?: number;
     url?: string | null;
+    label?: string | null;
 }
 
