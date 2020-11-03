@@ -121,12 +121,20 @@ export class MapComponent implements OnInit {
   }
 
   append(event): void {
-    // Get the offsets relative to the image. Note that this assumes a 100x100 image
-    let target = event.target;
-    let width = target.getBoundingClientRect().width;
-    this.xActual = (100 * event.offsetX) / width;
-    let height = target.getBoundingClientRect().height;
-    this.yActual = (100 * event.offsetY) / height;
+    // TODO Don't do calculations if browser is firefox; just use offsetX and offsetY
+    const isFirefox = 'InstallTrigger' in window
+
+    if (!isFirefox) {
+      // Get the offsets relative to the image. Note that this assumes a 100x100 image
+      let target = event.target;
+      let width = target.getBoundingClientRect().width;
+      this.xActual = (100 * event.offsetX) / width;
+      let height = target.getBoundingClientRect().height;
+      this.yActual = (100 * event.offsetY) / height;
+    } else {
+      this.xActual = event.offsetX;
+      this.yActual = event.offsetY;
+    }
 
     this.idToSend = uuidv4();
     this.selectedRad = 3;
