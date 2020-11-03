@@ -19,14 +19,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ConsoleConnectionInfo } from './consoleConnectionInfo';
 
 
 export interface VmCreateForm { 
-    id: string;
-    url: string;
-    name: string;
-    teamIds: Array<string>;
+    id: string | null;
+    url?: string | null;
+    name: string | null;
+    teamIds: Array<string> | null;
     userId?: string | null;
     allowedNetworks?: Array<string> | null;
+    consoleConnectionInfo?: ConsoleConnectionInfo;
 }
 

@@ -20,6 +20,7 @@
  * Do not edit the class manually.
  */
 import { PowerState } from './powerState';
+import { ConsoleConnectionInfo } from './consoleConnectionInfo';
 
 
 export interface Vm { 
@@ -56,5 +57,6 @@ export interface Vm {
      * True if this Vm currently has pending tasks (power on, power off, etc)
      */
     hasPendingTasks?: boolean;
+    consoleConnectionInfo?: ConsoleConnectionInfo;
 }
 
