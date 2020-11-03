@@ -8,26 +8,35 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 -->
 
-<form [formGroup]="form" (ngSubmit)="initMap()" *ngIf="mapInitialzed == false && editMode == false">
-  <mat-label>Name</mat-label>
-  <mat-form-field fxLayout="row">
-    <input type="string" matNativeControl formControlName="name">
-  </mat-form-field>
-  <mat-label>Image URL</mat-label>
-  <mat-form-field fxLayout="row">
-    <input type="string" matNativeControl formControlName="imageURL">
-  </mat-form-field>
-  <mat-label>Team ID</mat-label>
-  <mat-form-field fxLayout="row">
-    <input type="string" matNativeControl formControlName="teamID">
-  </mat-form-field>
-
-  <div fxLayout="row" fxLayoutAlign="space-around center">
-    <button type="submit">
-      Submit
-    </button>
-  </div>
-</form>
+<div id="setupForm">
+  <form [formGroup]="form" (ngSubmit)="initMap()" *ngIf="mapInitialzed == false && editMode == false">
+    <mat-label>Name</mat-label>
+    <mat-form-field fxLayout="row">
+      <input type="string" matInput formControlName="name">
+    </mat-form-field>
+    <mat-label>Image URL</mat-label>
+    <mat-form-field fxLayout="row">
+      <input type="string" matInput formControlName="imageURL">
+    </mat-form-field>
+    <mat-label>Team ID</mat-label>
+    <mat-form-field fxLayout="row">
+      <!-- <input type="string" matInput formControlName="teamID">
+      TODO populate this with teams in current view -->
+      <select matNativeControl formControlName="teamID">
+        <option *ngFor="let team of teams" [ngValue]="team.Id">{{team.Name}}</option>
+      </select>
+    </mat-form-field>
+    <div id="addTeam">
+      <button mat-flat-button color="primary" class="action-button" (click)="addTeam()">Add team to map</button>
+    </div>
+  
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+      <button mat-flat-button color="primary" class="action-button" type="submit">
+        Submit
+      </button>
+    </div>
+  </form>
+</div>
 
 
 <div *ngIf="mapInitialzed == true">
@@ -54,9 +63,11 @@ DM20-0181
     >
     </app-add-point>
   </ng-template>
-  
-  <div>
-    <button type="button" (click)="save()">
+</div>
+
+<div class="btn_group">
+  <div class="block" *ngIf="mapInitialzed==true">
+    <button mat-flat-button color="primary" class="action-button" type="button" (click)="save()">
       Save
     </button>
   </div>

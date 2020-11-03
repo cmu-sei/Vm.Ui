@@ -20,7 +20,7 @@ import {
 import { Machine } from '../../models/machine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
-import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
+import { Coordinate, SimpleTeam, VmMap, VmsService } from '../../generated/vm-api';
 import { core } from '@angular/compiler';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';

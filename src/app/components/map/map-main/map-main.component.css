@@ -16,4 +16,10 @@ DM20-0181
 .block {
     width: 100px;
     display: inline-block;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+#form {
+    margin-right: 100px;
 }

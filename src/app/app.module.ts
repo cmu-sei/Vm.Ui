@@ -77,6 +77,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AddPointComponent } from './components/map/add-point/add-point.component';
 import { MapTeamDisplayComponent } from './components/map/map-team-display/map-team-display.component';
 import { MapMainComponent } from './components/map/map-main/map-main.component';
+import { MatSelectModule } from '@angular/material/select';
 
 
 export function initConfig(settings: SettingsService) {
@@ -103,6 +104,7 @@ export function initConfig(settings: SettingsService) {
     MatTabsModule,
     MatCheckboxModule,
     MatTooltipModule,
+    MatSelectModule
   ],
   declarations: [],
 })
