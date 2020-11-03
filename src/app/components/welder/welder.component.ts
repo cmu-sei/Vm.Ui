@@ -8,18 +8,18 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { WelderService } from '../../services/welder/welder.service';
 import { ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { WelderService } from '../../services/welder/welder.service';
 import { VmService } from '../../vms/state/vms.service';
 
 @Component({
   selector: 'app-welder',
   templateUrl: './welder.component.html',
-  styleUrls: ['./welder.component.scss'],
+  styleUrls: ['./welder.component.css'],
 })
 export class WelderComponent implements OnInit, OnDestroy {
   public showDeployButton = false;

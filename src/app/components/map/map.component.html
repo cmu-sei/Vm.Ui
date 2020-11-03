@@ -1,0 +1,47 @@
+<form [formGroup]="form" (ngSubmit)="initMap()" *ngIf="mapInitialzed == false">
+  <mat-label>Name</mat-label>
+  <mat-form-field fxLayout="row">
+    <input type="string" matNativeControl formControlName="name">
+  </mat-form-field>
+  <mat-label>Image URL</mat-label>
+  <mat-form-field fxLayout="row">
+    <input type="string" matNativeControl formControlName="imageURL">
+  </mat-form-field>
+  <mat-label>Team ID</mat-label>
+  <mat-form-field fxLayout="row">
+    <input type="string" matNativeControl formControlName="teamID">
+  </mat-form-field>
+
+  <div fxLayout="row" fxLayoutAlign="space-around center">
+    <button type="submit">
+      Submit
+    </button>
+  </div>
+</form>
+
+
+<div *ngIf="mapInitialzed == true">
+  <div>
+    <svg viewBox="0 0 100 100">
+      <image [attr.href]="imageURL" width="100" height="100" (click)="append($event)"/>
+      <circle class="clickpoint" *ngFor="let m of machines" [attr.cx]="m.x" [attr.cy]="m.y" [attr.r]="m.r" (click)="redirect(m.url)" fill-opacity="0.0"></circle>
+    </svg>
+  </div>
+  
+  <ng-template #addPointDialog>
+    <app-add-point
+      (machineEmitter)="receiveMachine($event)"
+      xPos={{xActual}}
+      yPos={{yActual}}
+      rad="3"
+      url="https://example.com"
+    >
+    </app-add-point>
+  </ng-template>
+  
+  <div>
+    <button type="button" (click)="save()">
+      Save
+    </button>
+  </div>
+</div>

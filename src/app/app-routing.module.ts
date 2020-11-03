@@ -8,67 +8,46 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ComnAuthGuardService } from '@cmusei/crucible-common';
 import { AutoDeployComponent } from './components/auto-deploy/auto-deploy.component';
 import { ConsoleComponent } from './components/console/console.component';
 import { VmMainComponent } from './components/vm-main/vm-main.component';
+import { AuthLogoutComponent } from './components/auth/auth-logout.component';
+import { ConsoleComponent } from './components/console/console.component';
+import { AutoDeployComponent } from './components/auto-deploy/auto-deploy.component';
+import { AuthCallbackSilentComponent } from './components/auth/auth-callback-silent.component';
 import { WelderComponent } from './components/welder/welder.component';
+import { MapComponent } from './components/map/map.component';
+import { MapTeamDisplayComponent } from './components/map/map-team-display/map-team-display.component';
 
 export const ROUTES: Routes = [
-  {
-    path: 'views/:viewId/auto-deploy',
-    component: AutoDeployComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  {
-    path: 'views/:viewName/:teamId/welder',
-    component: WelderComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  {
-    path: 'views/:viewId/vms/:name/console',
-    component: ConsoleComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  {
-    path: 'views/:viewId',
-    component: VmMainComponent,
-    canActivate: [ComnAuthGuardService],
-  },
+  { path: 'auth-callback', component: AuthCallbackComponent },
+  { path: 'auth-callback-silent', component: AuthCallbackSilentComponent },
+  { path: 'logout', component: AuthLogoutComponent },
+  { path: 'views/:viewId/auto-deploy', component: AutoDeployComponent, canActivate: [AuthGuard] },
+  { path: 'views/:viewName/:teamId/welder', component: WelderComponent, canActivate: [AuthGuard] },
+  { path: 'views/:viewId/vms/:name/console', component: ConsoleComponent, canActivate: [AuthGuard] },
+  { path: 'views/:viewId', component: VmMainComponent, canActivate: [AuthGuard] },
+  { path: 'views/:viewId/map', component: MapComponent, canActivate: [AuthGuard]},
+  { path: 'views/:viewId/map/:teamId', component: MapTeamDisplayComponent, canActivate: [AuthGuard] },
   // TODO: deprecated, remove when safe to do so
-  {
-    path: 'exercises/:viewId/auto-deploy',
-    component: AutoDeployComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  {
-    path: 'exercises/:viewName/:teamId/welder',
-    component: WelderComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  {
-    path: 'exercises/:viewId/vms/:name/console',
-    component: ConsoleComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  {
-    path: 'exercises/:viewId',
-    component: VmMainComponent,
-    canActivate: [ComnAuthGuardService],
-  },
+  { path: 'exercises/:viewId/auto-deploy', component: AutoDeployComponent, canActivate: [AuthGuard] },
+  { path: 'exercises/:viewName/:teamId/welder', component: WelderComponent, canActivate: [AuthGuard] },
+  { path: 'exercises/:viewId/vms/:name/console', component: ConsoleComponent, canActivate: [AuthGuard] },
+  { path: 'exercises/:viewId', component: VmMainComponent, canActivate: [AuthGuard] },
   // End depreceated routes
-  {
-    path: '**',
-    component: VmMainComponent,
-    canActivate: [ComnAuthGuardService],
-  },
+  { path: '**', component: VmMainComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({
-  exports: [RouterModule],
-  imports: [CommonModule, RouterModule.forRoot(ROUTES)],
+  exports: [
+    RouterModule
+  ],
+  imports: [
+    CommonModule,
+    RouterModule.forRoot(ROUTES)
+  ]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
