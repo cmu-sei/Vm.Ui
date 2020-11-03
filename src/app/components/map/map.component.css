@@ -9,5 +9,29 @@ DM20-0181
 */
 
 .clickpoint {
-    cursor: pointer;
-  }
+  cursor: pointer;
+}
+
+.btn_group {
+  width: 100%;
+  text-align: left;
+}
+
+.block {
+  width: 100px;
+  margin-left: 25px;
+  margin-right: 25px;
+  display: inline-block;
+}
+
+#setupForm {
+  text-align: center;
+}
+
+form {
+  display: inline-block;
+}
+
+#addTeam {
+  margin-bottom: 25px;
+}

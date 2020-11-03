@@ -18,14 +18,17 @@ DM20-0181
   </svg>
 </div>
 
-<div>
-  <button (click)="deleteMap()">
-    Delete Map
-  </button>
-</div>
-
-<div>
-  <button (click)="back()">
-    Back to View
-  </button>
+<div class="btn_group">
+  <div class="block">
+    <button mat-flat-button color="primary" class="action-button" type="button" (click)="deleteMap()">
+      Delete Map
+    </button>
+  </div>
+  
+  <div class="block">
+    <button mat-flat-button color="primary" class="action-button" type="button" (click)="back()">
+      Back to View
+    </button>
+  </div>
+  
 </div>

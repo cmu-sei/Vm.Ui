@@ -65,14 +65,9 @@ DM20-0181
       Save
     </button>
   </div>
-</div>
-
-<div *ngIf="mapInitialzed == false">
-  <button (click)="addTeam()">Add team to map</button>
-</div>
-
-<div>
-  <button type="button" (click)="back()">
-    Back to View
-  </button>
+  <div class="block">
+    <button mat-flat-button color="primary" class="action-button" type="button" (click)="back()">
+      Back to View
+    </button>
+  </div>
 </div>
