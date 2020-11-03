@@ -42,7 +42,7 @@ export class AddPointComponent implements OnInit {
     // Default values come from map component
     this.form = this.formBuilder.group({
       rad: [this.rad],
-      url: [this.url],
+      url: [''],
       label: [this.label]
     });
     console.log(this.editing);
