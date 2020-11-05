@@ -47,6 +47,7 @@ import { AppComponent } from './app.component';
 import { AutoDeployComponent } from './components/auto-deploy/auto-deploy.component';
 import { ConsoleComponent } from './components/console/console.component';
 import { FocusedAppComponent } from './components/focused-app/focused-app.component';
+import { MapComponent } from './components/map/map.component';
 import { ConfirmDialogComponent } from './components/shared/confirm-dialog/confirm-dialog.component';
 import { SystemMessageComponent } from './components/shared/system-message/system-message.component';
 import { VmListComponent } from './components/vm-list/vm-list.component';
@@ -61,6 +62,10 @@ import { SystemMessageService } from './services/system-message/system-message.s
 import { TeamsService } from './services/teams/teams.service';
 import { WelderService } from './services/welder/welder.service';
 import { VmService } from './vms/state/vms.service';
+import { AddPointComponent } from './components/map/add-point/add-point.component';
+import { MapTeamDisplayComponent } from './components/map/map-team-display/map-team-display.component';
+import { MapMainComponent } from './components/map/map-main/map-main.component';
+import { MatSelectModule } from '@angular/material/select';
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
@@ -87,7 +92,9 @@ const settings: ComnSettingsConfig = {
     MatTabsModule,
     MatCheckboxModule,
     MatTooltipModule,
+    MatSelectModule
   ],
+  declarations: [],
 })
 export class AngularMaterialModule {}
 
@@ -102,6 +109,10 @@ export class AngularMaterialModule {}
     ConfirmDialogComponent,
     SystemMessageComponent,
     WelderComponent,
+    MapMainComponent,
+    MapComponent,
+    MapTeamDisplayComponent,
+    AddPointComponent
   ],
   imports: [
     HttpClientModule,

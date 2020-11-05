@@ -13,7 +13,7 @@
     "docker:stack:proxy": "docker stack deploy -c ./docker/api.yml -c ./docker/api-proxy.yml vm_stack",
     "docker:destroy": "docker stack rm vm_stack",
     "swagger:gen": "curl --insecure http://localhost:4302/swagger/v1/swagger.json --output swagger.json && node_modules/@openapitools/openapi-generator-cli/bin/openapi-generator generate -i ./swagger.json -g typescript-angular -o src/app/generated/vm-api --additional-properties ngVersion=9.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original",
-    "swagger:gen-win": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v4.1.2 generate -i http://host.docker.internal:4302/swagger/v1/swagger.json?format=openapi -g typescript-angular -o /local/src/app/generated/vm-api --additional-properties ngVersion=9.2 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original"
+    "swagger:gen-win": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v4.3.0 generate -i http://host.docker.internal:4302/swagger/v1/swagger.json?format=openapi -g typescript-angular -o /local/src/app/generated/vm-api --additional-properties ngVersion=9.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original --type-mappings=DateTime=Date"
   },
   "scriptComments": {
     "docker:stack": "// Runs the entire vm stack",
@@ -47,7 +47,7 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.901.9",
+    "@angular-devkit/build-angular": "^0.901.12",
     "@angular/cli": "^9.1.9",
     "@angular/compiler-cli": "^9.1.11",
     "@angular/language-service": "^9.1.11",

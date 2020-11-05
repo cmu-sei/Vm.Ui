@@ -1,0 +1,49 @@
+<!--
+Crucible
+Copyright 2020 Carnegie Mellon University.
+NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING INSTITUTE MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT INFRINGEMENT.
+Released under a MIT (SEI)-style license, please see license.txt or contact permission@sei.cmu.edu for full terms.
+[DISTRIBUTION STATEMENT A] This material has been approved for public release and unlimited distribution.  Please see Copyright notice for non-US Government use and distribution.
+Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark Office by Carnegie Mellon University.
+DM20-0181
+-->
+
+<h2>Add Click Point</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field fxLayout="row">
+    <mat-label>Radius</mat-label>
+    <input type="number" matNativeControl formControlName="rad">
+  </mat-form-field>
+  <mat-form-field fxLayout="row">
+    <mat-label>URL</mat-label>
+    <mat-select formControlName="url" #urlSelect [disabled]="custom">
+      <mat-optgroup label="VMs">
+        <mat-option *ngFor="let vm of vms" [value]="vm.url">{{vm.name}}</mat-option>
+      </mat-optgroup>
+      <mat-optgroup label="Maps">
+        <mat-option *ngFor="let m of vmMaps" [value]="getMapUrl(m)">{{m.name}}</mat-option> 
+      </mat-optgroup>
+    </mat-select>
+  </mat-form-field>
+  <mat-checkbox [(ngModel)]="custom" [ngModelOptions]="{standalone: true}">
+    Enter Custom URL
+  </mat-checkbox>
+  <mat-form-field fxLayout="row">
+    <mat-label>Custom URL</mat-label>
+    <input matNativeControl formControlName="customUrl" #customUrlField [attr.disabled]="!custom ? true : null">
+  </mat-form-field>
+  <mat-form-field fxLayout="row">
+    <mat-label>Label</mat-label>
+    <input type="text" matNativeControl formControlName="label">
+  </mat-form-field>
+
+  <div fxLayout="row" fxLayoutAlign="space-around center">
+    <button mat-flat-button color="primary" class="action-button" type="button" type="submit">
+      Save
+    </button>
+    <button type="button" mat-flat-button color="primary" class="action-button" type="button" (click)="onDelete()">
+      Delete 
+    </button>
+  </div>
+</form>

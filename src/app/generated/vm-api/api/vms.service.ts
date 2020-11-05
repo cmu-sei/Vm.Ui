@@ -27,15 +27,19 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { BulkPowerOperation } from '../model/bulkPowerOperation';
-import { BulkPowerOperationResponse } from '../model/bulkPowerOperationResponse';
-import { ProblemDetails } from '../model/problemDetails';
-import { Vm } from '../model/vm';
-import { VmCreateForm } from '../model/vmCreateForm';
-import { VmUpdateForm } from '../model/vmUpdateForm';
+import { BulkPowerOperation } from '../model/models';
+import { BulkPowerOperationResponse } from '../model/models';
+import { ProblemDetails } from '../model/models';
+import { SimpleTeam } from '../model/models';
+import { Vm } from '../model/models';
+import { VmCreateForm } from '../model/models';
+import { VmMap } from '../model/models';
+import { VmMapCreateForm } from '../model/models';
+import { VmUpdateForm } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
+
 
 
 @Injectable({
@@ -63,6 +67,42 @@ export class VmsService {
 
 
 
+    private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
+        if (typeof value === "object" && value instanceof Date === false) {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value);
+        } else {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+        }
+        return httpParams;
+    }
+
+    private addToHttpParamsRecursive(httpParams: HttpParams, value?: any, key?: string): HttpParams {
+        if (value == null) {
+            return httpParams;
+        }
+
+        if (typeof value === "object") {
+            if (Array.isArray(value)) {
+                (value as any[]).forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+            } else if (value instanceof Date) {
+                if (key != null) {
+                    httpParams = httpParams.append(key,
+                        (value as Date).toISOString().substr(0, 10));
+                } else {
+                   throw Error("key may not be null if value is Date");
+                }
+            } else {
+                Object.keys(value).forEach( k => httpParams = this.addToHttpParamsRecursive(
+                    httpParams, value[k], key != null ? `${key}.${k}` : k));
+            }
+        } else if (key != null) {
+            httpParams = httpParams.append(key, value);
+        } else {
+            throw Error("key may not be null if value is not object or array");
+        }
+        return httpParams;
+    }
+
     /**
      * Adds a Virtual Machine to a Team
      * Creates a new Virtual Machine with the attributes specified  &lt;para /&gt;  Accessible to a User with management permissions on a team the Virtual Machine will be added to
@@ -71,10 +111,10 @@ export class VmsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public addVmToTeam(vmId: string, teamId: string, observe?: 'body', reportProgress?: boolean): Observable<any>;
-    public addVmToTeam(vmId: string, teamId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<any>>;
-    public addVmToTeam(vmId: string, teamId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<any>>;
-    public addVmToTeam(vmId: string, teamId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public addVmToTeam(vmId: string, teamId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<any>;
+    public addVmToTeam(vmId: string, teamId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<any>>;
+    public addVmToTeam(vmId: string, teamId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<any>>;
+    public addVmToTeam(vmId: string, teamId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (vmId === null || vmId === undefined) {
             throw new Error('Required parameter vmId was null or undefined when calling addVmToTeam.');
         }
@@ -92,19 +132,28 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'application/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<any>(`${this.configuration.basePath}/api/teams/${encodeURIComponent(String(teamId))}/vms/${encodeURIComponent(String(vmId))}`,
             null,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -115,14 +164,14 @@ export class VmsService {
 
     /**
      * Power off multiple Virtual Machines
-     * @param BulkPowerOperation 
+     * @param bulkPowerOperation 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public bulkPowerOff(BulkPowerOperation?: BulkPowerOperation, observe?: 'body', reportProgress?: boolean): Observable<BulkPowerOperationResponse>;
-    public bulkPowerOff(BulkPowerOperation?: BulkPowerOperation, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<BulkPowerOperationResponse>>;
-    public bulkPowerOff(BulkPowerOperation?: BulkPowerOperation, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<BulkPowerOperationResponse>>;
-    public bulkPowerOff(BulkPowerOperation?: BulkPowerOperation, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public bulkPowerOff(bulkPowerOperation?: BulkPowerOperation, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<BulkPowerOperationResponse>;
+    public bulkPowerOff(bulkPowerOperation?: BulkPowerOperation, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<BulkPowerOperationResponse>>;
+    public bulkPowerOff(bulkPowerOperation?: BulkPowerOperation, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<BulkPowerOperationResponse>>;
+    public bulkPowerOff(bulkPowerOperation?: BulkPowerOperation, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -134,13 +183,16 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -157,9 +209,15 @@ export class VmsService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<BulkPowerOperationResponse>(`${this.configuration.basePath}/api/vms/actions/power-off`,
-            BulkPowerOperation,
+            bulkPowerOperation,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -170,14 +228,14 @@ export class VmsService {
 
     /**
      * Power on multiple Virtual Machines
-     * @param BulkPowerOperation 
+     * @param bulkPowerOperation 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public bulkPowerOn(BulkPowerOperation?: BulkPowerOperation, observe?: 'body', reportProgress?: boolean): Observable<BulkPowerOperationResponse>;
-    public bulkPowerOn(BulkPowerOperation?: BulkPowerOperation, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<BulkPowerOperationResponse>>;
-    public bulkPowerOn(BulkPowerOperation?: BulkPowerOperation, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<BulkPowerOperationResponse>>;
-    public bulkPowerOn(BulkPowerOperation?: BulkPowerOperation, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public bulkPowerOn(bulkPowerOperation?: BulkPowerOperation, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<BulkPowerOperationResponse>;
+    public bulkPowerOn(bulkPowerOperation?: BulkPowerOperation, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<BulkPowerOperationResponse>>;
+    public bulkPowerOn(bulkPowerOperation?: BulkPowerOperation, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<BulkPowerOperationResponse>>;
+    public bulkPowerOn(bulkPowerOperation?: BulkPowerOperation, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -189,13 +247,16 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -212,9 +273,15 @@ export class VmsService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<BulkPowerOperationResponse>(`${this.configuration.basePath}/api/vms/actions/power-on`,
-            BulkPowerOperation,
+            bulkPowerOperation,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -225,14 +292,14 @@ export class VmsService {
 
     /**
      * Shutdown multiple Virtual Machines
-     * @param BulkPowerOperation 
+     * @param bulkPowerOperation 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public bulkShutdown(BulkPowerOperation?: BulkPowerOperation, observe?: 'body', reportProgress?: boolean): Observable<BulkPowerOperationResponse>;
-    public bulkShutdown(BulkPowerOperation?: BulkPowerOperation, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<BulkPowerOperationResponse>>;
-    public bulkShutdown(BulkPowerOperation?: BulkPowerOperation, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<BulkPowerOperationResponse>>;
-    public bulkShutdown(BulkPowerOperation?: BulkPowerOperation, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public bulkShutdown(bulkPowerOperation?: BulkPowerOperation, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<BulkPowerOperationResponse>;
+    public bulkShutdown(bulkPowerOperation?: BulkPowerOperation, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<BulkPowerOperationResponse>>;
+    public bulkShutdown(bulkPowerOperation?: BulkPowerOperation, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<BulkPowerOperationResponse>>;
+    public bulkShutdown(bulkPowerOperation?: BulkPowerOperation, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -244,13 +311,16 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -267,9 +337,83 @@ export class VmsService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<BulkPowerOperationResponse>(`${this.configuration.basePath}/api/vms/actions/shutdown`,
-            BulkPowerOperation,
+            bulkPowerOperation,
             {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Add a new map to a view
+     * @param viewId The guid of the view to add the map to
+     * @param vmMapCreateForm The data of the map to create
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public createMap(viewId: string, vmMapCreateForm?: VmMapCreateForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<VmMap>;
+    public createMap(viewId: string, vmMapCreateForm?: VmMapCreateForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<VmMap>>;
+    public createMap(viewId: string, vmMapCreateForm?: VmMapCreateForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<VmMap>>;
+    public createMap(viewId: string, vmMapCreateForm?: VmMapCreateForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling createMap.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        // authentication (oauth2) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.post<VmMap>(`${this.configuration.basePath}/api/views/${encodeURIComponent(String(viewId))}/map`,
+            vmMapCreateForm,
+            {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -281,14 +425,14 @@ export class VmsService {
     /**
      * Creates a new Virtual Machine
      * Creates a new Virtual Machine with the attributes specified  &lt;para /&gt;  Accessible to a User with management permissions on a team the Virtual Machine will be added to
-     * @param VmCreateForm The data to create the Team with
+     * @param vmCreateForm The data to create the Team with
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createVm(VmCreateForm?: VmCreateForm, observe?: 'body', reportProgress?: boolean): Observable<Vm>;
-    public createVm(VmCreateForm?: VmCreateForm, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Vm>>;
-    public createVm(VmCreateForm?: VmCreateForm, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Vm>>;
-    public createVm(VmCreateForm?: VmCreateForm, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public createVm(vmCreateForm?: VmCreateForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Vm>;
+    public createVm(vmCreateForm?: VmCreateForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Vm>>;
+    public createVm(vmCreateForm?: VmCreateForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Vm>>;
+    public createVm(vmCreateForm?: VmCreateForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -300,13 +444,16 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -323,9 +470,68 @@ export class VmsService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<Vm>(`${this.configuration.basePath}/api/vms`,
-            VmCreateForm,
+            vmCreateForm,
             {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Delete a map with the specified id
+     * @param mapId The guid of the map to delete
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public deleteMap(mapId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<any>;
+    public deleteMap(mapId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<any>>;
+    public deleteMap(mapId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<any>>;
+    public deleteMap(mapId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (mapId === null || mapId === undefined) {
+            throw new Error('Required parameter mapId was null or undefined when calling deleteMap.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        // authentication (oauth2) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/views/maps/${encodeURIComponent(String(mapId))}`,
+            {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -341,10 +547,10 @@ export class VmsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteVm(id: string, observe?: 'body', reportProgress?: boolean): Observable<any>;
-    public deleteVm(id: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<any>>;
-    public deleteVm(id: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<any>>;
-    public deleteVm(id: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public deleteVm(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<any>;
+    public deleteVm(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<any>>;
+    public deleteVm(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<any>>;
+    public deleteVm(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling deleteVm.');
         }
@@ -359,18 +565,27 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'application/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.delete<any>(`${this.configuration.basePath}/api/vms/${encodeURIComponent(String(id))}`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -384,10 +599,10 @@ export class VmsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAll(observe?: 'body', reportProgress?: boolean): Observable<Array<Vm>>;
-    public getAll(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Vm>>>;
-    public getAll(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Vm>>>;
-    public getAll(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getAll(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<Vm>>;
+    public getAll(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<Vm>>>;
+    public getAll(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<Vm>>>;
+    public getAll(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -399,20 +614,190 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Vm>>(`${this.configuration.basePath}/api/vms`,
             {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get all maps in the system
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getAllMaps(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<VmMap>>;
+    public getAllMaps(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<VmMap>>>;
+    public getAllMaps(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<VmMap>>>;
+    public getAllMaps(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+
+        let headers = this.defaultHeaders;
+
+        // authentication (oauth2) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<Array<VmMap>>(`${this.configuration.basePath}/api/views/maps`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get a specific map by id
+     * @param mapId The guid of the map to retrieve
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getMap(mapId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<VmMap>;
+    public getMap(mapId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<VmMap>>;
+    public getMap(mapId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<VmMap>>;
+    public getMap(mapId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (mapId === null || mapId === undefined) {
+            throw new Error('Required parameter mapId was null or undefined when calling getMap.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        // authentication (oauth2) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<VmMap>(`${this.configuration.basePath}/api/views/maps/${encodeURIComponent(String(mapId))}`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get a map for a specific team
+     * @param teamId The guid of the team to consider
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getTeamMap(teamId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<VmMap>;
+    public getTeamMap(teamId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<VmMap>>;
+    public getTeamMap(teamId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<VmMap>>;
+    public getTeamMap(teamId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (teamId === null || teamId === undefined) {
+            throw new Error('Required parameter teamId was null or undefined when calling getTeamMap.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        // authentication (oauth2) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<VmMap>(`${this.configuration.basePath}/api/teams/${encodeURIComponent(String(teamId))}/map`,
+            {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -430,23 +815,26 @@ export class VmsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getTeamVms(teamId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'body', reportProgress?: boolean): Observable<Array<Vm>>;
-    public getTeamVms(teamId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Vm>>>;
-    public getTeamVms(teamId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Vm>>>;
-    public getTeamVms(teamId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getTeamVms(teamId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<Vm>>;
+    public getTeamVms(teamId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<Vm>>>;
+    public getTeamVms(teamId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<Vm>>>;
+    public getTeamVms(teamId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (teamId === null || teamId === undefined) {
             throw new Error('Required parameter teamId was null or undefined when calling getTeamVms.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (name !== undefined && name !== null) {
-            queryParameters = queryParameters.set('name', <any>name);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>name, 'name');
         }
         if (includePersonal !== undefined && includePersonal !== null) {
-            queryParameters = queryParameters.set('includePersonal', <any>includePersonal);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>includePersonal, 'includePersonal');
         }
         if (onlyMine !== undefined && onlyMine !== null) {
-            queryParameters = queryParameters.set('onlyMine', <any>onlyMine);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>onlyMine, 'onlyMine');
         }
 
         let headers = this.defaultHeaders;
@@ -459,21 +847,141 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Vm>>(`${this.configuration.basePath}/api/teams/${encodeURIComponent(String(teamId))}/vms`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get all the teams in a view
+     * Implemented to avoid calling Player API in VM UI app
+     * @param viewId The guid of the view to consider
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getTeams(viewId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<SimpleTeam>>;
+    public getTeams(viewId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<SimpleTeam>>>;
+    public getTeams(viewId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<SimpleTeam>>>;
+    public getTeams(viewId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling getTeams.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        // authentication (oauth2) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<Array<SimpleTeam>>(`${this.configuration.basePath}/api/views/${encodeURIComponent(String(viewId))}/teams`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get all maps for a view
+     * @param viewId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getViewMaps(viewId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<VmMap>>;
+    public getViewMaps(viewId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<VmMap>>>;
+    public getViewMaps(viewId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<VmMap>>>;
+    public getViewMaps(viewId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling getViewMaps.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        // authentication (oauth2) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<Array<VmMap>>(`${this.configuration.basePath}/api/views/maps/viewmaps/${encodeURIComponent(String(viewId))}`,
+            {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -491,23 +999,26 @@ export class VmsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getViewVms(viewId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'body', reportProgress?: boolean): Observable<Array<Vm>>;
-    public getViewVms(viewId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Vm>>>;
-    public getViewVms(viewId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Vm>>>;
-    public getViewVms(viewId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getViewVms(viewId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<Vm>>;
+    public getViewVms(viewId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<Vm>>>;
+    public getViewVms(viewId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<Vm>>>;
+    public getViewVms(viewId: string, name?: string, includePersonal?: boolean, onlyMine?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (viewId === null || viewId === undefined) {
             throw new Error('Required parameter viewId was null or undefined when calling getViewVms.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (name !== undefined && name !== null) {
-            queryParameters = queryParameters.set('name', <any>name);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>name, 'name');
         }
         if (includePersonal !== undefined && includePersonal !== null) {
-            queryParameters = queryParameters.set('includePersonal', <any>includePersonal);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>includePersonal, 'includePersonal');
         }
         if (onlyMine !== undefined && onlyMine !== null) {
-            queryParameters = queryParameters.set('onlyMine', <any>onlyMine);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>onlyMine, 'onlyMine');
         }
 
         let headers = this.defaultHeaders;
@@ -520,21 +1031,30 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Vm>>(`${this.configuration.basePath}/api/views/${encodeURIComponent(String(viewId))}/vms`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -549,10 +1069,10 @@ export class VmsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getVm(id: string, observe?: 'body', reportProgress?: boolean): Observable<Vm>;
-    public getVm(id: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Vm>>;
-    public getVm(id: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Vm>>;
-    public getVm(id: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getVm(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Vm>;
+    public getVm(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Vm>>;
+    public getVm(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Vm>>;
+    public getVm(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getVm.');
         }
@@ -567,20 +1087,29 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Vm>(`${this.configuration.basePath}/api/vms/${encodeURIComponent(String(id))}`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -597,10 +1126,10 @@ export class VmsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public removeVmFromTeam(vmId: string, teamId: string, observe?: 'body', reportProgress?: boolean): Observable<any>;
-    public removeVmFromTeam(vmId: string, teamId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<any>>;
-    public removeVmFromTeam(vmId: string, teamId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<any>>;
-    public removeVmFromTeam(vmId: string, teamId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public removeVmFromTeam(vmId: string, teamId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<any>;
+    public removeVmFromTeam(vmId: string, teamId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<any>>;
+    public removeVmFromTeam(vmId: string, teamId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<any>>;
+    public removeVmFromTeam(vmId: string, teamId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (vmId === null || vmId === undefined) {
             throw new Error('Required parameter vmId was null or undefined when calling removeVmFromTeam.');
         }
@@ -618,18 +1147,27 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'application/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.delete<any>(`${this.configuration.basePath}/api/teams/${encodeURIComponent(String(teamId))}/vms/${encodeURIComponent(String(vmId))}`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -639,19 +1177,18 @@ export class VmsService {
     }
 
     /**
-     * Updates a new Virtual Machine
-     * Updates a Virtual Machine with the attributes specified  &lt;para /&gt;  Accessible to a User with management permissions on a team the Virtual Machine is in
-     * @param id 
-     * @param VmUpdateForm The data to update the Virtual Machine with
+     * Update a map
+     * @param mapId The guid of the map to update
+     * @param vmMapCreateForm The data of the map to update
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateVm(id: string, VmUpdateForm?: VmUpdateForm, observe?: 'body', reportProgress?: boolean): Observable<Vm>;
-    public updateVm(id: string, VmUpdateForm?: VmUpdateForm, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Vm>>;
-    public updateVm(id: string, VmUpdateForm?: VmUpdateForm, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Vm>>;
-    public updateVm(id: string, VmUpdateForm?: VmUpdateForm, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling updateVm.');
+    public updateMap(mapId: string, vmMapCreateForm?: VmMapCreateForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<VmMap>;
+    public updateMap(mapId: string, vmMapCreateForm?: VmMapCreateForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<VmMap>>;
+    public updateMap(mapId: string, vmMapCreateForm?: VmMapCreateForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<VmMap>>;
+    public updateMap(mapId: string, vmMapCreateForm?: VmMapCreateForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (mapId === null || mapId === undefined) {
+            throw new Error('Required parameter mapId was null or undefined when calling updateMap.');
         }
 
         let headers = this.defaultHeaders;
@@ -664,13 +1201,16 @@ export class VmsService {
             headers = headers.set('Authorization', 'Bearer ' + accessToken);
         }
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -687,9 +1227,84 @@ export class VmsService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
-        return this.httpClient.put<Vm>(`${this.configuration.basePath}/api/vms/${encodeURIComponent(String(id))}`,
-            VmUpdateForm,
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.put<VmMap>(`${this.configuration.basePath}/api/views/maps/${encodeURIComponent(String(mapId))}`,
+            vmMapCreateForm,
             {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Updates a new Virtual Machine
+     * Updates a Virtual Machine with the attributes specified  &lt;para /&gt;  Accessible to a User with management permissions on a team the Virtual Machine is in
+     * @param id 
+     * @param vmUpdateForm The data to update the Virtual Machine with
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateVm(id: string, vmUpdateForm?: VmUpdateForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Vm>;
+    public updateVm(id: string, vmUpdateForm?: VmUpdateForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Vm>>;
+    public updateVm(id: string, vmUpdateForm?: VmUpdateForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Vm>>;
+    public updateVm(id: string, vmUpdateForm?: VmUpdateForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling updateVm.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        // authentication (oauth2) required
+        if (this.configuration.accessToken) {
+            const accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers = headers.set('Authorization', 'Bearer ' + accessToken);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.put<Vm>(`${this.configuration.basePath}/api/vms/${encodeURIComponent(String(id))}`,
+            vmUpdateForm,
+            {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -699,3 +1314,4 @@ export class VmsService {
     }
 
 }
+

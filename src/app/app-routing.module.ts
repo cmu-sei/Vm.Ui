@@ -16,6 +16,9 @@ import { AutoDeployComponent } from './components/auto-deploy/auto-deploy.compon
 import { ConsoleComponent } from './components/console/console.component';
 import { VmMainComponent } from './components/vm-main/vm-main.component';
 import { WelderComponent } from './components/welder/welder.component';
+import { MapComponent } from './components/map/map.component';
+import { MapTeamDisplayComponent } from './components/map/map-team-display/map-team-display.component';
+import { MapMainComponent } from './components/map/map-main/map-main.component';
 
 export const ROUTES: Routes = [
   {
@@ -38,6 +41,27 @@ export const ROUTES: Routes = [
     component: VmMainComponent,
     canActivate: [ComnAuthGuardService],
   },
+  { 
+    path: 'views/:viewId/map', 
+    component: MapMainComponent, 
+    canActivate: [ComnAuthGuardService]
+  },
+  { 
+    path: 'views/:viewId/build-map', 
+    component: MapComponent, 
+    canActivate: [ComnAuthGuardService]
+  },
+  { 
+    path: 'views/:viewId/map/:teamId', 
+    component: MapTeamDisplayComponent, 
+    canActivate: [ComnAuthGuardService] 
+  },
+  { 
+    path: 'views/:viewId/map/:teamId/edit', 
+    component: MapComponent, 
+    canActivate: [ComnAuthGuardService] 
+  },
+ 
   // TODO: deprecated, remove when safe to do so
   {
     path: 'exercises/:viewId/auto-deploy',
