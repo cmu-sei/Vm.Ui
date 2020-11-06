@@ -32,6 +32,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import {
   ComnAuthModule,
   ComnSettingsConfig,
@@ -66,6 +67,7 @@ import { AddPointComponent } from './components/map/add-point/add-point.componen
 import { MapTeamDisplayComponent } from './components/map/map-team-display/map-team-display.component';
 import { MapMainComponent } from './components/map/map-main/map-main.component';
 import { MatSelectModule } from '@angular/material/select';
+import { NewMapComponent } from './components/map/new-map/new-map.component';
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
@@ -75,6 +77,7 @@ const settings: ComnSettingsConfig = {
 @NgModule({
   exports: [
     CdkTableModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatListModule,
     MatTableModule,
@@ -112,6 +115,7 @@ export class AngularMaterialModule {}
     MapMainComponent,
     MapComponent,
     MapTeamDisplayComponent,
+    NewMapComponent,
     AddPointComponent
   ],
   imports: [

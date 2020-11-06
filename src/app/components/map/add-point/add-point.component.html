@@ -16,21 +16,22 @@ DM20-0181
     <input type="number" matNativeControl formControlName="rad">
   </mat-form-field>
   <mat-form-field fxLayout="row">
-    <mat-label>URL</mat-label>
-    <mat-select formControlName="url" #urlSelect [disabled]="custom">
+    <mat-label>Resource</mat-label>
+    <input matNativeControl matInput aria-label="Resource" [matAutocomplete]="auto" formControlName="url" [attr.disabled]="custom ? true : null">
+    <mat-autocomplete #urlSelect #auto="matAutocomplete">
       <mat-optgroup label="VMs">
         <mat-option *ngFor="let vm of vms" [value]="vm.url">{{vm.name}}</mat-option>
       </mat-optgroup>
       <mat-optgroup label="Maps">
         <mat-option *ngFor="let m of vmMaps" [value]="getMapUrl(m)">{{m.name}}</mat-option> 
       </mat-optgroup>
-    </mat-select>
+    </mat-autocomplete>
   </mat-form-field>
   <mat-checkbox [(ngModel)]="custom" [ngModelOptions]="{standalone: true}">
-    Enter Custom URL
+    Enter Custom Resource URL
   </mat-checkbox>
   <mat-form-field fxLayout="row">
-    <mat-label>Custom URL</mat-label>
+    <mat-label>Custom Resource URL</mat-label>
     <input matNativeControl formControlName="customUrl" #customUrlField [attr.disabled]="!custom ? true : null">
   </mat-form-field>
   <mat-form-field fxLayout="row">

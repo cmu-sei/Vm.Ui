@@ -23,3 +23,7 @@ DM20-0181
 #form {
     margin-right: 100px;
 }
+
+#rightmost {
+    margin-left: 10px;
+}

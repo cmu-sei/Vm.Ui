@@ -10,16 +10,18 @@ DM20-0181
 
 import {
   Component,
+  EventEmitter,
+  Input,
   OnInit,
+  Output,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
 import { Machine } from '../../models/machine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
-import { Coordinate, SimpleTeam, VmMap, VmsService } from '../../generated/vm-api';
+import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
@@ -29,13 +31,10 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class MapComponent implements OnInit {
   machines: Machine[];
-  viewId: string;
   mapInitialzed: boolean;
-  form: FormGroup;
   teamIDs: string[];
   name: string;
   imageURL: string;
-  editMode: boolean;
   mapId: string;
 
   xActual: number;
@@ -44,8 +43,17 @@ export class MapComponent implements OnInit {
   selectedRad: number;
   selectedURL: string;
   selectedLabel: string;
-  teams: SimpleTeam[];
   timesSaved: number;
+
+  viewId: string;
+
+  // Edit mode input doesn't work as a bool
+  @Input() viewIdInput: string;
+  @Input() teamIdInput: string;
+  @Input() mapIdInput: string;
+
+  @Output() mapSaved = new EventEmitter<void>();
+  @Output() initEmitter = new EventEmitter<boolean>();
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
@@ -55,65 +63,73 @@ export class MapComponent implements OnInit {
     private vmService: VmsService,
     private route: ActivatedRoute,
     private router: Router,
-    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.timesSaved = 0;
     this.machines = new Array<Machine>();
-    this.teamIDs = new Array<string>();
-    this.route.params.subscribe((params) => {
-      this.viewId = params['viewId'];
-    });
-    this.getTeams();
-    this.editMode = this.router.url.endsWith('edit');
-    if (this.editMode) {
-      this.initMapEdit();
-    } else {
-      this.mapInitialzed = false;
-      this.form = this.formBuilder.group({
-        name: [''],
-        imageURL: [''],
-        teamIDs: [''],
+    console.log('View id input :' + this.viewIdInput);
+    console.log('team id input: ' + this.teamIdInput);
+    console.log('Map id input: ' + this.mapIdInput);
+
+    if (this.viewIdInput === undefined) {
+      this.route.params.subscribe((params) => {
+        this.viewId = params['viewId'];
       });
+    } else {
+      this.viewId = this.viewIdInput;
     }
+
+    this.initMap();
   }
 
   initMap(): void {
-    this.name = this.form.get('name').value;
-    this.imageURL = this.form.get('imageURL').value;
-    this.teamIDs = this.form.get('teamIDs').value;
-    this.mapInitialzed = true;
-  }
+    console.log('Calling initMapEdit');
 
-  initMapEdit(): void {
     let teamId: string;
-    this.route.params.subscribe((params) => {
-      teamId = params['teamId'];
-    });
-    this.vmService.getTeamMap(teamId).subscribe((data) => {
+    if (this.teamIdInput === undefined) {
+      this.route.params.subscribe((params) => {
+        teamId = params['teamId'];
+      });
+    } else {
+      teamId = this.teamIdInput;
+    }
+
+    console.log('Calling getMap');
+    this.vmService.getMap(this.mapIdInput).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
       this.imageURL = data.imageUrl;
       this.teamIDs = data.teamIds;
-      for (let coord of data.coordinates) {
-        this.machines.push(
-          new Machine(
-            coord.xPosition,
-            coord.yPosition,
-            coord.radius,
-            coord.url,
-            coord.id,
-            coord.label
-          )
-        );
+
+      if (data.coordinates != null) {
+        for (let coord of data.coordinates) {
+          this.machines.push(
+            new Machine(
+              coord.xPosition,
+              coord.yPosition,
+              coord.radius,
+              coord.url,
+              coord.id,
+              coord.label
+            )
+          );
+        }
       }
     });
+
+    console.log('After getMap');
+    console.log('Image URL: ' + this.imageURL);
     this.mapInitialzed = true;
+    this.initEmitter.emit(true);
+  }
+
+  ngOnChanges(): void {
+    this.ngOnInit();
   }
 
   redirect(url: string): void {
-    window.open(url, '_blank');
+    window.open(url);
   }
 
   append(event): void {
@@ -141,20 +157,17 @@ export class MapComponent implements OnInit {
   receiveMachine(machine: Machine): void {
     console.log('In receive');
     console.log(machine);
-    // Check if this is an edit or creation
-    let machineToEdit: Machine = null;
-    for (let m of this.machines) {
-      // It's an edit
-      if (m.id == machine.id) {
-        machineToEdit = m;
-        break;
-      }
-    }
 
-    if (machineToEdit != null) {
+    // Find the machine being edited. If not undefined, an existing machine is being edited.
+    // Else a new machine is being created
+    const machineToEdit = this.machines.find(m => {
+      m.id === machine.id;
+    });
+
+    if (machineToEdit != undefined) {
       const index = this.machines.indexOf(machineToEdit);
       // Remove the machine
-      if (machine.x == -1) {
+      if (machine.x === -1) {
         this.machines.splice(index, 1);
         // Replace the machine with an edited version
       } else {
@@ -193,21 +206,11 @@ export class MapComponent implements OnInit {
 
     console.log(JSON.stringify(payload));
 
-    if (this.editMode || this.timesSaved > 0) {
-      this.vmService.updateMap(this.mapId, payload).subscribe(
-        (x) => console.log('Got a next value: ' + x),
-        () => window.alert('Error saving map'),
-        () => window.alert('Map successfully saved!')
-      );
-    } else {
-      this.vmService.createMap(this.viewId, payload).subscribe(
-        (x) => {console.log('Got a next value: ' + x); this.mapId = x.id},
-        () => window.alert('Error saving map'),
-        () => window.alert('Map successfully saved!')
-      );
-    }
-
-    this.timesSaved++;
+    this.vmService.updateMap(this.mapId, payload).subscribe(
+      (x) => console.log('Got a next value: ' + x),
+      () => window.alert('Error saving map'),
+      () => { window.alert('Map successfully saved!') }
+    );
   }
 
   back(): void {
@@ -228,12 +231,4 @@ export class MapComponent implements OnInit {
   calcFontSize(radius: number): number {
     return radius / 3;
   }
-
-  getTeams(): void {
-    this.vmService.getTeams(this.viewId).subscribe(data => {
-      this.teams = data;
-      console.log(this.teams);
-    })
-  }
 }
-

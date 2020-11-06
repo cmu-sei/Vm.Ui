@@ -8,7 +8,7 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
@@ -20,9 +20,14 @@ import { Machine } from '../../../models/machine';
 })
 export class MapTeamDisplayComponent implements OnInit {
   machines: Machine[];
-  teamId: string;
   imageUrl: string;
   id: string;
+  teamId: string;
+
+  @Input() teamIdInput: string;
+  @Input() mapIdInput: string;
+
+  @Output() mapDeleted = new EventEmitter<void>();
 
   constructor(
     private vmService: VmsService,
@@ -31,31 +36,32 @@ export class MapTeamDisplayComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
+    console.log('Calling init in display component');
     this.machines = new Array<Machine>();
-    this.route.params.subscribe(params => {
-      this.teamId = params['teamId']
-    })
+    if (this.teamIdInput === undefined) {
+      this.route.params.subscribe(params => {
+        this.teamId = params['teamId']
+      })
+    } else {
+      this.teamId = this.teamIdInput;
+    }
+    
     this.getMapData();
   }
 
+  ngOnChanges(): void {
+    console.log('Changes found in display component');
+    this.ngOnInit();
+  }
+
   getMapData(): void {
-    this.vmService.getTeamMap(this.teamId).subscribe(data => {
+    this.vmService.getMap(this.mapIdInput).subscribe(data => {
       this.id = data.id;
       for (let coord of data.coordinates) {
         this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
       }
       this.imageUrl = data.imageUrl;
     });
-  }
-
-  deleteMap(): void {
-    this.vmService.deleteMap(this.id).subscribe(
-      x => console.log('Got a next value: ' + x),
-      err => console.log('Got an error: ' + err),
-      () => console.log('Got a complete notification')
-    );
-    
-    this.back();
   }
 
   back(): void {
@@ -65,12 +71,11 @@ export class MapTeamDisplayComponent implements OnInit {
     });
   }
 
-  redirect(url): void {
-    window.open(url, '_blank')
+  redirect(url: string): void {
+    window.open(url)
   }
   
-    // This gets called a lot for some reason. May want to investigate
-    calcFontSize(radius: number): number {
-      return radius / 3;
-    }
+  calcFontSize(radius: number): number {
+    return radius / 3;
+  }
 }

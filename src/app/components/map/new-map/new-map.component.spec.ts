@@ -8,22 +8,28 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-.clickpoint {
-  cursor: pointer;
-}
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-.btn_group {
-  width: 100%;
-  text-align: left;
-}
+import { NewMapComponent } from './new-map.component';
 
-.block {
-  width: 100px;
-  margin-left: 25px;
-  margin-right: 25px;
-  display: inline-block;
-}
+describe('NewMapComponent', () => {
+  let component: NewMapComponent;
+  let fixture: ComponentFixture<NewMapComponent>;
 
-#addTeam {
-  margin-bottom: 25px;
-}
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ NewMapComponent ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(NewMapComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
