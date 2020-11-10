@@ -81,6 +81,10 @@ export class MapComponent implements OnInit {
     this.initMap();
   }
 
+  // ngOnChanges(): void {
+  //   this.ngOnInit();
+  // }
+
   initMap(): void {
     console.log('Calling initMap');
 

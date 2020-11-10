@@ -48,6 +48,10 @@ export class MapTeamDisplayComponent implements OnInit {
     await this.getMapData();
   }
 
+  ngOnChanges(): void {
+    this.ngOnInit();
+  }
+
   // ngOnChanges(): void {
   //   console.log('Changes found in display component');
   //   this.ngOnInit();

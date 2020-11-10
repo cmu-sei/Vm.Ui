@@ -97,6 +97,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
       this.teamId = this.selected.teamIds[0];
       this.mapId = this.selected.id;
       this.readMap = true;
+      this.editMode = false;
     }
     this.build = false;
   }
