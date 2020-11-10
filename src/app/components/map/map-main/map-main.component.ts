@@ -157,7 +157,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.dialogRef = this.dialog.open(this.editPropsDialog);
   }
 
-  propertiesChanged(tuple: [string, string, string[]]): void {
+  async propertiesChanged(tuple: [string, string, string[]]) {
     const name = tuple[0];
     const url = tuple[1];
     const ids = tuple[2];
@@ -169,11 +169,12 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
       teamIds: ids
     }
 
-    this.vmsService.updateMap(this.selected.id, payload).subscribe(
-      (x) => console.log('Got a next value ' + x),
-      () => window.alert('Error editing properties'),
-      () => window.alert('Properties successfully saved!')
-    )
+    await this.vmsService.updateMap(this.selected.id, payload).toPromise();
+    window.alert('Properties successfully updated!');
+
+    await this.getMaps();
+    this.buildChild.ngOnInit();
+
     this.dialogRef.close();
   }
 }
