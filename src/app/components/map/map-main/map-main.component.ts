@@ -161,6 +161,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     const name = tuple[0];
     const url = tuple[1];
     const ids = tuple[2];
+    const id = this.selected.id;
 
     let payload = <VmMap> {
       coordinates: this.selected.coordinates,
@@ -169,10 +170,13 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
       teamIds: ids
     }
 
-    await this.vmsService.updateMap(this.selected.id, payload).toPromise();
+    await this.vmsService.updateMap(id, payload).toPromise();
     window.alert('Properties successfully updated!');
 
     await this.getMaps();
+    this.selected = this.VmMaps.find(m => {
+      return m.id === id;
+    });
     this.buildChild.ngOnInit();
 
     this.dialogRef.close();

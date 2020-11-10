@@ -74,7 +74,7 @@ export class NewMapComponent implements OnInit {
         () => { window.alert('Map created successfully!'), this.mapCreated.emit(mapId); }
       )
     } else {
-      console.log('Editing properties')
+      console.log('Editing properties');
       this.propertiesChanged.emit([this.form.get('name').value as string, this.form.get('imageURL').value as string, 
         this.form.get('teamIDs').value as string[]])
     }
