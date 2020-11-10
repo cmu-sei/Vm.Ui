@@ -8,11 +8,9 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Template } from '@angular/compiler/src/render3/r3_ast';
-import { Component, Input, OnInit, Output, EventEmitter, ViewChild, ElementRef, TemplateRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { start } from 'repl';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { Vm, VmMap, VmsService } from '../../../generated/vm-api';
@@ -42,7 +40,6 @@ export class AddPointComponent implements OnInit {
   custom: boolean;
 
   constructor(
-    private formBuilder: FormBuilder,
     private vmService: VmsService,
     private route: ActivatedRoute
     ) {}

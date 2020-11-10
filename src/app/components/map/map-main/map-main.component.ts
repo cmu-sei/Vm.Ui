@@ -10,9 +10,8 @@ DM20-0181
 
 import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { VmMap, VmsService } from '../../../generated/vm-api';
-import { AddPointComponent } from '../add-point/add-point.component';
 import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.component';
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
@@ -102,7 +101,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.build = false;
   }
 
-  trackByMaps(index: number, item: VmMap): string {
+  trackByMaps(item: VmMap): string {
     return item.id;
   }
 
