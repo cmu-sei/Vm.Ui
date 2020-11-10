@@ -58,7 +58,6 @@ export class AddPointComponent implements OnInit {
       label: new FormControl({value: '',disabled: false}),
       customUrl: new FormControl({value: '', disabled: true})
     });
-    console.log(this.form.get('label').value);
 
     this.route.params.subscribe(params => {
       this.viewId = params['viewId'];
@@ -82,7 +81,6 @@ export class AddPointComponent implements OnInit {
 
   onSubmit(): void {
     console.log("form submitted");   
-    console.log('url = ' + this.form.get('url').value); 
     const url = this.custom ? this.form.get('customUrl').value : this.form.get('url').value;
 
     const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, url, 
@@ -112,19 +110,13 @@ export class AddPointComponent implements OnInit {
     return 'views/' + m.viewId + '/map/' + m.teamIds[0];
   }
 
-  display(val): string {
-    return val && val.name ? val.name : '';
-  }
-
   private _filterVms(value: string): Vm[] {
-    console.log('In filter VMs');
     const lower = value.toLowerCase();
 
     return this.vms.filter(vm => vm.name.toLowerCase().includes(lower));
   }
 
   private _filterVmMaps(value: string): VmMap[] {
-    console.log('In filter VMMaps');
     const lower = value.toLowerCase();
 
     return this.vmMaps.filter(m => m.name.toLowerCase().includes(lower));

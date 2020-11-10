@@ -126,8 +126,6 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
   editClicked() {
     this.editMode = !this.editMode;
     console.log('Edit mode: ' + this.editMode);
-    console.log('Read: ' + this.readMap);
-    console.log('Build: ' + this.build)
   }
 
   async mapCreated(id: string) {

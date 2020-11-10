@@ -66,11 +66,9 @@ export class MapComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('ngOnInit map component');
     this.timesSaved = 0;
     this.machines = new Array<Machine>();
-    console.log('View id input :' + this.viewIdInput);
-    console.log('team id input: ' + this.teamIdInput);
-    console.log('Map id input: ' + this.mapIdInput);
 
     if (this.viewIdInput === undefined) {
       this.route.params.subscribe((params) => {
@@ -84,7 +82,7 @@ export class MapComponent implements OnInit {
   }
 
   initMap(): void {
-    console.log('Calling initMapEdit');
+    console.log('Calling initMap');
 
     let teamId: string;
     if (this.teamIdInput === undefined) {
@@ -118,14 +116,11 @@ export class MapComponent implements OnInit {
       }
     });
 
-    console.log('After getMap');
-    console.log('Image URL: ' + this.imageURL);
+    console.log('After getMap machines array is:');
+    console.log(this.machines);
+
     this.mapInitialzed = true;
     this.initEmitter.emit(true);
-  }
-
-  ngOnChanges(): void {
-    this.ngOnInit();
   }
 
   redirect(url: string): void {
@@ -156,19 +151,28 @@ export class MapComponent implements OnInit {
 
   receiveMachine(machine: Machine): void {
     console.log('In receive');
+    console.log('Machine: ');
     console.log(machine);
 
     // Find the machine being edited. If not undefined, an existing machine is being edited.
     // Else a new machine is being created
     const machineToEdit = this.machines.find(m => {
-      m.id === machine.id;
+      console.log('Comparing ' + m.id + ' to ' + machine.id);
+      return m.id === machine.id;
     });
+
+    console.log('Machine to edit: ' + machineToEdit);
 
     if (machineToEdit != undefined) {
       const index = this.machines.indexOf(machineToEdit);
       // Remove the machine
       if (machine.x === -1) {
+        console.log('Removing machine');
+        console.log('Array before:')
+        console.log(this.machines);
         this.machines.splice(index, 1);
+        console.log('New machines array: ');
+        console.log(this.machines);
         // Replace the machine with an edited version
       } else {
         this.machines[index] = machine;
