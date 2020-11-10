@@ -97,6 +97,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
       this.teamId = this.selected.teamIds[0];
       this.mapId = this.selected.id;
       this.readMap = true;
+      // Edit mode is exited bc otherwise it causes that bug with extra clickpoints. Should figure out a more robust solution
       this.editMode = false;
     }
     this.build = false;

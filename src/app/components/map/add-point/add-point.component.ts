@@ -79,8 +79,12 @@ export class AddPointComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log("form submitted");   
-    const url = this.custom ? this.form.get('customUrl').value : this.form.get('url').value.url;
+    console.log("form submitted");
+    const isMap = this.form.get('url').value.url === undefined
+    const urlField = this.form.get('url');
+
+    // If a custom url was selected, use that. Else, if a VmMap was selected, get it's url. If a VM was selected, use it's url field
+    const url = this.custom ? this.form.get('customUrl').value : isMap ? this.getMapUrl(urlField.value as VmMap) : urlField.value.url;
 
     const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, url, 
       this.id, this.form.get('label').value);
