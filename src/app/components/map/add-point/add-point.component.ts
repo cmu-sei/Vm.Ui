@@ -12,6 +12,9 @@ import { Template } from '@angular/compiler/src/render3/r3_ast';
 import { Component, Input, OnInit, Output, EventEmitter, ViewChild, ElementRef, TemplateRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { start } from 'repl';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { Vm, VmMap, VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
 
@@ -32,17 +35,22 @@ export class AddPointComponent implements OnInit {
   form: FormGroup;
   vms: Vm[];
   vmMaps: VmMap[];
+  vmsFiltered: Observable<Vm[]>;
+  vmMapsFiltered: Observable<VmMap[]>;
+  control: FormControl;
   viewId: string;
   custom: boolean;
-  
+
   constructor(
     private formBuilder: FormBuilder,
     private vmService: VmsService,
     private route: ActivatedRoute
     ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.custom = false;
+    this.control = new FormControl();
+
     // Default values come from map component
     this.form = new FormGroup({
       rad: new FormControl({value: this.rad, disabled: false}),
@@ -55,8 +63,21 @@ export class AddPointComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.viewId = params['viewId'];
     });
-    this.getVms();
-    this.getVmMaps();
+
+    await this.getVms();
+    await this.getVmMaps();
+
+    this.vmsFiltered = this.form.get('url').valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterVms(value))
+      );
+
+    this.vmMapsFiltered = this.form.get('url').valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filterVmMaps(value))
+        );
   }
 
   onSubmit(): void {
@@ -77,19 +98,35 @@ export class AddPointComponent implements OnInit {
   }
 
   // Currently getting all VMs/Maps in view. May need to get more granular
-  getVms(): void {
-    this.vmService.getViewVms(this.viewId).subscribe(data => {
-      this.vms = data;
-    })
+  async getVms() {
+    const data = await this.vmService.getViewVms(this.viewId).toPromise();
+    this.vms = data;
   }
 
-  getVmMaps(): void {
-    this.vmService.getViewMaps(this.viewId).subscribe(data => {
-      this.vmMaps = data;
-    })
+  async getVmMaps() {
+    const data = await this.vmService.getViewMaps(this.viewId).toPromise();
+    this.vmMaps = data;
   }
 
   getMapUrl(m: VmMap): string {
     return 'views/' + m.viewId + '/map/' + m.teamIds[0];
+  }
+
+  display(val): string {
+    return val && val.name ? val.name : '';
+  }
+
+  private _filterVms(value: string): Vm[] {
+    console.log('In filter VMs');
+    const lower = value.toLowerCase();
+
+    return this.vms.filter(vm => vm.name.toLowerCase().includes(lower));
+  }
+
+  private _filterVmMaps(value: string): VmMap[] {
+    console.log('In filter VMMaps');
+    const lower = value.toLowerCase();
+
+    return this.vmMaps.filter(m => m.name.toLowerCase().includes(lower));
   }
 }
