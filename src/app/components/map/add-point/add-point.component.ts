@@ -69,19 +69,21 @@ export class AddPointComponent implements OnInit {
     this.vmsFiltered = this.form.get('url').valueChanges
       .pipe(
         startWith(''),
-        map(value => this._filterVms(value))
+        map(value => typeof value === 'string' ? value : value.name),
+        map(name => name ? this._filterVms(name) : this.vms.slice())
       );
 
     this.vmMapsFiltered = this.form.get('url').valueChanges
-        .pipe(
-          startWith(''),
-          map(value => this._filterVmMaps(value))
-        );
+      .pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.name),
+        map(name => name ? this._filterVmMaps(name) : this.vmMaps.slice())
+      );
   }
 
   onSubmit(): void {
     console.log("form submitted");   
-    const url = this.custom ? this.form.get('customUrl').value : this.form.get('url').value;
+    const url = this.custom ? this.form.get('customUrl').value : this.form.get('url').value.url;
 
     const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, url, 
       this.id, this.form.get('label').value);
@@ -110,10 +112,9 @@ export class AddPointComponent implements OnInit {
     return 'views/' + m.viewId + '/map/' + m.id;
   }
 
-  // display(item: Vm | VmMap): string {
-  //   console.log('Displaying: ' + item);
-  //   return item.name;
-  // }
+  display(item: Vm | VmMap): string {
+    return item && item.name ? item.name : '';
+  }
 
   private _filterVms(value: string): Vm[] {
     const lower = value.toLowerCase();

@@ -18,12 +18,12 @@ DM20-0181
   <mat-form-field fxLayout="row">
     <mat-label>Resource</mat-label>
     <input type="text" matNativeControl matInput aria-label="Resource" [matAutocomplete]="auto" formControlName="url" [attr.disabled]="custom ? true : null">
-    <mat-autocomplete #urlSelect #auto="matAutocomplete">
+    <mat-autocomplete #urlSelect #auto="matAutocomplete" [displayWith]="display">
       <mat-optgroup label="VMs">
-        <mat-option *ngFor="let vm of vmsFiltered | async" [value]="vm.url">{{vm.name}}</mat-option>
+        <mat-option *ngFor="let vm of vmsFiltered | async" [value]="vm">{{vm.name}}</mat-option>
       </mat-optgroup>
       <mat-optgroup label="Maps">
-        <mat-option *ngFor="let m of vmMapsFiltered | async" [value]="getMapUrl(m)">{{m.name}}</mat-option> 
+        <mat-option *ngFor="let m of vmMapsFiltered | async" [value]="m">{{m.name}}</mat-option> 
       </mat-optgroup>
     </mat-autocomplete>
   </mat-form-field>
