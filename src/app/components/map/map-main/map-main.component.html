@@ -12,7 +12,7 @@ DM20-0181
   <div class="block" id="form">
     <mat-form-field>
       <mat-label>Select Map</mat-label>
-      <mat-select [(value)]="selected" [(ngModel)]="selected" (selectionChange)="goToMap()">
+      <mat-select [(value)]="selected" (selectionChange)="goToMap()">
         <mat-option>Select Map</mat-option>
         <mat-option *ngFor="let vm of VmMaps; trackBy: trackByMaps" [value]="vm">{{vm.name}}</mat-option>
       </mat-select>
