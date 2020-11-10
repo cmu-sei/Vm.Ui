@@ -35,7 +35,7 @@ export class MapTeamDisplayComponent implements OnInit {
     private router: Router
     ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     console.log('Calling init in display component');
     this.machines = new Array<Machine>();
     if (this.teamIdInput === undefined) {
@@ -46,22 +46,21 @@ export class MapTeamDisplayComponent implements OnInit {
       this.teamId = this.teamIdInput;
     }
     
-    this.getMapData();
+    await this.getMapData();
   }
 
-  ngOnChanges(): void {
-    console.log('Changes found in display component');
-    this.ngOnInit();
-  }
+  // ngOnChanges(): void {
+  //   console.log('Changes found in display component');
+  //   this.ngOnInit();
+  // }
 
-  getMapData(): void {
-    this.vmService.getMap(this.mapIdInput).subscribe(data => {
-      this.id = data.id;
-      for (let coord of data.coordinates) {
-        this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
-      }
-      this.imageUrl = data.imageUrl;
-    });
+  async getMapData() {
+    const data = await this.vmService.getMap(this.mapIdInput).toPromise();
+    this.id = data.id;
+    for (let coord of data.coordinates) {
+      this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
+    }
+    this.imageUrl = data.imageUrl;
   }
 
   back(): void {

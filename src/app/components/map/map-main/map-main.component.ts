@@ -114,8 +114,9 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     );
   }
 
-  save() {
-    this.buildChild.save();
+  async save() {
+    await this.buildChild.save();
+    console.log('After awaiting save');
     this.editMode = false;
   }
 

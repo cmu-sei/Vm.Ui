@@ -210,11 +210,8 @@ export class MapComponent implements OnInit {
 
     console.log(JSON.stringify(payload));
 
-    this.vmService.updateMap(this.mapId, payload).subscribe(
-      (x) => console.log('Got a next value: ' + x),
-      () => window.alert('Error saving map'),
-      () => { window.alert('Map successfully saved!') }
-    );
+    await this.vmService.updateMap(this.mapId, payload).toPromise();
+    window.alert('Map successfully saved!');
   }
 
   back(): void {
