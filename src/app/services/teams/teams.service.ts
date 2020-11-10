@@ -22,7 +22,7 @@ export class TeamsService {
   ) {}
 
   public GetAllMyTeams(viewId: string): Observable<Array<TeamData>> {
-    const url = `${this.settings.settings.ApiPlayerUrl}/me/views/${viewId}/teams`;
+    const url = `${this.settings.settings.ApiPlayerUrl}/api/me/views/${viewId}/teams`;
     return this.http.get<Array<TeamData>>(url);
   }
 }
