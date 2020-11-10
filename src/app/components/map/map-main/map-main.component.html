@@ -23,8 +23,9 @@ DM20-0181
     In add point dialog, clicking and unlicking the custom url checkbox disables the autocomplete: DONE
     Autocomplete filtering: DONE
     Make sure deleting click points works: DONE
+    Make sure new points immediately become available: DONE
 
-    Make sure new points immediately become available
+    Fix linking to map
   -->    
   <div class="block">
     <button mat-flat-button color="primary" class="action-button" type="button" (click)="buildMap()"> New Map </button>
@@ -64,8 +65,6 @@ DM20-0181
   <app-map
     *ngIf="readMap && editMode && !build"
     (initEmitter) = "mapInit($event)"
-    viewIdInput = {{viewId}}
-    teamIdInput = {{teamId}}
     mapIdInput = {{mapId}}
   ></app-map>
 </div>

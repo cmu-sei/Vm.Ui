@@ -107,8 +107,13 @@ export class AddPointComponent implements OnInit {
   }
 
   getMapUrl(m: VmMap): string {
-    return 'views/' + m.viewId + '/map/' + m.teamIds[0];
+    return 'views/' + m.viewId + '/map/' + m.id;
   }
+
+  // display(item: Vm | VmMap): string {
+  //   console.log('Displaying: ' + item);
+  //   return item.name;
+  // }
 
   private _filterVms(value: string): Vm[] {
     const lower = value.toLowerCase();

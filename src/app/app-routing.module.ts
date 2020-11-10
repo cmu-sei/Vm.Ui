@@ -52,7 +52,7 @@ export const ROUTES: Routes = [
     canActivate: [ComnAuthGuardService]
   },
   { 
-    path: 'views/:viewId/map/:teamId', 
+    path: 'views/:viewId/map/:mapId', 
     component: MapTeamDisplayComponent, 
     canActivate: [ComnAuthGuardService] 
   },

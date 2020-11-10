@@ -22,9 +22,8 @@ export class MapTeamDisplayComponent implements OnInit {
   machines: Machine[];
   imageUrl: string;
   id: string;
-  teamId: string;
+  mapId: string;
 
-  @Input() teamIdInput: string;
   @Input() mapIdInput: string;
 
   @Output() mapDeleted = new EventEmitter<void>();
@@ -38,12 +37,12 @@ export class MapTeamDisplayComponent implements OnInit {
   async ngOnInit() {
     console.log('Calling init in display component');
     this.machines = new Array<Machine>();
-    if (this.teamIdInput === undefined) {
+    if (this.mapIdInput === undefined) {
       this.route.params.subscribe(params => {
-        this.teamId = params['teamId']
+        this.mapId = params['mapId']
       })
     } else {
-      this.teamId = this.teamIdInput;
+      this.mapId = this.mapIdInput;
     }
     
     await this.getMapData();
@@ -55,7 +54,7 @@ export class MapTeamDisplayComponent implements OnInit {
   // }
 
   async getMapData() {
-    const data = await this.vmService.getMap(this.mapIdInput).toPromise();
+    const data = await this.vmService.getMap(this.mapId).toPromise();
     this.id = data.id;
     for (let coord of data.coordinates) {
       this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
