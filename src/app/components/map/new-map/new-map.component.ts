@@ -15,29 +15,27 @@ import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 @Component({
   selector: 'app-new-map',
   templateUrl: './new-map.component.html',
-  styleUrls: ['./new-map.component.css']
+  styleUrls: ['./new-map.component.css'],
 })
 export class NewMapComponent implements OnInit {
-
   teams: SimpleTeam[];
   form: FormGroup;
- 
+
   @Input() viewId: string;
   @Input() creating: boolean;
   @Input() name: string;
   @Input() url: string;
   @Input() teamsInput: string[];
-  
+
   @Output() mapCreated = new EventEmitter<string>();
   @Output() propertiesChanged = new EventEmitter<[string, string, string[]]>();
 
   constructor(
     private vmService: VmsService,
-    private formBuilder: FormBuilder,
-  ) { }
+    private formBuilder: FormBuilder
+  ) {}
 
   ngOnInit(): void {
-    console.log('In new map component');
     this.getTeams();
 
     this.form = this.formBuilder.group({
@@ -47,36 +45,52 @@ export class NewMapComponent implements OnInit {
     });
   }
 
+  // Get the available teams within this view
   getTeams(): void {
-    this.vmService.getTeams(this.viewId).subscribe(data => {
+    this.vmService.getTeams(this.viewId).subscribe((data) => {
       this.teams = data;
       console.log(this.teams);
-    })
+    });
   }
 
   submit(): void {
     console.log('submit pressed');
-    console.log('Creating: ' + this.creating + ' type: ' + typeof(this.creating));
     if (this.creating) {
       // Save an empty map
-      let payload = <VmMap> {
+      let payload = <VmMap>{
         coordinates: null,
         name: this.form.get('name').value as string,
         imageUrl: this.form.get('imageURL').value as string,
-        teamIds: this.form.get('teamIDs').value as string[]
-      }
-      
-      console.log('Creating map assigned to view ' + this.viewId + ' with payload ' + payload);
-      let mapId;
+        teamIds: this.form.get('teamIDs').value as string[],
+      };
+
+      console.log(
+        'Creating map assigned to view ' +
+          this.viewId +
+          ' with payload ' +
+          payload
+      );
+
+      let mapId: string;
       this.vmService.createMap(this.viewId, payload).subscribe(
-        (x) => {console.log('Got a next value ' + x); mapId = x.id },
+        (x) => {
+          console.log('Got a next value ' + x);
+          mapId = x.id;
+        },
         () => window.alert('Error creating new map'),
-        () => { window.alert('Map created successfully!'), this.mapCreated.emit(mapId); }
-      )
+        () => {
+          window.alert('Map created successfully!'),
+            this.mapCreated.emit(mapId);
+        }
+      );
     } else {
+      // Properties are being edited, emit the changes
       console.log('Editing properties');
-      this.propertiesChanged.emit([this.form.get('name').value as string, this.form.get('imageURL').value as string, 
-        this.form.get('teamIDs').value as string[]])
+      this.propertiesChanged.emit([
+        this.form.get('name').value as string,
+        this.form.get('imageURL').value as string,
+        this.form.get('teamIDs').value as string[],
+      ]);
     }
   }
 }

@@ -61,7 +61,7 @@ export class MapComponent implements OnInit, OnChanges {
     private dialog: MatDialog,
     private vmService: VmsService,
     private route: ActivatedRoute,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -73,13 +73,14 @@ export class MapComponent implements OnInit, OnChanges {
       this.viewId = params['viewId'];
     });
 
-
     this.initMap();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log('Map component changes detected');
     console.log(changes);
+    
+    // Don't call init again on the first change. This causes clickpoints to be duplicated 
     if (!changes['mapIdInput'].firstChange) {
       this.ngOnInit();
     }
@@ -90,6 +91,8 @@ export class MapComponent implements OnInit, OnChanges {
 
     console.log('Array before API call:');
     console.log(this.machines);
+
+    // Get map data, put coordinates into machines array
     this.vmService.getMap(this.mapIdInput).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
@@ -123,8 +126,10 @@ export class MapComponent implements OnInit, OnChanges {
     window.open(url);
   }
 
+  // Add a new click point
   append(event): void {
-    const isFirefox = 'InstallTrigger' in window
+    const isFirefox = 'InstallTrigger' in window;
+    console.log(typeof event);
 
     if (!isFirefox) {
       // Get the offsets relative to the image. Note that this assumes a 100x100 image
@@ -152,8 +157,7 @@ export class MapComponent implements OnInit, OnChanges {
 
     // Find the machine being edited. If not undefined, an existing machine is being edited.
     // Else a new machine is being created
-    const machineToEdit = this.machines.find(m => {
-      console.log('Comparing ' + m.id + ' to ' + machine.id);
+    const machineToEdit = this.machines.find((m) => {
       return m.id === machine.id;
     });
 
@@ -161,15 +165,10 @@ export class MapComponent implements OnInit, OnChanges {
 
     if (machineToEdit != undefined) {
       const index = this.machines.indexOf(machineToEdit);
-      // Remove the machine
+      // Remove the machine, a -1 field means deletion 
       if (machine.x === -1) {
-        console.log('Removing machine');
-        console.log('Array before:')
-        console.log(this.machines);
         this.machines.splice(index, 1);
-        console.log('New machines array: ');
-        console.log(this.machines);
-        // Replace the machine with an edited version
+      // Replace the machine with an edited version
       } else {
         this.machines[index] = machine;
       }
@@ -181,7 +180,7 @@ export class MapComponent implements OnInit, OnChanges {
     this.dialogRef.close();
   }
 
-  // click button, save map
+  // Save button clicked, save the map
   async save(): Promise<void> {
     console.log('Save pressed');
     let coords = new Array<Coordinate>();
@@ -228,7 +227,6 @@ export class MapComponent implements OnInit, OnChanges {
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 
-  // This gets called a lot for some reason. May want to investigate
   calcFontSize(radius: number): number {
     return radius / 3;
   }

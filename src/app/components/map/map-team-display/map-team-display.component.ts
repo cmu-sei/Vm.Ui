@@ -16,7 +16,7 @@ import { Machine } from '../../../models/machine';
 @Component({
   selector: 'app-map-team-display',
   templateUrl: './map-team-display.component.html',
-  styleUrls: ['./map-team-display.component.css']
+  styleUrls: ['./map-team-display.component.css'],
 })
 export class MapTeamDisplayComponent implements OnInit {
   machines: Machine[];
@@ -32,51 +32,55 @@ export class MapTeamDisplayComponent implements OnInit {
     private vmService: VmsService,
     private route: ActivatedRoute,
     private router: Router
-    ) { }
+  ) {}
 
   async ngOnInit() {
     console.log('Calling init in display component');
     this.machines = new Array<Machine>();
     if (this.mapIdInput === undefined) {
-      this.route.params.subscribe(params => {
-        this.mapId = params['mapId']
-      })
+      this.route.params.subscribe((params) => {
+        this.mapId = params['mapId'];
+      });
     } else {
       this.mapId = this.mapIdInput;
     }
-    
+
     await this.getMapData();
   }
 
+  // Needed to facilitate switching between maps
   ngOnChanges(): void {
     this.ngOnInit();
   }
-
-  // ngOnChanges(): void {
-  //   console.log('Changes found in display component');
-  //   this.ngOnInit();
-  // }
 
   async getMapData() {
     const data = await this.vmService.getMap(this.mapId).toPromise();
     this.id = data.id;
     for (let coord of data.coordinates) {
-      this.machines.push(new Machine(coord.xPosition, coord.yPosition, coord.radius, coord.url, coord.id, coord.label));
+      this.machines.push(
+        new Machine(
+          coord.xPosition,
+          coord.yPosition,
+          coord.radius,
+          coord.url,
+          coord.id,
+          coord.label
+        )
+      );
     }
     this.imageUrl = data.imageUrl;
   }
 
   back(): void {
-    this.router.navigate(['../'], { relativeTo:this.route })
-    .then(() => {
+    this.router.navigate(['../'], { relativeTo: this.route }).then(() => {
       window.location.reload();
     });
   }
 
   redirect(url: string): void {
-    window.open(url)
+    window.open(url);
   }
-  
+
   calcFontSize(radius: number): number {
     return radius / 3;
   }

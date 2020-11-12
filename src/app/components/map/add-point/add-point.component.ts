@@ -9,7 +9,7 @@ DM20-0181
 */
 
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -19,7 +19,7 @@ import { Machine } from '../../../models/machine';
 @Component({
   selector: 'app-add-point',
   templateUrl: './add-point.component.html',
-  styleUrls: ['./add-point.component.css']
+  styleUrls: ['./add-point.component.css'],
 })
 export class AddPointComponent implements OnInit {
   @Input() xPos: number;
@@ -30,6 +30,7 @@ export class AddPointComponent implements OnInit {
   @Input() label: string;
 
   @Output() machineEmitter = new EventEmitter<Machine>();
+
   form: FormGroup;
   vms: Vm[];
   vmMaps: VmMap[];
@@ -39,10 +40,7 @@ export class AddPointComponent implements OnInit {
   viewId: string;
   custom: boolean;
 
-  constructor(
-    private vmService: VmsService,
-    private route: ActivatedRoute
-    ) {}
+  constructor(private vmService: VmsService, private route: ActivatedRoute) {}
 
   async ngOnInit() {
     this.custom = false;
@@ -50,44 +48,53 @@ export class AddPointComponent implements OnInit {
 
     // Default values come from map component
     this.form = new FormGroup({
-      rad: new FormControl({value: this.rad, disabled: false}),
-      url: new FormControl({value: '', disabled: false}),
-      label: new FormControl({value: this.label, disabled: false}),
-      customUrl: new FormControl({value: this.url, disabled: true})
+      rad: new FormControl({ value: this.rad, disabled: false }),
+      url: new FormControl({ value: '', disabled: false }),
+      label: new FormControl({ value: this.label, disabled: false }),
+      customUrl: new FormControl({ value: this.url, disabled: true }),
     });
 
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       this.viewId = params['viewId'];
     });
 
     await this.getVms();
     await this.getVmMaps();
 
-    this.vmsFiltered = this.form.get('url').valueChanges
-      .pipe(
-        startWith(''),
-        map(value => typeof value === 'string' ? value : value.name),
-        map(name => name ? this._filterVms(name) : this.vms.slice())
-      );
+    // Filtering for VMs and VmMaps
+    this.vmsFiltered = this.form.get('url').valueChanges.pipe(
+      startWith(''),
+      map((value) => (typeof value === 'string' ? value : value.name)),
+      map((name) => (name ? this._filterVms(name) : this.vms.slice()))
+    );
 
-    this.vmMapsFiltered = this.form.get('url').valueChanges
-      .pipe(
-        startWith(''),
-        map(value => typeof value === 'string' ? value : value.name),
-        map(name => name ? this._filterVmMaps(name) : this.vmMaps.slice())
-      );
+    this.vmMapsFiltered = this.form.get('url').valueChanges.pipe(
+      startWith(''),
+      map((value) => (typeof value === 'string' ? value : value.name)),
+      map((name) => (name ? this._filterVmMaps(name) : this.vmMaps.slice()))
+    );
   }
 
   onSubmit(): void {
-    console.log("form submitted");
-    const isMap = this.form.get('url').value.url === undefined
+    console.log('form submitted');
+    const isMap = this.form.get('url').value.url === undefined;
     const urlVal = this.form.get('url').value;
 
     // If a custom url was selected, use that. Else, if a VmMap was selected, get its url. If a VM was selected, use its url field
-    const url = this.custom ? this.form.get('customUrl').value : isMap ? this.getMapUrl(urlVal as VmMap) : urlVal.url;
+    const url = this.custom
+      ? this.form.get('customUrl').value
+      : isMap
+      ? this.getMapUrl(urlVal as VmMap)
+      : urlVal.url;
 
-    const machine = new Machine(+this.xPos, +this.yPos, +this.form.get("rad").value, url, 
-      this.id, this.form.get('label').value);
+    const machine = new Machine(
+      +this.xPos,
+      +this.yPos,
+      +this.form.get('rad').value,
+      url,
+      this.id,
+      this.form.get('label').value
+    );
 
     console.log(machine);
     this.machineEmitter.emit(machine);
@@ -95,15 +102,16 @@ export class AddPointComponent implements OnInit {
 
   onDelete(): void {
     // Send a machine with fields set to -1 to signal that it should be deleted
-    this.machineEmitter.emit(new Machine(-1, -1, -1, '', this.id, '')); 
+    this.machineEmitter.emit(new Machine(-1, -1, -1, '', this.id, ''));
   }
 
-  // Currently getting all VMs/Maps in view. May need to get more granular
+  // Get all available VMs in this view
   async getVms() {
     const data = await this.vmService.getViewVms(this.viewId).toPromise();
     this.vms = data;
   }
 
+  // Get all available VmMaps in this view
   async getVmMaps() {
     const data = await this.vmService.getViewMaps(this.viewId).toPromise();
     this.vmMaps = data;
@@ -113,19 +121,18 @@ export class AddPointComponent implements OnInit {
     return 'views/' + m.viewId + '/map/' + m.id;
   }
 
+  // Display resource name in dialog instead of url
   display(item: Vm | VmMap): string {
     return item && item.name ? item.name : '';
   }
 
   private _filterVms(value: string): Vm[] {
     const lower = value.toLowerCase();
-
-    return this.vms.filter(vm => vm.name.toLowerCase().includes(lower));
+    return this.vms.filter((vm) => vm.name.toLowerCase().includes(lower));
   }
 
   private _filterVmMaps(value: string): VmMap[] {
     const lower = value.toLowerCase();
-
-    return this.vmMaps.filter(m => m.name.toLowerCase().includes(lower));
+    return this.vmMaps.filter((m) => m.name.toLowerCase().includes(lower));
   }
 }

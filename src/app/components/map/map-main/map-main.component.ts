@@ -8,7 +8,14 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { VmMap, VmsService } from '../../../generated/vm-api';
@@ -19,9 +26,8 @@ import { NewMapComponent } from '../new-map/new-map.component';
 @Component({
   selector: 'app-map-main',
   templateUrl: './map-main.component.html',
-  styleUrls: ['./map-main.component.css']
+  styleUrls: ['./map-main.component.css'],
 })
-
 export class MapMainComponent implements OnInit, AfterViewChecked {
   VmMaps: VmMap[];
   selected: VmMap;
@@ -48,13 +54,15 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private dialog: MatDialog
-  ) { this.mapInitialized = false; }
+  ) {
+    this.mapInitialized = false;
+  }
 
   ngOnInit(): void {
     this.VmMaps = new Array<VmMap>();
-    this.route.params.subscribe(params => {
-      this.viewId = params['viewId']
-    })
+    this.route.params.subscribe((params) => {
+      this.viewId = params['viewId'];
+    });
     this.getMaps();
   }
 
@@ -63,7 +71,6 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
   }
 
   buildMap() {
-    // this.build = true;
     this.creatingMap = true;
     this.dialogRef = this.dialog.open(this.newMapDialog);
   }
@@ -75,6 +82,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.goToMap();
   }
 
+  // Get the available maps in this view
   async getMaps() {
     const dataPromise = this.vmsService.getViewMaps(this.viewId).toPromise();
     const data = await dataPromise;
@@ -101,15 +109,20 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.build = false;
   }
 
+  // Track changes in the map select by map IDs
   trackByMaps(item: VmMap): string {
     return item.id;
   }
 
   async delete() {
     this.vmsService.deleteMap(this.selected.id).subscribe(
-      x => console.log('Got a next value: ' + x),
-      err => console.log('Got an error: ' + err),
-      async () => { console.log('Map deleted'); window.alert('Map Deleted!'); await this.mapDeleted(); }
+      (x) => console.log('Got a next value: ' + x),
+      (err) => console.log('Got an error: ' + err),
+      async () => {
+        console.log('Map deleted');
+        window.alert('Map Deleted!');
+        await this.mapDeleted();
+      }
     );
   }
 
@@ -135,15 +148,14 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.build = false;
     this.readMap = true;
     this.editMode = true;
-    
+
     console.log('Calling getMaps from mapCreated');
     await this.getMaps();
-    
+
     console.log('Length: ' + this.VmMaps.length);
-    this.selected = this.VmMaps.find(m => {
-      console.log('Comparing ' + m.id + ' to ' + id);
+    this.selected = this.VmMaps.find((m) => {
       return m.id == id;
-    })
+    });
 
     console.log('Before calling go to map, selected is: ' + this.selected);
     this.goToMap();
@@ -152,7 +164,6 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
   }
 
   editProperties(): void {
-    // this.editProps = true;
     this.creatingMap = false;
     this.dialogRef = this.dialog.open(this.editPropsDialog);
   }
@@ -163,18 +174,18 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     const ids = tuple[2];
     const id = this.selected.id;
 
-    let payload = <VmMap> {
+    let payload = <VmMap>{
       coordinates: this.selected.coordinates,
       name: name,
       imageUrl: url,
-      teamIds: ids
-    }
+      teamIds: ids,
+    };
 
     await this.vmsService.updateMap(id, payload).toPromise();
     window.alert('Properties successfully updated!');
 
     await this.getMaps();
-    this.selected = this.VmMaps.find(m => {
+    this.selected = this.VmMaps.find((m) => {
       return m.id === id;
     });
     this.buildChild.ngOnInit();
