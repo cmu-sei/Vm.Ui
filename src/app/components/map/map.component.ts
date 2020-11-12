@@ -12,8 +12,10 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -29,7 +31,7 @@ import { v4 as uuidv4 } from 'uuid';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnChanges {
   machines: Machine[];
   mapInitialzed: boolean;
   teamIDs: string[];
@@ -47,9 +49,6 @@ export class MapComponent implements OnInit {
 
   viewId: string;
 
-  // Edit mode input doesn't work as a bool
-  @Input() viewIdInput: string;
-  @Input() teamIdInput: string;
   @Input() mapIdInput: string;
 
   @Output() mapSaved = new EventEmitter<void>();
@@ -70,34 +69,27 @@ export class MapComponent implements OnInit {
     this.timesSaved = 0;
     this.machines = new Array<Machine>();
 
-    if (this.viewIdInput === undefined) {
-      this.route.params.subscribe((params) => {
-        this.viewId = params['viewId'];
-      });
-    } else {
-      this.viewId = this.viewIdInput;
-    }
+    this.route.params.subscribe((params) => {
+      this.viewId = params['viewId'];
+    });
+
 
     this.initMap();
   }
 
-  // ngOnChanges(): void {
-  //   this.ngOnInit();
-  // }
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('Map component changes detected');
+    console.log(changes);
+    if (!changes['mapIdInput'].firstChange) {
+      this.ngOnInit();
+    }
+  }
 
   initMap(): void {
     console.log('Calling initMap');
 
-    let teamId: string;
-    if (this.teamIdInput === undefined) {
-      this.route.params.subscribe((params) => {
-        teamId = params['teamId'];
-      });
-    } else {
-      teamId = this.teamIdInput;
-    }
-
-    console.log('Calling getMap');
+    console.log('Array before API call:');
+    console.log(this.machines);
     this.vmService.getMap(this.mapIdInput).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
