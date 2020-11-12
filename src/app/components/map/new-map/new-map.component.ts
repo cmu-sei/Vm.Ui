@@ -63,7 +63,7 @@ export class NewMapComponent implements OnInit {
         coordinates: null,
         name: this.form.get('name').value as string,
         imageUrl: this.form.get('imageURL').value as string,
-        teamIds: null
+        teamIds: this.form.get('teamIDs').value as string[]
       }
       
       console.log('Creating map assigned to view ' + this.viewId + ' with payload ' + payload);
