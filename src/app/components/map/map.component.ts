@@ -215,10 +215,14 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   edit(m: Machine): void {
+    console.log('Editing');
     console.log(m);
-    this.idToSend = m.id;
+
+    this.xActual = m.x;
+    this.yActual = m.y;
     this.selectedRad = m.r;
     this.selectedURL = m.url;
+    this.idToSend = m.id;
     this.selectedLabel = m.label;
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
