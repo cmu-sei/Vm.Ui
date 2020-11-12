@@ -52,8 +52,8 @@ export class AddPointComponent implements OnInit {
     this.form = new FormGroup({
       rad: new FormControl({value: this.rad, disabled: false}),
       url: new FormControl({value: '', disabled: false}),
-      label: new FormControl({value: '',disabled: false}),
-      customUrl: new FormControl({value: '', disabled: true})
+      label: new FormControl({value: this.label, disabled: false}),
+      customUrl: new FormControl({value: this.url, disabled: true})
     });
 
     this.route.params.subscribe(params => {
