@@ -15,7 +15,6 @@ import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ID } from '@datorama/akita';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { ConsoleComponent } from '../../components/console/console.component';
 import {
   BulkPowerOperation,
   BulkPowerOperationResponse,
