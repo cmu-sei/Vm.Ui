@@ -68,6 +68,8 @@ import { MapTeamDisplayComponent } from './components/map/map-team-display/map-t
 import { MapMainComponent } from './components/map/map-main/map-main.component';
 import { MatSelectModule } from '@angular/material/select';
 import { NewMapComponent } from './components/map/new-map/new-map.component';
+import { VmMapsQuery } from './state/vmMaps/vm-maps.query';
+import { VmMapsService } from './state/vmMaps/vm-maps.service';
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
@@ -138,6 +140,8 @@ export class AngularMaterialModule {}
   ],
   providers: [
     VmService,
+    VmMapsService,
+    VmMapsQuery,
     AutoDeployService,
     FileService,
     TeamsService,

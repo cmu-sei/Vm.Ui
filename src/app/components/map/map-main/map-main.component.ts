@@ -21,8 +21,8 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { VmMap, VmsService } from '../../../generated/vm-api';
-import { VmMapsQuery } from '../../../state/vmMaps/vmMaps.query';
-import { VmMapService } from '../../../state/vmMaps/vmMaps.service';
+import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
+import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.component';
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
@@ -58,18 +58,22 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private dialog: MatDialog,
-    private vmMapService: VmMapService,
+    private vmMapsService: VmMapsService,
     private vmMapQuery: VmMapsQuery,
   ) {
     this.mapInitialized = false;
   }
 
   ngOnInit(): void {
+    console.log('Top of on init');
+    this.vmMapsService.get();
+    
     this.VmMaps = new Array<VmMap>();
     this.maps = this.route.params.pipe(
       switchMap((params) => {
+        console.log('In switch map');
         this.viewId = params['viewId']
-        return this.vmsService.getViewMaps(this.viewId);
+        return this.vmMapQuery.getByViewId(this.viewId);
       })
     );
   }
@@ -83,27 +87,20 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.dialogRef = this.dialog.open(this.newMapDialog);
   }
 
-  mapDeleted() {
-    this.getMaps();
+  // // Get the available maps in this view
+  // getMaps() {
+  //   // const dataPromise = this.vmsService.getViewMaps(this.viewId).toPromise();
+  //   // const data = await dataPromise;
 
-    this.selected = undefined;
-    this.goToMap();
-  }
+  //   this.vmMapService.getViewMaps(this.viewId).subscribe();
+  //   this.maps = this.vmMapQuery.selectAll();
+  //   console.log('in getMaps, this.maps = ' + this.maps);
 
-  // Get the available maps in this view
-  getMaps() {
-    // const dataPromise = this.vmsService.getViewMaps(this.viewId).toPromise();
-    // const data = await dataPromise;
-
-    this.vmMapService.getViewMaps(this.viewId).subscribe();
-    this.maps = this.vmMapQuery.selectAll();
-    console.log('in getMaps, this.maps = ' + this.maps);
-
-    if (this.maps === null) {
-      this.readMap = false;
-      this.selected = undefined;
-    }
-  }
+  //   if (this.maps === null) {
+  //     this.readMap = false;
+  //     this.selected = undefined;
+  //   }
+  // }
 
   goToMap() {
     if (this.selected === undefined) {
@@ -122,16 +119,10 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     return item.id;
   }
 
-  async delete() {
-    this.vmsService.deleteMap(this.selected.id).subscribe(
-      (x) => console.log('Got a next value: ' + x),
-      (err) => console.log('Got an error: ' + err),
-      async () => {
-        console.log('Map deleted');
-        window.alert('Map Deleted!');
-        await this.mapDeleted();
-      }
-    );
+  delete() {
+    this.vmMapsService.remove(this.selected.id);
+    this.selected = undefined;
+    this.goToMap();
   }
 
   async save() {
@@ -158,7 +149,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.editMode = true;
 
     console.log('Calling getMaps from mapCreated');
-    this.getMaps();
+    // this.getMaps();
 
     console.log('Length: ' + this.VmMaps.length);
     this.selected = this.VmMaps.find((m) => {
@@ -192,7 +183,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     await this.vmsService.updateMap(id, payload).toPromise();
     window.alert('Properties successfully updated!');
 
-    this.getMaps();
+    // this.getMaps();
     this.selected = this.VmMaps.find((m) => {
       return m.id === id;
     });
