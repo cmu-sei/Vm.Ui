@@ -8,33 +8,16 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { VmService } from '../../state/vms/vms.service';
+import { Injectable } from '@angular/core';
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import { VmMapModel } from './vmMaps.model';
 
-@Component({
-  selector: 'app-console',
-  templateUrl: './console.component.html',
-  styleUrls: ['./console.component.scss'],
-})
-export class ConsoleComponent implements OnInit {
-  constructor(private vmService: VmService, private route: ActivatedRoute) {}
+export interface VmMapsState extends EntityState<VmMapModel> {}
 
-  ngOnInit() {
-    const viewId = this.route.snapshot.params['viewId'];
-    const name = this.route.snapshot.params['name'];
-
-    this.vmService.GetViewVmsByName(viewId, name).subscribe(
-      (vms) => {
-        if (vms != null) {
-          const vm = vms[0];
-
-          if (vm) {
-            window.location.href = vm.url;
-          }
-        }
-      },
-      (err) => {}
-    );
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'vmMaps' })
+export class VmMapsStore extends EntityStore<VmMapsState> {
+  constructor() {
+    super();
   }
 }

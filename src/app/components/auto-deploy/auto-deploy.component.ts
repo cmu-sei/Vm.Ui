@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AutoDeployService } from '../../services/auto-deploy/auto-deploy.service';
-import { VmService } from '../../vms/state/vms.service';
+import { VmService } from '../../state/vms/vms.service';
 
 @Component({
   selector: 'app-auto-deploy',

@@ -28,8 +28,8 @@ import { filter, switchMap, take } from 'rxjs/operators';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
-import { VmModel } from '../../vms/state/vm.model';
-import { VmService } from '../../vms/state/vms.service';
+import { VmModel } from '../../state/vms/vm.model';
+import { VmService } from '../../state/vms/vms.service';
 
 @Component({
   selector: 'app-vm-list',

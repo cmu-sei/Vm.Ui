@@ -62,7 +62,7 @@ import { FileService } from './services/file/file.service';
 import { SystemMessageService } from './services/system-message/system-message.service';
 import { TeamsService } from './services/teams/teams.service';
 import { WelderService } from './services/welder/welder.service';
-import { VmService } from './vms/state/vms.service';
+import { VmService } from './state/vms/vms.service';
 import { AddPointComponent } from './components/map/add-point/add-point.component';
 import { MapTeamDisplayComponent } from './components/map/map-team-display/map-team-display.component';
 import { MapMainComponent } from './components/map/map-main/map-main.component';

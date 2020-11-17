@@ -14,7 +14,7 @@ DM20-0181
       <mat-label>Select Map</mat-label>
       <mat-select [(value)]="selected" [(ngModel)]="selected" (selectionChange)="goToMap()">
         <mat-option>Select Map</mat-option>
-        <mat-option *ngFor="let vm of VmMaps; trackBy: trackByMaps" [value]="vm">{{vm.name}}</mat-option>
+        <mat-option *ngFor="let vm of maps | async; trackBy: trackByMaps" [value]="vm">{{vm.name}}</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
@@ -49,7 +49,6 @@ DM20-0181
 
   <app-map-team-display
     *ngIf="readMap && !editMode && !build"
-    teamIdInput = {{teamId}}
     mapIdInput = {{mapId}}
   >
   </app-map-team-display>

@@ -18,7 +18,11 @@ import {
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { VmMap, VmsService } from '../../../generated/vm-api';
+import { VmMapsQuery } from '../../../state/vmMaps/vmMaps.query';
+import { VmMapService } from '../../../state/vmMaps/vmMaps.service';
 import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.component';
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
@@ -34,7 +38,6 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
   editMode: boolean;
   readMap: boolean;
   mapInitialized: boolean;
-  teamId: string;
   viewId: string;
   build: boolean;
   mapId: string;
@@ -48,22 +51,27 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
   @ViewChild('newMapDialog') newMapDialog: TemplateRef<NewMapComponent>;
   @ViewChild('editPropsDialog') editPropsDialog: TemplateRef<NewMapComponent>;
   private dialogRef: MatDialogRef<NewMapComponent>;
+  maps: Observable<VmMap[]>;
 
   constructor(
     private vmsService: VmsService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private vmMapService: VmMapService,
+    private vmMapQuery: VmMapsQuery,
   ) {
     this.mapInitialized = false;
   }
 
   ngOnInit(): void {
     this.VmMaps = new Array<VmMap>();
-    this.route.params.subscribe((params) => {
-      this.viewId = params['viewId'];
-    });
-    this.getMaps();
+    this.maps = this.route.params.pipe(
+      switchMap((params) => {
+        this.viewId = params['viewId']
+        return this.vmsService.getViewMaps(this.viewId);
+      })
+    );
   }
 
   ngAfterViewChecked() {
@@ -75,22 +83,23 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.dialogRef = this.dialog.open(this.newMapDialog);
   }
 
-  async mapDeleted() {
-    await this.getMaps();
+  mapDeleted() {
+    this.getMaps();
 
     this.selected = undefined;
     this.goToMap();
   }
 
   // Get the available maps in this view
-  async getMaps() {
-    const dataPromise = this.vmsService.getViewMaps(this.viewId).toPromise();
-    const data = await dataPromise;
+  getMaps() {
+    // const dataPromise = this.vmsService.getViewMaps(this.viewId).toPromise();
+    // const data = await dataPromise;
 
-    console.log('Length in getMaps: ' + data.length);
+    this.vmMapService.getViewMaps(this.viewId).subscribe();
+    this.maps = this.vmMapQuery.selectAll();
+    console.log('in getMaps, this.maps = ' + this.maps);
 
-    this.VmMaps = data;
-    if (data.length === 0) {
+    if (this.maps === null) {
       this.readMap = false;
       this.selected = undefined;
     }
@@ -102,7 +111,6 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
       this.readMap = false;
     } else {
       console.log('In go to map, selected is: ' + this.selected.name);
-      this.teamId = this.selected.teamIds[0];
       this.mapId = this.selected.id;
       this.readMap = true;
     }
@@ -150,7 +158,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.editMode = true;
 
     console.log('Calling getMaps from mapCreated');
-    await this.getMaps();
+    this.getMaps();
 
     console.log('Length: ' + this.VmMaps.length);
     this.selected = this.VmMaps.find((m) => {
@@ -184,7 +192,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     await this.vmsService.updateMap(id, payload).toPromise();
     window.alert('Properties successfully updated!');
 
-    await this.getMaps();
+    this.getMaps();
     this.selected = this.VmMaps.find((m) => {
       return m.id === id;
     });
