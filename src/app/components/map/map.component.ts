@@ -25,6 +25,7 @@ import { AddPointComponent } from './add-point/add-point.component';
 import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
+import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 
 @Component({
   selector: 'app-map',
@@ -61,7 +62,8 @@ export class MapComponent implements OnInit, OnChanges {
     private dialog: MatDialog,
     private vmService: VmsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private vmMapsService: VmMapsService,
   ) {}
 
   ngOnInit(): void {
@@ -181,7 +183,7 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   // Save button clicked, save the map
-  async save(): Promise<void> {
+  save() {
     console.log('Save pressed');
     let coords = new Array<Coordinate>();
     for (let machine of this.machines) {
@@ -205,7 +207,7 @@ export class MapComponent implements OnInit, OnChanges {
 
     console.log(JSON.stringify(payload));
 
-    await this.vmService.updateMap(this.mapId, payload).toPromise();
+    this.vmMapsService.update(this.mapId, payload);
     window.alert('Map successfully saved!');
   }
 

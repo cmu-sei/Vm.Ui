@@ -23,8 +23,10 @@ export class VmMapsService {
     this.vmMapsStore.add(vmMap);
   }
 
-  update(id, vmMap: Partial<VmMap>) {
-    this.vmMapsStore.update(id, vmMap);
+  update(id: string, vmMap: Partial<VmMap>) {
+    this.vmService.updateMap(id, vmMap).pipe(
+      take(1)
+    ).subscribe((m) => this.vmMapsStore.update(id, m));
   }
 
   remove(id: ID) {

@@ -67,7 +67,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
   ngOnInit(): void {
     console.log('Top of on init');
     this.vmMapsService.get();
-    
+
     this.VmMaps = new Array<VmMap>();
     this.maps = this.route.params.pipe(
       switchMap((params) => {
@@ -86,21 +86,6 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.creatingMap = true;
     this.dialogRef = this.dialog.open(this.newMapDialog);
   }
-
-  // // Get the available maps in this view
-  // getMaps() {
-  //   // const dataPromise = this.vmsService.getViewMaps(this.viewId).toPromise();
-  //   // const data = await dataPromise;
-
-  //   this.vmMapService.getViewMaps(this.viewId).subscribe();
-  //   this.maps = this.vmMapQuery.selectAll();
-  //   console.log('in getMaps, this.maps = ' + this.maps);
-
-  //   if (this.maps === null) {
-  //     this.readMap = false;
-  //     this.selected = undefined;
-  //   }
-  // }
 
   goToMap() {
     if (this.selected === undefined) {
@@ -125,9 +110,8 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.goToMap();
   }
 
-  async save() {
-    await this.buildChild.save();
-    console.log('After awaiting save');
+  save() {
+    this.buildChild.save();
     this.editMode = false;
   }
 
