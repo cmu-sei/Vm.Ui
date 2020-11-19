@@ -21,4 +21,10 @@ export class VmMapsQuery extends QueryEntity<VmMapsState> {
     });
   }
 
+  getAllWithName(param: string): Observable<VmMap[]> {
+    return this.selectAll({
+      filterBy: ({name}) => name.toLowerCase().includes(param.toLowerCase())
+    });
+  }
+
 }

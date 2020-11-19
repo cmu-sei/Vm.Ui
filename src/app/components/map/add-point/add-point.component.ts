@@ -12,9 +12,10 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { map, startWith, switchMap } from 'rxjs/operators';
 import { Vm, VmMap, VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
+import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 
 @Component({
   selector: 'app-add-point',
@@ -40,7 +41,11 @@ export class AddPointComponent implements OnInit {
   viewId: string;
   custom: boolean;
 
-  constructor(private vmService: VmsService, private route: ActivatedRoute) {}
+  constructor(
+    private vmService: VmsService,
+    private route: ActivatedRoute,
+    private vmMapsQuery: VmMapsQuery
+  ) {}
 
   async ngOnInit() {
     this.custom = false;
@@ -54,25 +59,27 @@ export class AddPointComponent implements OnInit {
       customUrl: new FormControl({ value: this.url, disabled: true }),
     });
 
-    this.route.params.subscribe((params) => {
-      this.viewId = params['viewId'];
-    });
-
-    await this.getVms();
-    await this.getVmMaps();
-
-    // Filtering for VMs and VmMaps
-    this.vmsFiltered = this.form.get('url').valueChanges.pipe(
-      startWith(''),
-      map((value) => (typeof value === 'string' ? value : value.name)),
-      map((name) => (name ? this._filterVms(name) : this.vms.slice()))
+    this.vmMapsFiltered = this.route.params.pipe(
+      switchMap((params) => {
+        this.viewId = params['viewId'];
+        return this.vmMapsQuery.getByViewId(this.viewId);
+      })
     );
 
-    this.vmMapsFiltered = this.form.get('url').valueChanges.pipe(
-      startWith(''),
-      map((value) => (typeof value === 'string' ? value : value.name)),
-      map((name) => (name ? this._filterVmMaps(name) : this.vmMaps.slice()))
-    );
+    this.form
+      .get('url')
+      .valueChanges.subscribe(
+        (value) =>
+          (this.vmMapsFiltered = this.vmMapsQuery.getAllWithName(
+            typeof value === 'string' ? value : value.name
+          ))
+      );
+
+    // this.vmMapsFiltered = this.form.get('url').valueChanges.pipe(
+    //   startWith(''),
+    //   map((value) => (typeof value === 'string' ? value : value.name)),
+    //   map((name) => (name ? this._filterVmMaps(name) : this.vmMaps.slice()))
+    // );
   }
 
   onSubmit(): void {
@@ -112,9 +119,10 @@ export class AddPointComponent implements OnInit {
   }
 
   // Get all available VmMaps in this view
-  async getVmMaps() {
-    const data = await this.vmService.getViewMaps(this.viewId).toPromise();
-    this.vmMaps = data;
+  getVmMaps() {
+    this.vmMapsQuery
+      .getByViewId(this.viewId)
+      .subscribe((m) => (this.vmMaps = m));
   }
 
   getMapUrl(m: VmMap): string {
@@ -129,10 +137,5 @@ export class AddPointComponent implements OnInit {
   private _filterVms(value: string): Vm[] {
     const lower = value.toLowerCase();
     return this.vms.filter((vm) => vm.name.toLowerCase().includes(lower));
-  }
-
-  private _filterVmMaps(value: string): VmMap[] {
-    const lower = value.toLowerCase();
-    return this.vmMaps.filter((m) => m.name.toLowerCase().includes(lower));
   }
 }
