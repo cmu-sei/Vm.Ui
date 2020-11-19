@@ -19,5 +19,6 @@ export * from './vm';
 export * from './vmCreateForm';
 export * from './vmMap';
 export * from './vmMapCreateForm';
+export * from './vmMapUpdateForm';
 export * from './vmUpdateForm';
 export * from './vsphereVirtualMachine';

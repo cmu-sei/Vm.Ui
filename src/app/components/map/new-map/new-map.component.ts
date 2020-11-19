@@ -61,6 +61,7 @@ export class NewMapComponent implements OnInit {
     console.log('submit pressed');
     if (this.creating) {
       const mapId = uuidv4();
+      console.log('Map ID: ' + mapId);
       // Save an empty map
       let payload = <VmMap>{
         coordinates: null,

@@ -26,6 +26,7 @@ import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
+import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
 
 @Component({
   selector: 'app-map',
@@ -64,6 +65,7 @@ export class MapComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private vmMapsService: VmMapsService,
+    private vmMapsQuery: VmMapsQuery,
   ) {}
 
   ngOnInit(): void {
@@ -95,7 +97,7 @@ export class MapComponent implements OnInit, OnChanges {
     console.log(this.machines);
 
     // Get map data, put coordinates into machines array
-    this.vmService.getMap(this.mapIdInput).subscribe((data) => {
+    this.vmMapsQuery.getById(this.mapIdInput).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
       this.imageURL = data.imageUrl;

@@ -133,7 +133,6 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.editMode = true;
 
     this.vmMapQuery.getById(id).subscribe(m => {
-      console.log('In getById subscription');
       this.selected = m;
 
       console.log('Before calling go to map, selected is: ' + this.selected);
@@ -148,7 +147,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.dialogRef = this.dialog.open(this.editPropsDialog);
   }
 
-  async propertiesChanged(tuple: [string, string, string[]]) {
+  propertiesChanged(tuple: [string, string, string[]]) {
     const name = tuple[0];
     const url = tuple[1];
     const ids = tuple[2];
@@ -161,15 +160,12 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
       teamIds: ids,
     };
 
-    await this.vmsService.updateMap(id, payload).toPromise();
-    window.alert('Properties successfully updated!');
+    this.vmMapsService.update(id, payload);
 
-    // this.getMaps();
-    this.selected = this.VmMaps.find((m) => {
-      return m.id === id;
+    this.vmMapQuery.getById(id).subscribe(m => {
+      this.selected = m;
+      this.buildChild.ngOnInit();
+      this.dialogRef.close();
     });
-    this.buildChild.ngOnInit();
-
-    this.dialogRef.close();
   }
 }
