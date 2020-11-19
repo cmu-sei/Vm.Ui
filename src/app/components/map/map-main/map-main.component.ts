@@ -19,7 +19,7 @@ import {
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { filter, switchMap } from 'rxjs/operators';
 import { VmMap, VmsService } from '../../../generated/vm-api';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
@@ -124,7 +124,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     console.log('Edit mode: ' + this.editMode);
   }
 
-  async mapCreated(id: string) {
+  mapCreated(id: string) {
     console.log('Emitted id: ' + id);
     this.mapId = id;
 
@@ -132,18 +132,15 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     this.readMap = true;
     this.editMode = true;
 
-    console.log('Calling getMaps from mapCreated');
-    // this.getMaps();
+    this.vmMapQuery.getById(id).subscribe(m => {
+      console.log('In getById subscription');
+      this.selected = m;
 
-    console.log('Length: ' + this.VmMaps.length);
-    this.selected = this.VmMaps.find((m) => {
-      return m.id == id;
+      console.log('Before calling go to map, selected is: ' + this.selected);
+      this.goToMap();
+  
+      this.dialogRef.close();
     });
-
-    console.log('Before calling go to map, selected is: ' + this.selected);
-    this.goToMap();
-
-    this.dialogRef.close();
   }
 
   editProperties(): void {

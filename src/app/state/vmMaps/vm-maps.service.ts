@@ -19,8 +19,10 @@ export class VmMapsService {
     ).subscribe((maps) => this.vmMapsStore.set(maps));
   }
 
-  add(vmMap: VmMap) {
-    this.vmMapsStore.add(vmMap);
+  add(viewId: string, vmMap: VmMap) {
+    this.vmService.createMap(viewId, vmMap).pipe(
+      take(1)
+    ).subscribe(m => this.vmMapsStore.add(m));
   }
 
   update(id: string, vmMap: Partial<VmMap>) {

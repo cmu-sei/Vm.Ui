@@ -11,6 +11,9 @@ DM20-0181
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
+import { v4 as uuidv4 } from 'uuid';
+import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-map',
@@ -32,7 +35,8 @@ export class NewMapComponent implements OnInit {
 
   constructor(
     private vmService: VmsService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private vmMapsService: VmMapsService
   ) {}
 
   ngOnInit(): void {
@@ -56,12 +60,14 @@ export class NewMapComponent implements OnInit {
   submit(): void {
     console.log('submit pressed');
     if (this.creating) {
+      const mapId = uuidv4();
       // Save an empty map
       let payload = <VmMap>{
         coordinates: null,
         name: this.form.get('name').value as string,
         imageUrl: this.form.get('imageURL').value as string,
         teamIds: this.form.get('teamIDs').value as string[],
+        id: mapId,
       };
 
       console.log(
@@ -71,18 +77,8 @@ export class NewMapComponent implements OnInit {
           payload
       );
 
-      let mapId: string;
-      this.vmService.createMap(this.viewId, payload).subscribe(
-        (x) => {
-          console.log('Got a next value ' + x);
-          mapId = x.id;
-        },
-        () => window.alert('Error creating new map'),
-        () => {
-          window.alert('Map created successfully!'),
-            this.mapCreated.emit(mapId);
-        }
-      );
+      this.vmMapsService.add(this.viewId, payload);
+      this.mapCreated.emit(mapId);
     } else {
       // Properties are being edited, emit the changes
       console.log('Editing properties');

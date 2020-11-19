@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { QueryEntity } from '@datorama/akita';
+import { filterNil, QueryEntity } from '@datorama/akita';
 import { Observable } from 'rxjs';
 import { VmMap } from '../../generated/vm-api';
 import { VmMapsStore, VmMapsState } from './vm-maps.store';
@@ -12,7 +12,7 @@ export class VmMapsQuery extends QueryEntity<VmMapsState> {
   }
 
   getById(id: string): Observable<VmMap> {
-    return this.selectEntity(id);
+    return this.selectEntity(id).pipe(filterNil);
   }
 
   getByViewId(id: string): Observable<VmMap[]> {
