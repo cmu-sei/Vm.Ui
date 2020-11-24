@@ -8,12 +8,12 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 -->
 
-<div>
+<div *ngIf="mapInitialized == true">
   <svg viewBox="0 8 100 100" #img>
     <image [attr.href]="imageUrl" width="100" height="100"/>
-    <g *ngFor="let m of machines" >
-      <circle class="clickpoint" [attr.cx]="m.x" [attr.cy]="m.y" [attr.r]="m.r" (click)="redirect(m.url)" fill-opacity="0.0"> </circle>
-      <text class="clickpoint" [attr.x]="m.x" [attr.y]="m.y" [attr.font-size]="calcFontSize(m.r)" fill="black" text-anchor="middle" (click)="redirect(m.url)">{{m.label}}</text>
+    <g *ngFor="let m of machines | async" >
+      <circle class="clickpoint" [attr.cx]="m.xPosition" [attr.cy]="m.yPosition" [attr.r]="m.radius" (click)="redirect(m.url)" fill-opacity="0.0"> </circle>
+      <text class="clickpoint" [attr.x]="m.xPosition" [attr.y]="m.yPosition" [attr.font-size]="calcFontSize(m.radius)" fill="black" text-anchor="middle" (click)="redirect(m.url)">{{m.label}}</text>
     </g>
   </svg>
 </div>

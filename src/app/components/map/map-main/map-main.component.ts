@@ -33,7 +33,6 @@ import { NewMapComponent } from '../new-map/new-map.component';
   styleUrls: ['./map-main.component.css'],
 })
 export class MapMainComponent implements OnInit, AfterViewChecked {
-  VmMaps: VmMap[];
   selected: VmMap;
   editMode: boolean;
   readMap: boolean;
@@ -68,7 +67,6 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     console.log('Top of on init');
     this.vmMapsService.get();
 
-    this.VmMaps = new Array<VmMap>();
     this.maps = this.route.params.pipe(
       switchMap((params) => {
         console.log('In switch map');
@@ -166,6 +164,14 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
       this.selected = m;
       this.buildChild.ngOnInit();
       this.dialogRef.close();
+    });
+  }
+
+  // User clicked a clickpoint that points to a map
+  redirectToMap(id: string) {
+    this.vmMapQuery.getById(id).subscribe(m => {
+      this.selected = m;
+      this.goToMap();
     });
   }
 }

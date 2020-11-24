@@ -170,7 +170,7 @@ export class MapComponent implements OnInit, OnChanges {
     if (machineToEdit != undefined) {
       const index = this.machines.indexOf(machineToEdit);
       // Remove the machine, a -1 field means deletion 
-      if (machine.x === -1) {
+      if (machine.xPosition === -1) {
         this.machines.splice(index, 1);
       // Replace the machine with an edited version
       } else {
@@ -190,9 +190,9 @@ export class MapComponent implements OnInit, OnChanges {
     let coords = new Array<Coordinate>();
     for (let machine of this.machines) {
       let coord = <Coordinate>{
-        xPosition: machine.x,
-        yPosition: machine.y,
-        radius: machine.r,
+        xPosition: machine.xPosition,
+        yPosition: machine.yPosition,
+        radius: machine.radius,
         url: machine.url,
         id: machine.id,
         label: machine.label,
@@ -221,9 +221,9 @@ export class MapComponent implements OnInit, OnChanges {
     console.log('Editing');
     console.log(m);
 
-    this.xActual = m.x;
-    this.yActual = m.y;
-    this.selectedRad = m.r;
+    this.xActual = m.xPosition;
+    this.yActual = m.yPosition;
+    this.selectedRad = m.radius;
     this.selectedURL = m.url;
     this.idToSend = m.id;
     this.selectedLabel = m.label;

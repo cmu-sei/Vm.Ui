@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { filterNil, QueryEntity } from '@datorama/akita';
 import { Observable } from 'rxjs';
-import { VmMap } from '../../generated/vm-api';
+import { map } from 'rxjs/operators';
+import { Coordinate, VmMap } from '../../generated/vm-api';
 import { VmMapsStore, VmMapsState } from './vm-maps.store';
 
 @Injectable({ providedIn: 'root' })
@@ -25,6 +26,13 @@ export class VmMapsQuery extends QueryEntity<VmMapsState> {
     return this.selectAll({
       filterBy: ({name}) => name.toLowerCase().includes(param.toLowerCase())
     });
+  }
+
+  getMapCoordinates(mapId: string): Observable<Coordinate[]> {
+    return this.selectEntity(mapId).pipe(
+      filterNil,
+      map(m => m.coordinates)
+    );
   }
 
 }

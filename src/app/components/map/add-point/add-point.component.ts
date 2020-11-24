@@ -47,7 +47,7 @@ export class AddPointComponent implements OnInit {
     private route: ActivatedRoute,
     private vmMapsQuery: VmMapsQuery,
     private VmAkitaService: VmService,
-    private vmsQuery: VmsQuery,
+    private vmsQuery: VmsQuery
   ) {}
 
   async ngOnInit() {
@@ -79,10 +79,15 @@ export class AddPointComponent implements OnInit {
             typeof value === 'string' ? value : value.name
           ))
       );
-    
-    this.form.get('url').valueChanges.subscribe(
-      (value) => this.vmsFiltered = this.vmsQuery.getAllWithName(typeof value === 'string' ? value : value.name)
-    )
+
+    this.form
+      .get('url')
+      .valueChanges.subscribe(
+        (value) =>
+          (this.vmsFiltered = this.vmsQuery.getAllWithName(
+            typeof value === 'string' ? value : value.name
+          ))
+      );
   }
 
   onSubmit(): void {
@@ -90,11 +95,11 @@ export class AddPointComponent implements OnInit {
     const isMap = this.form.get('url').value.url === undefined;
     const urlVal = this.form.get('url').value;
 
-    // If a custom url was selected, use that. Else, if a VmMap was selected, get its url. If a VM was selected, use its url field
+    // If a custom url was selected, use that. Else, if a VmMap was selected, get its id. If a VM was selected, use its url field
     const url = this.custom
       ? this.form.get('customUrl').value
       : isMap
-      ? this.getMapUrl(urlVal as VmMap)
+      ? (urlVal as VmMap).id
       : urlVal.url;
 
     const machine = new Machine(

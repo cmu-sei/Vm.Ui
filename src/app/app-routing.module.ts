@@ -46,21 +46,6 @@ export const ROUTES: Routes = [
     component: MapMainComponent, 
     canActivate: [ComnAuthGuardService]
   },
-  { 
-    path: 'views/:viewId/build-map', 
-    component: MapComponent, 
-    canActivate: [ComnAuthGuardService]
-  },
-  { 
-    path: 'views/:viewId/map/:mapId', 
-    component: MapTeamDisplayComponent, 
-    canActivate: [ComnAuthGuardService] 
-  },
-  { 
-    path: 'views/:viewId/map/:teamId/edit', 
-    component: MapComponent, 
-    canActivate: [ComnAuthGuardService] 
-  },
  
   // TODO: deprecated, remove when safe to do so
   {

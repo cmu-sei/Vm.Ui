@@ -36,6 +36,7 @@
     "@cmusei/crucible-common": "0.0.5",
     "@datorama/akita": "^5.0.5",
     "@microsoft/signalr": "^3.1.9",
+    "@types/uuid": "^8.3.0",
     "babel-polyfill": "^6.26.0",
     "core-js": "^3.6.5",
     "ngx-drag-to-select": "^3.1.1",

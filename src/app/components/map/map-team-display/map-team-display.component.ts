@@ -10,8 +10,11 @@ DM20-0181
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VmsService } from '../../../generated/vm-api';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { Coordinate, VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
+import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 
 @Component({
   selector: 'app-map-team-display',
@@ -19,56 +22,34 @@ import { Machine } from '../../../models/machine';
   styleUrls: ['./map-team-display.component.css'],
 })
 export class MapTeamDisplayComponent implements OnInit {
-  machines: Machine[];
-  imageUrl: string;
+  machines: Observable<Machine[]>;
   id: string;
   mapId: string;
+  imageUrl: string;
+  mapInitialized: boolean;
 
+  @Input() imageUrlInput: string;
   @Input() mapIdInput: string;
 
-  @Output() mapDeleted = new EventEmitter<void>();
+  @Output() mapSwitched = new EventEmitter<string>();
 
   constructor(
     private vmService: VmsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private vmMapsQuery: VmMapsQuery,
   ) {}
 
-  async ngOnInit() {
-    console.log('Calling init in display component');
-    this.machines = new Array<Machine>();
-    if (this.mapIdInput === undefined) {
-      this.route.params.subscribe((params) => {
-        this.mapId = params['mapId'];
-      });
-    } else {
-      this.mapId = this.mapIdInput;
-    }
-
-    await this.getMapData();
+  ngOnInit() {
+    this.mapId = this.mapIdInput;
+    this.machines = this.vmMapsQuery.getMapCoordinates(this.mapId);
+    this.imageUrl = this.imageUrlInput;
+    this.mapInitialized = true;
   }
 
   // Needed to facilitate switching between maps
   ngOnChanges(): void {
     this.ngOnInit();
-  }
-
-  async getMapData() {
-    const data = await this.vmService.getMap(this.mapId).toPromise();
-    this.id = data.id;
-    for (let coord of data.coordinates) {
-      this.machines.push(
-        new Machine(
-          coord.xPosition,
-          coord.yPosition,
-          coord.radius,
-          coord.url,
-          coord.id,
-          coord.label
-        )
-      );
-    }
-    this.imageUrl = data.imageUrl;
   }
 
   back(): void {
@@ -78,7 +59,20 @@ export class MapTeamDisplayComponent implements OnInit {
   }
 
   redirect(url: string): void {
-    window.open(url);
+    console.log(url);
+    const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+    // If the url is just a guid, we are redirecting to a map. This is a special case and will behave as if the user
+    // selected the new map from the drop down. This approach works because the only maps available
+    // to link to are other maps in the same view that the user can access. So given some map m that links to a map m'
+    // we know that 1. m' is in this view and 2. the user can access m' (these conditions are the same for the maps in the drop down)
+    if (url.match(guidRegex)) {
+      console.log('Map clicked');
+      this.mapSwitched.emit(url);
+    } else {
+      console.log('Non map clicked');
+      window.open(url);
+    }
   }
 
   calcFontSize(radius: number): number {

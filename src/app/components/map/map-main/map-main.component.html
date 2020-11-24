@@ -50,6 +50,8 @@ DM20-0181
   <app-map-team-display
     *ngIf="readMap && !editMode && !build"
     mapIdInput = {{mapId}}
+    imageUrlInput = {{this.selected.imageUrl}}
+    (mapSwitched) = "redirectToMap($event)"
   >
   </app-map-team-display>
   
