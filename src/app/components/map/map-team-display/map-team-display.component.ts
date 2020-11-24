@@ -11,8 +11,7 @@ DM20-0181
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { Coordinate, VmsService } from '../../../generated/vm-api';
+import { VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 
@@ -34,7 +33,6 @@ export class MapTeamDisplayComponent implements OnInit {
   @Output() mapSwitched = new EventEmitter<string>();
 
   constructor(
-    private vmService: VmsService,
     private route: ActivatedRoute,
     private router: Router,
     private vmMapsQuery: VmMapsQuery,

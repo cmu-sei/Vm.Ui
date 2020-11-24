@@ -13,7 +13,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-map',

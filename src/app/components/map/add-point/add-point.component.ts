@@ -43,14 +43,13 @@ export class AddPointComponent implements OnInit {
   custom: boolean;
 
   constructor(
-    private vmService: VmsService,
     private route: ActivatedRoute,
     private vmMapsQuery: VmMapsQuery,
     private VmAkitaService: VmService,
     private vmsQuery: VmsQuery
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.custom = false;
     this.control = new FormControl();
 

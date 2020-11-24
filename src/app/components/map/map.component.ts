@@ -61,7 +61,6 @@ export class MapComponent implements OnInit, OnChanges {
 
   constructor(
     private dialog: MatDialog,
-    private vmService: VmsService,
     private route: ActivatedRoute,
     private router: Router,
     private vmMapsService: VmMapsService,
