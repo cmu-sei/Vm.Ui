@@ -11,7 +11,6 @@ DM20-0181
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { VmsService } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 

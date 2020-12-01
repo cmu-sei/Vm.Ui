@@ -12,8 +12,8 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { filter, map, startWith, switchMap } from 'rxjs/operators';
-import { Vm, VmMap, VmsService } from '../../../generated/vm-api';
+import { switchMap } from 'rxjs/operators';
+import { Vm, VmMap } from '../../../generated/vm-api';
 import { Machine } from '../../../models/machine';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { VmModel } from '../../../state/vms/vm.model';
@@ -61,15 +61,19 @@ export class AddPointComponent implements OnInit {
       customUrl: new FormControl({ value: this.url, disabled: true }),
     });
 
+    // Get VM Maps in view
     this.vmMapsFiltered = this.route.params.pipe(
       switchMap((params) => {
-        this.viewId = params['viewId'];
-        return this.vmMapsQuery.getByViewId(this.viewId);
+        const viewId = params['viewId'];
+        return this.vmMapsQuery.getByViewId(viewId);
       })
     );
+    
+    // Get VMs in view
+    // Calling the service directly here because the API doesn't set a viewId field on a VM, so there's no way to do this as a query
+    this.vmsFiltered = this.VmAkitaService.GetViewVms(true, true);
 
-    this.vmsFiltered = this.VmAkitaService.GetViewVms(true, false);
-
+    // Set up filter for VM Maps
     this.form
       .get('url')
       .valueChanges.subscribe(
@@ -78,7 +82,8 @@ export class AddPointComponent implements OnInit {
             typeof value === 'string' ? value : value.name
           ))
       );
-
+    
+    // Set up filter for VMs
     this.form
       .get('url')
       .valueChanges.subscribe(

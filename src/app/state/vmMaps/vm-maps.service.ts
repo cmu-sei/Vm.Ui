@@ -10,7 +10,7 @@ DM20-0181
 
 import { Injectable } from '@angular/core';
 import { ID } from '@datorama/akita';
-import { take, tap } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { VmMap, VmsService } from '../../generated/vm-api';
 import { VmMapsStore } from './vm-maps.store';
 

@@ -35,4 +35,10 @@ export class VmsQuery extends QueryEntity<VmsState> {
       filterBy: ({name}) => name.toLowerCase().includes(param.toLowerCase())
     });
   }
+
+  getByViewId(id: string): Observable<VmModel[]> {
+    return this.selectAll({
+      filterBy: ({viewId}) => viewId === id
+    });
+  }
 }

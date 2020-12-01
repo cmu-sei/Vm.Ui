@@ -22,7 +22,7 @@ import {
 import { Machine } from '../../models/machine';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
-import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
+import { Coordinate, VmMap } from '../../generated/vm-api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
