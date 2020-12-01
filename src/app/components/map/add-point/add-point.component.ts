@@ -71,7 +71,7 @@ export class AddPointComponent implements OnInit {
     
     // Get VMs in view
     // Calling the service directly here because the API doesn't set a viewId field on a VM, so there's no way to do this as a query
-    this.vmsFiltered = this.VmAkitaService.GetViewVms(true, true);
+    this.vmsFiltered = this.VmAkitaService.GetViewVms(true, false);
 
     // Set up filter for VM Maps
     this.form
@@ -99,12 +99,12 @@ export class AddPointComponent implements OnInit {
     const isMap = this.form.get('url').value.url === undefined;
     const urlVal = this.form.get('url').value;
 
-    // If a custom url was selected, use that. Else, if a VmMap was selected, get its id. If a VM was selected, use its url field
+    // If a custom url was selected, use that. Else, if a VmMap was selected, get its id. If a VM was selected, use its name field
     const url = this.custom
       ? this.form.get('customUrl').value
       : isMap
       ? (urlVal as VmMap).id
-      : urlVal.url;
+      : (urlVal as VmModel).name;
 
     const machine = new Machine(
       +this.xPos,
