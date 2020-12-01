@@ -9,17 +9,17 @@ DM20-0181
 */
 
 export class Machine {
-    x: number;
-    y: number;
-    r: number;
-    url: string;
-    id: string;
-    label: string;
+    xPosition?: number;
+    yPosition?: number;
+    radius?: number;
+    url?: string;
+    id?: string;
+    label?: string;
 
     constructor(x: number, y:number, r:number, url:string, id:string, label: string) {
-        this.x = x;
-        this.y = y;
-        this.r = r;
+        this.xPosition = x;
+        this.yPosition = y;
+        this.radius = r;
         this.url = url;
         this.id = id;
         this.label = label;

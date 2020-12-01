@@ -14,8 +14,8 @@ import { ComnAuthService, Theme } from '@cmusei/crucible-common';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import { VmModel } from '../../vms/state/vm.model';
-import { VmsQuery } from '../../vms/state/vms.query';
+import { VmModel } from '../../state/vms/vm.model';
+import { VmsQuery } from '../../state/vms/vms.query';
 import { SignalRService } from '../shared/signalr/signalr.service';
 
 @Component({

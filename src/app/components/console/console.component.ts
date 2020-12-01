@@ -10,7 +10,7 @@ DM20-0181
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { VmService } from '../../vms/state/vms.service';
+import { VmService } from '../../state/vms/vms.service';
 
 @Component({
   selector: 'app-console',

@@ -24,14 +24,6 @@ DM20-0181
   display: inline-block;
 }
 
-#setupForm {
-  text-align: center;
-}
-
-form {
-  display: inline-block;
-}
-
 #addTeam {
   margin-bottom: 25px;
 }

@@ -8,23 +8,28 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Injectable } from '@angular/core';
-import { QueryEntity, QueryConfig } from '@datorama/akita';
-import { VmsStore, VmsState } from './vms.store';
-import { VmModel } from './vm.model';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-const naturalCompare = require('string-natural-compare');
+import { NewMapComponent } from './new-map.component';
 
-const sortByFn = (a: VmModel, b: VmModel, state: VmsState) => {
-  return naturalCompare(a.name, b.name, { caseInsensitive: true });
-};
+describe('NewMapComponent', () => {
+  let component: NewMapComponent;
+  let fixture: ComponentFixture<NewMapComponent>;
 
-@QueryConfig({
-  sortBy: sortByFn,
-})
-@Injectable({ providedIn: 'root' })
-export class VmsQuery extends QueryEntity<VmsState> {
-  constructor(protected store: VmsStore) {
-    super(store);
-  }
-}
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ NewMapComponent ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(NewMapComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

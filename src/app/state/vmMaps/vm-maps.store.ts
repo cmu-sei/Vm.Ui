@@ -1,4 +1,4 @@
-<!--
+/*
 Crucible
 Copyright 2020 Carnegie Mellon University.
 NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING INSTITUTE MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT INFRINGEMENT.
@@ -6,29 +6,20 @@ Released under a MIT (SEI)-style license, please see license.txt or contact perm
 [DISTRIBUTION STATEMENT A] This material has been approved for public release and unlimited distribution.  Please see Copyright notice for non-US Government use and distribution.
 Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark Office by Carnegie Mellon University.
 DM20-0181
--->
+*/
 
-<div *ngIf="mapInitialzed == true">
-  <div>
-    <svg viewBox="0 8 100 100">
-      <image [attr.href]="imageURL" width="100" height="100" (click)="append($event)"/>
-      <g *ngFor="let m of machines" >
-        <circle class="clickpoint" [attr.cx]="m.xPosition" [attr.cy]="m.yPosition" [attr.r]="m.radius" (click)="edit(m)" fill-opacity="1.0"> </circle>
-        <text class="clickpoint" [attr.x]="m.xPosition" [attr.y]="m.yPosition" [attr.font-size]="calcFontSize(m.radius)" fill="white" text-anchor="middle" (click)="edit(m)">{{m.label}}</text>
-      </g>
-    </svg>
-  </div>
-  
-  <ng-template #addPointDialog>
-    <app-add-point
-      (machineEmitter)="receiveMachine($event)"
-      xPos={{xActual}}
-      yPos={{yActual}}
-      rad={{selectedRad}}
-      url={{selectedURL}}
-      id={{idToSend}}
-      label={{selectedLabel}}
-    >
-    </app-add-point>
-  </ng-template>
-</div>
+import { Injectable } from '@angular/core';
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import { VmMap } from '../../generated/vm-api';
+
+export interface VmMapsState extends EntityState<VmMap> {}
+
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'vmMaps' })
+export class VmMapsStore extends EntityStore<VmMapsState> {
+
+  constructor() {
+    super();
+  }
+
+}
