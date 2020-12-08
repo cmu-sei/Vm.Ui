@@ -66,9 +66,17 @@ export class MapTeamDisplayComponent implements OnInit {
     if (url.match(guidRegex)) {
       console.log('Map clicked');
       this.mapSwitched.emit(url);
-    } else {
-      console.log('Non map clicked');
+    } else if (url.startsWith('http')) {
+      // If the URL starts with http, we assume it is a custom URL
+      console.log('Custom URL clicked');
       window.open(url);
+    } else {
+      // If neither a map or custom url was clicked, it must be a VM. Url is the name of the VM
+      console.log('VM clicked');
+      this.route.params.subscribe((params) => {
+        const viewId = params['viewId'];
+        window.open(`views/${viewId}/vms/${url}/console`);
+      });
     }
   }
 
