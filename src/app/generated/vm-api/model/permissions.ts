@@ -21,8 +21,9 @@
  */
 
 
-export interface SimpleTeam { 
-    id?: string;
-    name?: string | null;
-}
+export type Permissions = 'ReadOnly';
+
+export const Permissions = {
+    ReadOnly: 'ReadOnly' as Permissions
+};
 

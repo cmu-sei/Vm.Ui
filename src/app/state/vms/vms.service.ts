@@ -14,10 +14,12 @@ import { Router } from '@angular/router';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ID } from '@datorama/akita';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+import { ConsoleComponent } from '../../components/console/console.component';
 import {
   BulkPowerOperation,
   BulkPowerOperationResponse,
+  Permissions,
   VmsService,
 } from '../../generated/vm-api';
 import { VmModel } from './vm.model';
@@ -92,6 +94,18 @@ export class VmService {
   ): Observable<Array<VmModel>> {
     const url = `${this.settings.settings.ApiUrl}/views/${viewId}/vms?name=${name}`;
     return this.http.get<Array<VmModel>>(url);
+  }
+
+  public GetReadOnly(viewId: string): Observable<boolean> {
+    return this.vmsService.getViewPermissions(viewId).pipe(
+      map((x) => {
+        if (x.includes(Permissions.ReadOnly)) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+    );
   }
 
   public powerOn(ids: string[]): Observable<BulkPowerOperationResponse> {

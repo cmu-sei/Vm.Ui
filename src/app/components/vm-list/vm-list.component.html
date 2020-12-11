@@ -23,6 +23,7 @@ DM20-0181
           <div class="title-text"><b>Virtual Machines</b></div>
 
           <button
+            *ngIf="!readOnly"
             mat-stroked-button
             class="action-button"
             [matMenuTriggerFor]="actionsMenu"

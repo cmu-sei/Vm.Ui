@@ -16,6 +16,7 @@ import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
+import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../shared/signalr/signalr.service';
 
 @Component({
@@ -24,7 +25,6 @@ import { SignalRService } from '../shared/signalr/signalr.service';
   styleUrls: ['./vm-main.component.scss'],
 })
 export class VmMainComponent implements OnInit, OnDestroy {
-
   unsubscribe$: Subject<null> = new Subject<null>();
 
   constructor(
@@ -32,22 +32,25 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private signalRService: SignalRService,
     private routerQuery: RouterQuery,
     private activatedRoute: ActivatedRoute,
-    private authService: ComnAuthService
+    private authService: ComnAuthService,
+    public vmService: VmService
   ) {
-    this.activatedRoute.queryParamMap.pipe(takeUntil(this.unsubscribe$)).subscribe(params => {
-      const selectedTheme = params.get('theme');
-      const theme = selectedTheme === Theme.DARK ? Theme.DARK : Theme.LIGHT;
-      this.authService.setUserTheme(theme);
-    });
+    this.activatedRoute.queryParamMap
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((params) => {
+        const selectedTheme = params.get('theme');
+        const theme = selectedTheme === Theme.DARK ? Theme.DARK : Theme.LIGHT;
+        this.authService.setUserTheme(theme);
+      });
   }
 
   public openVms: Array<{ [name: string]: string }>;
   public selectedTab: number;
   public vms$: Observable<VmModel[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
+  public readOnly$: Observable<boolean>;
 
   ngOnInit() {
-
     this.openVms = new Array<{ [name: string]: string }>();
     this.selectedTab = 0;
 
@@ -68,6 +71,10 @@ export class VmMainComponent implements OnInit, OnDestroy {
       .catch((err) => {
         console.log(err);
       });
+
+    this.readOnly$ = this.vmService.GetReadOnly(
+      this.routerQuery.getParams('viewId')
+    );
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }) {
