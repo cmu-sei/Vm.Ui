@@ -17,6 +17,7 @@ DM20-0181
     <mat-tab label="VM List">
       <app-vm-list
         [vms]="vms$ | async"
+        [readOnly]="readOnly$ | async"
         (openVmHere)="onOpenVmHere($event)"
         (errors)="onErrors($event)"
       ></app-vm-list>

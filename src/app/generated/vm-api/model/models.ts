@@ -18,6 +18,7 @@ export * from './isoFile';
 export * from './isoResult';
 export * from './mountVsphereIso';
 export * from './nicOptions';
+export * from './permissions';
 export * from './powerState';
 export * from './problemDetails';
 export * from './setVsphereVirtualMachineResolution';

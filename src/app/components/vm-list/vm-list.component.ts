@@ -65,6 +65,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.vmModelDataSource.data = val;
   }
 
+  @Input() readOnly: boolean;
+
   constructor(
     public vmService: VmService,
     private fileService: FileService,
