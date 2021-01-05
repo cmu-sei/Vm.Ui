@@ -48,6 +48,7 @@ import { VmListComponent } from './components/vm-list/vm-list.component';
 import { VmMainComponent } from './components/vm-main/vm-main.component';
 import { WelderComponent } from './components/welder/welder.component';
 import { BASE_PATH } from './generated/vm-api';
+import { BASE_PATH as PLAYER_BASE_PATH } from './generated/player-api';
 import { AutoDeployService } from './services/auto-deploy/auto-deploy.service';
 import { DialogService } from './services/dialog/dialog.service';
 import { ErrorService } from './services/error/error.service';
@@ -150,6 +151,11 @@ export class AngularMaterialModule {}
       useFactory: getBasePath,
       deps: [ComnSettingsService],
     },
+    {
+      provide: PLAYER_BASE_PATH,
+      useFactory: getPlayerBasePath,
+      deps: [ComnSettingsService]
+    }
   ],
   bootstrap: [AppComponent],
   entryComponents: [ConfirmDialogComponent, SystemMessageComponent],
@@ -158,4 +164,8 @@ export class AppModule {}
 
 export function getBasePath(settingsSvc: ComnSettingsService) {
   return settingsSvc.settings.ApiUrl.replace('/api', '');
+}
+
+export function getPlayerBasePath(settingsSvc: ComnSettingsService) {
+  return settingsSvc.settings.ApiPlayerUrl.replace('/api', '');
 }

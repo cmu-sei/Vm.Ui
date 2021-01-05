@@ -4,7 +4,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
-import { FileService } from '../../../generated/player-api';
+import { FileModel, FileService } from '../../../generated/player-api';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -17,7 +17,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class NewMapComponent implements OnInit {
   teams: SimpleTeam[];
   form: FormGroup;
-  images: string[] = ['foo', 'bar', 'boz'];
+  images: FileModel[];
 
   @Input() viewId: string;
   @Input() creating: boolean;
@@ -37,6 +37,7 @@ export class NewMapComponent implements OnInit {
 
   ngOnInit(): void {
     this.getTeams();
+    this.getImages();
 
     this.form = this.formBuilder.group({
       name: [this.name],
@@ -52,6 +53,13 @@ export class NewMapComponent implements OnInit {
       this.teams = data;
       console.log(this.teams);
     });
+  }
+
+  // Get the available image files within this view
+  getImages(): void {
+    this.fileService.getViewFiles(this.viewId).subscribe((data) => {
+      this.images = data.filter(f => this.isImage(f.name));
+    })
   }
 
   submit(): void {
@@ -86,5 +94,10 @@ export class NewMapComponent implements OnInit {
         this.form.get('teamIDs').value as string[],
       ]);
     }
+  }
+
+  // Returns whether this file is an image. This is determined by the file's extension.
+  private isImage(file: string): boolean {
+    return file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg') || file.endsWith('.gif');
   }
 }
