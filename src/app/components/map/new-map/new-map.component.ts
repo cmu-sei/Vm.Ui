@@ -4,8 +4,10 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
+import { FileService } from '../../../generated/player-api';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-new-map',
@@ -15,6 +17,7 @@ import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 export class NewMapComponent implements OnInit {
   teams: SimpleTeam[];
   form: FormGroup;
+  images: string[] = ['foo', 'bar', 'boz'];
 
   @Input() viewId: string;
   @Input() creating: boolean;
@@ -28,7 +31,8 @@ export class NewMapComponent implements OnInit {
   constructor(
     private vmService: VmsService,
     private formBuilder: FormBuilder,
-    private vmMapsService: VmMapsService
+    private vmMapsService: VmMapsService,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +41,7 @@ export class NewMapComponent implements OnInit {
     this.form = this.formBuilder.group({
       name: [this.name],
       imageURL: [this.url],
+      viewImage: [''],
       teamIDs: [this.teamsInput],
     });
   }

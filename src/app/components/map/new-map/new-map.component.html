@@ -11,8 +11,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <input type="string" matInput formControlName="name">
       </mat-form-field>
       <mat-form-field fxLayout="row">
-        <mat-label>Image URL</mat-label>
+        <mat-label>External Image URL</mat-label>
         <input type="string" matInput formControlName="imageURL">
+      </mat-form-field>
+      <mat-form-field fxLayout="row">
+        <mat-label>View Image</mat-label>
+        <mat-select matNativeControl formControlName="viewImage">
+          <mat-option *ngFor="let img of images" [value]="img">{{img}}</mat-option>   
+        </mat-select>
       </mat-form-field>
       <mat-form-field fxLayout="row">
         <mat-label>Teams</mat-label>
