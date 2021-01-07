@@ -41,7 +41,7 @@ export class MapTeamDisplayComponent implements OnInit {
       // and use that to get an object url that will point to the image
       
       // Simple test for whether the string is an actual url. If not, it is b64 encoded.
-      if (!url.startsWith('http')) {
+      if (!this.isURL(url)) {
         const asBlob = this.b64ToBlob(url);
         console.log('B64 as blob in display component:');
         console.log(asBlob);
@@ -94,7 +94,11 @@ export class MapTeamDisplayComponent implements OnInit {
     return radius / 3;
   }
 
-  private b64ToBlob(b64: string) {
+  isURL(str: string): boolean {
+    return str.startsWith('http');
+  }
+
+  b64ToBlob(b64: string): Blob {
     let byteStr = atob(b64.split(',')[1]);
     let buffer = new ArrayBuffer(byteStr.length);
     let byteVals = new Uint8Array(buffer);

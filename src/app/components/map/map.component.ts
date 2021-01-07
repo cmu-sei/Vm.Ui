@@ -21,6 +21,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ViewService } from '../../generated/player-api';
+import { MapTeamDisplayComponent } from './map-team-display/map-team-display.component';
 
 @Component({
   selector: 'app-map',
@@ -32,7 +34,7 @@ export class MapComponent implements OnInit, OnChanges {
   mapInitialzed: boolean;
   teamIDs: string[];
   name: string;
-  imageURL: SafeUrl;
+  imageURL: string;
   imageUrlToSave: string;
   mapId: string;
 
@@ -60,7 +62,6 @@ export class MapComponent implements OnInit, OnChanges {
     private router: Router,
     private vmMapsService: VmMapsService,
     private vmMapsQuery: VmMapsQuery,
-    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
@@ -86,19 +87,28 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   initMap(): void {
-    console.log('Calling initMap');
-
-    console.log('Array before API call:');
-    console.log(this.machines);
-
     // Get map data, put coordinates into machines array
     this.vmMapsQuery.getById(this.mapIdInput).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
-      this.imageURL = this.sanitizer.bypassSecurityTrustUrl(data.imageUrl);
-      console.log('Sanitized image URL:' + this.imageURL);
-      this.imageUrlToSave = data.imageUrl;
       this.teamIDs = data.teamIds;
+
+      // As in display component, need to figure out if the URL is b64 encoded and, if so, convert it to a blob
+      // and then generate an object url
+      const url = data.imageUrl;
+      console.log('URL = ' + url);
+      // Using the same basic check as in display component for whether a string is a url
+      if (!this.isURL(url)) {
+        const asBlob = this.b64ToBlob(url);
+        console.log('Blob = ');
+        console.log(asBlob);
+        const objUrl = window.URL.createObjectURL(asBlob);
+        this.imageURL = objUrl;
+        console.log('Object URL = ' + objUrl);
+      } else {
+        this.imageURL = url;
+      }
+      this.imageUrlToSave = url;
 
       if (data.coordinates != null) {
         for (let coord of data.coordinates) {
@@ -114,13 +124,10 @@ export class MapComponent implements OnInit, OnChanges {
           );
         }
       }
+
+      this.mapInitialzed = true;
+      this.initEmitter.emit(true);
     });
-
-    console.log('After getMap machines array is:');
-    console.log(this.machines);
-
-    this.mapInitialzed = true;
-    this.initEmitter.emit(true);
   }
 
   redirect(url: string): void {
@@ -230,5 +237,21 @@ export class MapComponent implements OnInit, OnChanges {
 
   calcFontSize(radius: number): number {
     return radius / 3;
+  }
+
+  isURL(str: string): boolean {
+    return str.startsWith('http');
+  }
+
+  b64ToBlob(b64: string): Blob {
+    let byteStr = atob(b64.split(',')[1]);
+    let buffer = new ArrayBuffer(byteStr.length);
+    let byteVals = new Uint8Array(buffer);
+
+    for (let i = 0; i < byteStr.length; i++) {
+      byteVals[i] = byteStr.charCodeAt(i);
+    }
+
+    return new Blob([buffer]);
   }
 }
