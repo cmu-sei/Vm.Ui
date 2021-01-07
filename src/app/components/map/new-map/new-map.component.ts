@@ -72,35 +72,46 @@ export class NewMapComponent implements OnInit {
   }
 
   submit(): void {
+    // Images uploaded to this view are given precedence if two URLs are specified
     console.log('submit pressed');
-    if (this.creating) {
-      const mapId = uuidv4();
-      console.log('Map ID: ' + mapId);
 
-      // Get name and assigned teams
-      const name = this.form.get('name').value as string;
-      const teams = this.form.get('teamIDs').value as string[];
+    // Get name and assigned teams
+    const name = this.form.get('name').value as string;
+    const teams = this.form.get('teamIDs').value as string[];
 
-      // Images uploaded to this view are given precedence if two URLs are specified
+    const selectUsed = this.form.get('viewImage').value as string != '';
+    const selectBlob = this.form.get('viewImage').value as Blob;
 
-      const selectUsed = this.form.get('viewImage').value as string != '';
-      const selectBlob = this.form.get('viewImage').value as Blob;
-      console.log('Selected blob: ');
-      console.log(selectBlob);
+    const mapId = uuidv4();
+    console.log('Map ID: ' + mapId);
 
-      // If a image that was uploaded to the view was selected, convert the Blob to base64
-      // We can't just use window.URL.createObjectURL() becuase that URL is only valid inside this document
-      // So by encoding the image as base64, other components can decode it back into a blob and then generate an object URL
-      let reader = new FileReader();
-      // Allow us to access instance variables and methods inside the function literal
-      const self = this;
-      reader.onload = function() {
-        const asB64 = reader.result.toString();
+    // If a image that was uploaded to the view was selected, convert the Blob to base64
+    // We can't just use window.URL.createObjectURL() becuase that URL is only valid inside this document
+    // So by encoding the image as base64, other components can decode it back into a blob and then generate an object URL
+    let reader = new FileReader();
+    // Allow us to access instance variables and methods inside the function literal
+    const self = this;
+    reader.onload = function() {
+      const asB64 = reader.result.toString();
+
+      if (self.creating) {
         const urlToSave = selectBlob != null ? asB64 : self.form.get('imageURL').value as string;
         console.log('Image URL = ' + urlToSave);
-
         self.saveMap(name, urlToSave, teams, mapId);
+      } else {
+        // Figure out whether to emit the url of an external image or an uploaded one
+        const urlToEmit = selectUsed ? asB64 : self.form.get('imageURL').value as string;
+        console.log('URL to emit = ' + urlToEmit);
+
+        self.propertiesChanged.emit([
+          name,
+          urlToEmit,
+          teams,
+        ]);
       }
+    }
+
+    if (this.creating) {
       if (selectUsed) {
         reader.readAsDataURL(selectBlob);
       } else {
@@ -110,11 +121,7 @@ export class NewMapComponent implements OnInit {
     } else {
       // Properties are being edited, emit the changes
       console.log('Editing properties');
-      this.propertiesChanged.emit([
-        this.form.get('name').value as string,
-        this.form.get('imageURL').value as string,
-        this.form.get('teamIDs').value as string[],
-      ]);
+      reader.readAsDataURL(selectBlob);
     }
   }
 
