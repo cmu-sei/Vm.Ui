@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Machine } from '../../../models/machine';
@@ -16,7 +17,7 @@ export class MapTeamDisplayComponent implements OnInit {
   machines: Observable<Machine[]>;
   id: string;
   mapId: string;
-  imageUrl: string;
+  imageUrl: SafeUrl;
   mapInitialized: boolean;
 
   @Input() imageUrlInput: string;
@@ -33,8 +34,24 @@ export class MapTeamDisplayComponent implements OnInit {
   ngOnInit() {
     this.mapId = this.mapIdInput;
     this.machines = this.vmMapsQuery.getMapCoordinates(this.mapId);
-    this.imageUrl = this.imageUrlInput;
-    this.mapInitialized = true;
+    
+    this.vmMapsQuery.getById(this.mapId).subscribe(m => {
+      const url = m.imageUrl;
+      // If this is a base64 string, this image was uploaded to the view. Get a blob from the b64 string
+      // and use that to get an object url that will point to the image
+      
+      // Simple test for whether the string is an actual url. If not, it is b64 encoded.
+      if (!url.startsWith('http')) {
+        const asBlob = this.b64ToBlob(url);
+        console.log('B64 as blob in display component:');
+        console.log(asBlob);
+        const objUrl = window.URL.createObjectURL(asBlob);
+        this.imageUrl = objUrl;
+      } else {
+        this.imageUrl = url;
+      }
+      this.mapInitialized = true;
+    })
   }
 
   // Needed to facilitate switching between maps
@@ -75,5 +92,17 @@ export class MapTeamDisplayComponent implements OnInit {
 
   calcFontSize(radius: number): number {
     return radius / 3;
+  }
+
+  private b64ToBlob(b64: string) {
+    let byteStr = atob(b64.split(',')[1]);
+    let buffer = new ArrayBuffer(byteStr.length);
+    let byteVals = new Uint8Array(buffer);
+
+    for (let i = 0; i < byteStr.length; i++) {
+      byteVals[i] = byteStr.charCodeAt(i);
+    }
+
+    return new Blob([buffer]);
   }
 }

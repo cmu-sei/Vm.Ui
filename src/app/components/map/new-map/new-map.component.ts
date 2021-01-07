@@ -7,7 +7,8 @@ import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 import { FileModel, FileService } from '../../../generated/player-api';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Observable } from 'rxjs';
+import { map, } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-map',
@@ -17,7 +18,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class NewMapComponent implements OnInit {
   teams: SimpleTeam[];
   form: FormGroup;
-  images: FileModel[];
+  images: Image[];
 
   @Input() viewId: string;
   @Input() creating: boolean;
@@ -32,7 +33,7 @@ export class NewMapComponent implements OnInit {
     private vmService: VmsService,
     private formBuilder: FormBuilder,
     private vmMapsService: VmMapsService,
-    private fileService: FileService
+    private fileService: FileService,
   ) {}
 
   ngOnInit(): void {
@@ -57,9 +58,17 @@ export class NewMapComponent implements OnInit {
 
   // Get the available image files within this view
   getImages(): void {
+    this.images = new Array<Image>();
+
     this.fileService.getViewFiles(this.viewId).subscribe((data) => {
-      this.images = data.filter(f => this.isImage(f.name));
-    })
+      for (let fp of data.filter(f => this.isImage(f.name))) {
+        this.getImageBlob(fp.id).subscribe(blob => {
+          this.images.push(new Image(fp, blob));
+        });
+      }
+      console.log('Available images:');
+      console.log(this.images);
+    });
   }
 
   submit(): void {
@@ -67,24 +76,41 @@ export class NewMapComponent implements OnInit {
     if (this.creating) {
       const mapId = uuidv4();
       console.log('Map ID: ' + mapId);
-      // Save an empty map
-      let payload = <VmMap>{
-        coordinates: null,
-        name: this.form.get('name').value as string,
-        imageUrl: this.form.get('imageURL').value as string,
-        teamIds: this.form.get('teamIDs').value as string[],
-        id: mapId,
-      };
 
-      console.log(
-        'Creating map assigned to view ' +
-          this.viewId +
-          ' with payload ' +
-          payload
-      );
-
-      this.vmMapsService.add(this.viewId, payload);
-      this.mapCreated.emit(mapId);
+      // Give images uploaded to this view precedence if two URLs are specified
+      const selectBlob = this.form.get('viewImage').value as Blob;
+      console.log('Selected blob: ');
+      console.log(selectBlob);
+      // If a image that was uploaded to the view was selected, convert the Blob to base64
+      // We can't just use window.URL.createObjectURL() becuase that URL is only valid inside this document
+      // So by encoding the image as base64, other components can decode it back into a blob and then generate an object URL
+      let reader = new FileReader();
+      // Allow us to access instance variables and methods inside the function literal
+      const self = this;
+      reader.onload = function() {
+        let asB64 = reader.result.toString();
+        const urlToSave = selectBlob != null ? asB64 : self.form.get('imageURL').value as string;
+        console.log('Image URL = ' + urlToSave);
+  
+        // Save an empty map
+        let payload = <VmMap>{
+          coordinates: null,
+          name: self.form.get('name').value as string,
+          imageUrl: urlToSave,
+          teamIds: self.form.get('teamIDs').value as string[],
+          id: mapId,
+        };
+  
+        console.log(
+          'Creating map assigned to view ' +
+          self.viewId +
+            ' with payload ');
+        console.log(payload);
+  
+        self.vmMapsService.add(self.viewId, payload);
+        self.mapCreated.emit(mapId);
+      }
+      reader.readAsDataURL(selectBlob);
     } else {
       // Properties are being edited, emit the changes
       console.log('Editing properties');
@@ -96,8 +122,27 @@ export class NewMapComponent implements OnInit {
     }
   }
 
+  // Get the blob representing an image file in this view
+  getImageBlob(id: string): Observable<Blob> {
+    return this.fileService.download(id).pipe(
+      map((data) => {
+        return data;
+      })
+    )
+  }
+
   // Returns whether this file is an image. This is determined by the file's extension.
   private isImage(file: string): boolean {
     return file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg') || file.endsWith('.gif');
   }
+}
+
+class Image {
+  file: FileModel;
+  blob: Blob;
+
+  constructor(file: FileModel, blob: Blob) {
+    this.file = file;
+    this.blob = blob;
+  } 
 }

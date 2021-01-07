@@ -20,6 +20,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-map',
@@ -31,7 +32,8 @@ export class MapComponent implements OnInit, OnChanges {
   mapInitialzed: boolean;
   teamIDs: string[];
   name: string;
-  imageURL: string;
+  imageURL: SafeUrl;
+  imageUrlToSave: string;
   mapId: string;
 
   xActual: number;
@@ -58,6 +60,7 @@ export class MapComponent implements OnInit, OnChanges {
     private router: Router,
     private vmMapsService: VmMapsService,
     private vmMapsQuery: VmMapsQuery,
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
@@ -92,7 +95,9 @@ export class MapComponent implements OnInit, OnChanges {
     this.vmMapsQuery.getById(this.mapIdInput).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
-      this.imageURL = data.imageUrl;
+      this.imageURL = this.sanitizer.bypassSecurityTrustUrl(data.imageUrl);
+      console.log('Sanitized image URL:' + this.imageURL);
+      this.imageUrlToSave = data.imageUrl;
       this.teamIDs = data.teamIds;
 
       if (data.coordinates != null) {
@@ -195,7 +200,7 @@ export class MapComponent implements OnInit, OnChanges {
     let payload = <VmMap>{
       coordinates: coords,
       name: this.name,
-      imageUrl: this.imageURL,
+      imageUrl: this.imageUrlToSave,
       teamIds: this.teamIDs.length == 0 ? null : this.teamIDs,
     };
 
