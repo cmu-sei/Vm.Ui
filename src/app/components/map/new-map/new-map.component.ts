@@ -95,7 +95,7 @@ export class NewMapComponent implements OnInit {
       const asB64 = reader.result.toString();
 
       if (self.creating) {
-        const urlToSave = selectBlob != null ? asB64 : self.form.get('imageURL').value as string;
+        const urlToSave = selectUsed ? asB64 : self.form.get('imageURL').value as string;
         console.log('Image URL = ' + urlToSave);
         self.saveMap(name, urlToSave, teams, mapId);
       } else {
@@ -111,17 +111,16 @@ export class NewMapComponent implements OnInit {
       }
     }
 
-    if (this.creating) {
-      if (selectUsed) {
-        reader.readAsDataURL(selectBlob);
-      } else {
-        this.saveMap(name, this.form.get('imageURL').value as string, teams, mapId);
-      }
-      
-    } else {
-      // Properties are being edited, emit the changes
-      console.log('Editing properties');
+    if (selectUsed) {
       reader.readAsDataURL(selectBlob);
+    } else if (this.creating) {
+      this.saveMap(name, this.form.get('imageURL').value as string, teams, mapId);
+    } else {
+      this.propertiesChanged.emit([
+        name,
+        this.form.get('imageURL').value as string,
+        teams,
+      ]);
     }
   }
 
