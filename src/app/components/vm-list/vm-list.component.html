@@ -47,22 +47,22 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             (keyup)="applyFilter($event.target.value)"
             placeholder="Search"
           />
+          <button
+            matSuffix
+            *ngIf="filterString != ''"
+            fxLayoutAlign="start center"
+            mat-icon-button
+            (click)="clearFilter()"
+            style="outline: none"
+            title="Clear Search"
+          >
+            <mat-icon
+              class="text"
+              style="transform: scale(0.85)"
+              svgIcon="ic_cancel_circle"
+            ></mat-icon>
+          </button>
         </mat-form-field>
-        <button
-          *ngIf="filterString != ''"
-          fxLayoutAlign="start center"
-          mat-icon-button
-          (click)="clearFilter()"
-          style="outline: none"
-          title="Clear Search"
-        >
-          <mat-icon
-            class="text"
-            style="transform: scale(0.85)"
-            svgIcon="ic_cancel_circle"
-          ></mat-icon>
-        </button>
-
         <mat-menu #actionsMenu="matMenu">
           <button
             mat-menu-item
@@ -159,12 +159,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             fxLayoutAlign="center center"
             [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }"
           >
-            <div
-              class="vm-content"
-              fxLayout="row"
-              fxLayoutAlign="start center"
-              *ngIf="theme$ | async as currentTheme"
-            >
+            <div class="vm-content" fxLayout="row" fxLayoutAlign="start center">
               <div fxFlex="none">
                 <button mat-icon-button>
                   <mat-icon
@@ -200,7 +195,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                   class="vm-link"
                   [attr.href]="vm.url"
                   (click)="
-                    openHere($event, vm.name, vm.url + '?theme=' + currentTheme)
+                    openHere(
+                      $event,
+                      vm.name,
+                      this.themeService.addThemeQueryParam(vm.url)
+                    )
                   "
                   >{{ vm.name }}</a
                 >
@@ -210,7 +209,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                   mat-icon-button
                   style="outline: none"
                   class="text"
-                  (click)="openInTab(vm.url + '?theme=' + currentTheme)"
+                  (click)="
+                    openInTab(this.themeService.addThemeQueryParam(vm.url))
+                  "
                   title="Open in Browser Tab"
                 >
                   <mat-icon class="tab-icon" svgIcon="ic_open_tab"></mat-icon>

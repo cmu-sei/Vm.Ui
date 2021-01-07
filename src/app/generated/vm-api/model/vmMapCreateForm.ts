@@ -20,7 +20,5 @@ export interface VmMapCreateForm {
     name?: string | null;
     imageUrl?: string | null;
     teamIds?: Array<string> | null;
-    id?: string | null;
 }
-
 

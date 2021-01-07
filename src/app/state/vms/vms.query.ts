@@ -25,13 +25,13 @@ export class VmsQuery extends QueryEntity<VmsState> {
 
   getAllWithName(param: string): Observable<VmModel[]> {
     return this.selectAll({
-      filterBy: ({name}) => name.toLowerCase().includes(param.toLowerCase())
+      filterBy: ({ name }) => name.toLowerCase().includes(param.toLowerCase()),
     });
   }
 
   getByViewId(id: string): Observable<VmModel[]> {
     return this.selectAll({
-      filterBy: ({viewId}) => viewId === id
+      filterBy: ({ viewId }) => viewId === id,
     });
   }
 }

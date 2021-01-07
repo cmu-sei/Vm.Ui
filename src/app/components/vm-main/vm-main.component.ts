@@ -7,6 +7,7 @@ import { ComnAuthService, Theme } from '@cmusei/crucible-common';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
+import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
@@ -26,7 +27,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private routerQuery: RouterQuery,
     private activatedRoute: ActivatedRoute,
     private authService: ComnAuthService,
-    public vmService: VmService
+    public vmService: VmService,
+    private teamsQuery: VmTeamsQuery
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -42,8 +44,11 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public vms$: Observable<VmModel[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
   public readOnly$: Observable<boolean>;
+  public viewId: string;
+  public teams$ = this.teamsQuery.selectAll();
 
   ngOnInit() {
+    this.viewId = this.routerQuery.getParams('viewId');
     this.openVms = new Array<{ [name: string]: string }>();
     this.selectedTab = 0;
 
@@ -59,15 +64,13 @@ export class VmMainComponent implements OnInit, OnDestroy {
     this.signalRService
       .startConnection()
       .then(() => {
-        this.signalRService.joinView(this.routerQuery.getParams('viewId'));
+        this.signalRService.joinView(this.viewId);
       })
       .catch((err) => {
         console.log(err);
       });
 
-    this.readOnly$ = this.vmService.GetReadOnly(
-      this.routerQuery.getParams('viewId')
-    );
+    this.readOnly$ = this.vmService.GetReadOnly(this.viewId);
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }) {
@@ -75,15 +78,15 @@ export class VmMainComponent implements OnInit, OnDestroy {
     const index = this.openVms.findIndex((vm) => vm.name === vmObj.name);
     if (index === -1) {
       this.openVms.push(vmObj);
-      this.selectedTab = this.openVms.length;
+      this.selectedTab = this.openVms.length + 1;
     } else {
-      this.selectedTab = index + 1;
+      this.selectedTab = index + 2;
     }
   }
 
   remove(name: string) {
     const index = this.openVms.findIndex((vm) => vm.name === name);
-    if (index !== -1) {
+    if (index !== -1 && this.selectedTab > 1) {
       this.selectedTab = 0;
       this.openVms.splice(index, 1);
     }
@@ -99,7 +102,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.signalRService.leaveView(this.routerQuery.getParams('viewId'));
+    this.signalRService.leaveView(this.viewId);
     this.vmErrors$.complete();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();

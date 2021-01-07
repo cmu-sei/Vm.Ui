@@ -10,7 +10,6 @@ import { VmMapsStore, VmMapsState } from './vm-maps.store';
 
 @Injectable({ providedIn: 'root' })
 export class VmMapsQuery extends QueryEntity<VmMapsState> {
-
   constructor(protected store: VmMapsStore) {
     super(store);
   }
@@ -21,21 +20,20 @@ export class VmMapsQuery extends QueryEntity<VmMapsState> {
 
   getByViewId(id: string): Observable<VmMap[]> {
     return this.selectAll({
-      filterBy: ({viewId}) => viewId === id
+      filterBy: ({ viewId }) => viewId === id,
     });
   }
 
   getAllWithName(param: string): Observable<VmMap[]> {
     return this.selectAll({
-      filterBy: ({name}) => name.toLowerCase().includes(param.toLowerCase())
+      filterBy: ({ name }) => name.toLowerCase().includes(param.toLowerCase()),
     });
   }
 
   getMapCoordinates(mapId: string): Observable<Coordinate[]> {
     return this.selectEntity(mapId).pipe(
       filterNil,
-      map(m => m.coordinates)
+      map((m) => m.coordinates)
     );
   }
-
 }

@@ -10,9 +10,7 @@ export interface VmMapsState extends EntityState<VmMap> {}
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'vmMaps' })
 export class VmMapsStore extends EntityStore<VmMapsState> {
-
   constructor() {
     super();
   }
-
 }

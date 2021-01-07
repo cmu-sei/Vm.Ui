@@ -22,10 +22,15 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  MatTooltipDefaultOptions,
+  MatTooltipModule,
+  MAT_TOOLTIP_DEFAULT_OPTIONS,
+} from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatExpansionModule } from '@angular/material/expansion';
 import {
   ComnAuthModule,
   ComnSettingsConfig,
@@ -63,10 +68,21 @@ import { MatSelectModule } from '@angular/material/select';
 import { NewMapComponent } from './components/map/new-map/new-map.component';
 import { VmMapsQuery } from './state/vmMaps/vm-maps.query';
 import { VmMapsService } from './state/vmMaps/vm-maps.service';
+import { UserListComponent } from './components/user-list/user-list.component';
+import { TeamUsersComponent } from './components/user-list/team-users/team-users.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
   envUrl: 'assets/config/settings.env.json',
+};
+
+/** Custom options the configure the tooltip's default show/hide delays. */
+export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
+  showDelay: 1000,
+  hideDelay: 0,
+  touchendHideDelay: 1000,
 };
 
 @NgModule({
@@ -90,7 +106,9 @@ const settings: ComnSettingsConfig = {
     MatTabsModule,
     MatCheckboxModule,
     MatTooltipModule,
-    MatSelectModule
+    MatSelectModule,
+    MatExpansionModule,
+    ScrollingModule,
   ],
   declarations: [],
 })
@@ -111,9 +129,12 @@ export class AngularMaterialModule {}
     MapComponent,
     MapTeamDisplayComponent,
     NewMapComponent,
-    AddPointComponent
+    AddPointComponent,
+    UserListComponent,
+    TeamUsersComponent,
   ],
   imports: [
+    TableVirtualScrollModule,
     HttpClientModule,
     BrowserModule,
     BrowserAnimationsModule,
@@ -150,6 +171,7 @@ export class AngularMaterialModule {}
       useFactory: getBasePath,
       deps: [ComnSettingsService],
     },
+    { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
   ],
   bootstrap: [AppComponent],
   entryComponents: [ConfirmDialogComponent, SystemMessageComponent],
@@ -157,5 +179,11 @@ export class AngularMaterialModule {}
 export class AppModule {}
 
 export function getBasePath(settingsSvc: ComnSettingsService) {
-  return settingsSvc.settings.ApiUrl.replace('/api', '');
+  let url: string = settingsSvc.settings.ApiUrl;
+
+  if (url.endsWith('/')) {
+    url = url.slice(0, url.length - 1);
+  }
+
+  return url.replace('/api', '');
 }

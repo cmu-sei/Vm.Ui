@@ -3,6 +3,7 @@
     "DeployApiUrl": "http://localhost:4308/api",
     "ApiPlayerUrl": "http://localhost:4300",
     "WelderUrl": "",
+    "UserFollowUrl": "http://localhost:4305/user/{userId}/view/{viewId}/console",
     "OIDCSettings": {
         "authority": "http://localhost:5000/",
         "client_id": "player.vm.ui",
