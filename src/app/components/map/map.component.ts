@@ -20,9 +20,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ViewService } from '../../generated/player-api';
-import { MapTeamDisplayComponent } from './map-team-display/map-team-display.component';
 
 @Component({
   selector: 'app-map',
