@@ -8,7 +8,7 @@ import { FileModel, FileService } from '../../../generated/player-api';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { Observable } from 'rxjs';
-import { map, } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-map',
@@ -33,7 +33,7 @@ export class NewMapComponent implements OnInit {
     private vmService: VmsService,
     private formBuilder: FormBuilder,
     private vmMapsService: VmMapsService,
-    private fileService: FileService,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -52,7 +52,6 @@ export class NewMapComponent implements OnInit {
   getTeams(): void {
     this.vmService.getTeams(this.viewId).subscribe((data) => {
       this.teams = data;
-      console.log(this.teams);
     });
   }
 
@@ -61,29 +60,25 @@ export class NewMapComponent implements OnInit {
     this.images = new Array<Image>();
 
     this.fileService.getViewFiles(this.viewId).subscribe((data) => {
-      for (let fp of data.filter(f => this.isImage(f.name))) {
-        this.getImageBlob(fp.id).subscribe(blob => {
+      for (let fp of data.filter((f) => this.isImage(f.name))) {
+        this.getImageBlob(fp.id).subscribe((blob) => {
           this.images.push(new Image(fp, blob));
         });
       }
-      console.log('Available images:');
-      console.log(this.images);
     });
   }
 
   submit(): void {
     // Images uploaded to this view are given precedence if two URLs are specified
-    console.log('submit pressed');
 
     // Get name and assigned teams
     const name = this.form.get('name').value as string;
     const teams = this.form.get('teamIDs').value as string[];
 
-    const selectUsed = this.form.get('viewImage').value as string != '';
+    const selectUsed = (this.form.get('viewImage').value as string) != '';
     const selectBlob = this.form.get('viewImage').value as Blob;
 
     const mapId = uuidv4();
-    console.log('Map ID: ' + mapId);
 
     // If a image that was uploaded to the view was selected, convert the Blob to base64
     // We can't just use window.URL.createObjectURL() becuase that URL is only valid inside this document
@@ -91,30 +86,34 @@ export class NewMapComponent implements OnInit {
     let reader = new FileReader();
     // Allow us to access instance variables and methods inside the function literal
     const self = this;
-    reader.onload = function() {
+    reader.onload = function () {
       const asB64 = reader.result.toString();
 
       if (self.creating) {
-        const urlToSave = selectUsed ? asB64 : self.form.get('imageURL').value as string;
-        console.log('Image URL = ' + urlToSave);
+        const urlToSave = selectUsed
+          ? asB64
+          : (self.form.get('imageURL').value as string);
+
         self.saveMap(name, urlToSave, teams, mapId);
       } else {
         // Figure out whether to emit the url of an external image or an uploaded one
-        const urlToEmit = selectUsed ? asB64 : self.form.get('imageURL').value as string;
-        console.log('URL to emit = ' + urlToEmit);
+        const urlToEmit = selectUsed
+          ? asB64
+          : (self.form.get('imageURL').value as string);
 
-        self.propertiesChanged.emit([
-          name,
-          urlToEmit,
-          teams,
-        ]);
+        self.propertiesChanged.emit([name, urlToEmit, teams]);
       }
-    }
+    };
 
     if (selectUsed) {
       reader.readAsDataURL(selectBlob);
     } else if (this.creating) {
-      this.saveMap(name, this.form.get('imageURL').value as string, teams, mapId);
+      this.saveMap(
+        name,
+        this.form.get('imageURL').value as string,
+        teams,
+        mapId
+      );
     } else {
       this.propertiesChanged.emit([
         name,
@@ -130,10 +129,15 @@ export class NewMapComponent implements OnInit {
       map((data) => {
         return data;
       })
-    )
+    );
   }
 
-  saveMap(name: string, imageUrl: string, teams: string[], mapId: string): void {
+  saveMap(
+    name: string,
+    imageUrl: string,
+    teams: string[],
+    mapId: string
+  ): void {
     // Save an empty map (no coordinates)
     let payload = <VmMap>{
       coordinates: null,
@@ -143,19 +147,18 @@ export class NewMapComponent implements OnInit {
       id: mapId,
     };
 
-    console.log(
-      'Creating map assigned to view ' +
-      this.viewId +
-        ' with payload ');
-    console.log(payload);
-
     this.vmMapsService.add(this.viewId, payload);
     this.mapCreated.emit(mapId);
   }
 
   // Returns whether this file is an image. This is determined by the file's extension.
   private isImage(file: string): boolean {
-    return file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg') || file.endsWith('.gif');
+    return (
+      file.endsWith('.png') ||
+      file.endsWith('.jpg') ||
+      file.endsWith('.jpeg') ||
+      file.endsWith('.gif')
+    );
   }
 }
 
@@ -166,5 +169,5 @@ class Image {
   constructor(file: FileModel, blob: Blob) {
     this.file = file;
     this.blob = blob;
-  } 
+  }
 }

@@ -58,11 +58,10 @@ export class MapComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private vmMapsService: VmMapsService,
-    private vmMapsQuery: VmMapsQuery,
+    private vmMapsQuery: VmMapsQuery
   ) {}
 
   ngOnInit(): void {
-    console.log('ngOnInit map component');
     this.timesSaved = 0;
     this.machines = new Array<Machine>();
 
@@ -74,10 +73,7 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Map component changes detected');
-    console.log(changes);
-    
-    // Don't call init again on the first change. This causes clickpoints to be duplicated 
+    // Don't call init again on the first change. This causes clickpoints to be duplicated
     if (!changes['mapIdInput'].firstChange) {
       this.ngOnInit();
     }
@@ -93,15 +89,11 @@ export class MapComponent implements OnInit, OnChanges {
       // As in display component, need to figure out if the URL is b64 encoded and, if so, convert it to a blob
       // and then generate an object url
       const url = data.imageUrl;
-      console.log('URL = ' + url);
       // Using the same basic check as in display component for whether a string is a url
       if (!this.isURL(url)) {
         const asBlob = this.b64ToBlob(url);
-        console.log('Blob = ');
-        console.log(asBlob);
         const objUrl = window.URL.createObjectURL(asBlob);
         this.imageURL = objUrl;
-        console.log('Object URL = ' + objUrl);
       } else {
         this.imageURL = url;
       }
@@ -134,7 +126,6 @@ export class MapComponent implements OnInit, OnChanges {
   // Add a new click point
   append(event): void {
     const isFirefox = 'InstallTrigger' in window;
-    console.log(typeof event);
 
     if (!isFirefox) {
       // Get the offsets relative to the image. Note that this assumes a 100x100 image
@@ -156,24 +147,18 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   receiveMachine(machine: Machine): void {
-    console.log('In receive');
-    console.log('Machine: ');
-    console.log(machine);
-
     // Find the machine being edited. If not undefined, an existing machine is being edited.
     // Else a new machine is being created
     const machineToEdit = this.machines.find((m) => {
       return m.id === machine.id;
     });
 
-    console.log('Machine to edit: ' + machineToEdit);
-
     if (machineToEdit != undefined) {
       const index = this.machines.indexOf(machineToEdit);
-      // Remove the machine, a -1 field means deletion 
+      // Remove the machine, a -1 field means deletion
       if (machine.xPosition === -1) {
         this.machines.splice(index, 1);
-      // Replace the machine with an edited version
+        // Replace the machine with an edited version
       } else {
         this.machines[index] = machine;
       }
@@ -187,7 +172,6 @@ export class MapComponent implements OnInit, OnChanges {
 
   // Save button clicked, save the map
   save() {
-    console.log('Save pressed');
     let coords = new Array<Coordinate>();
     for (let machine of this.machines) {
       let coord = <Coordinate>{
@@ -208,8 +192,6 @@ export class MapComponent implements OnInit, OnChanges {
       teamIds: this.teamIDs.length == 0 ? null : this.teamIDs,
     };
 
-    console.log(JSON.stringify(payload));
-
     this.vmMapsService.update(this.mapId, payload);
     window.alert('Map successfully saved!');
   }
@@ -219,9 +201,6 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   edit(m: Machine): void {
-    console.log('Editing');
-    console.log(m);
-
     this.xActual = m.xPosition;
     this.yActual = m.yPosition;
     this.selectedRad = m.radius;
