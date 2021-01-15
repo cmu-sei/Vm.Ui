@@ -14,9 +14,7 @@ import {
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { ComnAuthQuery, Theme } from '@cmusei/crucible-common';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
-import { Observable } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';

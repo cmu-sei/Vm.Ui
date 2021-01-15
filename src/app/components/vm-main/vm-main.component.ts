@@ -11,7 +11,7 @@ import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
-import { SignalRService } from '../shared/signalr/signalr.service';
+import { SignalRService } from '../../services/signalr/signalr.service';
 
 @Component({
   selector: 'app-vm-main',

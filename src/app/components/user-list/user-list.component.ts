@@ -5,9 +5,7 @@
 
 import {
   Component,
-  OnInit,
   ChangeDetectionStrategy,
-  OnDestroy,
   Input,
   ViewChild,
   Output,
@@ -19,7 +17,7 @@ import { debounceTime } from 'rxjs/operators';
 import { VmTeam } from '../../state/vm-teams/vm-team.model';
 import { VmUser } from '../../state/vm-users/vm-user.model';
 import { VmUsersQuery } from '../../state/vm-users/vm-users.query';
-import { SignalRService } from '../shared/signalr/signalr.service';
+import { SignalRService } from '../../services/signalr/signalr.service';
 
 @Component({
   selector: 'app-user-list',
@@ -87,7 +85,7 @@ export class UserListComponent {
     this.hideInactive = value;
   }
 
-  public trackByTeamId(index, item: VmTeam) {
+  public trackByTeamId(item: VmTeam) {
     return item.id;
   }
 

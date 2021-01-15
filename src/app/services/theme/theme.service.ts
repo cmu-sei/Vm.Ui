@@ -4,7 +4,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ComnAuthQuery, Theme } from '@cmusei/crucible-common';
+import { ComnAuthQuery } from '@cmusei/crucible-common';
 
 @Injectable({
   providedIn: 'root',

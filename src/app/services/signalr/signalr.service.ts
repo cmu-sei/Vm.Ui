@@ -2,15 +2,15 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Inject, Injectable } from '@angular/core';
-import { ComnAuthService, ComnSettingsService } from '@cmusei/crucible-common';
+import { ComnAuthService } from '@cmusei/crucible-common';
 import * as signalR from '@microsoft/signalr';
-import { BASE_PATH, VmUserTeam } from '../../../generated/vm-api';
-import { createVmTeam, VmTeam } from '../../../state/vm-teams/vm-team.model';
-import { VmTeamsService } from '../../../state/vm-teams/vm-teams.service';
-import { createVmUser, VmUser } from '../../../state/vm-users/vm-user.model';
-import { VmUsersService } from '../../../state/vm-users/vm-users.service';
-import { VmModel } from '../../../state/vms/vm.model';
-import { VmService } from '../../../state/vms/vms.service';
+import { BASE_PATH, VmUserTeam } from '../../generated/vm-api';
+import { createVmTeam } from '../../state/vm-teams/vm-team.model';
+import { VmTeamsService } from '../../state/vm-teams/vm-teams.service';
+import { createVmUser, VmUser } from '../../state/vm-users/vm-user.model';
+import { VmUsersService } from '../../state/vm-users/vm-users.service';
+import { VmModel } from '../../state/vms/vm.model';
+import { VmService } from '../../state/vms/vms.service';
 
 @Injectable({
   providedIn: 'root',

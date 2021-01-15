@@ -33,7 +33,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {
   ComnAuthModule,
-  ComnSettingsConfig,
   ComnSettingsModule,
   ComnSettingsService,
 } from '@cmusei/crucible-common';
