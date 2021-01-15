@@ -73,11 +73,6 @@ import { TeamUsersComponent } from './components/user-list/team-users/team-users
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 
-const settings: ComnSettingsConfig = {
-  url: 'assets/config/settings.json',
-  envUrl: 'assets/config/settings.env.json',
-};
-
 /** Custom options the configure the tooltip's default show/hide delays. */
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   showDelay: 1000,
