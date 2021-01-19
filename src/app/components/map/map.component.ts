@@ -126,14 +126,14 @@ export class MapComponent implements OnInit, OnChanges {
   // Add a new click point
   append(event): void {
     const isFirefox = 'InstallTrigger' in window;
-
+    
     if (!isFirefox) {
       // Get the offsets relative to the image. Note that this assumes a 100x100 image
       let target = event.target;
       let width = target.getBoundingClientRect().width;
-      this.xActual = (100 * event.offsetX) / width;
+      this.xActual = (100 * event.pageX) / width;
       let height = target.getBoundingClientRect().height;
-      this.yActual = (100 * event.offsetY) / height;
+      this.yActual = ((100 * event.pageY) / height) + 2;
     } else {
       this.xActual = event.offsetX;
       this.yActual = event.offsetY;
@@ -147,6 +147,9 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   receiveMachine(machine: Machine): void {
+    console.log('Machine: ');
+    console.log(machine);
+
     // Find the machine being edited. If not undefined, an existing machine is being edited.
     // Else a new machine is being created
     const machineToEdit = this.machines.find((m) => {
