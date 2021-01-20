@@ -51,19 +51,17 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
     private changeDetector: ChangeDetectorRef,
     private dialog: MatDialog,
     private vmMapsService: VmMapsService,
-    private vmMapQuery: VmMapsQuery,
+    private vmMapQuery: VmMapsQuery
   ) {
     this.mapInitialized = false;
   }
 
   ngOnInit(): void {
-    console.log('Top of on init');
     this.vmMapsService.get();
 
     this.maps = this.route.params.pipe(
       switchMap((params) => {
-        console.log('In switch map');
-        this.viewId = params['viewId']
+        this.viewId = params['viewId'];
         return this.vmMapQuery.getByViewId(this.viewId);
       })
     );
@@ -80,10 +78,8 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
 
   goToMap() {
     if (this.selected === undefined) {
-      console.log('In go to map, selected undefined');
       this.readMap = false;
     } else {
-      console.log('In go to map, selected is: ' + this.selected.name);
       this.mapId = this.selected.id;
       this.readMap = true;
     }
@@ -112,23 +108,20 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
 
   editClicked() {
     this.editMode = !this.editMode;
-    console.log('Edit mode: ' + this.editMode);
   }
 
   mapCreated(id: string) {
-    console.log('Emitted id: ' + id);
     this.mapId = id;
 
     this.build = false;
     this.readMap = true;
     this.editMode = true;
 
-    this.vmMapQuery.getById(id).subscribe(m => {
+    this.vmMapQuery.getById(id).subscribe((m) => {
       this.selected = m;
 
-      console.log('Before calling go to map, selected is: ' + this.selected);
       this.goToMap();
-  
+
       this.dialogRef.close();
     });
   }
@@ -153,7 +146,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
 
     this.vmMapsService.update(id, payload);
 
-    this.vmMapQuery.getById(id).subscribe(m => {
+    this.vmMapQuery.getById(id).subscribe((m) => {
       this.selected = m;
       this.buildChild.ngOnInit();
       this.dialogRef.close();
@@ -162,7 +155,7 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
 
   // User clicked a clickpoint that points to a map
   redirectToMap(id: string) {
-    this.vmMapQuery.getById(id).subscribe(m => {
+    this.vmMapQuery.getById(id).subscribe((m) => {
       this.selected = m;
       this.goToMap();
     });
