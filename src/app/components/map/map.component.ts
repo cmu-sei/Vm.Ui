@@ -32,6 +32,7 @@ export class MapComponent implements OnInit, OnChanges {
   teamIDs: string[];
   name: string;
   imageURL: string;
+  imageUrlToSave: string;
   mapId: string;
 
   xActual: number;
@@ -57,11 +58,10 @@ export class MapComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private vmMapsService: VmMapsService,
-    private vmMapsQuery: VmMapsQuery,
+    private vmMapsQuery: VmMapsQuery
   ) {}
 
   ngOnInit(): void {
-    console.log('ngOnInit map component');
     this.timesSaved = 0;
     this.machines = new Array<Machine>();
 
@@ -73,27 +73,31 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Map component changes detected');
-    console.log(changes);
-    
-    // Don't call init again on the first change. This causes clickpoints to be duplicated 
+    // Don't call init again on the first change. This causes clickpoints to be duplicated
     if (!changes['mapIdInput'].firstChange) {
       this.ngOnInit();
     }
   }
 
   initMap(): void {
-    console.log('Calling initMap');
-
-    console.log('Array before API call:');
-    console.log(this.machines);
-
     // Get map data, put coordinates into machines array
     this.vmMapsQuery.getById(this.mapIdInput).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
-      this.imageURL = data.imageUrl;
       this.teamIDs = data.teamIds;
+
+      // As in display component, need to figure out if the URL is b64 encoded and, if so, convert it to a blob
+      // and then generate an object url
+      const url = data.imageUrl;
+      // Using the same basic check as in display component for whether a string is a url
+      if (!this.isURL(url)) {
+        const asBlob = this.b64ToBlob(url);
+        const objUrl = window.URL.createObjectURL(asBlob);
+        this.imageURL = objUrl;
+      } else {
+        this.imageURL = url;
+      }
+      this.imageUrlToSave = url;
 
       if (data.coordinates != null) {
         for (let coord of data.coordinates) {
@@ -109,13 +113,10 @@ export class MapComponent implements OnInit, OnChanges {
           );
         }
       }
+
+      this.mapInitialzed = true;
+      this.initEmitter.emit(true);
     });
-
-    console.log('After getMap machines array is:');
-    console.log(this.machines);
-
-    this.mapInitialzed = true;
-    this.initEmitter.emit(true);
   }
 
   redirect(url: string): void {
@@ -125,15 +126,14 @@ export class MapComponent implements OnInit, OnChanges {
   // Add a new click point
   append(event): void {
     const isFirefox = 'InstallTrigger' in window;
-    console.log(typeof event);
-
+    
     if (!isFirefox) {
       // Get the offsets relative to the image. Note that this assumes a 100x100 image
       let target = event.target;
       let width = target.getBoundingClientRect().width;
-      this.xActual = (100 * event.offsetX) / width;
+      this.xActual = (100 * event.pageX) / width;
       let height = target.getBoundingClientRect().height;
-      this.yActual = (100 * event.offsetY) / height;
+      this.yActual = ((100 * event.pageY) / height) + 2;
     } else {
       this.xActual = event.offsetX;
       this.yActual = event.offsetY;
@@ -147,7 +147,6 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   receiveMachine(machine: Machine): void {
-    console.log('In receive');
     console.log('Machine: ');
     console.log(machine);
 
@@ -157,14 +156,12 @@ export class MapComponent implements OnInit, OnChanges {
       return m.id === machine.id;
     });
 
-    console.log('Machine to edit: ' + machineToEdit);
-
     if (machineToEdit != undefined) {
       const index = this.machines.indexOf(machineToEdit);
-      // Remove the machine, a -1 field means deletion 
+      // Remove the machine, a -1 field means deletion
       if (machine.xPosition === -1) {
         this.machines.splice(index, 1);
-      // Replace the machine with an edited version
+        // Replace the machine with an edited version
       } else {
         this.machines[index] = machine;
       }
@@ -178,7 +175,6 @@ export class MapComponent implements OnInit, OnChanges {
 
   // Save button clicked, save the map
   save() {
-    console.log('Save pressed');
     let coords = new Array<Coordinate>();
     for (let machine of this.machines) {
       let coord = <Coordinate>{
@@ -195,11 +191,9 @@ export class MapComponent implements OnInit, OnChanges {
     let payload = <VmMap>{
       coordinates: coords,
       name: this.name,
-      imageUrl: this.imageURL,
+      imageUrl: this.imageUrlToSave,
       teamIds: this.teamIDs.length == 0 ? null : this.teamIDs,
     };
-
-    console.log(JSON.stringify(payload));
 
     this.vmMapsService.update(this.mapId, payload);
     window.alert('Map successfully saved!');
@@ -210,9 +204,6 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   edit(m: Machine): void {
-    console.log('Editing');
-    console.log(m);
-
     this.xActual = m.xPosition;
     this.yActual = m.yPosition;
     this.selectedRad = m.radius;
@@ -225,5 +216,21 @@ export class MapComponent implements OnInit, OnChanges {
 
   calcFontSize(radius: number): number {
     return radius / 3;
+  }
+
+  isURL(str: string): boolean {
+    return str.startsWith('http');
+  }
+
+  b64ToBlob(b64: string): Blob {
+    let byteStr = atob(b64.split(',')[1]);
+    let buffer = new ArrayBuffer(byteStr.length);
+    let byteVals = new Uint8Array(buffer);
+
+    for (let i = 0; i < byteStr.length; i++) {
+      byteVals[i] = byteStr.charCodeAt(i);
+    }
+
+    return new Blob([buffer]);
   }
 }

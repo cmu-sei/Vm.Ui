@@ -52,6 +52,7 @@ import { VmListComponent } from './components/vm-list/vm-list.component';
 import { VmMainComponent } from './components/vm-main/vm-main.component';
 import { WelderComponent } from './components/welder/welder.component';
 import { BASE_PATH } from './generated/vm-api';
+import { BASE_PATH as PLAYER_BASE_PATH } from './generated/player-api';
 import { AutoDeployService } from './services/auto-deploy/auto-deploy.service';
 import { DialogService } from './services/dialog/dialog.service';
 import { ErrorService } from './services/error/error.service';
@@ -166,6 +167,11 @@ export class AngularMaterialModule {}
       deps: [ComnSettingsService],
     },
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
+    {
+      provide: PLAYER_BASE_PATH,
+      useFactory: getPlayerBasePath,
+      deps: [ComnSettingsService],
+    },
   ],
   bootstrap: [AppComponent],
   entryComponents: [ConfirmDialogComponent, SystemMessageComponent],
@@ -173,8 +179,14 @@ export class AngularMaterialModule {}
 export class AppModule {}
 
 export function getBasePath(settingsSvc: ComnSettingsService) {
-  let url: string = settingsSvc.settings.ApiUrl;
+  return sanitizeBasePath(settingsSvc.settings.ApiUrl);
+}
 
+export function getPlayerBasePath(settingsSvc: ComnSettingsService) {
+  return sanitizeBasePath(settingsSvc.settings.ApiPlayerUrl);
+}
+
+function sanitizeBasePath(url: string) {
   if (url.endsWith('/')) {
     url = url.slice(0, url.length - 1);
   }

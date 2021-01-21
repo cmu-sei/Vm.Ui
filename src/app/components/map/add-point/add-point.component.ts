@@ -61,7 +61,7 @@ export class AddPointComponent implements OnInit {
         return this.vmMapsQuery.getByViewId(viewId);
       })
     );
-    
+
     // Get VMs in view
     // Calling the service directly here because the API doesn't set a viewId field on a VM, so there's no way to do this as a query
     this.vmsFiltered = this.VmAkitaService.GetViewVms(true, false);
@@ -75,7 +75,7 @@ export class AddPointComponent implements OnInit {
             typeof value === 'string' ? value : value.name
           ))
       );
-    
+
     // Set up filter for VMs
     this.form
       .get('url')
@@ -88,7 +88,6 @@ export class AddPointComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log('form submitted');
     const isMap = this.form.get('url').value.url === undefined;
     const urlVal = this.form.get('url').value;
 
@@ -108,7 +107,6 @@ export class AddPointComponent implements OnInit {
       this.form.get('label').value
     );
 
-    console.log(machine);
     this.machineEmitter.emit(machine);
   }
 
