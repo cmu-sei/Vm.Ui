@@ -14,13 +14,12 @@ import {
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { ComnAuthQuery, Theme } from '@cmusei/crucible-common';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
-import { Observable } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
+import { ThemeService } from '../../services/theme/theme.service';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmService } from '../../state/vms/vms.service';
 
@@ -46,9 +45,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public showIps = false;
   public ipv4Only = true;
   public selectedVms = new Array<string>();
-  public theme$: Observable<Theme>;
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(SelectContainerComponent)
   selectContainer: SelectContainerComponent;
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
@@ -65,10 +63,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private fileService: FileService,
     private dialogService: DialogService,
     private teamsService: TeamsService,
-    private authQuery: ComnAuthQuery
-  ) {
-    this.theme$ = authQuery.userTheme$;
-  }
+    public themeService: ThemeService
+  ) {}
 
   ngOnInit() {
     this.pageEvent = new PageEvent();

@@ -9,34 +9,37 @@ import { VmMapsStore } from './vm-maps.store';
 
 @Injectable({ providedIn: 'root' })
 export class VmMapsService {
-
-  constructor(private vmMapsStore: VmMapsStore, private vmService: VmsService) {
-  }
-
+  constructor(
+    private vmMapsStore: VmMapsStore,
+    private vmService: VmsService
+  ) {}
 
   get() {
     this.vmMapsStore.setLoading(true);
-    this.vmService.getAllMaps().pipe(
-      take(1)
-    ).subscribe((maps) => this.vmMapsStore.set(maps));
+    this.vmService
+      .getAllMaps()
+      .pipe(take(1))
+      .subscribe((maps) => this.vmMapsStore.set(maps));
   }
 
   add(viewId: string, vmMap: VmMap) {
-    this.vmService.createMap(viewId, vmMap).pipe(
-      take(1)
-    ).subscribe(m => this.vmMapsStore.add(m));
+    this.vmService
+      .createMap(viewId, vmMap)
+      .pipe(take(1))
+      .subscribe((m) => this.vmMapsStore.add(m));
   }
 
   update(id: string, vmMap: Partial<VmMap>) {
-    this.vmService.updateMap(id, vmMap).pipe(
-      take(1)
-    ).subscribe((m) => this.vmMapsStore.update(id, m));
+    this.vmService
+      .updateMap(id, vmMap)
+      .pipe(take(1))
+      .subscribe((m) => this.vmMapsStore.update(id, m));
   }
 
   remove(id: ID) {
-    this.vmService.deleteMap(id as string).pipe(
-      take(1)
-    ).subscribe(() => this.vmMapsStore.remove(id));
+    this.vmService
+      .deleteMap(id as string)
+      .pipe(take(1))
+      .subscribe(() => this.vmMapsStore.remove(id));
   }
-
 }
