@@ -44,7 +44,6 @@ export class AddPointComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('Editing? ' + this.editing)
     this.custom = false;
     this.control = new FormControl();
 
