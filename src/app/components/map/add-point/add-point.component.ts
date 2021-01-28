@@ -25,6 +25,7 @@ export class AddPointComponent implements OnInit {
   @Input() url: string;
   @Input() id: string;
   @Input() label: string;
+  @Input() editing: boolean;
 
   @Output() machineEmitter = new EventEmitter<Machine>();
 
@@ -43,6 +44,7 @@ export class AddPointComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log('Editing? ' + this.editing)
     this.custom = false;
     this.control = new FormControl();
 

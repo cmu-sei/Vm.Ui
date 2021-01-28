@@ -42,6 +42,7 @@ export class MapComponent implements OnInit, OnChanges {
   selectedURL: string;
   selectedLabel: string;
   timesSaved: number;
+  editing: boolean;
 
   viewId: string;
 
@@ -142,6 +143,7 @@ export class MapComponent implements OnInit, OnChanges {
     this.idToSend = uuidv4();
     this.selectedRad = 3;
     this.selectedURL = 'https://example.com';
+    this.editing = false;
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
@@ -210,6 +212,7 @@ export class MapComponent implements OnInit, OnChanges {
     this.selectedURL = m.url;
     this.idToSend = m.id;
     this.selectedLabel = m.label;
+    this.editing = true;
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
