@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<h2>Add Click Point</h2>
+<h2>{{ editing == 'true' ? 'Edit' : 'Add' }} Click Point</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <mat-form-field fxLayout="row">

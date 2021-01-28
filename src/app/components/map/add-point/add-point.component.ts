@@ -25,6 +25,7 @@ export class AddPointComponent implements OnInit {
   @Input() url: string;
   @Input() id: string;
   @Input() label: string;
+  @Input() editing: boolean;
 
   @Output() machineEmitter = new EventEmitter<Machine>();
 
