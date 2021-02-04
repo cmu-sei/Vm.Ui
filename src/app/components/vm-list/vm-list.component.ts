@@ -77,7 +77,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       filters: string
     ) => {
       const matchFilter = [];
-      const filterArray = filters.split(' ');
+      const filterArray = this.parseSearch(filters);
       const columns = [data.name];
       // Or if you don't want to specify specifics columns =>
       // const columns = (<any>Object).values(data);
@@ -85,27 +85,21 @@ export class VmListComponent implements OnInit, AfterViewInit {
       filterArray.forEach((f) => {
         const customFilter = [];
         columns.forEach((column) => {
-          // If the term starts with '-' we want to not consider VMs containing that term
+          // If the term is negated we want to not consider VMs containing that term
           // so consider it a match when a VM does not contain it.
-          // We consider a lone dash a match otherwise some VMs will disappear and reappear when applying a filter like 'foo -bar'.
-          // This does not allow for searching a literal '-' but we could add escape sequences to account for this
 
-          if (f == '-') {
-            customFilter.push(true)
-          } else if (f.startsWith('-')) {
-            customFilter.push(!column.toLowerCase().includes(f.substring(1)));
+          if (f.kind == SearchOperator.Negate) {
+            customFilter.push(!column.toLowerCase().includes(f.value));
           } else {
-            customFilter.push(column.toLowerCase().includes(f))
+            customFilter.push(column.toLowerCase().includes(f.value))
           }
         });
 
         data.ipAddresses.forEach((address) => {
-          if (f == '-') {
-            customFilter.push(true)
-          } else if (f.startsWith('-')) {
-            customFilter.push(!address.toLowerCase().includes(f.substring(1)));
+          if (f.kind == SearchOperator.Negate) {
+            customFilter.push(!address.toLowerCase().includes(f.value));
           } else {
-            customFilter.push(address.toLowerCase().includes(f) || f == '-');
+            customFilter.push(address.toLowerCase().includes(f.value));
           }
         });
 
@@ -287,10 +281,51 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public trackByVmId(item) {
     return item.id;
   }
+
+  private parseSearch(search: string) {
+    let parsed = new Array<SearchTerm>();
+    for (let token of search.split(' ')) {
+      // Only operator for now is negation
+      
+      // Negation is urnary and appears in the same token as the term it negates
+      // We don't consider a lone '-' as a negation. Lone operators are ignored because
+      // the user is probably about to type something to apply the operator to and we 
+      // don't want to prematurely hide any VMs
+      if (token.startsWith('-') && token.length > 1) {
+        const term = new SearchTerm(SearchOperator.Negate, token.substring(1));
+        parsed.push(term);
+      } else if (token.length == 1) {
+        // This is a lone urnary operator - may need to expand this test when non-urnary operators are introduced
+        // Either way, it should not be included as a term to actually search for
+        continue;
+      } else {
+        // This is a normal, unmodifed search term
+        const term = new SearchTerm(SearchOperator.None, token);
+        parsed.push(term);
+      }
+    }
+
+    return parsed;
+  }
 }
 
 enum VmAction {
   PowerOn,
   PowerOff,
   Shutdown,
+}
+
+enum SearchOperator {
+  Negate,
+  None, // Just a regular search term
+}
+
+class SearchTerm {
+  kind: SearchOperator
+  value: string
+
+  constructor(kind: SearchOperator, value: string) {
+    this.kind = kind;
+    this.value = value;
+  }
 }
