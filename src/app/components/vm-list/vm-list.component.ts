@@ -84,13 +84,30 @@ export class VmListComponent implements OnInit, AfterViewInit {
       // Main loop
       filterArray.forEach((f) => {
         const customFilter = [];
-        columns.forEach((column) =>
-          customFilter.push(column.toLowerCase().includes(f))
-        );
+        columns.forEach((column) => {
+          // If the term starts with '-' we want to not consider VMs containing that term
+          // so consider it a match when a VM does not contain it.
+          // We consider a lone dash a match otherwise some VMs will disappear and reappear when applying a filter like 'foo -bar'.
+          // This does not allow for searching a literal '-' but we could add escape sequences to account for this
 
-        data.ipAddresses.forEach((address) =>
-          customFilter.push(address.includes(f))
-        );
+          if (f == '-') {
+            customFilter.push(true)
+          } else if (f.startsWith('-')) {
+            customFilter.push(!column.toLowerCase().includes(f.substring(1)));
+          } else {
+            customFilter.push(column.toLowerCase().includes(f))
+          }
+        });
+
+        data.ipAddresses.forEach((address) => {
+          if (f == '-') {
+            customFilter.push(true)
+          } else if (f.startsWith('-')) {
+            customFilter.push(!address.toLowerCase().includes(f.substring(1)));
+          } else {
+            customFilter.push(address.toLowerCase().includes(f) || f == '-');
+          }
+        });
 
         matchFilter.push(customFilter.some(Boolean)); // OR
       });
