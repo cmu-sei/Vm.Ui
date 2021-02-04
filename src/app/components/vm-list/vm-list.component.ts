@@ -89,17 +89,23 @@ export class VmListComponent implements OnInit, AfterViewInit {
           // so consider it a match when a VM does not contain it.
 
           if (f.kind == SearchOperator.Negate) {
-            customFilter.push(!column.toLowerCase().includes(f.value));
+            customFilter.push(!column.toLowerCase().includes(f.value[0]));
+          } else if (f.kind == SearchOperator.Or) {
+            const truthVal = f.value.some(tok => column.toLowerCase().includes(tok));
+            customFilter.push(truthVal);
           } else {
-            customFilter.push(column.toLowerCase().includes(f.value))
+            customFilter.push(column.toLowerCase().includes(f.value[0]))
           }
         });
 
         data.ipAddresses.forEach((address) => {
           if (f.kind == SearchOperator.Negate) {
-            customFilter.push(!address.toLowerCase().includes(f.value));
+            customFilter.push(!address.toLowerCase().includes(f.value[0]));
+          } else if (f.kind == SearchOperator.Or) {
+            const truthVal = f.value.some(tok => address.toLowerCase().includes(tok));
+            customFilter.push(truthVal);
           } else {
-            customFilter.push(address.toLowerCase().includes(f.value));
+            customFilter.push(address.toLowerCase().includes(f.value[0]));
           }
         });
 
@@ -282,32 +288,69 @@ export class VmListComponent implements OnInit, AfterViewInit {
     return item.id;
   }
 
+  // TODO make this work for and/or
   private parseSearch(search: string) {
+    console.log('Calling parser function with argument ' + search);
+
     let parsed = new Array<SearchTerm>();
-    for (let token of search.split(' ')) {
-      // Only operator for now is negation
-      
+    const tokens = search.split(' ');
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];      
+      console.log('Token = ' + token);
+
       // Negation is urnary and appears in the same token as the term it negates
       // We don't consider a lone '-' as a negation. Lone operators are ignored because
       // the user is probably about to type something to apply the operator to and we 
       // don't want to prematurely hide any VMs
       if (token.startsWith('-') && token.length > 1) {
-        const term = new SearchTerm(SearchOperator.Negate, token.substring(1));
+        const term = new SearchTerm(SearchOperator.Negate, [token.substring(1)]);
         parsed.push(term);
       } else if (token.length == 1) {
         // This is a lone urnary operator - may need to expand this test when non-urnary operators are introduced
         // Either way, it should not be included as a term to actually search for
         continue;
       } else {
-        // This is a normal, unmodifed search term
-        const term = new SearchTerm(SearchOperator.None, token);
-        parsed.push(term);
+        // This term has not been modified by an urnary operator but we still need to check for binary operators
+        // which are currently just AND and OR
+        if (i >= tokens.length - 1 || !this.isBinOp(tokens[i + 1])) {
+          const term = new SearchTerm(SearchOperator.None, [token]);
+          console.log('Found a normal token');
+          parsed.push(term);
+        } else if (this.isBinOp(tokens[i + 1])) {
+          console.log('Binary operator is next token, look ahead');
+          const lower = tokens[i + 1].toLowerCase();
+          if (lower == 'or') {
+            // Look ahead to find any other ORs
+            let term = new SearchTerm(SearchOperator.Or, [token]);
+            let j = i + 1;
+            for (; j < tokens.length; j+=2) {
+              // TODO: This could go out of bounds if last term is OR 
+              if (tokens[j].toLowerCase() == 'or') {
+                console.log('Found another BinOp, pushing ' + tokens[j + 1] + ' onto term');
+                term.value.push(tokens[j + 1]);
+              } else {
+                break;
+              }
+            }
+            i = j - 1;
+            console.log('No more BinOps. i is now ' + i);
+            parsed.push(term);
+          }
+        }
       }
     }
 
+    console.log('Parsed:')
+    console.log(parsed);
     return parsed;
   }
+
+  private isBinOp(tok: string): boolean {
+    const lower = tok.toLowerCase();
+    return lower == 'and' || lower == 'or';
+  }
 }
+
 
 enum VmAction {
   PowerOn,
@@ -315,16 +358,21 @@ enum VmAction {
   Shutdown,
 }
 
+// To add:
+// AND - is AND really necessary - search seems to have implicit AND behavior
+// exact search - figure out intended behavior
 enum SearchOperator {
+  And,
+  Or,
   Negate,
   None, // Just a regular search term
 }
 
 class SearchTerm {
   kind: SearchOperator
-  value: string
+  value: string[]
 
-  constructor(kind: SearchOperator, value: string) {
+  constructor(kind: SearchOperator, value: string[]) {
     this.kind = kind;
     this.value = value;
   }
