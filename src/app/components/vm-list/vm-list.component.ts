@@ -85,10 +85,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
       filterArray.forEach((f) => {
         const customFilter = [];
         columns.forEach((column) => {
-          // If the term is negated we want to not consider VMs containing that term
-          // so consider it a match when a VM does not contain it.
-
           switch (f.kind) {
+            // If the term is negated we want to not consider VMs containing that term
+            // so consider it a match when a VM does not contain it.
             case SearchOperator.Negate: 
               customFilter.push(!column.toLowerCase().includes(f.value[0]));
               break;
@@ -316,7 +315,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     let parsed = new Array<SearchTerm>();
     const tokens = search.split(' ');
     for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];      
+      const token = tokens[i];
 
       // Negation is urnary and appears in the same token as the term it negates
       // We don't consider a lone '-' as a negation. Lone operators are ignored because
@@ -349,7 +348,14 @@ export class VmListComponent implements OnInit, AfterViewInit {
         
         // Normal token
         if (i >= tokens.length - 1 || !this.isBinOp(tokens[i + 1])) {
-          const term = new SearchTerm(SearchOperator.None, [token]);
+          let term: SearchTerm;
+          // This token is escaped so discard the slash and search for a literal occurance of the token.
+          // Used to search for literal keyword/operators
+          if (this.isEscaped(tokens[i])) {
+            term = new SearchTerm(SearchOperator.None, [token.substr(1)]);
+          } else {
+            term = new SearchTerm(SearchOperator.None, [token]);
+          } 
           parsed.push(term);
         } else if (this.isBinOp(tokens[i + 1])) {
           // A binary operator is being applied
@@ -363,7 +369,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
                 if (j + 1 > tokens.length - 1) {
                   break;
                 }
-                term.value.push(tokens[j + 1]);
+                const curr = tokens[j + 1];
+                if (this.isEscaped(tokens[j + 1])) {
+                  term.value.push(curr.substr(1));
+                } else {
+                  term.value.push(tokens[j + 1]);
+                }
               } else {
                 break;
               }
@@ -384,6 +395,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
   private isBinOp(tok: string): boolean {
     const lower = tok.toLowerCase();
     return lower == 'or';
+  }
+
+  private isEscaped(tok: string): boolean {
+    return tok.startsWith('\\');
   }
 }
 
