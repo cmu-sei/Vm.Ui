@@ -357,9 +357,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
         }
       }
     }
-
-    console.log('Parsed:')
-    console.log(parsed);
     return parsed;
   }
 
@@ -380,7 +377,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
   private parseBinaryOp(i: number, tokens: string[]): [SearchTerm, number] {
     const token = tokens[i];
     const lower = tokens[i + 1].toLowerCase();
-    console.log(lower);
     let term: SearchTerm;
     if (lower == 'or') {
       // Look ahead to find any other ORs
