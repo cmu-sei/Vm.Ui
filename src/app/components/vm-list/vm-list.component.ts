@@ -289,6 +289,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   // TODO make this work for and/or
+  // TODO clean this up
   private parseSearch(search: string) {
     console.log('Calling parser function with argument ' + search);
 
@@ -324,14 +325,17 @@ export class VmListComponent implements OnInit, AfterViewInit {
             let term = new SearchTerm(SearchOperator.Or, [token]);
             let j = i + 1;
             for (; j < tokens.length; j+=2) {
-              // TODO: This could go out of bounds if last term is OR 
               if (tokens[j].toLowerCase() == 'or') {
+                if (j + 1 > tokens.length - 1) {
+                  break;
+                }
                 console.log('Found another BinOp, pushing ' + tokens[j + 1] + ' onto term');
                 term.value.push(tokens[j + 1]);
               } else {
                 break;
               }
             }
+            // We need to skip over the terms that we considered while looking ahead or they will be double counted
             i = j - 1;
             console.log('No more BinOps. i is now ' + i);
             parsed.push(term);
