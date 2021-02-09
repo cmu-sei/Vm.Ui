@@ -108,6 +108,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
           } else if (f.kind == SearchOperator.Or) {
             const truthVal = f.value.some(tok => address.toLowerCase().includes(tok));
             customFilter.push(truthVal);
+          } else if (f.kind == SearchOperator.Exact) {
+            // Same behavior as exact match for names
+            const term = f.value.join(' ');
+            customFilter.push(address.toLowerCase().includes(term));
           } else {
             customFilter.push(address.toLowerCase().includes(f.value[0]));
           }
@@ -292,15 +296,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
     return item.id;
   }
 
-  // TODO How to handle syntax errors?
   private parseSearch(search: string) {
-    console.log('Calling parser function with argument ' + search);
-
     let parsed = new Array<SearchTerm>();
     const tokens = search.split(' ');
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i];      
-      console.log('Token = ' + token);
 
       // Negation is urnary and appears in the same token as the term it negates
       // We don't consider a lone '-' as a negation. Lone operators are ignored because
@@ -330,12 +330,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
       } else {
         // This term has not been modified by an urnary operator but we still need to check for binary operators
         // which is currently just OR - search has AND behavior by default, no need for an AND operator
+        
+        // Normal token
         if (i >= tokens.length - 1 || !this.isBinOp(tokens[i + 1])) {
           const term = new SearchTerm(SearchOperator.None, [token]);
-          console.log('Found a normal token');
           parsed.push(term);
         } else if (this.isBinOp(tokens[i + 1])) {
-          console.log('Binary operator is next token, look ahead');
+          // A binary operator is being applied
           const lower = tokens[i + 1].toLowerCase();
           if (lower == 'or') {
             // Look ahead to find any other ORs
@@ -346,7 +347,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
                 if (j + 1 > tokens.length - 1) {
                   break;
                 }
-                console.log('Found another BinOp, pushing ' + tokens[j + 1] + ' onto term');
                 term.value.push(tokens[j + 1]);
               } else {
                 break;
@@ -354,7 +354,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
             }
             // We need to skip over the terms that we considered while looking ahead or they will be double counted
             i = j - 1;
-            console.log('No more BinOps. i is now ' + i);
             parsed.push(term);
           }
         }
