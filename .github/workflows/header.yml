@@ -32,10 +32,10 @@ jobs:
       - name: Commit and push files
         if: env.FILESCHANGED == 'TRUE'
         run: |
-          echo "fils have been changed"
+          echo "Files have been changed"
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git commit -m "Add changes" -a
+          git commit -m "Add missing document markings" -a
 
       - name: Push changes
         if: env.FILESCHANGED == 'TRUE'
