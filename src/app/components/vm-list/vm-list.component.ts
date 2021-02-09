@@ -305,6 +305,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
     return item.id;
   }
 
+  /*
+    Operator behaviors:
+    Negation: get search results that don't include this term. Example foo -bar
+    Or: A boolean or. Get results that include 1 or more terms that have been or'd. Example: foo or bar or boz
+    Exact: Get results where this exact term appears. Example: "abc 123"
+    There is no and operator because that is the default behavior. ie foo bar is logically equivalent to foo and bar
+  */
   private parseSearch(search: string) {
     let parsed = new Array<SearchTerm>();
     const tokens = search.split(' ');
