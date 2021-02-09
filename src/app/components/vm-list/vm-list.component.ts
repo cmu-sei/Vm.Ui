@@ -331,19 +331,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
         continue;
       } else if (token.startsWith('\"')) {
         // Exact match - find all tokens wrapped by quotes and consider them a single term
-        let term = new SearchTerm(SearchOperator.Exact, [token.replace('\"', '').replace('\"', '')]); // Replace twice in case this the only quoted token 
-        if (!token.endsWith('\"')) {
-          let j = i + 1; // Needs to be scoped outside of loop
-          for (; j < tokens.length; j++) {
-            const curr = tokens[j];
-            if (curr.endsWith('\"')) {
-              term.value.push(curr.replace('\"', ''));
-              break;
-            }
-            term.value.push(curr);
-          }
-          i = j + 1;
-        }
+        const [term, newIndex] = this.parseExactMatch(i, tokens);
+        i = newIndex;
         parsed.push(term);
       } else {
         // This term has not been modified by an urnary operator but we still need to check for binary operators
@@ -362,30 +351,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
           parsed.push(term);
         } else if (this.isBinOp(tokens[i + 1])) {
           // A binary operator is being applied
-          const lower = tokens[i + 1].toLowerCase();
-          if (lower == 'or') {
-            // Look ahead to find any other ORs
-            let term = new SearchTerm(SearchOperator.Or, [token]);
-            let j = i + 1;
-            for (; j < tokens.length; j+=2) {
-              if (tokens[j].toLowerCase() == 'or') {
-                if (j + 1 > tokens.length - 1) {
-                  break;
-                }
-                const curr = tokens[j + 1];
-                if (this.isEscaped(tokens[j + 1])) {
-                  term.value.push(curr.substr(1));
-                } else {
-                  term.value.push(tokens[j + 1]);
-                }
-              } else {
-                break;
-              }
-            }
-            // We need to skip over the terms that we considered while looking ahead or they will be double counted
-            i = j - 1;
-            parsed.push(term);
-          }
+          const [term, newIndex] = this.parseBinaryOp(i, tokens);
+          i = newIndex;
+          parsed.push(term);
         }
       }
     }
@@ -402,6 +370,60 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   private isEscaped(tok: string): boolean {
     return tok.startsWith('\\');
+  }
+
+  /**
+   * Parse an expression with a binary operator
+   * @param i the current index into tokens
+   * @param tokens the list of tokens
+   */
+  private parseBinaryOp(i: number, tokens: string[]): [SearchTerm, number] {
+    const token = tokens[i];
+    const lower = tokens[i + 1].toLowerCase();
+    console.log(lower);
+    let term: SearchTerm;
+    if (lower == 'or') {
+      // Look ahead to find any other ORs
+      term = new SearchTerm(SearchOperator.Or, [token]);
+      let j = i + 1;
+      for (; j < tokens.length; j+=2) {
+        if (tokens[j].toLowerCase() == 'or') {
+          if (j + 1 > tokens.length - 1) {
+            break;
+          }
+          const curr = tokens[j + 1];
+          if (this.isEscaped(tokens[j + 1])) {
+            term.value.push(curr.substr(1));
+          } else {
+            term.value.push(tokens[j + 1]);
+          }
+        } else {
+          break;
+        }
+      }
+      // We need to skip over the terms that we considered while looking ahead or they will be double counted
+      i = j - 1;
+    }
+    return [term, i];
+  }
+
+  private parseExactMatch(i: number, tokens: string[]): [SearchTerm, number] {
+    // Replace twice in case this the only quoted token 
+    const token = tokens[i];
+    let term = new SearchTerm(SearchOperator.Exact, [token.replace('\"', '').replace('\"', '')]); 
+    if (!token.endsWith('\"')) {
+      let j = i + 1; // Needs to be scoped outside of loop
+      for (; j < tokens.length; j++) {
+        const curr = tokens[j];
+        if (curr.endsWith('\"')) {
+          term.value.push(curr.replace('\"', ''));
+          break;
+        }
+        term.value.push(curr);
+      }
+      return [term, j + 1];
+    }
+    return [term, i + 1];
   }
 }
 
