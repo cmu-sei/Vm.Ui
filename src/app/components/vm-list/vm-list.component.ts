@@ -330,17 +330,19 @@ export class VmListComponent implements OnInit, AfterViewInit {
         continue;
       } else if (token.startsWith('\"')) {
         // Exact match - find all tokens wrapped by quotes and consider them a single term
-        let term = new SearchTerm(SearchOperator.Exact, [token.replace('\"', '')]);
-        let j = i + 1; // Needs to be scoped outside of loop
-        for (; j < tokens.length; j++) {
-          const curr = tokens[j];
-          if (curr.endsWith('\"')) {
-            term.value.push(curr.replace('\"', ''));
-            break;
+        let term = new SearchTerm(SearchOperator.Exact, [token.replace('\"', '').replace('\"', '')]); // Replace twice in case this the only quoted token 
+        if (!token.endsWith('\"')) {
+          let j = i + 1; // Needs to be scoped outside of loop
+          for (; j < tokens.length; j++) {
+            const curr = tokens[j];
+            if (curr.endsWith('\"')) {
+              term.value.push(curr.replace('\"', ''));
+              break;
+            }
+            term.value.push(curr);
           }
-          term.value.push(curr);
+          i = j + 1;
         }
-        i = j + 1;
         parsed.push(term);
       } else {
         // This term has not been modified by an urnary operator but we still need to check for binary operators
