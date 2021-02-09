@@ -310,6 +310,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     Or: A boolean or. Get results that include 1 or more terms that have been or'd. Example: foo or bar or boz
     Exact: Get results where this exact term appears. Example: "abc 123"
     There is no and operator because that is the default behavior. ie foo bar is logically equivalent to foo and bar
+    keywords/operations can be escaped with \, no need to do so inside quotes though
   */
   private parseSearch(search: string) {
     let parsed = new Array<SearchTerm>();
