@@ -93,6 +93,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
           } else if (f.kind == SearchOperator.Or) {
             const truthVal = f.value.some(tok => column.toLowerCase().includes(tok));
             customFilter.push(truthVal);
+          } else if (f.kind == SearchOperator.Exact) {
+            // Consider all terms that were in quotes as one term to match
+            const term = f.value.join(' ');
+            customFilter.push(column.toLowerCase().includes(term));
           } else {
             customFilter.push(column.toLowerCase().includes(f.value[0]))
           }
@@ -288,8 +292,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     return item.id;
   }
 
-  // TODO make this work for and/or
-  // TODO clean this up
+  // TODO How to handle syntax errors?
   private parseSearch(search: string) {
     console.log('Calling parser function with argument ' + search);
 
@@ -307,12 +310,26 @@ export class VmListComponent implements OnInit, AfterViewInit {
         const term = new SearchTerm(SearchOperator.Negate, [token.substring(1)]);
         parsed.push(term);
       } else if (token.length == 1) {
-        // This is a lone urnary operator - may need to expand this test when non-urnary operators are introduced
-        // Either way, it should not be included as a term to actually search for
+        // This is a lone urnary operator - currently just means a lone '-' character
+        // ignore it so we don't discard matches that don't contain a literal '-' char
         continue;
+      } else if (token.startsWith('\"')) {
+        // Exact match - find all tokens wrapped by quotes and consider them a single term
+        let term = new SearchTerm(SearchOperator.Exact, [token.replace('\"', '')]);
+        let j = i + 1; // Needs to be scoped outside of loop
+        for (; j < tokens.length; j++) {
+          const curr = tokens[j];
+          if (curr.endsWith('\"')) {
+            term.value.push(curr.replace('\"', ''));
+            break;
+          }
+          term.value.push(curr);
+        }
+        i = j + 1;
+        parsed.push(term);
       } else {
         // This term has not been modified by an urnary operator but we still need to check for binary operators
-        // which are currently just AND and OR
+        // which is currently just OR - search has AND behavior by default, no need for an AND operator
         if (i >= tokens.length - 1 || !this.isBinOp(tokens[i + 1])) {
           const term = new SearchTerm(SearchOperator.None, [token]);
           console.log('Found a normal token');
@@ -351,7 +368,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   private isBinOp(tok: string): boolean {
     const lower = tok.toLowerCase();
-    return lower == 'and' || lower == 'or';
+    return lower == 'or';
   }
 }
 
@@ -362,11 +379,8 @@ enum VmAction {
   Shutdown,
 }
 
-// To add:
-// AND - is AND really necessary - search seems to have implicit AND behavior
-// exact search - figure out intended behavior
 enum SearchOperator {
-  And,
+  Exact,
   Or,
   Negate,
   None, // Just a regular search term
