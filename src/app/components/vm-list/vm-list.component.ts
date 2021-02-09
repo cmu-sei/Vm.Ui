@@ -88,32 +88,41 @@ export class VmListComponent implements OnInit, AfterViewInit {
           // If the term is negated we want to not consider VMs containing that term
           // so consider it a match when a VM does not contain it.
 
-          if (f.kind == SearchOperator.Negate) {
-            customFilter.push(!column.toLowerCase().includes(f.value[0]));
-          } else if (f.kind == SearchOperator.Or) {
-            const truthVal = f.value.some(tok => column.toLowerCase().includes(tok));
-            customFilter.push(truthVal);
-          } else if (f.kind == SearchOperator.Exact) {
-            // Consider all terms that were in quotes as one term to match
-            const term = f.value.join(' ');
-            customFilter.push(column.toLowerCase().includes(term));
-          } else {
-            customFilter.push(column.toLowerCase().includes(f.value[0]))
+          switch (f.kind) {
+            case SearchOperator.Negate: 
+              customFilter.push(!column.toLowerCase().includes(f.value[0]));
+              break;
+            case SearchOperator.Or:
+              const truthVal = f.value.some(tok => column.toLowerCase().includes(tok));
+              customFilter.push(truthVal);
+              break;
+            case SearchOperator.Exact:
+              // Consider all terms that were in quotes as one term to match
+              const term = f.value.join(' ');
+              customFilter.push(column.toLowerCase().includes(term));
+              break
+            default:
+              customFilter.push(column.toLowerCase().includes(f.value[0]))
           }
         });
 
         data.ipAddresses.forEach((address) => {
-          if (f.kind == SearchOperator.Negate) {
-            customFilter.push(!address.toLowerCase().includes(f.value[0]));
-          } else if (f.kind == SearchOperator.Or) {
-            const truthVal = f.value.some(tok => address.toLowerCase().includes(tok));
-            customFilter.push(truthVal);
-          } else if (f.kind == SearchOperator.Exact) {
-            // Same behavior as exact match for names
-            const term = f.value.join(' ');
-            customFilter.push(address.toLowerCase().includes(term));
-          } else {
-            customFilter.push(address.toLowerCase().includes(f.value[0]));
+
+          switch(f.kind) {
+            case SearchOperator.Negate:
+              customFilter.push(!address.toLowerCase().includes(f.value[0]));
+              break;
+            case SearchOperator.Or:
+              const truthVal = f.value.some(tok => address.toLowerCase().includes(tok));
+              customFilter.push(truthVal);
+              break;
+            case SearchOperator.Exact:
+              // Same behavior as exact match for names
+              const term = f.value.join(' ');
+              customFilter.push(address.toLowerCase().includes(term));
+              break;
+            default:
+              customFilter.push(address.toLowerCase().includes(f.value[0]));
           }
         });
 
