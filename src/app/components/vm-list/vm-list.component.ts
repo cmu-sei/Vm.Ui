@@ -77,20 +77,56 @@ export class VmListComponent implements OnInit, AfterViewInit {
       filters: string
     ) => {
       const matchFilter = [];
-      const filterArray = filters.split(' ');
+      const filterArray = this.parseSearch(filters);
       const columns = [data.name];
       // Or if you don't want to specify specifics columns =>
       // const columns = (<any>Object).values(data);
       // Main loop
       filterArray.forEach((f) => {
         const customFilter = [];
-        columns.forEach((column) =>
-          customFilter.push(column.toLowerCase().includes(f))
-        );
+        columns.forEach((column) => {
+          switch (f.kind) {
+            // If the term is negated we want to not consider VMs containing that term
+            // so consider it a match when a VM does not contain it.
+            case SearchOperator.Negate:
+              customFilter.push(!column.toLowerCase().includes(f.value[0]));
+              break;
+            case SearchOperator.Or:
+              const truthVal = f.value.some((tok) =>
+                column.toLowerCase().includes(tok)
+              );
+              customFilter.push(truthVal);
+              break;
+            case SearchOperator.Exact:
+              // Consider all terms that were in quotes as one term to match
+              const term = f.value.join(' ');
+              customFilter.push(column.toLowerCase().includes(term));
+              break;
+            default:
+              customFilter.push(column.toLowerCase().includes(f.value[0]));
+          }
+        });
 
-        data.ipAddresses.forEach((address) =>
-          customFilter.push(address.includes(f))
-        );
+        data.ipAddresses.forEach((address) => {
+          switch (f.kind) {
+            case SearchOperator.Negate:
+              customFilter.push(!address.toLowerCase().includes(f.value[0]));
+              break;
+            case SearchOperator.Or:
+              const truthVal = f.value.some((tok) =>
+                address.toLowerCase().includes(tok)
+              );
+              customFilter.push(truthVal);
+              break;
+            case SearchOperator.Exact:
+              // Same behavior as exact match for names
+              const term = f.value.join(' ');
+              customFilter.push(address.toLowerCase().includes(term));
+              break;
+            default:
+              customFilter.push(address.toLowerCase().includes(f.value[0]));
+          }
+        });
 
         matchFilter.push(customFilter.some(Boolean)); // OR
       });
@@ -126,9 +162,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
    */
   applyFilter(filterValue: string) {
     this.pageEvent.pageIndex = 0;
-    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
     this.filterString = filterValue;
-    this.vmModelDataSource.filter = filterValue;
+    this.vmModelDataSource.filter = filterValue.toLowerCase();
   }
 
   /**
@@ -270,10 +305,145 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public trackByVmId(item) {
     return item.id;
   }
+
+  /*
+    Operator behaviors:
+    Negation: get search results that don't include this term. Example foo -bar
+    Or: A boolean or. Get results that include 1 or more terms that have been or'd. Example: foo or bar or boz
+    Exact: Get results where this exact term appears. Example: "abc 123"
+    There is no and operator because that is the default behavior. ie foo bar is logically equivalent to foo and bar
+    keywords/operations can be escaped with \, no need to do so inside quotes though
+  */
+  private parseSearch(search: string) {
+    let parsed = new Array<SearchTerm>();
+    const tokens = search.split(' ');
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+
+      // Negation is unary and appears in the same token as the term it negates
+      // We don't consider a lone '-' as a negation. Lone operators are ignored because
+      // the user is probably about to type something to apply the operator to and we
+      // don't want to prematurely hide any VMs
+      if (token.startsWith('-') && token.length > 1) {
+        const term = new SearchTerm(SearchOperator.Negate, [
+          token.substring(1),
+        ]);
+        parsed.push(term);
+      } else if (token.length == 1) {
+        // This is a lone unary operator - currently just means a lone '-' character
+        // ignore it so we don't discard matches that don't contain a literal '-' char
+        continue;
+      } else if (token.startsWith('"')) {
+        // Exact match - find all tokens wrapped by quotes and consider them a single term
+        const [term, newIndex] = this.parseExactMatch(i, tokens);
+        i = newIndex;
+        parsed.push(term);
+      } else {
+        // This term has not been modified by an unary operator but we still need to check for binary operators
+        // which is currently just OR - search has AND behavior by default, no need for an AND operator
+
+        // Normal token
+        if (i >= tokens.length - 1 || !this.isBinOp(tokens[i + 1])) {
+          let term: SearchTerm;
+          this.isEscaped(tokens[i])
+            ? (term = new SearchTerm(SearchOperator.None, [token.substr(1)]))
+            : (term = new SearchTerm(SearchOperator.None, [token]));
+          parsed.push(term);
+        } else if (this.isBinOp(tokens[i + 1])) {
+          // A binary operator is being applied
+          const [term, newIndex] = this.parseBinaryOp(i, tokens);
+          i = newIndex;
+          parsed.push(term);
+        }
+      }
+    }
+    return parsed;
+  }
+
+  private isBinOp(tok: string): boolean {
+    const lower = tok.toLowerCase();
+    return lower == 'or';
+  }
+
+  private isEscaped(tok: string): boolean {
+    return tok.startsWith('\\');
+  }
+
+  /**
+   * Parse an expression with a binary operator
+   * @param i the current index into tokens
+   * @param tokens the list of tokens
+   */
+  private parseBinaryOp(i: number, tokens: string[]): [SearchTerm, number] {
+    const token = tokens[i];
+    const lower = tokens[i + 1].toLowerCase();
+    let term: SearchTerm;
+    if (lower == 'or') {
+      // Look ahead to find any other ORs
+      term = new SearchTerm(SearchOperator.Or, [token]);
+      let j = i + 1;
+      for (; j < tokens.length; j += 2) {
+        if (tokens[j].toLowerCase() == 'or') {
+          if (j + 1 > tokens.length - 1) {
+            break;
+          }
+          const curr = tokens[j + 1];
+          if (this.isEscaped(tokens[j + 1])) {
+            term.value.push(curr.substr(1));
+          } else {
+            term.value.push(tokens[j + 1]);
+          }
+        } else {
+          break;
+        }
+      }
+      // We need to skip over the terms that we considered while looking ahead or they will be double counted
+      i = j - 1;
+    }
+    return [term, i];
+  }
+
+  private parseExactMatch(i: number, tokens: string[]): [SearchTerm, number] {
+    // Replace twice in case this the only quoted token
+    const token = tokens[i];
+    let term = new SearchTerm(SearchOperator.Exact, [
+      token.replace('"', '').replace('"', ''),
+    ]);
+    if (!token.endsWith('"')) {
+      let j = i + 1; // Needs to be scoped outside of loop
+      for (; j < tokens.length; j++) {
+        const curr = tokens[j];
+        if (curr.endsWith('"')) {
+          term.value.push(curr.replace('"', ''));
+          break;
+        }
+        term.value.push(curr);
+      }
+      return [term, j + 1];
+    }
+    return [term, i + 1];
+  }
 }
 
 enum VmAction {
   PowerOn,
   PowerOff,
   Shutdown,
+}
+
+enum SearchOperator {
+  Exact,
+  Or,
+  Negate,
+  None, // Just a regular search term
+}
+
+class SearchTerm {
+  kind: SearchOperator;
+  value: string[];
+
+  constructor(kind: SearchOperator, value: string[]) {
+    this.kind = kind;
+    this.value = value;
+  }
 }
