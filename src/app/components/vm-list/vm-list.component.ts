@@ -77,6 +77,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       filters: string
     ) => {
       const matchFilter = [];
+      console.log('Fixing an invisibile bug take 1'); // update this to know when changes are live
       const filterArray = this.parseSearch(filters);
       const columns = [data.name];
       // Or if you don't want to specify specifics columns =>
@@ -89,6 +90,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
             // If the term is negated we want to not consider VMs containing that term
             // so consider it a match when a VM does not contain it.
             case SearchOperator.Negate:
+              console.log('VM names should *not* include ' + f.value[0]);
+
               customFilter.push(!column.toLowerCase().includes(f.value[0]));
               break;
             case SearchOperator.Or:
@@ -103,6 +106,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
               customFilter.push(column.toLowerCase().includes(term));
               break;
             default:
+              console.log('VM names should include ' + f.value[0]);
+              
               customFilter.push(column.toLowerCase().includes(f.value[0]));
           }
         });
@@ -329,6 +334,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
           token.substring(1),
         ]);
         parsed.push(term);
+
+        console.log('Found a negated term:');
+        console.log(term);
+
       } else if (token.length == 1) {
         // This is a lone unary operator - currently just means a lone '-' character
         // ignore it so we don't discard matches that don't contain a literal '-' char
@@ -349,6 +358,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
             ? (term = new SearchTerm(SearchOperator.None, [token.substr(1)]))
             : (term = new SearchTerm(SearchOperator.None, [token]));
           parsed.push(term);
+
+          console.log('Found a normal term:');
+          console.log(term);
+
         } else if (this.isBinOp(tokens[i + 1])) {
           // A binary operator is being applied
           const [term, newIndex] = this.parseBinaryOp(i, tokens);
@@ -357,6 +370,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
         }
       }
     }
+    console.log(parsed);
+
     return parsed;
   }
 
