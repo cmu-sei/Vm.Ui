@@ -162,9 +162,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
    */
   applyFilter(filterValue: string) {
     this.pageEvent.pageIndex = 0;
-    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
     this.filterString = filterValue;
-    this.vmModelDataSource.filter = filterValue;
+    this.vmModelDataSource.filter = filterValue.toLowerCase();
   }
 
   /**
