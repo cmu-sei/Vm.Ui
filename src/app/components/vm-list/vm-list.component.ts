@@ -137,9 +137,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
           }
         });
 
+        console.log('Did VM with name = ' + data.name + ' match the search term? ' + f.value[0] + customFilter.some(Boolean));
         matchFilter.push(customFilter.some(Boolean)); // OR
       });
-      console.log('Did VM with name = ' + data.name + ' match? ' + matchFilter.every(Boolean));
+      console.log('Did VM with name = ' + data.name + ' match all search terms? ' + matchFilter.every(Boolean));
       return matchFilter.every(Boolean); // AND
     };
 
