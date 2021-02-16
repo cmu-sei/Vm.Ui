@@ -91,8 +91,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
             // so consider it a match when a VM does not contain it.
             case SearchOperator.Negate:
               console.log('VM names should *not* include ' + f.value[0]);
+              const p = !column.toLowerCase().includes(f.value[0]);
+              console.log('Column = ' + column.toLowerCase() + ' does *not* contain search term?' + p);
 
-              customFilter.push(!column.toLowerCase().includes(f.value[0]));
+              customFilter.push(p);
               break;
             case SearchOperator.Or:
               const truthVal = f.value.some((tok) =>
@@ -107,8 +109,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
               break;
             default:
               console.log('VM names should include ' + f.value[0]);
-              
-              customFilter.push(column.toLowerCase().includes(f.value[0]));
+              const q = column.toLowerCase().includes(f.value[0]);
+              console.log('Column = ' + column.toLowerCase() + ' does include search term? ' + q);
+
+              customFilter.push(p);
           }
         });
 
