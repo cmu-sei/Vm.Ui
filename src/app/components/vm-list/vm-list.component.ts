@@ -318,7 +318,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i];
 
-      // Negation is urnary and appears in the same token as the term it negates
+      // Negation is unary and appears in the same token as the term it negates
       // We don't consider a lone '-' as a negation. Lone operators are ignored because
       // the user is probably about to type something to apply the operator to and we 
       // don't want to prematurely hide any VMs
@@ -326,7 +326,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
         const term = new SearchTerm(SearchOperator.Negate, [token.substring(1)]);
         parsed.push(term);
       } else if (token.length == 1) {
-        // This is a lone urnary operator - currently just means a lone '-' character
+        // This is a lone unary operator - currently just means a lone '-' character
         // ignore it so we don't discard matches that don't contain a literal '-' char
         continue;
       } else if (token.startsWith('\"')) {
@@ -335,7 +335,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
         i = newIndex;
         parsed.push(term);
       } else {
-        // This term has not been modified by an urnary operator but we still need to check for binary operators
+        // This term has not been modified by an unary operator but we still need to check for binary operators
         // which is currently just OR - search has AND behavior by default, no need for an AND operator
         
         // Normal token
