@@ -77,7 +77,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       filters: string
     ) => {
       const matchFilter = [];
-      console.log('Fixing an invisible bug take 3'); // update this to know when changes are live
+      console.log('Fixing an invisible bug take 4'); // update this to know when changes are live
       const filterArray = this.parseSearch(filters);
       const columns = [data.name];
       // Or if you don't want to specify specifics columns =>
@@ -139,6 +139,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
         matchFilter.push(customFilter.some(Boolean)); // OR
       });
+      console.log('Did VM with name = ' + data.name + ' match? ' + matchFilter.every(Boolean));
       return matchFilter.every(Boolean); // AND
     };
 
