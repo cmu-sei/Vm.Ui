@@ -346,9 +346,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
         // Normal token
         if (i >= tokens.length - 1 || !this.isBinOp(tokens[i + 1])) {
           let term: SearchTerm;
-          // This token is escaped so discard the slash and search for a literal occurance of the token.
-          // Used to search for literal keyword/operators
-
           this.isEscaped(tokens[i])
             ? (term = new SearchTerm(SearchOperator.None, [token.substr(1)]))
             : (term = new SearchTerm(SearchOperator.None, [token]));
