@@ -85,6 +85,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       // Main loop
       filterArray.forEach((f) => {
         const customFilter = [];
+        // Ben: I'm pretty this for loop is unnecessary because columns will always have length one, but leaving for now.
         columns.forEach((column) => {
           switch (f.kind) {
             // If the term is negated we want to not consider VMs containing that term
@@ -116,10 +117,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
           }
         });
 
+        // We should look for matches with the IP addresses only if the search term is an IP address
+        // This is what was causing the "it works on my machine" issue.
         data.ipAddresses.forEach((address) => {
           switch (f.kind) {
             case SearchOperator.Negate:
-              customFilter.push(!address.toLowerCase().includes(f.value[0]));
+              // see above - should also make this more robust.
+              // customFilter.push(!address.toLowerCase().includes(f.value[0]));
               break;
             case SearchOperator.Or:
               const truthVal = f.value.some((tok) =>
