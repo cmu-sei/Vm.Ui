@@ -88,31 +88,34 @@ export class VmListComponent implements OnInit, AfterViewInit {
           switch (f.kind) {
             // If the term is negated we want to not consider VMs containing that term
             // so consider it a match when a VM does not contain it.
-            case SearchOperator.Negate: 
+            case SearchOperator.Negate:
               customFilter.push(!column.toLowerCase().includes(f.value[0]));
               break;
             case SearchOperator.Or:
-              const truthVal = f.value.some(tok => column.toLowerCase().includes(tok));
+              const truthVal = f.value.some((tok) =>
+                column.toLowerCase().includes(tok)
+              );
               customFilter.push(truthVal);
               break;
             case SearchOperator.Exact:
               // Consider all terms that were in quotes as one term to match
               const term = f.value.join(' ');
               customFilter.push(column.toLowerCase().includes(term));
-              break
+              break;
             default:
-              customFilter.push(column.toLowerCase().includes(f.value[0]))
+              customFilter.push(column.toLowerCase().includes(f.value[0]));
           }
         });
 
         data.ipAddresses.forEach((address) => {
-
-          switch(f.kind) {
+          switch (f.kind) {
             case SearchOperator.Negate:
               customFilter.push(!address.toLowerCase().includes(f.value[0]));
               break;
             case SearchOperator.Or:
-              const truthVal = f.value.some(tok => address.toLowerCase().includes(tok));
+              const truthVal = f.value.some((tok) =>
+                address.toLowerCase().includes(tok)
+              );
               customFilter.push(truthVal);
               break;
             case SearchOperator.Exact:
@@ -320,16 +323,18 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
       // Negation is unary and appears in the same token as the term it negates
       // We don't consider a lone '-' as a negation. Lone operators are ignored because
-      // the user is probably about to type something to apply the operator to and we 
+      // the user is probably about to type something to apply the operator to and we
       // don't want to prematurely hide any VMs
       if (token.startsWith('-') && token.length > 1) {
-        const term = new SearchTerm(SearchOperator.Negate, [token.substring(1)]);
+        const term = new SearchTerm(SearchOperator.Negate, [
+          token.substring(1),
+        ]);
         parsed.push(term);
       } else if (token.length == 1) {
         // This is a lone unary operator - currently just means a lone '-' character
         // ignore it so we don't discard matches that don't contain a literal '-' char
         continue;
-      } else if (token.startsWith('\"')) {
+      } else if (token.startsWith('"')) {
         // Exact match - find all tokens wrapped by quotes and consider them a single term
         const [term, newIndex] = this.parseExactMatch(i, tokens);
         i = newIndex;
@@ -337,17 +342,16 @@ export class VmListComponent implements OnInit, AfterViewInit {
       } else {
         // This term has not been modified by an unary operator but we still need to check for binary operators
         // which is currently just OR - search has AND behavior by default, no need for an AND operator
-        
+
         // Normal token
         if (i >= tokens.length - 1 || !this.isBinOp(tokens[i + 1])) {
           let term: SearchTerm;
           // This token is escaped so discard the slash and search for a literal occurance of the token.
           // Used to search for literal keyword/operators
-          if (this.isEscaped(tokens[i])) {
-            term = new SearchTerm(SearchOperator.None, [token.substr(1)]);
-          } else {
-            term = new SearchTerm(SearchOperator.None, [token]);
-          } 
+
+          this.isEscaped(tokens[i])
+            ? (term = new SearchTerm(SearchOperator.None, [token.substr(1)]))
+            : (term = new SearchTerm(SearchOperator.None, [token]));
           parsed.push(term);
         } else if (this.isBinOp(tokens[i + 1])) {
           // A binary operator is being applied
@@ -382,7 +386,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       // Look ahead to find any other ORs
       term = new SearchTerm(SearchOperator.Or, [token]);
       let j = i + 1;
-      for (; j < tokens.length; j+=2) {
+      for (; j < tokens.length; j += 2) {
         if (tokens[j].toLowerCase() == 'or') {
           if (j + 1 > tokens.length - 1) {
             break;
@@ -404,15 +408,17 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   private parseExactMatch(i: number, tokens: string[]): [SearchTerm, number] {
-    // Replace twice in case this the only quoted token 
+    // Replace twice in case this the only quoted token
     const token = tokens[i];
-    let term = new SearchTerm(SearchOperator.Exact, [token.replace('\"', '').replace('\"', '')]); 
-    if (!token.endsWith('\"')) {
+    let term = new SearchTerm(SearchOperator.Exact, [
+      token.replace('"', '').replace('"', ''),
+    ]);
+    if (!token.endsWith('"')) {
       let j = i + 1; // Needs to be scoped outside of loop
       for (; j < tokens.length; j++) {
         const curr = tokens[j];
-        if (curr.endsWith('\"')) {
-          term.value.push(curr.replace('\"', ''));
+        if (curr.endsWith('"')) {
+          term.value.push(curr.replace('"', ''));
           break;
         }
         term.value.push(curr);
@@ -422,7 +428,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
     return [term, i + 1];
   }
 }
-
 
 enum VmAction {
   PowerOn,
@@ -438,8 +443,8 @@ enum SearchOperator {
 }
 
 class SearchTerm {
-  kind: SearchOperator
-  value: string[]
+  kind: SearchOperator;
+  value: string[];
 
   constructor(kind: SearchOperator, value: string[]) {
     this.kind = kind;
