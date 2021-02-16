@@ -77,7 +77,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       filters: string
     ) => {
       const matchFilter = [];
-      console.log('Fixing an invisibile bug take 1'); // update this to know when changes are live
+      console.log('Fixing an invisible bug take 3'); // update this to know when changes are live
       const filterArray = this.parseSearch(filters);
       const columns = [data.name];
       // Or if you don't want to specify specifics columns =>
@@ -92,7 +92,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
             case SearchOperator.Negate:
               console.log('VM names should *not* include ' + f.value[0]);
               const p = !column.toLowerCase().includes(f.value[0]);
-              console.log('Column = ' + column.toLowerCase() + ' does *not* contain search term?' + p);
+              console.log('Column = ' + column.toLowerCase() + ' does *not* contain search term? ' + p);
 
               customFilter.push(p);
               break;
@@ -112,7 +112,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
               const q = column.toLowerCase().includes(f.value[0]);
               console.log('Column = ' + column.toLowerCase() + ' does include search term? ' + q);
 
-              customFilter.push(p);
+              customFilter.push(q);
           }
         });
 
