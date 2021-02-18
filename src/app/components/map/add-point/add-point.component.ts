@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Vm, VmMap } from '../../../generated/vm-api';
-import { Machine } from '../../../models/machine';
+import { Clickpoint } from '../../../models/clickpoint';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { VmModel } from '../../../state/vms/vm.model';
 import { VmsQuery } from '../../../state/vms/vms.query';
@@ -27,7 +27,7 @@ export class AddPointComponent implements OnInit {
   @Input() label: string;
   @Input() editing: boolean;
 
-  @Output() machineEmitter = new EventEmitter<Machine>();
+  @Output() machineEmitter = new EventEmitter<Clickpoint>();
 
   form: FormGroup;
   vmsFiltered: Observable<VmModel[]>;
@@ -92,28 +92,39 @@ export class AddPointComponent implements OnInit {
     const isMap = this.form.get('url').value.url === undefined;
     const urlVal = this.form.get('url').value;
 
-    // If a custom url was selected, use that. Else, if a VmMap was selected, get its id. If a VM was selected, use its name field
-    const url = this.custom
-      ? this.form.get('customUrl').value
-      : isMap
-      ? (urlVal as VmMap).id
-      : (urlVal as VmModel).name;
+    // If a custom url was selected, use that. Else, if a VmMap was selected, get its id.
+    // If not a custom URL or Map, determine whether it is a VM or a multiple select query (ie * or a range)
+    // and send either the VM's name or the query
+    let query = '';
+    let multiple = false;
 
-    const machine = new Machine(
+    if (this.custom) {
+      query = this.form.get('customUrl').value;
+    } else if (isMap) {
+      query = (urlVal as VmMap).id;
+    } else if ((urlVal as VmModel) != undefined) {
+      query = (urlVal as VmModel).name;
+    } else {
+      query = urlVal as string;
+    }
+
+    const point = new Clickpoint(
       +this.xPos,
       +this.yPos,
       +this.form.get('rad').value,
-      url,
+      [],
       this.id,
-      this.form.get('label').value
+      this.form.get('label').value,
+      query,
+      multiple,
     );
 
-    this.machineEmitter.emit(machine);
+    this.machineEmitter.emit(point);
   }
 
   onDelete(): void {
-    // Send a machine with fields set to -1 to signal that it should be deleted
-    this.machineEmitter.emit(new Machine(-1, -1, -1, '', this.id, ''));
+    // Send a clickpoint with fields set to -1 to signal that it should be deleted
+    this.machineEmitter.emit(new Clickpoint(-1, -1, -1, [], this.id, '', '', false));
   }
 
   getMapUrl(m: VmMap): string {

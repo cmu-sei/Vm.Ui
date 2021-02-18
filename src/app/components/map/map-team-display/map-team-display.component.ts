@@ -5,7 +5,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Machine } from '../../../models/machine';
+import { Clickpoint } from '../../../models/clickpoint';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 
 @Component({
@@ -14,7 +14,7 @@ import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
   styleUrls: ['./map-team-display.component.css'],
 })
 export class MapTeamDisplayComponent implements OnInit {
-  machines: Observable<Machine[]>;
+  machines: Observable<Clickpoint[]>;
   id: string;
   mapId: string;
   imageUrl: SafeUrl;
@@ -63,6 +63,7 @@ export class MapTeamDisplayComponent implements OnInit {
     });
   }
 
+  // TODO support clickpoints containing multiple URLs
   redirect(url: string): void {
     const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -74,11 +75,9 @@ export class MapTeamDisplayComponent implements OnInit {
       this.mapSwitched.emit(url);
     } else if (url.startsWith('http')) {
       // If the URL starts with http, we assume it is a custom URL
-
       window.open(url);
     } else {
       // If neither a map or custom url was clicked, it must be a VM. Url is the name of the VM
-
       this.route.params.subscribe((params) => {
         const viewId = params['viewId'];
         window.open(`views/${viewId}/vms/${url}/console`);

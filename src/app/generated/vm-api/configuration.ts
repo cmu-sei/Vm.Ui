@@ -1,6 +1,3 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-
 import { HttpParameterCodec } from '@angular/common/http';
 
 export interface ConfigurationParameters {
@@ -85,4 +82,3 @@ export class Configuration {
         return mime !== null && (jsonMime.test(mime) || mime.toLowerCase() === 'application/json-patch+json');
     }
 }
-

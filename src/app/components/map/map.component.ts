@@ -12,7 +12,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { Machine } from '../../models/machine';
+import { Clickpoint } from '../../models/clickpoint';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
 import { Coordinate, VmMap } from '../../generated/vm-api';
@@ -27,7 +27,7 @@ import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
   styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit, OnChanges {
-  machines: Machine[];
+  machines: Clickpoint[];
   mapInitialzed: boolean;
   teamIDs: string[];
   name: string;
@@ -64,7 +64,7 @@ export class MapComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.timesSaved = 0;
-    this.machines = new Array<Machine>();
+    this.machines = new Array<Clickpoint>();
 
     this.route.params.subscribe((params) => {
       this.viewId = params['viewId'];
@@ -103,13 +103,15 @@ export class MapComponent implements OnInit, OnChanges {
       if (data.coordinates != null) {
         for (let coord of data.coordinates) {
           this.machines.push(
-            new Machine(
+            new Clickpoint(
               coord.xPosition,
               coord.yPosition,
               coord.radius,
-              coord.url,
+              coord.urls,
               coord.id,
-              coord.label
+              coord.label,
+              '',
+              false
             )
           );
         }
@@ -148,28 +150,42 @@ export class MapComponent implements OnInit, OnChanges {
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 
-  receiveMachine(machine: Machine): void {
-    console.log('Machine: ');
-    console.log(machine);
+  receiveMachine(point: Clickpoint): void {
+    console.log('Clickpoint: ');
+    console.log(point);
 
     // Find the machine being edited. If not undefined, an existing machine is being edited.
     // Else a new machine is being created
     const machineToEdit = this.machines.find((m) => {
-      return m.id === machine.id;
+      return m.id === point.id;
     });
 
-    if (machineToEdit != undefined) {
+    const editing = machineToEdit != undefined;
+
+    if (editing) {
       const index = this.machines.indexOf(machineToEdit);
       // Remove the machine, a -1 field means deletion
-      if (machine.xPosition === -1) {
+      if (point.xPosition === -1) {
         this.machines.splice(index, 1);
-        // Replace the machine with an edited version
       } else {
-        this.machines[index] = machine;
+        // Replace the machine with an edited version
+        point.resources = [point.query];
+        this.machines[index] = point;
       }
-      // Add the new machine
-    } else {
-      this.machines.push(machine);
+    } else if (point.multiple) {
+      // The user wants to associate multiple VMs with this clickpoint, find their URLs
+      // The user can specify a wildcard with * or a range with [0,9]. As of now they need to be at the end of
+      // the string. Putting them in the middle isn't far from just allowing regular expressions, and if we want
+      // to do that, we should just let users input a regex and not mess with it
+      let vmNames = new Array<string>();
+      if (point.query.endsWith('*')) {
+        const start = point.query.substring(0, point.query.length - 1);
+        const filtered = this.vmMapsQuery.getAll().filter(vm => {
+          vm.name.startsWith(start);
+        });
+        vmNames = filtered.map(vm => vm.name);
+      }
+      // TODO support range syntax
     }
 
     this.dialogRef.close();
@@ -183,7 +199,7 @@ export class MapComponent implements OnInit, OnChanges {
         xPosition: machine.xPosition,
         yPosition: machine.yPosition,
         radius: machine.radius,
-        url: machine.url,
+        urls: machine.resources,
         id: machine.id,
         label: machine.label,
       };
@@ -205,13 +221,13 @@ export class MapComponent implements OnInit, OnChanges {
     this.router.navigate(['views/' + this.viewId + '/map']);
   }
 
-  edit(m: Machine): void {
-    this.xActual = m.xPosition;
-    this.yActual = m.yPosition;
-    this.selectedRad = m.radius;
-    this.selectedURL = m.url;
-    this.idToSend = m.id;
-    this.selectedLabel = m.label;
+  edit(c: Clickpoint): void {
+    this.xActual = c.xPosition;
+    this.yActual = c.yPosition;
+    this.selectedRad = c.radius;
+    this.selectedURL = '';
+    this.idToSend = c.id;
+    this.selectedLabel = c.label;
     this.editing = true;
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
