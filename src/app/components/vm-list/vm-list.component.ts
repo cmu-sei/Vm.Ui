@@ -77,53 +77,38 @@ export class VmListComponent implements OnInit, AfterViewInit {
       filters: string
     ) => {
       const matchFilter = [];
-      console.log('Fixing an invisible bug take 4'); // update this to know when changes are live
       const filterArray = this.parseSearch(filters);
-      const columns = [data.name];
+      const name = data.name;
       // Or if you don't want to specify specifics columns =>
       // const columns = (<any>Object).values(data);
       // Main loop
       filterArray.forEach((f) => {
         const customFilter = [];
-        // Ben: I'm pretty this for loop is unnecessary because columns will always have length one, but leaving for now.
-        columns.forEach((column) => {
-          switch (f.kind) {
-            // If the term is negated we want to not consider VMs containing that term
-            // so consider it a match when a VM does not contain it.
-            case SearchOperator.Negate:
-              console.log('VM names should *not* include ' + f.value[0]);
-              const p = !column.toLowerCase().includes(f.value[0]);
-              console.log('Column = ' + column.toLowerCase() + ' does *not* contain search term? ' + p);
+        switch (f.kind) {
+          // If the term is negated we want to not consider VMs containing that term
+          // so consider it a match when a VM does not contain it.
+          case SearchOperator.Negate:
+            customFilter.push(!name.toLowerCase().includes(f.value[0]));
+            break;
+          case SearchOperator.Or:
+            const truthVal = f.value.some((tok) =>
+              name.toLowerCase().includes(tok)
+            );
+            customFilter.push(truthVal);
+            break;
+          case SearchOperator.Exact:
+            // Consider all terms that were in quotes as one term to match
+            const term = f.value.join(' ');
+            customFilter.push(name.toLowerCase().includes(term));
+            break;
+          default:
+            customFilter.push(name.toLowerCase().includes(f.value[0]));
+        }
 
-              customFilter.push(p);
-              break;
-            case SearchOperator.Or:
-              const truthVal = f.value.some((tok) =>
-                column.toLowerCase().includes(tok)
-              );
-              customFilter.push(truthVal);
-              break;
-            case SearchOperator.Exact:
-              // Consider all terms that were in quotes as one term to match
-              const term = f.value.join(' ');
-              customFilter.push(column.toLowerCase().includes(term));
-              break;
-            default:
-              console.log('VM names should include ' + f.value[0]);
-              const q = column.toLowerCase().includes(f.value[0]);
-              console.log('Column = ' + column.toLowerCase() + ' does include search term? ' + q);
-
-              customFilter.push(q);
-          }
-        });
-
-        // We should look for matches with the IP addresses only if the search term is an IP address
-        // This is what was causing the "it works on my machine" issue.
         data.ipAddresses.forEach((address) => {
           switch (f.kind) {
             case SearchOperator.Negate:
-              // see above - should also make this more robust.
-              // customFilter.push(!address.toLowerCase().includes(f.value[0]));
+              // Using this operator on IP addresses causues issues, so just ignore it
               break;
             case SearchOperator.Or:
               const truthVal = f.value.some((tok) =>
@@ -140,11 +125,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
               customFilter.push(address.toLowerCase().includes(f.value[0]));
           }
         });
-
-        console.log('Did VM with name = ' + data.name + ' match the search term? ' + f.value[0] + customFilter.some(Boolean));
         matchFilter.push(customFilter.some(Boolean)); // OR
       });
-      console.log('Did VM with name = ' + data.name + ' match all search terms? ' + matchFilter.every(Boolean));
       return matchFilter.every(Boolean); // AND
     };
 
@@ -344,10 +326,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
           token.substring(1),
         ]);
         parsed.push(term);
-
-        console.log('Found a negated term:');
-        console.log(term);
-
       } else if (token.length == 1) {
         // This is a lone unary operator - currently just means a lone '-' character
         // ignore it so we don't discard matches that don't contain a literal '-' char
@@ -368,10 +346,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
             ? (term = new SearchTerm(SearchOperator.None, [token.substr(1)]))
             : (term = new SearchTerm(SearchOperator.None, [token]));
           parsed.push(term);
-
-          console.log('Found a normal term:');
-          console.log(term);
-
         } else if (this.isBinOp(tokens[i + 1])) {
           // A binary operator is being applied
           const [term, newIndex] = this.parseBinaryOp(i, tokens);
@@ -380,8 +354,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    console.log(parsed);
-
     return parsed;
   }
 
