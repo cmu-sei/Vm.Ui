@@ -78,39 +78,37 @@ export class VmListComponent implements OnInit, AfterViewInit {
     ) => {
       const matchFilter = [];
       const filterArray = this.parseSearch(filters);
-      const columns = [data.name];
+      const name = data.name;
       // Or if you don't want to specify specifics columns =>
       // const columns = (<any>Object).values(data);
       // Main loop
       filterArray.forEach((f) => {
         const customFilter = [];
-        columns.forEach((column) => {
-          switch (f.kind) {
-            // If the term is negated we want to not consider VMs containing that term
-            // so consider it a match when a VM does not contain it.
-            case SearchOperator.Negate:
-              customFilter.push(!column.toLowerCase().includes(f.value[0]));
-              break;
-            case SearchOperator.Or:
-              const truthVal = f.value.some((tok) =>
-                column.toLowerCase().includes(tok)
-              );
-              customFilter.push(truthVal);
-              break;
-            case SearchOperator.Exact:
-              // Consider all terms that were in quotes as one term to match
-              const term = f.value.join(' ');
-              customFilter.push(column.toLowerCase().includes(term));
-              break;
-            default:
-              customFilter.push(column.toLowerCase().includes(f.value[0]));
-          }
-        });
+        switch (f.kind) {
+          // If the term is negated we want to not consider VMs containing that term
+          // so consider it a match when a VM does not contain it.
+          case SearchOperator.Negate:
+            customFilter.push(!name.toLowerCase().includes(f.value[0]));
+            break;
+          case SearchOperator.Or:
+            const truthVal = f.value.some((tok) =>
+              name.toLowerCase().includes(tok)
+            );
+            customFilter.push(truthVal);
+            break;
+          case SearchOperator.Exact:
+            // Consider all terms that were in quotes as one term to match
+            const term = f.value.join(' ');
+            customFilter.push(name.toLowerCase().includes(term));
+            break;
+          default:
+            customFilter.push(name.toLowerCase().includes(f.value[0]));
+        }
 
         data.ipAddresses.forEach((address) => {
           switch (f.kind) {
             case SearchOperator.Negate:
-              customFilter.push(!address.toLowerCase().includes(f.value[0]));
+              // Using this operator on IP addresses causues issues, so just ignore it
               break;
             case SearchOperator.Or:
               const truthVal = f.value.some((tok) =>
@@ -127,7 +125,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
               customFilter.push(address.toLowerCase().includes(f.value[0]));
           }
         });
-
         matchFilter.push(customFilter.some(Boolean)); // OR
       });
       return matchFilter.every(Boolean); // AND
