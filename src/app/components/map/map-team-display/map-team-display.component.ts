@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -21,7 +21,6 @@ export class MapTeamDisplayComponent implements OnInit {
   mapId: string;
   imageUrl: SafeUrl;
   mapInitialized: boolean;
-  
 
   @Input() imageUrlInput: string;
   @Input() mapIdInput: string;
@@ -84,9 +83,15 @@ export class MapTeamDisplayComponent implements OnInit {
         window.open(url);
       } else {
         // If neither a map or custom url was clicked, it must be a VM. Url is the name of the VM
-        window.open(`views/${viewId}/vms/${url}/console`);
+        this.route.params.subscribe((params) => {
+          const viewId = params['viewId'];
+          window.open(`views/${viewId}/vms/${url}/console`);
+        });
       }
     } else {
+      this.dialog.open(MapVmSelectComponent, {
+        data: { vms: urls, viewId: viewId }
+      });
     }
   }
 
