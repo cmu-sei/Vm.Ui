@@ -68,7 +68,6 @@ export class MapTeamDisplayComponent implements OnInit {
     });
   }
 
-  // TODO support clickpoints containing multiple URLs
   redirect(urls: string[]): void {
     const viewId = this.route.snapshot.params['viewId'];
 
