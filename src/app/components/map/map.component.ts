@@ -152,9 +152,6 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   receiveMachine(point: Clickpoint): void {
-    console.log('Clickpoint: ');
-    console.log(point);
-
     // Find the machine being edited. If not undefined, an existing machine is being edited.
     // Else a new machine is being created
     const machineToEdit = this.machines.find((m) => {
@@ -181,20 +178,12 @@ export class MapComponent implements OnInit, OnChanges {
       const query = point.query;
       let vmNames = new Array<string>();
       if (query.endsWith('*')) {
-        console.log('Wildcard used');
-
         const start = query.substring(0, query.length - 1);
         this.vmsService.getViewVms(this.viewId).subscribe(vms => {
           const filtered = vms.filter(vm => {
             return vm.name.startsWith(start);
           })
           vmNames = filtered.map(vm => vm.name);
-          
-          console.log('Looking for VMs that match: ' + start);
-          console.log('All VMs in view');
-          console.log(vms);
-          console.log('VMs that matched');
-          console.log(filtered);
 
           point.urls = vmNames;
           this.machines.push(point);
@@ -206,10 +195,6 @@ export class MapComponent implements OnInit, OnChanges {
         const numbers = range.split(',');
         const lower = parseInt(numbers[0]);
         const upper = parseInt(numbers[1]);
-
-        console.log('Start = ' + start);
-        console.log('Lower bound = ' + lower);
-        console.log('Upper bound = ' + upper);
 
         this.vmsService.getViewVms(this.viewId).subscribe(vms => {
           const filtered = vms.filter(vm => {
@@ -231,8 +216,6 @@ export class MapComponent implements OnInit, OnChanges {
       
     } else {
       point.urls = [point.query];
-      console.log('About to push a clickpoint:');
-      console.log(point);
       this.machines.push(point);
     }
 

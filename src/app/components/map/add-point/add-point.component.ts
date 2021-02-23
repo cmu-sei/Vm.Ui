@@ -98,23 +98,17 @@ export class AddPointComponent implements OnInit {
     let multiple = false;
 
     if (this.custom) {
-      console.log('setting query to customUrl value');
       query = this.form.get('customUrl').value;
     } else if (typeof urlVal == 'string') {
       // Assume that if a string is entered, the user wants multiple VMs
       multiple = true;
       query = urlVal as string;
     } else if (this.isVmMap(urlVal)) {
-      console.log('Setting query to map id');
       query = (urlVal as VmMap).id;
     } else {
       // If here, the only remaining possible value is a VmModel
-      console.log('Setting query to vm name');
       query = (urlVal as VmModel).name;
     }
-
-    console.log('urlVal = ' + urlVal as string);
-    console.log('Query = ' + query);
 
     const point = new Clickpoint(
       +this.xPos,
