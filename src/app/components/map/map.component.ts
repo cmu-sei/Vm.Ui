@@ -20,7 +20,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
-import { VmsQuery } from '../../state/vms/vms.query';
 
 @Component({
   selector: 'app-map',
@@ -171,7 +170,7 @@ export class MapComponent implements OnInit, OnChanges {
         this.machines.splice(index, 1);
       } else {
         // Replace the machine with an edited version
-        point.resources = [point.query];
+        point.urls = [point.query];
         this.machines[index] = point;
       }
     } else if (point.multiple) {
@@ -197,7 +196,7 @@ export class MapComponent implements OnInit, OnChanges {
           console.log('VMs that matched');
           console.log(filtered);
 
-          point.resources = vmNames;
+          point.urls = vmNames;
           this.machines.push(point);
         });  
 
@@ -223,13 +222,15 @@ export class MapComponent implements OnInit, OnChanges {
           })
 
           const names = filtered.map(vm => vm.name);
-          point.resources = names;
+          point.urls = names;
           this.machines.push(point);
         })
+      } else {
+        window.alert('Invalid query');
       }
       
     } else {
-      point.resources = [point.query];
+      point.urls = [point.query];
       console.log('About to push a clickpoint:');
       console.log(point);
       this.machines.push(point);
@@ -246,7 +247,7 @@ export class MapComponent implements OnInit, OnChanges {
         xPosition: machine.xPosition,
         yPosition: machine.yPosition,
         radius: machine.radius,
-        urls: machine.resources,
+        urls: machine.urls,
         id: machine.id,
         label: machine.label,
       };

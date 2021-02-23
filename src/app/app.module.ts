@@ -72,6 +72,7 @@ import { UserListComponent } from './components/user-list/user-list.component';
 import { TeamUsersComponent } from './components/user-list/team-users/team-users.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
+import { MapVmSelectComponent } from './components/map/map-vm-select/map-vm-select.component';
 
 /** Custom options the configure the tooltip's default show/hide delays. */
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
@@ -127,6 +128,7 @@ export class AngularMaterialModule {}
     AddPointComponent,
     UserListComponent,
     TeamUsersComponent,
+    MapVmSelectComponent,
   ],
   imports: [
     TableVirtualScrollModule,
