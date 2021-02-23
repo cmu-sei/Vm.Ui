@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,7 +22,6 @@ export class MapTeamDisplayComponent implements OnInit {
   imageUrl: SafeUrl;
   mapInitialized: boolean;
   
-  private dialogRef: MatDialogRef<MapVmSelectComponent>;
 
   @Input() imageUrlInput: string;
   @Input() mapIdInput: string;
@@ -88,9 +87,6 @@ export class MapTeamDisplayComponent implements OnInit {
         window.open(`views/${viewId}/vms/${url}/console`);
       }
     } else {
-      this.dialogRef = this.dialog.open(MapVmSelectComponent, {
-        data: { vms: urls, viewId: viewId }
-      });
     }
   }
 

@@ -200,7 +200,7 @@ export class MapComponent implements OnInit, OnChanges {
           const filtered = vms.filter(vm => {
             const num = vm.name.charAt(vm.name.length - 1);
             const parsed = parseInt(num);
-            if (parsed == NaN) {
+            if (isNaN(parsed)) {
               return false
             }
             return vm.name.startsWith(start) && (parsed >= lower && parsed <= upper); 
