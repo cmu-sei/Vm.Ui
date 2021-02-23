@@ -180,7 +180,6 @@ export class MapComponent implements OnInit, OnChanges {
       // the string. Putting them in the middle isn't far from just allowing regular expressions, and if we want
       // to do that, we should just let users input a regex and not mess with it
       const query = point.query;
-      const rangeRegex = new RegExp('\[\d,\d*\]$');
       let vmNames = new Array<string>();
       if (query.endsWith('*')) {
         console.log('Wildcard used');
@@ -202,16 +201,31 @@ export class MapComponent implements OnInit, OnChanges {
           this.machines.push(point);
         });  
 
-      } else if (rangeRegex.test(query)) {
-        // TODO support range syntax
+      } else if (query.endsWith(']')) {
         const start = query.substring(0, query.lastIndexOf('['));
-        const range = query.substring(query.lastIndexOf('[') + 1);
+        const range = query.substring(query.lastIndexOf('[') + 1, query.lastIndexOf(']'));
         const numbers = range.split(',');
-        const lower = numbers[0];
-        const upper = numbers[1];
+        const lower = parseInt(numbers[0]);
+        const upper = parseInt(numbers[1]);
 
-        // Plan as of thursday: call filter, check vm name begins with start, get substr after start, 
-        // see if that number is in specified range
+        console.log('Start = ' + start);
+        console.log('Lower bound = ' + lower);
+        console.log('Upper bound = ' + upper);
+
+        this.vmsService.getViewVms(this.viewId).subscribe(vms => {
+          const filtered = vms.filter(vm => {
+            const num = vm.name.charAt(vm.name.length - 1);
+            const parsed = parseInt(num);
+            if (parsed == NaN) {
+              return false
+            }
+            return vm.name.startsWith(start) && (parsed >= lower && parsed <= upper); 
+          })
+
+          const names = filtered.map(vm => vm.name);
+          point.resources = names;
+          this.machines.push(point);
+        })
       }
       
     } else {
