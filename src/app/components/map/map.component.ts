@@ -15,11 +15,12 @@ import {
 import { Clickpoint } from '../../models/clickpoint';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
-import { Coordinate, VmMap } from '../../generated/vm-api';
+import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
+import { VmsQuery } from '../../state/vms/vms.query';
 
 @Component({
   selector: 'app-map',
@@ -59,7 +60,8 @@ export class MapComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private vmMapsService: VmMapsService,
-    private vmMapsQuery: VmMapsQuery
+    private vmMapsQuery: VmMapsQuery,
+    private vmsService: VmsService 
   ) {}
 
   ngOnInit(): void {
@@ -181,12 +183,27 @@ export class MapComponent implements OnInit, OnChanges {
       const rangeRegex = new RegExp('\[\d,\d*\]$');
       let vmNames = new Array<string>();
       if (query.endsWith('*')) {
+        console.log('Wildcard used');
+
         const start = query.substring(0, query.length - 1);
-        const filtered = this.vmMapsQuery.getAll().filter(vm => {
-          vm.name.startsWith(start);
-        });
-        vmNames = filtered.map(vm => vm.name);
+        this.vmsService.getViewVms(this.viewId).subscribe(vms => {
+          const filtered = vms.filter(vm => {
+            return vm.name.startsWith(start);
+          })
+          vmNames = filtered.map(vm => vm.name);
+          
+          console.log('Looking for VMs that match: ' + start);
+          console.log('All VMs in view');
+          console.log(vms);
+          console.log('VMs that matched');
+          console.log(filtered);
+
+          point.resources = vmNames;
+          this.machines.push(point);
+        });  
+
       } else if (rangeRegex.test(query)) {
+        // TODO support range syntax
         const start = query.substring(0, query.lastIndexOf('['));
         const range = query.substring(query.lastIndexOf('[') + 1);
         const numbers = range.split(',');
@@ -196,7 +213,12 @@ export class MapComponent implements OnInit, OnChanges {
         // Plan as of thursday: call filter, check vm name begins with start, get substr after start, 
         // see if that number is in specified range
       }
-      // TODO support range syntax
+      
+    } else {
+      point.resources = [point.query];
+      console.log('About to push a clickpoint:');
+      console.log(point);
+      this.machines.push(point);
     }
 
     this.dialogRef.close();
@@ -206,7 +228,7 @@ export class MapComponent implements OnInit, OnChanges {
   save() {
     let coords = new Array<Coordinate>();
     for (let machine of this.machines) {
-      let coord = <Coordinate>{
+      const coord = <Coordinate>{
         xPosition: machine.xPosition,
         yPosition: machine.yPosition,
         radius: machine.radius,
@@ -217,7 +239,7 @@ export class MapComponent implements OnInit, OnChanges {
       coords.push(coord);
     }
 
-    let payload = <VmMap>{
+    const payload = <VmMap>{
       coordinates: coords,
       name: this.name,
       imageUrl: this.imageUrlToSave,

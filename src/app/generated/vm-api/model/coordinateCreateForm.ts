@@ -16,7 +16,7 @@ export interface CoordinateCreateForm {
     xPosition?: number;
     yPosition?: number;
     radius?: number;
-    url?: string | null;
+    urls?: Array<string> | null;
     label?: string | null;
 }
 
