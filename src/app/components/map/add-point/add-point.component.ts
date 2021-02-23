@@ -89,7 +89,6 @@ export class AddPointComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const isMap = this.form.get('url').value.url === undefined;
     const urlVal = this.form.get('url').value;
 
     // If a custom url was selected, use that. Else, if a VmMap was selected, get its id.
@@ -99,14 +98,23 @@ export class AddPointComponent implements OnInit {
     let multiple = false;
 
     if (this.custom) {
+      console.log('setting query to customUrl value');
       query = this.form.get('customUrl').value;
-    } else if (isMap) {
-      query = (urlVal as VmMap).id;
-    } else if ((urlVal as VmModel) != undefined) {
-      query = (urlVal as VmModel).name;
-    } else {
+    } else if (typeof urlVal == 'string') {
+      // Assume that if a string is entered, the user wants multiple VMs
+      multiple = true;
       query = urlVal as string;
+    } else if (this.isVmMap(urlVal)) {
+      console.log('Setting query to map id');
+      query = (urlVal as VmMap).id;
+    } else {
+      // If here, the only remaining possible value is a VmModel
+      console.log('Setting query to vm name');
+      query = (urlVal as VmModel).name;
     }
+
+    console.log('urlVal = ' + urlVal as string);
+    console.log('Query = ' + query);
 
     const point = new Clickpoint(
       +this.xPos,
@@ -134,5 +142,13 @@ export class AddPointComponent implements OnInit {
   // Display resource name in dialog instead of url
   display(item: Vm | VmMap): string {
     return item && item.name ? item.name : '';
+  }
+
+  private isVmMap(object: any): object is VmMap {
+    return 'coordinates' in object;
+  }
+
+  private isVmModel(object: any): object is VmModel {
+    return 'powerState' in object;
   }
 }

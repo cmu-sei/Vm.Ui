@@ -177,13 +177,24 @@ export class MapComponent implements OnInit, OnChanges {
       // The user can specify a wildcard with * or a range with [0,9]. As of now they need to be at the end of
       // the string. Putting them in the middle isn't far from just allowing regular expressions, and if we want
       // to do that, we should just let users input a regex and not mess with it
+      const query = point.query;
+      const rangeRegex = new RegExp('\[\d,\d*\]$');
       let vmNames = new Array<string>();
-      if (point.query.endsWith('*')) {
-        const start = point.query.substring(0, point.query.length - 1);
+      if (query.endsWith('*')) {
+        const start = query.substring(0, query.length - 1);
         const filtered = this.vmMapsQuery.getAll().filter(vm => {
           vm.name.startsWith(start);
         });
         vmNames = filtered.map(vm => vm.name);
+      } else if (rangeRegex.test(query)) {
+        const start = query.substring(0, query.lastIndexOf('['));
+        const range = query.substring(query.lastIndexOf('[') + 1);
+        const numbers = range.split(',');
+        const lower = numbers[0];
+        const upper = numbers[1];
+
+        // Plan as of thursday: call filter, check vm name begins with start, get substr after start, 
+        // see if that number is in specified range
       }
       // TODO support range syntax
     }
