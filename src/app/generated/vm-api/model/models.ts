@@ -1,5 +1,7 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 export * from './bulkPowerOperation';
 export * from './bulkPowerOperationResponse';
@@ -23,6 +25,7 @@ export * from './vm';
 export * from './vmCreateForm';
 export * from './vmMap';
 export * from './vmMapCreateForm';
+export * from './vmMapUpdateForm';
 export * from './vmUpdateForm';
 export * from './vmUser';
 export * from './vmUserTeam';

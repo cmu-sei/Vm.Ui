@@ -1,0 +1,20 @@
+<!--
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<div>
+	<mat-form-field fxLayout="row">
+		<mat-label>
+			Choose VMs to open
+		</mat-label>
+		<mat-select multiple [(ngModel)]="selected">
+			<mat-option *ngFor="let vm of data.vms" [value]="vm">
+				{{vm}}
+			</mat-option>
+		</mat-select>
+	</mat-form-field>
+	<button mat-stroked-button (click)="redirect()">
+		Navigate to VM(s)
+	</button>
+</div>

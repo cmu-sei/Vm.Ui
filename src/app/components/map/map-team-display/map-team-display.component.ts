@@ -2,11 +2,13 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Machine } from '../../../models/machine';
+import { Clickpoint } from '../../../models/clickpoint';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
+import { MapVmSelectComponent } from '../map-vm-select/map-vm-select.component';
 
 @Component({
   selector: 'app-map-team-display',
@@ -14,7 +16,7 @@ import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
   styleUrls: ['./map-team-display.component.css'],
 })
 export class MapTeamDisplayComponent implements OnInit {
-  machines: Observable<Machine[]>;
+  machines: Observable<Clickpoint[]>;
   id: string;
   mapId: string;
   imageUrl: SafeUrl;
@@ -28,7 +30,8 @@ export class MapTeamDisplayComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private vmMapsQuery: VmMapsQuery
+    private vmMapsQuery: VmMapsQuery,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -63,25 +66,31 @@ export class MapTeamDisplayComponent implements OnInit {
     });
   }
 
-  redirect(url: string): void {
-    const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  redirect(urls: string[]): void {
+    const viewId = this.route.snapshot.params['viewId'];
 
-    // If the url is just a guid, we are redirecting to a map. This is a special case and will behave as if the user
-    // selected the new map from the drop down. This approach works because the only maps available
-    // to link to are other maps in the same view that the user can access. So given some map m that links to a map m'
-    // we know that 1. m' is in this view and 2. the user can access m' (these conditions are the same for the maps in the drop down)
-    if (url.match(guidRegex)) {
-      this.mapSwitched.emit(url);
-    } else if (url.startsWith('http')) {
-      // If the URL starts with http, we assume it is a custom URL
-
-      window.open(url);
+    if (urls.length == 1) {
+      const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const url = urls[0];
+      // If the url is just a guid, we are redirecting to a map. This is a special case and will behave as if the user
+      // selected the new map from the drop down. This approach works because the only maps available
+      // to link to are other maps in the same view that the user can access. So given some map m that links to a map m'
+      // we know that 1. m' is in this view and 2. the user can access m' (these conditions are the same for the maps in the drop down)
+      if (url.match(guidRegex)) {
+        this.mapSwitched.emit(url);
+      } else if (url.startsWith('http')) {
+        // If the URL starts with http, we assume it is a custom URL
+        window.open(url);
+      } else {
+        // If neither a map or custom url was clicked, it must be a VM. Url is the name of the VM
+        this.route.params.subscribe((params) => {
+          const viewId = params['viewId'];
+          window.open(`views/${viewId}/vms/${url}/console`);
+        });
+      }
     } else {
-      // If neither a map or custom url was clicked, it must be a VM. Url is the name of the VM
-
-      this.route.params.subscribe((params) => {
-        const viewId = params['viewId'];
-        window.open(`views/${viewId}/vms/${url}/console`);
+      this.dialog.open(MapVmSelectComponent, {
+        data: { vms: urls, viewId: viewId }
       });
     }
   }

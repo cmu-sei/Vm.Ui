@@ -12,10 +12,10 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { Machine } from '../../models/machine';
+import { Clickpoint } from '../../models/clickpoint';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
-import { Coordinate, VmMap } from '../../generated/vm-api';
+import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
@@ -27,7 +27,7 @@ import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
   styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit, OnChanges {
-  machines: Machine[];
+  machines: Clickpoint[];
   mapInitialzed: boolean;
   teamIDs: string[];
   name: string;
@@ -59,12 +59,13 @@ export class MapComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private vmMapsService: VmMapsService,
-    private vmMapsQuery: VmMapsQuery
+    private vmMapsQuery: VmMapsQuery,
+    private vmsService: VmsService 
   ) {}
 
   ngOnInit(): void {
     this.timesSaved = 0;
-    this.machines = new Array<Machine>();
+    this.machines = new Array<Clickpoint>();
 
     this.route.params.subscribe((params) => {
       this.viewId = params['viewId'];
@@ -103,13 +104,15 @@ export class MapComponent implements OnInit, OnChanges {
       if (data.coordinates != null) {
         for (let coord of data.coordinates) {
           this.machines.push(
-            new Machine(
+            new Clickpoint(
               coord.xPosition,
               coord.yPosition,
               coord.radius,
-              coord.url,
+              coord.urls,
               coord.id,
-              coord.label
+              coord.label,
+              '',
+              false
             )
           );
         }
@@ -148,28 +151,72 @@ export class MapComponent implements OnInit, OnChanges {
     this.dialogRef = this.dialog.open(this.addPointDialog);
   }
 
-  receiveMachine(machine: Machine): void {
-    console.log('Machine: ');
-    console.log(machine);
-
+  receiveMachine(point: Clickpoint): void {
     // Find the machine being edited. If not undefined, an existing machine is being edited.
     // Else a new machine is being created
     const machineToEdit = this.machines.find((m) => {
-      return m.id === machine.id;
+      return m.id === point.id;
     });
 
-    if (machineToEdit != undefined) {
+    const editing = machineToEdit != undefined;
+
+    if (editing) {
       const index = this.machines.indexOf(machineToEdit);
       // Remove the machine, a -1 field means deletion
-      if (machine.xPosition === -1) {
+      if (point.xPosition === -1) {
         this.machines.splice(index, 1);
-        // Replace the machine with an edited version
       } else {
-        this.machines[index] = machine;
+        // Replace the machine with an edited version
+        point.urls = [point.query];
+        this.machines[index] = point;
       }
-      // Add the new machine
+    } else if (point.multiple) {
+      // The user wants to associate multiple VMs with this clickpoint, find their URLs
+      // The user can specify a wildcard with * or a range with [0,9]. As of now they need to be at the end of
+      // the string. Putting them in the middle isn't far from just allowing regular expressions, and if we want
+      // to do that, we should just let users input a regex and not mess with it
+      const query = point.query;
+      let vmNames = new Array<string>();
+      if (query.endsWith('*')) {
+        const start = query.substring(0, query.length - 1);
+        this.vmsService.getViewVms(this.viewId).subscribe(vms => {
+          const filtered = vms.filter(vm => {
+            return vm.name.startsWith(start);
+          })
+          vmNames = filtered.map(vm => vm.name);
+
+          point.urls = vmNames;
+          this.machines.push(point);
+        });  
+
+      } else if (query.endsWith(']')) {
+        const start = query.substring(0, query.lastIndexOf('['));
+        const range = query.substring(query.lastIndexOf('[') + 1, query.lastIndexOf(']'));
+        const numbers = range.split(',');
+        const lower = parseInt(numbers[0]);
+        const upper = parseInt(numbers[1]);
+
+        this.vmsService.getViewVms(this.viewId).subscribe(vms => {
+          const filtered = vms.filter(vm => {
+            const num = vm.name.charAt(vm.name.length - 1);
+            const parsed = parseInt(num);
+            if (isNaN(parsed)) {
+              return false
+            }
+            return vm.name.startsWith(start) && (parsed >= lower && parsed <= upper); 
+          })
+
+          const names = filtered.map(vm => vm.name);
+          point.urls = names;
+          this.machines.push(point);
+        })
+      } else {
+        window.alert('Invalid query');
+      }
+      
     } else {
-      this.machines.push(machine);
+      point.urls = [point.query];
+      this.machines.push(point);
     }
 
     this.dialogRef.close();
@@ -179,18 +226,18 @@ export class MapComponent implements OnInit, OnChanges {
   save() {
     let coords = new Array<Coordinate>();
     for (let machine of this.machines) {
-      let coord = <Coordinate>{
+      const coord = <Coordinate>{
         xPosition: machine.xPosition,
         yPosition: machine.yPosition,
         radius: machine.radius,
-        url: machine.url,
+        urls: machine.urls,
         id: machine.id,
         label: machine.label,
       };
       coords.push(coord);
     }
 
-    let payload = <VmMap>{
+    const payload = <VmMap>{
       coordinates: coords,
       name: this.name,
       imageUrl: this.imageUrlToSave,
@@ -205,13 +252,13 @@ export class MapComponent implements OnInit, OnChanges {
     this.router.navigate(['views/' + this.viewId + '/map']);
   }
 
-  edit(m: Machine): void {
-    this.xActual = m.xPosition;
-    this.yActual = m.yPosition;
-    this.selectedRad = m.radius;
-    this.selectedURL = m.url;
-    this.idToSend = m.id;
-    this.selectedLabel = m.label;
+  edit(c: Clickpoint): void {
+    this.xActual = c.xPosition;
+    this.yActual = c.yPosition;
+    this.selectedRad = c.radius;
+    this.selectedURL = '';
+    this.idToSend = c.id;
+    this.selectedLabel = c.label;
     this.editing = true;
 
     this.dialogRef = this.dialog.open(this.addPointDialog);
