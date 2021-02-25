@@ -85,6 +85,20 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >
             Shutdown
           </button>
+          <button
+            mat-menu-item
+            (click)="openSelectedHere()"
+            [disabled]="selectedVms.length === 0"  
+          >
+            Open in Player tab
+          </button>
+          <button
+            mat-menu-item
+            (click)="openSelectedBrowser()"
+            [disabled]="selectedVms.length === 0"
+          >
+            Open in browser tab
+          </button>
         </mat-menu>
 
         <div fxLayout="column" fxLayoutAlign="space-around center">
@@ -138,9 +152,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         "
         [matTooltip]="vm.lastError"
       >
+      <!-- TODO Remove the true here before merging - only for local testing  -->
         <div
-          *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
-          [dtsSelectItem]="vm.id"
+          *ngIf="true || vm.powerState.toString() !== 'Unknown'; else notSelectable"
+          [dtsSelectItem]="vm"
           fxLayout="row"
           fxLayoutAlign="start center"
         >

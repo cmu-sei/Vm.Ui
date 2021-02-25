@@ -44,7 +44,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public filterString = '';
   public showIps = false;
   public ipv4Only = true;
-  public selectedVms = new Array<string>();
+  public selectedVms = new Array<VmModel>();
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(SelectContainerComponent)
@@ -285,11 +285,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
           switch (action) {
             case VmAction.PowerOff:
-              return this.vmService.powerOff(this.selectedVms);
+              return this.vmService.powerOff(this.selectedVms.map(vm => vm.id));
             case VmAction.PowerOn:
-              return this.vmService.powerOn(this.selectedVms);
+              return this.vmService.powerOn(this.selectedVms.map(vm => vm.id));
             case VmAction.Shutdown:
-              return this.vmService.shutdown(this.selectedVms);
+              return this.vmService.shutdown(this.selectedVms.map(vm => vm.id));
           }
         }),
         take(1)
@@ -303,6 +303,22 @@ export class VmListComponent implements OnInit, AfterViewInit {
     return item.id;
   }
 
+  /**
+   * Open the selected VMs in Player tabs
+   */
+  public openSelectedHere() {
+    return;
+  }
+
+  /**
+   * Open the selected VMs in browser tabs
+   */
+  public openSelectedBrowser() {
+    for (let vm of this.selectedVms) {
+      window.open(vm.url, '_blank');
+    }
+  }
+ 
   /*
     Operator behaviors:
     Negation: get search results that don't include this term. Example foo -bar
