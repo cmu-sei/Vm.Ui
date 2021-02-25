@@ -307,14 +307,19 @@ export class VmListComponent implements OnInit, AfterViewInit {
    * Open the selected VMs in Player tabs
    */
   public openSelectedHere() {
-    return;
+    for (const vm of this.selectedVms) {
+      const vmName = vm.name;
+      const url = vm.url;
+      const val = <{ [name: string]: string }>{ name: vmName, url };
+      this.openVmHere.emit(val);
+    }
   }
 
   /**
    * Open the selected VMs in browser tabs
    */
   public openSelectedBrowser() {
-    for (let vm of this.selectedVms) {
+    for (const vm of this.selectedVms) {
       window.open(vm.url, '_blank');
     }
   }
