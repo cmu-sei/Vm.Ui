@@ -152,9 +152,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         "
         [matTooltip]="vm.lastError"
       >
-      <!-- TODO Remove the true here before merging - only for local testing  -->
         <div
-          *ngIf="true || vm.powerState.toString() !== 'Unknown'; else notSelectable"
+          *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
           [dtsSelectItem]="vm"
           fxLayout="row"
           fxLayoutAlign="start center"
