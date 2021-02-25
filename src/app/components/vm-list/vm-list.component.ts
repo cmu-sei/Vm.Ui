@@ -5,6 +5,7 @@ import { HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -63,7 +64,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private fileService: FileService,
     private dialogService: DialogService,
     private teamsService: TeamsService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private changeDetector: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -76,6 +78,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
       data: VmModel,
       filters: string
     ) => {
+      console.log('Top of filter predicate');
+
       const matchFilter = [];
       const filterArray = this.parseSearch(filters);
       const name = data.name;
@@ -149,6 +153,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   onPage(pageEvent) {
+    console.log('On page called');
     this.pageEvent = pageEvent;
     this.selectContainer.clearSelection();
   }
@@ -161,6 +166,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.pageEvent.pageIndex = 0;
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
+
+    this.selectContainer.clearSelection();
   }
 
   /**
@@ -347,7 +354,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
           token.substring(1),
         ]);
         parsed.push(term);
-      } else if (token.length == 1) {
+      } else if (this.isUnOp(token)) {
         // This is a lone unary operator - currently just means a lone '-' character
         // ignore it so we don't discard matches that don't contain a literal '-' char
         continue;
@@ -376,6 +383,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
       }
     }
     return parsed;
+  }
+
+  private isUnOp(tok: string): boolean {
+    return tok == '-';
   }
 
   private isBinOp(tok: string): boolean {
