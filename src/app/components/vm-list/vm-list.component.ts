@@ -16,11 +16,13 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
 import { filter, switchMap, take } from 'rxjs/operators';
+import { VmsService } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmModel } from '../../state/vms/vm.model';
+import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 
 @Component({
@@ -45,6 +47,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public showIps = false;
   public ipv4Only = true;
   public selectedVms = new Array<VmModel>();
+  public sortByTeams = false;
+  public groupByTeams = new Array<{team: string, vms: VmModel[]}>();
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(SelectContainerComponent)
@@ -63,7 +67,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private fileService: FileService,
     private dialogService: DialogService,
     private teamsService: TeamsService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
   ) {}
 
   ngOnInit() {
@@ -256,6 +260,26 @@ export class VmListComponent implements OnInit, AfterViewInit {
       return vm.ipAddresses.filter((x) => !x.includes(':'));
     } else {
       return vm.ipAddresses;
+    }
+  }
+
+  sortChanged(checked: boolean): void {
+    this.sortByTeams = checked;
+    if (checked) {
+      const teams = new Set<string>();
+      for (const vm of this.vmModelDataSource.filteredData) {
+        vm.teamIds.map(id => teams.add(id));
+      }
+
+      for (const team of teams) {
+        this.groupByTeams.push({
+          team: team,
+          vms: this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team))
+        });
+      }
+
+      console.log('Grouped by team ID:');
+      console.log(this.groupByTeams);
     }
   }
 
