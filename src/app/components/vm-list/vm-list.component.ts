@@ -78,8 +78,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
       data: VmModel,
       filters: string
     ) => {
-      console.log('Top of filter predicate');
-
       const matchFilter = [];
       const filterArray = this.parseSearch(filters);
       const name = data.name;
@@ -153,7 +151,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   onPage(pageEvent) {
-    console.log('On page called');
     this.pageEvent = pageEvent;
     this.selectContainer.clearSelection();
   }
@@ -167,6 +164,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
 
+    // Clear selection to avoid bug in drag select library
     this.selectContainer.clearSelection();
   }
 
