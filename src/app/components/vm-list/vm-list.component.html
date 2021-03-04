@@ -149,7 +149,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
     
     <dts-select-container [(selectedItems)]="selectedVms" *ngIf=sortByTeams>
-      <div *ngFor="let group of groupByTeams;
+      <div *ngFor="let group of sortedGroups();
                   let i = index;">
         <label *ngIf="shouldShowHeader(i)">
           {{group.team}}

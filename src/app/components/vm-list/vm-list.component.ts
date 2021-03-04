@@ -37,7 +37,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public displayedColumns: string[] = ['name'];
 
   // MatPaginator Output
-  public defaultPageSize = 4;
+  public defaultPageSize = 50;
   public pageEvent: PageEvent;
   public uploading = false;
   public uploadProgress = 0;
@@ -264,7 +264,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   // TODO:
-  // Make pagination work with this
   // Improve styling (should talk to ryan)
   // Make sure all other functionalities work regardless of sorted vs not
   sortChanged(checked: boolean): void {
@@ -292,21 +291,45 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * Returns whether a particular VM should be displayed on the current page. Used when sorting VMs by team.
+   * @param i the index of the current group
+   * @param j the index of the current VM within the current group
+   */
   shouldBeOnPage(i: number, j: number): boolean {
+    // Get how many VMs have been displayed in previous groups
     let alreadyRendered = 0;
     this.groupByTeams.slice(0, i).map(group => {
       alreadyRendered += group.vms.length;
     })
 
+    // The current VM's index relative to the page size. add one to account for 0-based indexing
     const currentPos = alreadyRendered + j + 1;
 
+    // Returns true if the current VM should be on this page. 
+    // Basically, a VM should be on this page if its index is too high for the previous page but too low for the next page
+    // More formally: n = 0-based page index m = page size. true if: n * m < currentPos <= (n + 1) * m
     return currentPos <= (this.paginator.pageIndex + 1) * this.paginator.pageSize && currentPos > this.paginator.pageIndex * this.paginator.pageSize;
   }
 
+  /**
+   * Returns whether a particular group (team) header should be displayed
+   * @param i the index of the current group
+   */
   shouldShowHeader(i: number) {
     const numVMs = this.groupByTeams[i].vms.length;
     
+    // Two cases - we are either beginning to display this team's VMs on the current case 
+    // OR it was cut off and we need to finish displaying the VMs on this page
     return this.shouldBeOnPage(i, 0) || this.shouldBeOnPage(i, numVMs - 1);
+  }
+
+  /**
+   * Returns the sorted version of the VMs grouped by their team.
+   * Sorted alphabetically on team name
+   */
+  sortedGroups() {
+    return this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
   }
 
   public powerOffSelected() {
