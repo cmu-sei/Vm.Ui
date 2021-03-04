@@ -16,6 +16,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
 import { filter, switchMap, take } from 'rxjs/operators';
+import { TeamService } from '../../generated/player-api';
 import { VmsService } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
@@ -68,6 +69,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private teamsService: TeamsService,
     public themeService: ThemeService,
+    private playerTeamService: TeamService
   ) {}
 
   ngOnInit() {
@@ -263,6 +265,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // TODO:
+  // Get actual name of team from ID
+  // Improve styling (should talk to ryan)
+  // Make sure all other functionalities work regardless of sorted vs not
   sortChanged(checked: boolean): void {
     this.sortByTeams = checked;
     if (checked) {
@@ -272,10 +278,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
       }
 
       for (const team of teams) {
-        this.groupByTeams.push({
-          team: team,
-          vms: this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team))
-        });
+        // Call API to get the name of the current team given its id
+        this.playerTeamService.getTeam(team).subscribe(data => {
+          this.groupByTeams.push({
+            team: data.name,
+            vms: this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team))
+          });
+        })
       }
 
       console.log('Grouped by team ID:');
@@ -294,6 +303,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public shutdownSelected() {
     this.performAction(VmAction.Shutdown, 'Shutdown', 'shutdown');
   }
+
 
   private performAction(action: VmAction, title: string, actionName: string) {
     this.dialogService
