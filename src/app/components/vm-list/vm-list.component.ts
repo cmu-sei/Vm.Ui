@@ -15,8 +15,9 @@ import {
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
+import { Observable, of } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
-import { TeamService } from '../../generated/player-api';
+import { Team, TeamService } from '../../generated/player-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
@@ -48,6 +49,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public selectedVms = new Array<VmModel>();
   public sortByTeams = false;
   public groupByTeams = new Array<{team: string, vms: VmModel[]}>();
+  public onAdminTeam: Observable<boolean>;
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(SelectContainerComponent)
@@ -146,6 +148,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
           this.vmApiResponded = false;
         }
       );
+    
+    this.onAdminTeam = this.playerTeamService.getMyViewTeams(this.vmService.viewId).pipe(
+      switchMap((teams: Team[]) => {
+        return of(teams.some(t => t.permissions.some(p => p.key == 'ViewAdmin')))
+      })
+    )
   }
 
   ngAfterViewInit() {

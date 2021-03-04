@@ -116,7 +116,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             >IPv4 Only</mat-checkbox
           >
         </div>
-        <div fxLayout="column" fxLayoutAlign="space-around center">
+        <div fxLayout="column" fxLayoutAlign="space-around center" *ngIf="onAdminTeam | async">
           <mat-checkbox
             class="search-checkbox text"
             color="primary"
