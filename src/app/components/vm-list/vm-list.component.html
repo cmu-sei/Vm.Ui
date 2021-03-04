@@ -125,7 +125,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             Sort by Team
           </mat-checkbox>
         </div>
-        <div class="upload-padding" fxLayout="row" fxLayoutAlign="end center">
+        <div class="upload-padding" fxLayout="row" fxLayoutAlign="space-around center">
           <button
             mat-stroked-button
             class="text"
@@ -145,10 +145,17 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             (change)="uploadIso(fileInput)"
           />
         </div>
+        <div fxLayout="row" fxLayoutAlign="end center" *ngIf="sortByTeams">
+          <input
+            type="text"
+            placeholder="Number of columns"
+            [(ngModel)]="numColumns"
+          >
+        </div>
       </div>
     </div>
     
-    <dts-select-container [(selectedItems)]="selectedVms" *ngIf=sortByTeams>
+    <dts-select-container [(selectedItems)]="selectedVms" *ngIf=sortByTeams [ngStyle]="{'column-count': numColumns}">
       <div *ngFor="let group of sortedGroups();
                   let i = index;">
         <label *ngIf="shouldShowHeader(i)">
