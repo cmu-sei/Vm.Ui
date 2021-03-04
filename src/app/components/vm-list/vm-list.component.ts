@@ -50,7 +50,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public sortByTeams = false;
   public groupByTeams = new Array<{team: string, vms: VmModel[]}>();
   public onAdminTeam: Observable<boolean>;
-  public numColumns = 4;
+  public numColumns = 1;
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(SelectContainerComponent)
