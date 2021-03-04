@@ -149,16 +149,22 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
     
     <dts-select-container [(selectedItems)]="selectedVms" *ngIf=sortByTeams>
-      <div *ngFor="let group of groupByTeams">
-        <label>{{group.team}}</label>
-          <div *ngFor="let vm of group.vms">
-            <div
-              *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
-              [dtsSelectItem]="vm"
-              fxLayout="row"
-              fxLayoutAlign="start center"
-            >
-              <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
+      <div *ngFor="let group of groupByTeams;
+                  let i = index;">
+        <label *ngIf="shouldShowHeader(i)">
+          {{group.team}}
+        </label>
+          <div *ngFor="let vm of group.vms;
+                      let j = index;">
+            <div *ngIf="shouldBeOnPage(i, j)">
+              <div
+                *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
+                [dtsSelectItem]="vm"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+              >
+                <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
+              </div>
             </div>
 
               <ng-template #notSelectable>

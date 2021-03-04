@@ -17,13 +17,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { TeamService } from '../../generated/player-api';
-import { VmsService } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmModel } from '../../state/vms/vm.model';
-import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 
 @Component({
@@ -39,7 +37,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public displayedColumns: string[] = ['name'];
 
   // MatPaginator Output
-  public defaultPageSize = 50;
+  public defaultPageSize = 4;
   public pageEvent: PageEvent;
   public uploading = false;
   public uploadProgress = 0;
@@ -266,12 +264,14 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   // TODO:
-  // Get actual name of team from ID
+  // Make pagination work with this
   // Improve styling (should talk to ryan)
   // Make sure all other functionalities work regardless of sorted vs not
   sortChanged(checked: boolean): void {
     this.sortByTeams = checked;
     if (checked) {
+      this.groupByTeams = new Array<{team: string, vms: VmModel[]}>();
+
       const teams = new Set<string>();
       for (const vm of this.vmModelDataSource.filteredData) {
         vm.teamIds.map(id => teams.add(id));
@@ -290,6 +290,23 @@ export class VmListComponent implements OnInit, AfterViewInit {
       console.log('Grouped by team ID:');
       console.log(this.groupByTeams);
     }
+  }
+
+  shouldBeOnPage(i: number, j: number): boolean {
+    let alreadyRendered = 0;
+    this.groupByTeams.slice(0, i).map(group => {
+      alreadyRendered += group.vms.length;
+    })
+
+    const currentPos = alreadyRendered + j + 1;
+
+    return currentPos <= (this.paginator.pageIndex + 1) * this.paginator.pageSize && currentPos > this.paginator.pageIndex * this.paginator.pageSize;
+  }
+
+  shouldShowHeader(i: number) {
+    const numVMs = this.groupByTeams[i].vms.length;
+    
+    return this.shouldBeOnPage(i, 0) || this.shouldBeOnPage(i, numVMs - 1);
   }
 
   public powerOffSelected() {
