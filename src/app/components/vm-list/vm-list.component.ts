@@ -273,7 +273,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   // TODO:
   // Improve styling (should talk to ryan)
-  // Make sure all other functionalities work regardless of sorted vs not
+  // Let user choose number of columns to display
   sortChanged(checked: boolean): void {
     this.sortByTeams = checked;
     if (checked) {
@@ -284,18 +284,23 @@ export class VmListComponent implements OnInit, AfterViewInit {
         vm.teamIds.map(id => teams.add(id));
       }
 
+      this.paginator.length = 0;
       for (const team of teams) {
         // Call API to get the name of the current team given its id
         this.playerTeamService.getTeam(team).subscribe(data => {
+          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team));
+          this.paginator.length += vms.length;
           this.groupByTeams.push({
             team: data.name,
-            vms: this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team))
+            vms: vms
           });
         })
       }
 
       console.log('Grouped by team ID:');
       console.log(this.groupByTeams);
+    } else {
+      this.paginator.length = this.vmModelDataSource.filteredData.length;
     }
   }
 
