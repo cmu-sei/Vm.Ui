@@ -63,7 +63,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private fileService: FileService,
     private dialogService: DialogService,
     private teamsService: TeamsService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
   ) {}
 
   ngOnInit() {
@@ -161,6 +161,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.pageEvent.pageIndex = 0;
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
+
+    // Clear selection to avoid bug in drag select library
+    this.selectContainer.clearSelection();
   }
 
   /**
@@ -347,7 +350,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
           token.substring(1),
         ]);
         parsed.push(term);
-      } else if (token.length == 1) {
+      } else if (this.isUnOp(token)) {
         // This is a lone unary operator - currently just means a lone '-' character
         // ignore it so we don't discard matches that don't contain a literal '-' char
         continue;
@@ -376,6 +379,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
       }
     }
     return parsed;
+  }
+
+  private isUnOp(tok: string): boolean {
+    return tok == '-';
   }
 
   private isBinOp(tok: string): boolean {
