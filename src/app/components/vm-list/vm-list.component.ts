@@ -5,7 +5,6 @@ import { HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -65,7 +64,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private teamsService: TeamsService,
     public themeService: ThemeService,
-    private changeDetector: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
