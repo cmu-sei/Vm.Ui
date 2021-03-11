@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -60,7 +61,8 @@ export class MapComponent implements OnInit, OnChanges {
     private router: Router,
     private vmMapsService: VmMapsService,
     private vmMapsQuery: VmMapsQuery,
-    private vmsService: VmsService 
+    private vmsService: VmsService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -128,20 +130,13 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   // Add a new click point
-  append(event): void {
-    const isFirefox = 'InstallTrigger' in window;
-    
-    if (!isFirefox) {
-      // Get the offsets relative to the image. Note that this assumes a 100x100 image
-      let target = event.target;
-      let width = target.getBoundingClientRect().width;
-      this.xActual = (100 * event.pageX) / width;
-      let height = target.getBoundingClientRect().height;
-      this.yActual = ((100 * event.pageY) / height) + 2;
-    } else {
-      this.xActual = event.offsetX;
-      this.yActual = event.offsetY;
-    }
+  append(event): void {    
+    // Get the offsets relative to the image. Note that this assumes a 100x100 image
+    let target = event.target;
+    let width = target.getBoundingClientRect().width;
+    this.xActual = (100 * event.pageX) / width;
+    let height = target.getBoundingClientRect().height;
+    this.yActual = ((100 * event.pageY) / height) + 2;
 
     this.idToSend = uuidv4();
     this.selectedRad = 3;
@@ -217,6 +212,8 @@ export class MapComponent implements OnInit, OnChanges {
     } else {
       point.urls = [point.query];
       this.machines.push(point);
+      console.log('This.machines:');
+      console.log(this.machines);
     }
 
     this.dialogRef.close();
