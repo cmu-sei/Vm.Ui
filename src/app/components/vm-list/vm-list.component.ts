@@ -5,6 +5,7 @@ import { HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -64,6 +65,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private teamsService: TeamsService,
     public themeService: ThemeService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -208,6 +210,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
         const qf = fileSelector.files[0];
 
         if (isAdmin) {
+          console.log('About to open dialog');
           // First prompt the user to confirm if the iso is available for the team or the entire view
           this.dialogService
             .confirm(
@@ -218,6 +221,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
             .pipe(take(1))
             .subscribe((result) => {
               if (result['wasCancelled'] === false) {
+                console.log('wasCalled is false');
                 const isForAll = result['confirm'];
                 this.sendIsoFile(isForAll, qf);
               }
@@ -231,21 +235,26 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   sendIsoFile(isForAll: boolean, file: File) {
+    console.log('In sendIsoFile');
     this.uploading = true;
     this.fileService.uploadIso(isForAll, file).subscribe(
       (event) => {
         if (event.type === HttpEventType.UploadProgress) {
-          const percentDone = Math.round((100 * event.loaded) / event.total);
-          this.uploadProgress = percentDone;
+          this.uploadProgress = Math.round((100 * event.loaded) / event.total);
+          console.log(`Upload progress = ${this.uploadProgress}`);
+          this.cd.detectChanges();
         }
 
         if (event.type === HttpEventType.Response) {
+          console.log('Complete event');
           this.uploading = false;
+          this.cd.detectChanges();
         }
       },
       (err) => {
         console.log(err);
         this.uploading = false;
+        this.cd.detectChanges();
       }
     );
   }
