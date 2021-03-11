@@ -221,7 +221,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
             .pipe(take(1))
             .subscribe((result) => {
               if (result['wasCancelled'] === false) {
-                console.log('wasCalled is false');
                 const isForAll = result['confirm'];
                 this.sendIsoFile(isForAll, qf);
               }
@@ -235,18 +234,15 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   sendIsoFile(isForAll: boolean, file: File) {
-    console.log('In sendIsoFile');
     this.uploading = true;
     this.fileService.uploadIso(isForAll, file).subscribe(
       (event) => {
         if (event.type === HttpEventType.UploadProgress) {
           this.uploadProgress = Math.round((100 * event.loaded) / event.total);
-          console.log(`Upload progress = ${this.uploadProgress}`);
           this.cd.detectChanges();
         }
 
         if (event.type === HttpEventType.Response) {
-          console.log('Complete event');
           this.uploading = false;
           this.cd.detectChanges();
           this.dialogService.message('Upload Completed Successfully', '');
