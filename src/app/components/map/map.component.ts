@@ -62,7 +62,6 @@ export class MapComponent implements OnInit, OnChanges {
     private vmMapsService: VmMapsService,
     private vmMapsQuery: VmMapsQuery,
     private vmsService: VmsService,
-    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
