@@ -190,8 +190,6 @@ export class MapComponent implements OnInit, OnChanges {
         const lower = parseInt(numbers[0]);
         const upper = parseInt(numbers[1]);
 
-        console.log(`lower = ${lower} upper = ${upper}`);
-
         this.vmsService.getViewVms(this.viewId).subscribe(vms => {
           const filtered = vms.filter(vm => {
             // Calling split allows us to match numbers with arbitrary numbers of digits
@@ -214,8 +212,6 @@ export class MapComponent implements OnInit, OnChanges {
     } else {
       point.urls = [point.query];
       this.machines.push(point);
-      console.log('This.machines:');
-      console.log(this.machines);
     }
 
     this.dialogRef.close();
