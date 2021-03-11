@@ -125,10 +125,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             Sort by Team
           </mat-checkbox>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="sortByTeams">
-          <button (click)="decrementColumns()">-</button>
-          <input [(ngModel)]="numColumns">
-          <button (click)="incrementColumns()">+</button>
+        <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="sortByTeams" id="incDecWrapper" title="Add or remove columns">
+          <button mat-mini-fab color="primary" class="incDecBtn" (click)="decrementColumns()">-</button>
+          <input matInput id="colInput" [(ngModel)]="numColumns">
+          <button mat-mini-fab color="primary" class="incDecBtn" (click)="incrementColumns()">+</button>
         </div>
         <div class="upload-padding" fxLayout="row" fxLayoutAlign="end center">
           <button

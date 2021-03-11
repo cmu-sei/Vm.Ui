@@ -25,12 +25,16 @@ import { ThemeService } from '../../services/theme/theme.service';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmService } from '../../state/vms/vms.service';
 
+const MAX_COLUMNS = 10;
+const MIN_COLUMNS = 1;
+
 @Component({
   selector: 'app-vm-list',
   templateUrl: './vm-list.component.html',
   styleUrls: ['./vm-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class VmListComponent implements OnInit, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<VmModel>(
     new Array<VmModel>()
@@ -309,11 +313,15 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   decrementColumns() {
-    this.numColumns--;
+    if (this.numColumns > MIN_COLUMNS) {
+      this.numColumns--;
+    }
   }
 
   incrementColumns() {
-    this.numColumns++;
+    if (this.numColumns < MAX_COLUMNS) {
+      this.numColumns++;
+    }
   }
 
   /**
