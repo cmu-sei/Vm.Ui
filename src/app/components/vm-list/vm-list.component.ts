@@ -65,7 +65,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private teamsService: TeamsService,
     public themeService: ThemeService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -249,12 +249,14 @@ export class VmListComponent implements OnInit, AfterViewInit {
           console.log('Complete event');
           this.uploading = false;
           this.cd.detectChanges();
+          this.dialogService.message('Upload Completed Successfully', '');
         }
       },
       (err) => {
         console.log(err);
         this.uploading = false;
         this.cd.detectChanges();
+        this.dialogService.message('Upload Failed', 'Error: ' + err);
       }
     );
   }
