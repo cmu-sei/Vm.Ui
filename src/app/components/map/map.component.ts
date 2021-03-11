@@ -191,9 +191,12 @@ export class MapComponent implements OnInit, OnChanges {
         const lower = parseInt(numbers[0]);
         const upper = parseInt(numbers[1]);
 
+        console.log(`lower = ${lower} upper = ${upper}`);
+
         this.vmsService.getViewVms(this.viewId).subscribe(vms => {
           const filtered = vms.filter(vm => {
-            const num = vm.name.charAt(vm.name.length - 1);
+            // Calling split allows us to match numbers with arbitrary numbers of digits
+            const num = vm.name.split(start)[1];
             const parsed = parseInt(num);
             if (isNaN(parsed)) {
               return false
