@@ -125,7 +125,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             Sort by Team
           </mat-checkbox>
         </div>
-        <div class="upload-padding" fxLayout="row" fxLayoutAlign="space-around center">
+        <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="sortByTeams">
+          <button (click)="decrementColumns()">-</button>
+          <input [(ngModel)]="numColumns">
+          <button (click)="incrementColumns()">+</button>
+        </div>
+        <div class="upload-padding" fxLayout="row" fxLayoutAlign="end center">
           <button
             mat-stroked-button
             class="text"
@@ -144,13 +149,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="display: none"
             (change)="uploadIso(fileInput)"
           />
-        </div>
-        <div fxLayout="row" fxLayoutAlign="end center" *ngIf="sortByTeams">
-          <input
-            type="text"
-            placeholder="Number of columns"
-            [(ngModel)]="numColumns"
-          >
         </div>
       </div>
     </div>

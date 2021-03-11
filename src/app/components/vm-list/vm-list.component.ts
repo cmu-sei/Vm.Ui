@@ -50,7 +50,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public sortByTeams = false;
   public groupByTeams = new Array<{team: string, vms: VmModel[]}>();
   public onAdminTeam: Observable<boolean>;
-  public numColumns = 1;
+  public numColumns = 4;
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(SelectContainerComponent)
@@ -273,8 +273,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   // TODO:
-  // Improve styling (should talk to ryan)
-  // Let user choose number of columns to display
+  // Align columns properly with headers
+  // default column number = 4
+  // cap column count at 10
+  // use +/- thing to adjust column count between checkbox and upload file
+    // mouseover text = adjust number of columns
   sortChanged(checked: boolean): void {
     this.sortByTeams = checked;
     if (checked) {
@@ -303,6 +306,14 @@ export class VmListComponent implements OnInit, AfterViewInit {
     } else {
       this.paginator.length = this.vmModelDataSource.filteredData.length;
     }
+  }
+
+  decrementColumns() {
+    this.numColumns--;
+  }
+
+  incrementColumns() {
+    this.numColumns++;
   }
 
   /**
