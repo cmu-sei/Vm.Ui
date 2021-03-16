@@ -5,6 +5,7 @@ import { HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -64,6 +65,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private teamsService: TeamsService,
     public themeService: ThemeService,
+    private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -235,17 +237,21 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.fileService.uploadIso(isForAll, file).subscribe(
       (event) => {
         if (event.type === HttpEventType.UploadProgress) {
-          const percentDone = Math.round((100 * event.loaded) / event.total);
-          this.uploadProgress = percentDone;
+          this.uploadProgress = Math.round((100 * event.loaded) / event.total);
+          this.cd.detectChanges();
         }
 
         if (event.type === HttpEventType.Response) {
           this.uploading = false;
+          this.cd.detectChanges();
+          this.dialogService.message('Upload Completed Successfully', '');
         }
       },
       (err) => {
         console.log(err);
         this.uploading = false;
+        this.cd.detectChanges();
+        this.dialogService.message('Upload Failed', 'Error: ' + err);
       }
     );
   }
