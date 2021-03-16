@@ -277,11 +277,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   // TODO:
-  // Align columns properly with headers
-  // default column number = 4
-  // cap column count at 10
-  // use +/- thing to adjust column count between checkbox and upload file
-    // mouseover text = adjust number of columns
+  // Bug with VM name being blank 
   sortChanged(checked: boolean): void {
     this.sortByTeams = checked;
     if (checked) {

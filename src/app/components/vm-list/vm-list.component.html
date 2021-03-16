@@ -125,7 +125,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             Sort by Team
           </mat-checkbox>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="sortByTeams" id="incDecWrapper" title="Add or remove columns">
+        <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="sortByTeams" id="incDecWrapper" title="Adjust Number of Columns">
           <button mat-mini-fab color="primary" class="incDecBtn" (click)="decrementColumns()">-</button>
           <input matInput id="colInput" [(ngModel)]="numColumns">
           <button mat-mini-fab color="primary" class="incDecBtn" (click)="incrementColumns()">+</button>
@@ -156,7 +156,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <dts-select-container [(selectedItems)]="selectedVms" *ngIf=sortByTeams [ngStyle]="{'column-count': numColumns}">
       <div *ngFor="let group of sortedGroups();
                   let i = index;">
-        <label *ngIf="shouldShowHeader(i)">
+        <label *ngIf="shouldShowHeader(i)" style="display: inline-block;">
           {{group.team}}
         </label>
           <div *ngFor="let vm of group.vms;
@@ -167,6 +167,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [dtsSelectItem]="vm"
                 fxLayout="row"
                 fxLayoutAlign="start center"
+                style="display: inline-block;"
               >
                 <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
               </div>
