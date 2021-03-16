@@ -210,7 +210,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
         const qf = fileSelector.files[0];
 
         if (isAdmin) {
-          console.log('About to open dialog');
           // First prompt the user to confirm if the iso is available for the team or the entire view
           this.dialogService
             .confirm(
