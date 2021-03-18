@@ -58,6 +58,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public onAdminTeam: Observable<boolean>;
   public numColumns = 4;
 
+  // The number of simultaneous VMs to show in a scroll window when sorting by teams
+  public VMS_IN_SCROLL_WINDOW = 10;
+  // The height in px to use for a vm in a scroll window
+  public VM_HEIGHT = 50;
+
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(SelectContainerComponent)
   selectContainer: SelectContainerComponent;
@@ -315,17 +320,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  decrementColumns() {
-    if (this.numColumns > MIN_COLUMNS) {
-      console.log('Decreasing column count');
-      this.numColumns--;
-    }
-  }
-
-  incrementColumns() {
-    if (this.numColumns < MAX_COLUMNS) {
-      console.log('Incrementing column count');
-      this.numColumns++;
+  calcViewportHeight(group): number {
+    const len = group.vms.length;
+    if (len <= this.VMS_IN_SCROLL_WINDOW) {
+      return len * this.VM_HEIGHT;
+    } else {
+      return this.VMS_IN_SCROLL_WINDOW * this.VM_HEIGHT;
     }
   }
 

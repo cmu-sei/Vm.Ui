@@ -155,7 +155,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             {{group.team}}
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <cdk-virtual-scroll-viewport itemSize="50" class="vmList">
+        <cdk-virtual-scroll-viewport itemSize="50" class="vmList" [style.height.px]="calcViewportHeight(group)">
           <div *cdkVirtualFor="let vm of group.vms" class="listItem">
             <div
               *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
