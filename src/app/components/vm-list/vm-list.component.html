@@ -149,7 +149,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
     
     <div *ngIf="sortByTeams">
-      <mat-expansion-panel *ngFor="let group of sortedGroups()">
+      <mat-expansion-panel *ngFor="let group of groupByTeams">
         <mat-expansion-panel-header>
           <mat-panel-title>
             {{group.team}}

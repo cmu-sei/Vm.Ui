@@ -188,6 +188,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.pageEvent.pageIndex = 0;
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
+    this.filterGroups();
   }
 
   /**
@@ -287,34 +288,26 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   // TODO:
-  // Just use expansion panels
-  // Why is cdkVirtualFor not returning anything?
+  // Sort by team name in a performant way
   // Work with search?
   sortChanged(checked: boolean): void {
     this.sortByTeams = checked;
     if (checked) {
-      this.groupByTeams = new Array<{team: string, vms: VmModel[]}>();
-
       const teams = new Set<string>();
       for (const vm of this.vmModelDataSource.filteredData) {
         vm.teamIds.map(id => teams.add(id));
       }
 
-      this.paginator.length = 0;
       for (const team of teams) {
         // Call API to get the name of the current team given its id
         this.playerTeamService.getTeam(team).subscribe(data => {
-          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team));
-          this.paginator.length += vms.length;
+          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team));          
           this.groupByTeams.push({
             team: data.name,
             vms: vms
           });
         })
       }
-
-      console.log('Grouped by team ID:');
-      console.log(this.groupByTeams);
     } else {
       this.paginator.length = this.vmModelDataSource.filteredData.length;
     }
@@ -330,11 +323,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Returns the sorted version of the VMs grouped by their team.
-   * Sorted alphabetically on team name
+   * Filter the groups according to the current search term
    */
-  sortedGroups() {
-    return this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
+  filterGroups() {
+    for (let group of this.groupByTeams) {
+      group.vms = group.vms.filter(vm => this.vmModelDataSource.filteredData.includes(vm));
+    }
   }
 
   public powerOffSelected() {
