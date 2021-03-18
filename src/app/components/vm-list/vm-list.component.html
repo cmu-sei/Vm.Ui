@@ -125,11 +125,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             Sort by Team
           </mat-checkbox>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="sortByTeams" id="incDecWrapper" title="Adjust Number of Columns">
-          <button mat-mini-fab color="primary" class="incDecBtn" (click)="decrementColumns()">-</button>
-          <input matInput id="colInput" [(ngModel)]="numColumns">
-          <button mat-mini-fab color="primary" class="incDecBtn" (click)="incrementColumns()">+</button>
-        </div>
         <div class="upload-padding" fxLayout="row" fxLayoutAlign="end center">
           <button
             mat-stroked-button
@@ -153,108 +148,107 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </div>
     </div>
     
-    <dts-select-container [(selectedItems)]="selectedVms" *ngIf=sortByTeams [ngStyle]="{'column-count': numColumns}">
-      <div *ngFor="let group of sortedGroups();
-                  let i = index;">
-        <label *ngIf="shouldShowHeader(i)" style="display: inline-block;">
-          {{group.team}}
-        </label>
-          <div *ngFor="let vm of group.vms;
-                      let j = index;">
-            <div *ngIf="shouldBeOnPage(i, j)">
-              <div
-                *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
-                [dtsSelectItem]="vm"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                style="display: inline-block;"
-              >
-                <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
-              </div>
+    <div *ngIf="sortByTeams">
+      <mat-expansion-panel *ngFor="let group of sortedGroups()">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{group.team}}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <cdk-virtual-scroll-viewport itemSize="50" class="vmList">
+          <div *cdkVirtualFor="let vm of group.vms" class="listItem">
+            <div
+              *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
+              fxLayout="row"
+              fxLayoutAlign="start center"
+            >
+              <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
             </div>
 
-              <ng-template #notSelectable>
-                <div fxLayout="row" fxLayoutAlign="start center">
-                  <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
-                </div>
-              </ng-template>
-
-              <ng-template #vmTemplate>
-                <div
-                  fxLayout="column"
-                  fxLayoutAlign="center center"
-                  [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }"
-                >
-                  <div class="vm-content" fxLayout="row" fxLayoutAlign="start center">
-                    <div fxFlex="none">
-                      <button mat-icon-button>
-                        <mat-icon
-                          *ngIf="
-                            vm.powerState !== undefined &&
-                            vm.powerState.toString() === 'Unknown'
-                          "
-                          style="color: red"
-                          svgIcon="monitor"
-                          title="Power state unknown"
-                        ></mat-icon>
-                        <mat-icon
-                          *ngIf="
-                            vm.powerState !== undefined &&
-                            vm.powerState.toString() === 'On'
-                          "
-                          class="text"
-                          svgIcon="monitor"
-                        ></mat-icon>
-                        <mat-icon
-                          *ngIf="
-                            vm.powerState !== undefined &&
-                            vm.powerState.toString() === 'Off'
-                          "
-                          style="color: red"
-                          svgIcon="power_icon"
-                          title="Powered Off"
-                        ></mat-icon>
-                      </button>
-                    </div>
-                    <div fxFlex class="content">
-                      <a
-                        class="vm-link"
-                        [attr.href]="vm.url"
-                        (click)="
-                          openHere(
-                            $event,
-                            vm.name,
-                            this.themeService.addThemeQueryParam(vm.url)
-                          )
+            <ng-template #notSelectable>
+              <div fxLayout="row" fxLayoutAlign="start center">
+                <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
+              </div>
+            </ng-template>
+      
+            <ng-template #vmTemplate>
+              <div
+                fxLayout="column"
+                fxLayoutAlign="center center"
+                [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }"
+              >
+                <div class="vm-content" fxLayout="row" fxLayoutAlign="start center">
+                  <div fxFlex="none">
+                    <button mat-icon-button>
+                      <mat-icon
+                        *ngIf="
+                          vm.powerState !== undefined &&
+                          vm.powerState.toString() === 'Unknown'
                         "
-                        >{{ vm.name }}</a
-                      >
-                    </div>
-                    <div class="open-tab-icon">
-                      <button
-                        mat-icon-button
-                        style="outline: none"
+                        style="color: red"
+                        svgIcon="monitor"
+                        title="Power state unknown"
+                      ></mat-icon>
+                      <mat-icon
+                        *ngIf="
+                          vm.powerState !== undefined &&
+                          vm.powerState.toString() === 'On'
+                        "
                         class="text"
-                        (click)="
-                          openInTab(this.themeService.addThemeQueryParam(vm.url))
+                        svgIcon="monitor"
+                      ></mat-icon>
+                      <mat-icon
+                        *ngIf="
+                          vm.powerState !== undefined &&
+                          vm.powerState.toString() === 'Off'
                         "
-                        title="Open in Browser Tab"
-                      >
-                        <mat-icon class="tab-icon" svgIcon="ic_open_tab"></mat-icon>
-                      </button>
-                    </div>
+                        style="color: red"
+                        svgIcon="power_icon"
+                        title="Powered Off"
+                      ></mat-icon>
+                    </button>
                   </div>
-                  <div *ngIf="showIps" fxLayout="column" class="content">
-                    <label *ngFor="let address of getIpAddresses(vm)">
-                      {{ address }}
-                    </label>
+                  <div fxFlex class="content">
+                    <a
+                      class="vm-link"
+                      [attr.href]="vm.url"
+                      (click)="
+                        openHere(
+                          $event,
+                          vm.name,
+                          this.themeService.addThemeQueryParam(vm.url)
+                        )
+                      "
+                      >{{ vm.name }}</a
+                    >
+                  </div>
+                  <div class="open-tab-icon">
+                    <button
+                      mat-icon-button
+                      style="outline: none"
+                      class="text"
+                      (click)="
+                        openInTab(this.themeService.addThemeQueryParam(vm.url))
+                      "
+                      title="Open in Browser Tab"
+                    >
+                      <mat-icon class="tab-icon" svgIcon="ic_open_tab"></mat-icon>
+                    </button>
                   </div>
                 </div>
-              </ng-template>
-
+                <div *ngIf="showIps" fxLayout="column" class="content">
+                  <label *ngFor="let address of getIpAddresses(vm)">
+                    {{ address }}
+                  </label>
+                </div>
+              </div>
+            </ng-template>
           </div>
-      </div>
-    </dts-select-container>
+        </cdk-virtual-scroll-viewport>
+      </mat-expansion-panel>
+
+    </div>
+  
 
     <dts-select-container [(selectedItems)]="selectedVms" *ngIf="!sortByTeams">
       <div

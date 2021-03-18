@@ -105,15 +105,12 @@
   margin-left: 5px;
 }
 
-#incDecWrapper {
-  padding-left: 25px;
+.vmList {
+  height: 200px;
+  width: 200px;
+  // border: 1px solid black;
 }
 
-#colInput {
-  text-align: center;
-  width: 2em;
-}
-.incDecBtn {
-  scale: 75%;
-  font-size: xx-large;
+.listItem {
+  height: 50px;
 }
