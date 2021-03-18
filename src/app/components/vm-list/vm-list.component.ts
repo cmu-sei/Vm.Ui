@@ -17,7 +17,7 @@ import {
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { Team, TeamService } from '../../generated/player-api';
 import { DialogService } from '../../services/dialog/dialog.service';
@@ -54,7 +54,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public ipv4Only = true;
   public selectedVms = new Array<VmModel>();
   public sortByTeams = false;
-  public groupByTeams = new Array<{team: string, vms: VmModel[]}>();
+  public groupByTeams = new Array<{team: string, tid: string, vms: VmModel[]}>();
   public onAdminTeam: Observable<boolean>;
   public numColumns = 4;
 
@@ -288,8 +288,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   // TODO:
-  // Sort by team name in a performant way
-  // Work with search?
+  // Figure out drag to select
   sortChanged(checked: boolean): void {
     this.sortByTeams = checked;
     if (checked) {
@@ -298,16 +297,23 @@ export class VmListComponent implements OnInit, AfterViewInit {
         vm.teamIds.map(id => teams.add(id));
       }
 
+      let observables = new Array<Observable<Team>>();
       for (const team of teams) {
         // Call API to get the name of the current team given its id
-        this.playerTeamService.getTeam(team).subscribe(data => {
-          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team));          
-          this.groupByTeams.push({
-            team: data.name,
-            vms: vms
-          });
-        })
+        observables.push(this.playerTeamService.getTeam(team));
       }
+      forkJoin(observables).subscribe(results => {
+        for (const team of results) {
+          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team.id));
+          this.groupByTeams.push({
+            team: team.name,
+            tid: team.id,
+            vms: vms
+          })
+        }
+        this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
+      })
+
     } else {
       this.paginator.length = this.vmModelDataSource.filteredData.length;
     }
@@ -327,8 +333,16 @@ export class VmListComponent implements OnInit, AfterViewInit {
    */
   filterGroups() {
     for (let group of this.groupByTeams) {
-      group.vms = group.vms.filter(vm => this.vmModelDataSource.filteredData.includes(vm));
+      group.vms = [];
     }
+
+    this.vmModelDataSource.filteredData.map(vm => {
+      const teamIds = vm.teamIds;
+      for (let team of teamIds) {
+        const group = this.groupByTeams.find(g => g.tid == team);
+        group.vms.push(vm);
+      }
+    })
   }
 
   public powerOffSelected() {
