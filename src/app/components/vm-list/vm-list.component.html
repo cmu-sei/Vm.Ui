@@ -120,7 +120,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-checkbox
             class="search-checkbox text"
             color="primary"
-            (change) = "sortChanged($event.checked)"
+            (click)="toggleSort()"
           >
             Sort by Team
           </mat-checkbox>
@@ -148,106 +148,121 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </div>
     </div>
     
-    <div *ngIf="sortByTeams">
-      <mat-expansion-panel *ngFor="let group of groupByTeams">
+    <div [hidden]="!sortByTeams">
+      <mat-expansion-panel *ngFor="let group of groupByTeams; let iter = index">
         <mat-expansion-panel-header>
           <mat-panel-title>
             {{group.team}}
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <cdk-virtual-scroll-viewport itemSize="50" class="vmList" [style.height.px]="calcViewportHeight(group)">
-          <dts-select-container [(selectedItems)]="selectedVms">
-            <div *cdkVirtualFor="let vm of group.vms" class="listItem">
-              <div
-                *ngIf="true || vm.powerState.toString() !== 'Unknown'; else notSelectable"
-                [dtsSelectItem]="vm"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-              >
+        <dts-select-container [(selectedItems)]="selectedVms">
+          <div class="listItem" *ngFor="let vm of group.dataSource.data
+            | slice
+              : pageEvent.pageIndex * pageEvent.pageSize
+              : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
+            let i = index;
+            trackBy: trackByVmId"
+          >
+            <div
+              *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
+              [dtsSelectItem]="vm"
+              fxLayout="row"
+              fxLayoutAlign="start center"
+            >
+              <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
+            </div>
+
+            <ng-template #notSelectable>
+              <div fxLayout="row" fxLayoutAlign="start center">
                 <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
               </div>
-  
-              <ng-template #notSelectable>
-                <div fxLayout="row" fxLayoutAlign="start center">
-                  <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
-                </div>
-              </ng-template>
-        
-              <ng-template #vmTemplate>
-                <div
-                  fxLayout="column"
-                  fxLayoutAlign="center center"
-                  [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }"
-                >
-                  <div class="vm-content" fxLayout="row" fxLayoutAlign="start center">
-                    <div fxFlex="none">
-                      <button mat-icon-button>
-                        <mat-icon
-                          *ngIf="
-                            vm.powerState !== undefined &&
-                            vm.powerState.toString() === 'Unknown'
-                          "
-                          style="color: red"
-                          svgIcon="monitor"
-                          title="Power state unknown"
-                        ></mat-icon>
-                        <mat-icon
-                          *ngIf="
-                            vm.powerState !== undefined &&
-                            vm.powerState.toString() === 'On'
-                          "
-                          class="text"
-                          svgIcon="monitor"
-                        ></mat-icon>
-                        <mat-icon
-                          *ngIf="
-                            vm.powerState !== undefined &&
-                            vm.powerState.toString() === 'Off'
-                          "
-                          style="color: red"
-                          svgIcon="power_icon"
-                          title="Powered Off"
-                        ></mat-icon>
-                      </button>
-                    </div>
-                    <div fxFlex class="content">
-                      <a
-                        class="vm-link"
-                        [attr.href]="vm.url"
-                        (click)="
-                          openHere(
-                            $event,
-                            vm.name,
-                            this.themeService.addThemeQueryParam(vm.url)
-                          )
+            </ng-template>
+      
+            <ng-template #vmTemplate>
+              <div
+                fxLayout="column"
+                fxLayoutAlign="center center"
+                [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }"
+              >
+                <div class="vm-content" fxLayout="row" fxLayoutAlign="start center">
+                  <div fxFlex="none">
+                    <button mat-icon-button>
+                      <mat-icon
+                        *ngIf="
+                          vm.powerState !== undefined &&
+                          vm.powerState.toString() === 'Unknown'
                         "
-                        >{{ vm.name }}</a
-                      >
-                    </div>
-                    <div class="open-tab-icon">
-                      <button
-                        mat-icon-button
-                        style="outline: none"
+                        style="color: red"
+                        svgIcon="monitor"
+                        title="Power state unknown"
+                      ></mat-icon>
+                      <mat-icon
+                        *ngIf="
+                          vm.powerState !== undefined &&
+                          vm.powerState.toString() === 'On'
+                        "
                         class="text"
-                        (click)="
-                          openInTab(this.themeService.addThemeQueryParam(vm.url))
+                        svgIcon="monitor"
+                      ></mat-icon>
+                      <mat-icon
+                        *ngIf="
+                          vm.powerState !== undefined &&
+                          vm.powerState.toString() === 'Off'
                         "
-                        title="Open in Browser Tab"
-                      >
-                        <mat-icon class="tab-icon" svgIcon="ic_open_tab"></mat-icon>
-                      </button>
-                    </div>
+                        style="color: red"
+                        svgIcon="power_icon"
+                        title="Powered Off"
+                      ></mat-icon>
+                    </button>
                   </div>
-                  <div *ngIf="showIps" fxLayout="column" class="content">
-                    <label *ngFor="let address of getIpAddresses(vm)">
-                      {{ address }}
-                    </label>
+                  <div fxFlex class="content">
+                    <a
+                      class="vm-link"
+                      [attr.href]="vm.url"
+                      (click)="
+                        openHere(
+                          $event,
+                          vm.name,
+                          this.themeService.addThemeQueryParam(vm.url)
+                        )
+                      "
+                      >{{ vm.name }}</a
+                    >
+                  </div>
+                  <div class="open-tab-icon">
+                    <button
+                      mat-icon-button
+                      style="outline: none"
+                      class="text"
+                      (click)="
+                        openInTab(this.themeService.addThemeQueryParam(vm.url))
+                      "
+                      title="Open in Browser Tab"
+                    >
+                      <mat-icon class="tab-icon" svgIcon="ic_open_tab"></mat-icon>
+                    </button>
                   </div>
                 </div>
-              </ng-template>
-            </div>
-          </dts-select-container>
-        </cdk-virtual-scroll-viewport>
+                <div *ngIf="showIps" fxLayout="column" class="content">
+                  <label *ngFor="let address of getIpAddresses(vm)">
+                    {{ address }}
+                  </label>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </dts-select-container>
+        <mat-paginator
+          #groupPaginators
+          [pageSize]="defaultPageSize"
+          [pageSizeOptions]="[25, 50, 100]"
+          [showFirstLastButtons]="true"
+          (page)="onPage($event)"
+        >
+        </mat-paginator>
+        <div *ngIf="group.dataSource.paginator == undefined">
+          {{ assignPaginator(group, iter) }}
+        </div>
       </mat-expansion-panel>
     </div>
   
@@ -355,14 +370,16 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </ng-template>
     </div>
     </dts-select-container>
-    <mat-paginator
-      #paginator
-      [pageSize]="defaultPageSize"
-      [pageSizeOptions]="[25, 50, 100, vmModelDataSource.filteredData.length]"
-      [showFirstLastButtons]="true"
-      (page)="onPage($event)"
-    >
+    <div [hidden]="sortByTeams">
+      <mat-paginator
+        #paginator
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="[25, 50, 100, vmModelDataSource.filteredData.length]"
+        [showFirstLastButtons]="true"
+        (page)="onPage($event)"
+      >
     </mat-paginator>
+    </div>
   </div>
   <div class="vm-list-container mat-elevation-z8" *ngIf="!vmApiResponded">
     <label>The VM API is not currently reachable.</label>

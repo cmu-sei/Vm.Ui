@@ -5,14 +5,15 @@ import { HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
   Input,
   OnInit,
   Output,
+  QueryList,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -26,9 +27,6 @@ import { TeamsService } from '../../services/teams/teams.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmService } from '../../state/vms/vms.service';
-
-const MAX_COLUMNS = 10;
-const MIN_COLUMNS = 1;
 
 @Component({
   selector: 'app-vm-list',
@@ -54,20 +52,18 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public ipv4Only = true;
   public selectedVms = new Array<VmModel>();
   public sortByTeams = false;
-  public groupByTeams = new Array<{team: string, tid: string, vms: VmModel[]}>();
+  public groupByTeams = new Array<VmGroup>();
   public onAdminTeam: Observable<boolean>;
-  public numColumns = 4;
 
   // The number of simultaneous VMs to show in a scroll window when sorting by teams
   public VMS_IN_SCROLL_WINDOW = 10;
   // The height in px to use for a vm in a scroll window
   public VM_HEIGHT = 50;
 
+  @ViewChildren('groupPaginators') groupPaginators = new QueryList<MatPaginator>();
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(SelectContainerComponent)
   selectContainer: SelectContainerComponent;
-  @ViewChild('incBtn', { read: ElementRef, static: false }) incrementButton: ElementRef;
-  @ViewChild('decBtn', { read: ElementRef, static: false }) decrementButton: ElementRef;
 
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
   @Output() errors = new EventEmitter<{ [key: string]: string }>();
@@ -287,36 +283,29 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // TODO:
-  // Figure out drag to select
-  sortChanged(checked: boolean): void {
-    this.sortByTeams = checked;
-    if (checked) {
-      const teams = new Set<string>();
-      for (const vm of this.vmModelDataSource.filteredData) {
-        vm.teamIds.map(id => teams.add(id));
-      }
-
-      let observables = new Array<Observable<Team>>();
-      for (const team of teams) {
-        // Call API to get the name of the current team given its id
-        observables.push(this.playerTeamService.getTeam(team));
-      }
-      forkJoin(observables).subscribe(results => {
-        for (const team of results) {
-          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team.id));
-          this.groupByTeams.push({
-            team: team.name,
-            tid: team.id,
-            vms: vms
-          })
-        }
-        this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
-      })
-
-    } else {
-      this.paginator.length = this.vmModelDataSource.filteredData.length;
+  groupVms(): void {
+    const teams = new Set<string>();
+    for (const vm of this.vmModelDataSource.filteredData) {
+      vm.teamIds.map(id => teams.add(id));
     }
+
+    let observables = new Array<Observable<Team>>();
+    for (const team of teams) {
+      // Call API to get the name of the current team given its id
+      observables.push(this.playerTeamService.getTeam(team));
+    }
+
+    forkJoin(observables).subscribe(results => {
+      for (let team of results) {
+        const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team.id));
+        const group = new VmGroup(team.name, team.id, vms);
+        // group.dataSource.paginator = this.groupPaginators.toArray()[paginatorIdx++];
+        // console.log(group.dataSource.paginator);
+        this.groupByTeams.push(group);
+      }
+
+      this.groupByTeams.sort((a,b) => a.team.localeCompare(b.team));
+    });
   }
 
   calcViewportHeight(group): number {
@@ -333,16 +322,27 @@ export class VmListComponent implements OnInit, AfterViewInit {
    */
   filterGroups() {
     for (let group of this.groupByTeams) {
-      group.vms = [];
+      group.dataSource.data = [];
     }
 
     this.vmModelDataSource.filteredData.map(vm => {
       const teamIds = vm.teamIds;
       for (let team of teamIds) {
         const group = this.groupByTeams.find(g => g.tid == team);
-        group.vms.push(vm);
+        group.dataSource.data.push(vm);
       }
     })
+  }
+
+  toggleSort() {
+    this.sortByTeams = !this.sortByTeams;
+    this.groupVms();
+  }
+
+  assignPaginator(group: VmGroup, index: number) {
+    console.log(`Assigning paginator with index ${index} to group ${group.team}`);
+    group.dataSource.paginator = this.groupPaginators.toArray()[index];
+    // console.log(group.dataSource.paginator);
   }
 
   public powerOffSelected() {
@@ -550,5 +550,17 @@ class SearchTerm {
   constructor(kind: SearchOperator, value: string[]) {
     this.kind = kind;
     this.value = value;
+  }
+}
+
+class VmGroup {
+  team: string;
+  tid: string;
+  dataSource: MatTableDataSource<VmModel>
+
+  constructor(team: string, tid: string, vms: VmModel[]) {
+    this.team = team;
+    this.tid = tid;
+    this.dataSource = new MatTableDataSource<VmModel>(vms);
   }
 }
