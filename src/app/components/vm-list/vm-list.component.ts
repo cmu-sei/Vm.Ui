@@ -18,13 +18,12 @@ import {
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { Team, TeamService } from '../../generated/player-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
-import { ThemeService } from '../../services/theme/theme.service';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmService } from '../../state/vms/vms.service';
 
@@ -55,11 +54,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public groupByTeams = new Array<VmGroup>();
   public onAdminTeam: Observable<boolean>;
   public currentPanelIndex: number;
-
-  // The number of simultaneous VMs to show in a scroll window when sorting by teams
-  public VMS_IN_SCROLL_WINDOW = 10;
-  // The height in px to use for a vm in a scroll window
-  public VM_HEIGHT = 50;
 
   @ViewChildren('groupPaginators') groupPaginators = new QueryList<MatPaginator>();
   @ViewChild('paginator') paginator: MatPaginator;
@@ -277,8 +271,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // TODO 
-  // refactor
+  /**
+   * Split the VMs up into groups by their teams.
+   */
   groupVms(): void {
     const teams = new Set<string>();
     for (const vm of this.vmModelDataSource.filteredData) {
@@ -297,15 +292,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
         }
       }
     });
-  }
-
-  calcViewportHeight(group): number {
-    const len = group.vms.length;
-    if (len <= this.VMS_IN_SCROLL_WINDOW) {
-      return len * this.VM_HEIGHT;
-    } else {
-      return this.VMS_IN_SCROLL_WINDOW * this.VM_HEIGHT;
-    }
   }
 
   /**
@@ -327,20 +313,24 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   toggleSort() {
     this.sortByTeams = !this.sortByTeams;
+    // If we haven't already, group the VMs by team
     if (this.groupByTeams.length == 0) {
       this.groupVms();
     }
   }
 
   panelClicked(index: number) {
+    // This is the first panel to be clicked
     if (this.currentPanelIndex == undefined) {
       this.currentPanelIndex = index;
+      // The index has changed, so the user clicked a new panel. Clear the old drag to select selection
     } else if (index != this.currentPanelIndex) {
       this.groupSelects.toArray()[this.currentPanelIndex].clearSelection();
       this.currentPanelIndex = index;
     }
   }
 
+  // Assign each VM group a paginator
   assignPaginator(group: VmGroup, index: number) {
     group.dataSource.paginator = this.groupPaginators.toArray()[index];
   }
