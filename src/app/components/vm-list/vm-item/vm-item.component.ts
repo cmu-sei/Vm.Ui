@@ -1,0 +1,32 @@
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ThemeService } from '../../../services/theme/theme.service';
+import { VmModel } from '../../../state/vms/vm.model';
+
+@Component({
+  selector: 'vm-item',
+  templateUrl: './vm-item.component.html',
+  styleUrls: ['./vm-item.component.scss']
+})
+export class VmItemComponent implements OnInit {
+  @Input('vm') vm: VmModel;
+  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
+
+  constructor(
+    public themeService: ThemeService,
+  ) { }
+
+  ngOnInit(): void {
+  }
+
+  // Local Component functions
+  openInTab(url: string) {
+    window.open(url, '_blank');
+  }
+
+  openHere($event, vmName: string, url: string) {
+    $event.preventDefault();
+    const val = <{ [name: string]: string }>{ name: vmName, url };
+    this.openVmHere.emit(val);
+  }
+
+}

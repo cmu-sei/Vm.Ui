@@ -7,7 +7,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   OnInit,
@@ -81,7 +80,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private fileService: FileService,
     private dialogService: DialogService,
     private teamsService: TeamsService,
-    public themeService: ThemeService,
     private playerTeamService: TeamService,
     private cd: ChangeDetectorRef
   ) {}
@@ -197,15 +195,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.applyFilter('');
   }
 
-  // Local Component functions
-  openInTab(url: string) {
-    window.open(url, '_blank');
-  }
-
-  openHere($event, vmName: string, url: string) {
-    $event.preventDefault();
-    const val = <{ [name: string]: string }>{ name: vmName, url };
-    this.openVmHere.emit(val);
+  openHere($event) {
+    this.openVmHere.emit($event);
   }
 
   uploadIso(fileSelector) {

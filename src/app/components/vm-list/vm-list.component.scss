@@ -38,28 +38,8 @@
   padding-right: 4em;
 }
 
-.content {
-  text-align: left;
-  font-size: 70%;
-  padding-bottom: 0.5em;
-  padding-top: 0.2em;
-  padding-left: 0.1em;
-  word-wrap: break-word;
-  max-width: 182px;
-  font-family: 'open_sansregular';
-}
-
-.vm-content {
-  width: 225px;
-}
-
 .tab-icon {
   width: 16px;
-}
-
-.vm-link {
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 .sp-icon {
@@ -77,10 +57,6 @@
 
 .pending {
   opacity: 0.5;
-}
-
-.error {
-  background-color: rgba(255, 0, 0, 0.5);
 }
 
 .upload-padding {
@@ -103,12 +79,4 @@
   height: 20px;
   margin-bottom: 5px;
   margin-left: 5px;
-}
-
-.vmList {
-  width: 1000px;
-}
-
-.listItem {
-  height: 50px;
 }

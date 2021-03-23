@@ -1,0 +1,33 @@
+.content {
+	text-align: left;
+	font-size: 70%;
+	padding-bottom: 0.5em;
+	padding-top: 0.2em;
+	padding-left: 0.1em;
+	word-wrap: break-word;
+	max-width: 182px;
+	font-family: 'open_sansregular';
+}
+
+.vm-content {
+	width: 225px;
+}
+
+.vm-link {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.error {
+	background-color: rgba(255, 0, 0, 0.5);
+}
+    
+  
+.open-tab-icon {
+	margin-left: 0px;
+	padding-right: 4em;
+}
+
+.tab-icon {
+	width: 16px;
+}
