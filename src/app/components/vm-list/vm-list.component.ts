@@ -286,10 +286,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   // TODO 
-  // one API call
-  // Split VMs into columns
   // refactor
-  // fix filtering
   groupVms(): void {
     const teams = new Set<string>();
     for (const vm of this.vmModelDataSource.filteredData) {
