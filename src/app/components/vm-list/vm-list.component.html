@@ -155,7 +155,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             {{group.team}}
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <dts-select-container [(selectedItems)]="selectedVms">
+        <dts-select-container #groupSelectContainers [(selectedItems)]="selectedVms" (mousedown)="panelClicked(iter)">
           <div class="flex-container" *ngFor="let vm of group.dataSource.data
             | slice
               : pageEvent.pageIndex * pageEvent.pageSize
@@ -267,7 +267,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
   
 
-    <dts-select-container [(selectedItems)]="selectedVms" *ngIf="!sortByTeams">
+    <dts-select-container #selectContainer [(selectedItems)]="selectedVms" *ngIf="!sortByTeams">
       <div
         class="flex-container"
         *ngFor="

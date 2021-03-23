@@ -55,6 +55,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public sortByTeams = false;
   public groupByTeams = new Array<VmGroup>();
   public onAdminTeam: Observable<boolean>;
+  public currentPanelIndex: number;
 
   // The number of simultaneous VMs to show in a scroll window when sorting by teams
   public VMS_IN_SCROLL_WINDOW = 10;
@@ -63,8 +64,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   @ViewChildren('groupPaginators') groupPaginators = new QueryList<MatPaginator>();
   @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChild(SelectContainerComponent)
-  selectContainer: SelectContainerComponent;
+  @ViewChildren('groupSelectContainers') groupSelects = new QueryList<SelectContainerComponent>();
+  @ViewChild('selectContainer') selectContainer: SelectContainerComponent;
 
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
   @Output() errors = new EventEmitter<{ [key: string]: string }>();
@@ -337,6 +338,15 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.sortByTeams = !this.sortByTeams;
     if (this.groupByTeams.length == 0) {
       this.groupVms();
+    }
+  }
+
+  panelClicked(index: number) {
+    if (this.currentPanelIndex == undefined) {
+      this.currentPanelIndex = index;
+    } else if (index != this.currentPanelIndex) {
+      this.groupSelects.toArray()[this.currentPanelIndex].clearSelection();
+      this.currentPanelIndex = index;
     }
   }
 
