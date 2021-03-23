@@ -148,7 +148,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </div>
     </div>
     
-    <div [hidden]="!sortByTeams">
+    <div *ngIf="sortByTeams">
       <mat-expansion-panel *ngFor="let group of groupByTeams; let iter = index">
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -164,7 +164,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             trackBy: trackByVmId"
           >
             <div
-              *ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
+              *ngIf="true || vm.powerState.toString() !== 'Unknown'; else notSelectable"
               [dtsSelectItem]="vm"
               fxLayout="row"
               fxLayoutAlign="start center"

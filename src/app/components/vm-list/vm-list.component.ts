@@ -5,6 +5,7 @@ import { HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -81,6 +82,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private teamsService: TeamsService,
     public themeService: ThemeService,
     private playerTeamService: TeamService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -283,28 +285,28 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // TODO 
+  // one API call
+  // Split VMs into columns
+  // refactor
+  // fix filtering
   groupVms(): void {
     const teams = new Set<string>();
     for (const vm of this.vmModelDataSource.filteredData) {
       vm.teamIds.map(id => teams.add(id));
     }
 
-    let observables = new Array<Observable<Team>>();
-    for (const team of teams) {
-      // Call API to get the name of the current team given its id
-      observables.push(this.playerTeamService.getTeam(team));
-    }
-
-    forkJoin(observables).subscribe(results => {
+    this.playerTeamService.getViewTeams(this.vmService.viewId).subscribe(results => {
       for (let team of results) {
-        const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team.id));
-        const group = new VmGroup(team.name, team.id, vms);
-        // group.dataSource.paginator = this.groupPaginators.toArray()[paginatorIdx++];
-        // console.log(group.dataSource.paginator);
-        this.groupByTeams.push(group);
+        if (teams.has(team.id)) {
+          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team.id));
+          const group = new VmGroup(team.name, team.id, vms);
+          this.groupByTeams.push(group);
+  
+          this.groupByTeams.sort((a,b) => a.team.localeCompare(b.team));
+          this.cd.markForCheck();
+        }
       }
-
-      this.groupByTeams.sort((a,b) => a.team.localeCompare(b.team));
     });
   }
 
@@ -336,13 +338,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   toggleSort() {
     this.sortByTeams = !this.sortByTeams;
-    this.groupVms();
+    if (this.groupByTeams.length == 0) {
+      this.groupVms();
+    }
   }
 
   assignPaginator(group: VmGroup, index: number) {
-    console.log(`Assigning paginator with index ${index} to group ${group.team}`);
     group.dataSource.paginator = this.groupPaginators.toArray()[index];
-    // console.log(group.dataSource.paginator);
   }
 
   public powerOffSelected() {
