@@ -163,17 +163,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             let i = index;
             trackBy: trackByVmId"
           >
-            <div
-              *ngIf="true || vm.powerState.toString() !== 'Unknown'; else notSelectable"
-              [dtsSelectItem]="vm"
-              fxLayout="row"
-              fxLayoutAlign="start center"
-            >
-              <vm-item
-                [vm]="vm"
-                (openVmHere)="openHere($event)">
-              </vm-item>
-            </div>
+
+            <vm-item
+              [vm]="vm"
+              (openVmHere)="openHere($event)">
+            </vm-item>
           </div>
         </dts-select-container>
         <mat-paginator
@@ -203,19 +197,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         "
         [matTooltip]="vm.lastError"
       >
-
-        <div
-          [dtsSelectItem]="vm"
-          fxLayout="row"
-          fxLayoutAlign="start center"
+        <vm-item 
+          [vm]="vm"
+          (openVmHere)="openHere($event)"
         >
-          <vm-item 
-            [vm]="vm"
-            (openVmHere)="openHere($event)"
-          >
-          </vm-item>
-        </div>
-
+        </vm-item>
       </div>
     </dts-select-container>
     <div [hidden]="sortByTeams">

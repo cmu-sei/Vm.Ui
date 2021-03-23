@@ -1,4 +1,9 @@
-<div>
+<div
+	*ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
+	[dtsSelectItem]="vm"
+	fxLayout="row"
+	fxLayoutAlign="start center"
+>
 	<ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
 </div>
 

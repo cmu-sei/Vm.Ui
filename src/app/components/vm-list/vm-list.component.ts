@@ -405,6 +405,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
       window.open(vm.url, '_blank');
     }
   }
+
+  shouldDisableSelect(vm: VmModel) {
+    return vm.powerState.toString() == 'Unknown' ? undefined : vm;
+  }
  
   /*
     Operator behaviors:
