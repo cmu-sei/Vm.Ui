@@ -180,6 +180,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
     this.filterGroups();
+    this.selectContainer.clearSelection();
   }
 
   /**
@@ -244,17 +245,21 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.fileService.uploadIso(isForAll, file).subscribe(
       (event) => {
         if (event.type === HttpEventType.UploadProgress) {
-          const percentDone = Math.round((100 * event.loaded) / event.total);
-          this.uploadProgress = percentDone;
+          this.uploadProgress = Math.round((100 * event.loaded) / event.total);
+          this.cd.detectChanges();
         }
 
         if (event.type === HttpEventType.Response) {
           this.uploading = false;
+          this.cd.detectChanges();
+          this.dialogService.message('Upload Completed Successfully', '');
         }
       },
       (err) => {
         console.log(err);
         this.uploading = false;
+        this.cd.detectChanges();
+        this.dialogService.message('Upload Failed', 'Error: ' + err);
       }
     );
   }
@@ -424,7 +429,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
           token.substring(1),
         ]);
         parsed.push(term);
-      } else if (token.length == 1) {
+      } else if (this.isUnOp(token)) {
         // This is a lone unary operator - currently just means a lone '-' character
         // ignore it so we don't discard matches that don't contain a literal '-' char
         continue;
@@ -453,6 +458,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
       }
     }
     return parsed;
+  }
+
+  private isUnOp(tok: string): boolean {
+    return tok == '-';
   }
 
   private isBinOp(tok: string): boolean {

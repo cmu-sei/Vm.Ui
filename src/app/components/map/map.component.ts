@@ -60,7 +60,7 @@ export class MapComponent implements OnInit, OnChanges {
     private router: Router,
     private vmMapsService: VmMapsService,
     private vmMapsQuery: VmMapsQuery,
-    private vmsService: VmsService 
+    private vmsService: VmsService,
   ) {}
 
   ngOnInit(): void {
@@ -128,20 +128,13 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   // Add a new click point
-  append(event): void {
-    const isFirefox = 'InstallTrigger' in window;
-    
-    if (!isFirefox) {
-      // Get the offsets relative to the image. Note that this assumes a 100x100 image
-      let target = event.target;
-      let width = target.getBoundingClientRect().width;
-      this.xActual = (100 * event.pageX) / width;
-      let height = target.getBoundingClientRect().height;
-      this.yActual = ((100 * event.pageY) / height) + 2;
-    } else {
-      this.xActual = event.offsetX;
-      this.yActual = event.offsetY;
-    }
+  append(event): void {    
+    // Get the offsets relative to the image. Note that this assumes a 100x100 image
+    let target = event.target;
+    let width = target.getBoundingClientRect().width;
+    this.xActual = (100 * event.pageX) / width;
+    let height = target.getBoundingClientRect().height;
+    this.yActual = ((100 * event.pageY) / height) + 2;
 
     this.idToSend = uuidv4();
     this.selectedRad = 3;
@@ -198,7 +191,8 @@ export class MapComponent implements OnInit, OnChanges {
 
         this.vmsService.getViewVms(this.viewId).subscribe(vms => {
           const filtered = vms.filter(vm => {
-            const num = vm.name.charAt(vm.name.length - 1);
+            // Calling split allows us to match numbers with arbitrary numbers of digits
+            const num = vm.name.split(start)[1];
             const parsed = parseInt(num);
             if (isNaN(parsed)) {
               return false
