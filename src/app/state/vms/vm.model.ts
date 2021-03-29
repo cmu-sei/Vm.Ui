@@ -11,6 +11,7 @@ export interface VmModel {
   ipAddresses: string[];
   hasPendingTasks: boolean;
   lastError: string;
+  teamIds: string[];
 }
 
 export enum PowerState {

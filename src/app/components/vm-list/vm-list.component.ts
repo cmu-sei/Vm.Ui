@@ -11,16 +11,19 @@ import {
   Input,
   OnInit,
   Output,
+  QueryList,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
+import { Observable, of } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
+import { Team, TeamService } from '../../generated/player-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
-import { ThemeService } from '../../services/theme/theme.service';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmService } from '../../state/vms/vms.service';
 
@@ -30,6 +33,7 @@ import { VmService } from '../../state/vms/vms.service';
   styleUrls: ['./vm-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class VmListComponent implements OnInit, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<VmModel>(
     new Array<VmModel>()
@@ -46,10 +50,16 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public showIps = false;
   public ipv4Only = true;
   public selectedVms = new Array<VmModel>();
+  public sortByTeams = false;
+  public groupByTeams = new Array<VmGroup>();
+  public onAdminTeam: Observable<boolean>;
+  public currentPanelIndex: number;
 
+  @ViewChildren('groupPaginators') groupPaginators = new QueryList<MatPaginator>();
   @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChild(SelectContainerComponent)
-  selectContainer: SelectContainerComponent;
+  @ViewChildren('groupSelectContainers') groupSelects = new QueryList<SelectContainerComponent>();
+  @ViewChild('selectContainer') selectContainer: SelectContainerComponent;
+
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
   @Output() errors = new EventEmitter<{ [key: string]: string }>();
 
@@ -64,8 +74,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private fileService: FileService,
     private dialogService: DialogService,
     private teamsService: TeamsService,
-    public themeService: ThemeService,
-    private cd: ChangeDetectorRef,
+    private playerTeamService: TeamService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -144,6 +154,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
           this.vmApiResponded = false;
         }
       );
+    
+    this.onAdminTeam = this.playerTeamService.getMyViewTeams(this.vmService.viewId).pipe(
+      switchMap((teams: Team[]) => {
+        return of(teams.some(t => t.permissions.some(p => p.key == 'ViewAdmin')))
+      })
+    )
   }
 
   ngAfterViewInit() {
@@ -163,8 +179,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.pageEvent.pageIndex = 0;
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
-
-    // Clear selection to avoid bug in drag select library
+    this.filterGroups();
     this.selectContainer.clearSelection();
   }
 
@@ -175,15 +190,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.applyFilter('');
   }
 
-  // Local Component functions
-  openInTab(url: string) {
-    window.open(url, '_blank');
-  }
-
-  openHere($event, vmName: string, url: string) {
-    $event.preventDefault();
-    const val = <{ [name: string]: string }>{ name: vmName, url };
-    this.openVmHere.emit(val);
+  openHere($event) {
+    this.openVmHere.emit($event);
   }
 
   uploadIso(fileSelector) {
@@ -268,6 +276,70 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * Split the VMs up into groups by their teams.
+   */
+  groupVms(): void {
+    const teams = new Set<string>();
+    for (const vm of this.vmModelDataSource.filteredData) {
+      vm.teamIds.map(id => teams.add(id));
+    }
+
+    this.playerTeamService.getViewTeams(this.vmService.viewId).subscribe(results => {
+      for (let team of results) {
+        if (teams.has(team.id)) {
+          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team.id));
+          const group = new VmGroup(team.name, team.id, vms);
+          this.groupByTeams.push(group);
+  
+          this.groupByTeams.sort((a,b) => a.team.localeCompare(b.team));
+          this.cd.markForCheck();
+        }
+      }
+    });
+  }
+
+  /**
+   * Filter the groups according to the current search term
+   */
+  filterGroups() {
+    for (let group of this.groupByTeams) {
+      group.dataSource.data = [];
+    }
+
+    this.vmModelDataSource.filteredData.map(vm => {
+      const teamIds = vm.teamIds;
+      for (let team of teamIds) {
+        const group = this.groupByTeams.find(g => g.tid == team);
+        group.dataSource.data.push(vm);
+      }
+    })
+  }
+
+  toggleSort() {
+    this.sortByTeams = !this.sortByTeams;
+    // If we haven't already, group the VMs by team
+    if (this.groupByTeams.length == 0) {
+      this.groupVms();
+    }
+  }
+
+  panelClicked(index: number) {
+    // This is the first panel to be clicked
+    if (this.currentPanelIndex == undefined) {
+      this.currentPanelIndex = index;
+      // The index has changed, so the user clicked a new panel. Clear the old drag to select selection
+    } else if (index != this.currentPanelIndex) {
+      this.groupSelects.toArray()[this.currentPanelIndex].clearSelection();
+      this.currentPanelIndex = index;
+    }
+  }
+
+  // Assign each VM group a paginator
+  assignPaginator(group: VmGroup, index: number) {
+    group.dataSource.paginator = this.groupPaginators.toArray()[index];
+  }
+
   public powerOffSelected() {
     this.performAction(VmAction.PowerOff, 'Power Off', 'power off');
   }
@@ -279,6 +351,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public shutdownSelected() {
     this.performAction(VmAction.Shutdown, 'Shutdown', 'shutdown');
   }
+
 
   private performAction(action: VmAction, title: string, actionName: string) {
     this.dialogService
@@ -331,6 +404,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
     for (const vm of this.selectedVms) {
       window.open(vm.url, '_blank');
     }
+  }
+
+  shouldDisableSelect(vm: VmModel) {
+    return vm.powerState.toString() == 'Unknown' ? undefined : vm;
   }
  
   /*
@@ -476,5 +553,17 @@ class SearchTerm {
   constructor(kind: SearchOperator, value: string[]) {
     this.kind = kind;
     this.value = value;
+  }
+}
+
+class VmGroup {
+  team: string;
+  tid: string;
+  dataSource: MatTableDataSource<VmModel>
+
+  constructor(team: string, tid: string, vms: VmModel[]) {
+    this.team = team;
+    this.tid = tid;
+    this.dataSource = new MatTableDataSource<VmModel>(vms);
   }
 }
