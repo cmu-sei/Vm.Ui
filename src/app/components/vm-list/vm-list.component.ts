@@ -171,7 +171,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
     if (!this.sortByTeams) {
       this.selectContainer.clearSelection();
     } else {
-      console.log(this.currentPanelIndex);
       this.groupSelects.get(this.currentPanelIndex).clearSelection();
     }
   }
