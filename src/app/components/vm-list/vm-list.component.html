@@ -149,7 +149,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
     
     <div *ngIf="sortByTeams">
-      <mat-expansion-panel *ngFor="let group of groupByTeams; let iter = index">
+      <mat-expansion-panel *ngFor="let group of groupByTeams; let iter = index" (click)="setCurrentPanel(iter)">
         <mat-expansion-panel-header>
           <mat-panel-title>
             {{group.team}}
@@ -163,11 +163,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             let i = index;
             trackBy: trackByVmId"
           >
-
-            <vm-item
-              [vm]="vm"
-              (openVmHere)="openHere($event)">
-            </vm-item>
+          <vm-item 
+            *ngIf="vm.powerState.toString() !== 'Unknown'"
+            [dtsSelectItem]="vm"
+            [vm]="vm"
+            (openVmHere)="openHere($event)"
+          >
+          </vm-item>
+          <vm-item
+            *ngIf="vm.powerState.toString() === 'Unknown'"
+            [vm]="vm"
+            (openVmHere)="openHere($event)"
+          >
+          </vm-item>
           </div>
         </dts-select-container>
         <mat-paginator
@@ -198,6 +206,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [matTooltip]="vm.lastError"
       >
         <vm-item 
+          *ngIf="vm.powerState.toString() !== 'Unknown'"
+          [dtsSelectItem]="vm"
+          [vm]="vm"
+          (openVmHere)="openHere($event)"
+        >
+        </vm-item>
+        <vm-item
+          *ngIf="vm.powerState.toString() === 'Unknown'"
           [vm]="vm"
           (openVmHere)="openHere($event)"
         >
