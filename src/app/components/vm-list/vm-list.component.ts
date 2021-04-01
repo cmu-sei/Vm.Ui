@@ -168,7 +168,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   onPage(pageEvent) {
     this.pageEvent = pageEvent;
-    this.selectContainer.clearSelection();
+    if (!this.sortByTeams) {
+      this.selectContainer.clearSelection();
+    } else {
+      console.log(this.currentPanelIndex);
+      this.groupSelects.get(this.currentPanelIndex).clearSelection();
+    }
   }
 
   /**
@@ -180,7 +185,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
     this.filterGroups();
-    this.selectContainer.clearSelection();
+    if (!this.sortByTeams) {
+      this.selectContainer.clearSelection();
+    } else {
+      this.groupSelects.get(this.currentPanelIndex).clearSelection();
+    }
   }
 
   /**
@@ -324,12 +333,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  setCurrentPanel(index: number) {
+    this.currentPanelIndex = index;
+  }
+
   panelClicked(index: number) {
-    // This is the first panel to be clicked
-    if (this.currentPanelIndex == undefined) {
-      this.currentPanelIndex = index;
-      // The index has changed, so the user clicked a new panel. Clear the old drag to select selection
-    } else if (index != this.currentPanelIndex) {
+    // The index has changed, so the user clicked a new panel. Clear the old drag to select selection
+    if (index != this.currentPanelIndex) {
       this.groupSelects.toArray()[this.currentPanelIndex].clearSelection();
       this.currentPanelIndex = index;
     }

@@ -4,7 +4,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 -->
 
 <div
-	*ngIf="vm.powerState.toString() !== 'Unknown'; else notSelectable"
+	*ngIf="true || vm.powerState.toString() !== 'Unknown'; else notSelectable"
 	[dtsSelectItem]="vm"
 	fxLayout="row"
 	fxLayoutAlign="start center"
