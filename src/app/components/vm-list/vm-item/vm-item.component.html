@@ -4,19 +4,11 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 -->
 
 <div
-	*ngIf="true || vm.powerState.toString() !== 'Unknown'; else notSelectable"
-	[dtsSelectItem]="vm"
 	fxLayout="row"
 	fxLayoutAlign="start center"
 >
 	<ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
 </div>
-
-<ng-template #notSelectable>
-	<div fxLayout="row" fxLayoutAlign="start center">
-		<ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
-	</div>
-</ng-template>
 
 <ng-template #vmTemplate>
 	<div

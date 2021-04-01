@@ -163,10 +163,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             let i = index;
             trackBy: trackByVmId"
           >
-            <vm-item
-              [vm]="vm"
-              (openVmHere)="openHere($event)">
-            </vm-item>
+          <vm-item 
+            *ngIf="true || vm.powerState.toString() !== 'Unknown'"
+            [dtsSelectItem]="vm"
+            [vm]="vm"
+            (openVmHere)="openHere($event)"
+          >
+          </vm-item>
+          <vm-item
+            *ngIf="false && vm.powerState.toString() === 'Unknown'"
+            [vm]="vm"
+            (openVmHere)="openHere($event)"
+          >
+          </vm-item>
           </div>
         </dts-select-container>
         <mat-paginator
@@ -197,6 +206,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [matTooltip]="vm.lastError"
       >
         <vm-item 
+          *ngIf="true || vm.powerState.toString() !== 'Unknown'"
+          [dtsSelectItem]="vm"
+          [vm]="vm"
+          (openVmHere)="openHere($event)"
+        >
+        </vm-item>
+        <vm-item
+          *ngIf="false && vm.powerState.toString() === 'Unknown'"
           [vm]="vm"
           (openVmHere)="openHere($event)"
         >
