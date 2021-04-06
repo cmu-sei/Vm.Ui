@@ -183,10 +183,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.pageEvent.pageIndex = 0;
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
-    this.filterGroups();
     if (!this.sortByTeams) {
       this.selectContainer.clearSelection();
     } else {
+      this.filterGroups();
       this.groupSelects.get(this.currentPanelIndex).clearSelection();
     }
   }
