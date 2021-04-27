@@ -14,5 +14,5 @@
         "automaticSilentRenew": true,
         "silent_redirect_uri": "http://localhost:4303/auth-callback-silent"
     },
-    "UseLocalAuthStorage": true
+    "UseLocalAuthStorage": false
 }
