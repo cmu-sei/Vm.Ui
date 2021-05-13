@@ -9,12 +9,13 @@ describe('AutoDeployComponent', () => {
   let component: AutoDeployComponent;
   let fixture: ComponentFixture<AutoDeployComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AutoDeployComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [AutoDeployComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AutoDeployComponent);
@@ -26,4 +27,3 @@ describe('AutoDeployComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

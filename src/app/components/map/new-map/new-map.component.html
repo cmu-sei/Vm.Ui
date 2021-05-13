@@ -3,34 +3,43 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<h2>{{ creating ? 'New Map' : 'Edit Properties'}}</h2>
+<h2>{{ creating ? 'New Map' : 'Edit Properties' }}</h2>
 <div id="setupForm">
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <mat-form-field fxLayout="row">
-        <mat-label>Name</mat-label>
-        <input type="string" matInput formControlName="name">
-      </mat-form-field>
-      <mat-form-field fxLayout="row">
-        <mat-label>Select Image</mat-label>
-        <mat-select matNativeControl formControlName="viewImage">
-          <mat-option *ngFor="let img of images" [value]="img.blob">{{img.file.name}}</mat-option>   
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field fxLayout="row">
-        <mat-label>External Image URL</mat-label>
-        <input type="string" matInput formControlName="imageURL">
-      </mat-form-field>
-      <mat-form-field fxLayout="row">
-        <mat-label>Teams</mat-label>
-        <mat-select multiple matNativeControl formControlName="teamIDs">
-          <mat-option *ngFor="let team of teams" [value]="team.id">{{team.name}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    
-      <div fxLayout="row" fxLayoutAlign="space-around center">
-        <button mat-flat-button color="primary" class="action-button" type="submit">
-          Submit
-        </button>
-      </div>
-    </form>
-  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field fxLayout="row">
+      <mat-label>Name</mat-label>
+      <input type="string" matInput formControlName="name" />
+    </mat-form-field>
+    <mat-form-field fxLayout="row">
+      <mat-label>Select Image</mat-label>
+      <mat-select matNativeControl formControlName="viewImage">
+        <mat-option *ngFor="let img of images" [value]="img.blob">{{
+          img.file.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field fxLayout="row">
+      <mat-label>External Image URL</mat-label>
+      <input type="string" matInput formControlName="imageURL" />
+    </mat-form-field>
+    <mat-form-field fxLayout="row">
+      <mat-label>Teams</mat-label>
+      <mat-select multiple matNativeControl formControlName="teamIDs">
+        <mat-option *ngFor="let team of teams" [value]="team.id">{{
+          team.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+      <button
+        mat-flat-button
+        color="primary"
+        class="action-button"
+        type="submit"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+</div>

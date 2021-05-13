@@ -8,38 +8,71 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <mat-form-field fxLayout="row">
     <mat-label>Radius</mat-label>
-    <input type="number" matNativeControl formControlName="rad">
+    <input type="number" matNativeControl formControlName="rad" />
   </mat-form-field>
   <mat-form-field fxLayout="row">
     <mat-label>Resource</mat-label>
-    <input type="text" matNativeControl matInput aria-label="Resource" [matAutocomplete]="auto" formControlName="url" [attr.disabled]="custom ? true : null">
-    <mat-autocomplete #urlSelect #auto="matAutocomplete" [displayWith]="display">
+    <input
+      type="text"
+      matNativeControl
+      matInput
+      aria-label="Resource"
+      [matAutocomplete]="auto"
+      formControlName="url"
+      [attr.disabled]="custom ? true : null"
+    />
+    <mat-autocomplete
+      #urlSelect
+      #auto="matAutocomplete"
+      [displayWith]="display"
+    >
       <mat-optgroup label="VMs">
-        <mat-option *ngFor="let vm of vmsFiltered | async" [value]="vm">{{vm.name}}</mat-option>
+        <mat-option *ngFor="let vm of vmsFiltered | async" [value]="vm">{{
+          vm.name
+        }}</mat-option>
       </mat-optgroup>
       <mat-optgroup label="Maps">
-        <mat-option *ngFor="let m of vmMapsFiltered | async" [value]="m">{{m.name}}</mat-option> 
+        <mat-option *ngFor="let m of vmMapsFiltered | async" [value]="m">{{
+          m.name
+        }}</mat-option>
       </mat-optgroup>
     </mat-autocomplete>
   </mat-form-field>
-  <mat-checkbox [(ngModel)]="custom" [ngModelOptions]="{standalone: true}">
+  <mat-checkbox [(ngModel)]="custom" [ngModelOptions]="{ standalone: true }">
     Enter Custom Resource URL
   </mat-checkbox>
   <mat-form-field fxLayout="row">
     <mat-label>Custom Resource URL</mat-label>
-    <input matNativeControl formControlName="customUrl" #customUrlField [attr.disabled]="!custom ? true : null">
+    <input
+      matNativeControl
+      formControlName="customUrl"
+      #customUrlField
+      [attr.disabled]="!custom ? true : null"
+    />
   </mat-form-field>
   <mat-form-field fxLayout="row">
     <mat-label>Label</mat-label>
-    <input type="text" matNativeControl formControlName="label">
+    <input type="text" matNativeControl formControlName="label" />
   </mat-form-field>
 
   <div fxLayout="row" fxLayoutAlign="space-around center">
-    <button mat-flat-button color="primary" class="action-button" type="button" type="submit">
+    <button
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      type="button"
+      type="submit"
+    >
       Save
     </button>
-    <button type="button" mat-flat-button color="primary" class="action-button" (click)="onDelete()">
-      Delete 
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      (click)="onDelete()"
+    >
+      Delete
     </button>
   </div>
 </form>

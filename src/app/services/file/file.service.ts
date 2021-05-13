@@ -15,9 +15,8 @@ export class FileService {
     private settings: ComnSettingsService,
     private router: Router
   ) {
-    this.viewId = this.router.routerState.snapshot.root.firstChild.params[
-      'viewId'
-    ];
+    this.viewId =
+      this.router.routerState.snapshot.root.firstChild.params['viewId'];
   }
 
   public uploadIso(isForAll: boolean, file: File) {

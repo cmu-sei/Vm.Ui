@@ -88,7 +88,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <button
             mat-menu-item
             (click)="openSelectedHere()"
-            [disabled]="selectedVms.length === 0"  
+            [disabled]="selectedVms.length === 0"
           >
             Open in Player tab
           </button>
@@ -116,7 +116,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             >IPv4 Only</mat-checkbox
           >
         </div>
-        <div fxLayout="column" fxLayoutAlign="space-around center" *ngIf="onAdminTeam | async">
+        <div
+          fxLayout="column"
+          fxLayoutAlign="space-around center"
+          *ngIf="onAdminTeam | async"
+        >
           <mat-checkbox
             class="search-checkbox text"
             color="primary"
@@ -147,35 +151,46 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
       </div>
     </div>
-    
+
     <div *ngIf="sortByTeams">
-      <mat-expansion-panel *ngFor="let group of groupByTeams; let iter = index" (click)="setCurrentPanel(iter)">
+      <mat-expansion-panel
+        *ngFor="let group of groupByTeams; let iter = index"
+        (click)="setCurrentPanel(iter)"
+      >
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{group.team}}
+            {{ group.team }}
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <dts-select-container #groupSelectContainers [(selectedItems)]="selectedVms" (mousedown)="panelClicked(iter)">
-          <div class="flex-container" *ngFor="let vm of group.dataSource.data
-            | slice
-              : pageEvent.pageIndex * pageEvent.pageSize
-              : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
-            let i = index;
-            trackBy: trackByVmId"
+        <dts-select-container
+          #groupSelectContainers
+          [(selectedItems)]="selectedVms"
+          (mousedown)="panelClicked(iter)"
+        >
+          <div
+            class="flex-container"
+            *ngFor="
+              let vm of group.dataSource.data
+                | slice
+                  : pageEvent.pageIndex * pageEvent.pageSize
+                  : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
+              let i = index;
+              trackBy: trackByVmId
+            "
           >
-          <vm-item 
-            *ngIf="vm.powerState.toString() !== 'Unknown'"
-            [dtsSelectItem]="vm"
-            [vm]="vm"
-            (openVmHere)="openHere($event)"
-          >
-          </vm-item>
-          <vm-item
-            *ngIf="vm.powerState.toString() === 'Unknown'"
-            [vm]="vm"
-            (openVmHere)="openHere($event)"
-          >
-          </vm-item>
+            <vm-item
+              *ngIf="vm.powerState.toString() !== 'Unknown'"
+              [dtsSelectItem]="vm"
+              [vm]="vm"
+              (openVmHere)="openHere($event)"
+            >
+            </vm-item>
+            <vm-item
+              *ngIf="vm.powerState.toString() === 'Unknown'"
+              [vm]="vm"
+              (openVmHere)="openHere($event)"
+            >
+            </vm-item>
           </div>
         </dts-select-container>
         <mat-paginator
@@ -191,9 +206,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
       </mat-expansion-panel>
     </div>
-  
 
-    <dts-select-container #selectContainer [(selectedItems)]="selectedVms" *ngIf="!sortByTeams">
+    <dts-select-container
+      #selectContainer
+      [(selectedItems)]="selectedVms"
+      *ngIf="!sortByTeams"
+    >
       <div
         class="flex-container"
         *ngFor="
@@ -205,7 +223,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         "
         [matTooltip]="vm.lastError"
       >
-        <vm-item 
+        <vm-item
           *ngIf="vm.powerState.toString() !== 'Unknown'"
           [dtsSelectItem]="vm"
           [vm]="vm"
@@ -228,7 +246,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [showFirstLastButtons]="true"
         (page)="onPage($event)"
       >
-    </mat-paginator>
+      </mat-paginator>
     </div>
   </div>
   <div class="vm-list-container mat-elevation-z8" *ngIf="!vmApiResponded">

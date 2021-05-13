@@ -60,7 +60,7 @@ export class MapComponent implements OnInit, OnChanges {
     private router: Router,
     private vmMapsService: VmMapsService,
     private vmMapsQuery: VmMapsQuery,
-    private vmsService: VmsService,
+    private vmsService: VmsService
   ) {}
 
   ngOnInit(): void {
@@ -128,13 +128,13 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   // Add a new click point
-  append(event): void {    
+  append(event): void {
     // Get the offsets relative to the image. Note that this assumes a 100x100 image
     let target = event.target;
     let width = target.getBoundingClientRect().width;
     this.xActual = (100 * event.pageX) / width;
     let height = target.getBoundingClientRect().height;
-    this.yActual = ((100 * event.pageY) / height) + 2;
+    this.yActual = (100 * event.pageY) / height + 2;
 
     this.idToSend = uuidv4();
     this.selectedRad = 3;
@@ -172,42 +172,45 @@ export class MapComponent implements OnInit, OnChanges {
       let vmNames = new Array<string>();
       if (query.endsWith('*')) {
         const start = query.substring(0, query.length - 1);
-        this.vmsService.getViewVms(this.viewId).subscribe(vms => {
-          const filtered = vms.filter(vm => {
+        this.vmsService.getViewVms(this.viewId).subscribe((vms) => {
+          const filtered = vms.filter((vm) => {
             return vm.name.startsWith(start);
-          })
-          vmNames = filtered.map(vm => vm.name);
+          });
+          vmNames = filtered.map((vm) => vm.name);
 
           point.urls = vmNames;
           this.machines.push(point);
-        });  
-
+        });
       } else if (query.endsWith(']')) {
         const start = query.substring(0, query.lastIndexOf('['));
-        const range = query.substring(query.lastIndexOf('[') + 1, query.lastIndexOf(']'));
+        const range = query.substring(
+          query.lastIndexOf('[') + 1,
+          query.lastIndexOf(']')
+        );
         const numbers = range.split(',');
         const lower = parseInt(numbers[0]);
         const upper = parseInt(numbers[1]);
 
-        this.vmsService.getViewVms(this.viewId).subscribe(vms => {
-          const filtered = vms.filter(vm => {
+        this.vmsService.getViewVms(this.viewId).subscribe((vms) => {
+          const filtered = vms.filter((vm) => {
             // Calling split allows us to match numbers with arbitrary numbers of digits
             const num = vm.name.split(start)[1];
             const parsed = parseInt(num);
             if (isNaN(parsed)) {
-              return false
+              return false;
             }
-            return vm.name.startsWith(start) && (parsed >= lower && parsed <= upper); 
-          })
+            return (
+              vm.name.startsWith(start) && parsed >= lower && parsed <= upper
+            );
+          });
 
-          const names = filtered.map(vm => vm.name);
+          const names = filtered.map((vm) => vm.name);
           point.urls = names;
           this.machines.push(point);
-        })
+        });
       } else {
         window.alert('Invalid query');
       }
-      
     } else {
       point.urls = [point.query];
       this.machines.push(point);

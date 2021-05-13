@@ -7,9 +7,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <div style="font-family: 'open_sansregular'">{{ message }}</div>
 
 <mat-dialog-actions>
-  <button mat-button (click)="onClick(true)" tabindex="3">{{buttonTrueText}}</button>
-  <button mat-button (click)="onClick(false)" tabIndex="2">{{buttonFalseText}}</button>
+  <button mat-button (click)="onClick(true)" tabindex="3">
+    {{ buttonTrueText }}
+  </button>
+  <button mat-button (click)="onClick(false)" tabIndex="2">
+    {{ buttonFalseText }}
+  </button>
   <button mat-button (click)="onCancel()" tabindex="3">Cancel</button>
 </mat-dialog-actions>
-
-

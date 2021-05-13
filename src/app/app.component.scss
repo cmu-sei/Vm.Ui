@@ -4,7 +4,7 @@
 @font-face {
   font-family: 'open_sansregular';
   src: url('/assets/fonts/opensans-regular.woff2') format('woff2'),
-       url('/assets/fonts/opensans-regular.woff') format('woff');
+    url('/assets/fonts/opensans-regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
@@ -12,7 +12,7 @@
 @font-face {
   font-family: 'open_sansbold';
   src: url('/assets/fonts/opensans-bold.woff2') format('woff2'),
-       url('/assets/fonts/opensans-bold.woff') format('woff');
+    url('/assets/fonts/opensans-bold.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
@@ -20,12 +20,13 @@
 @font-face {
   font-family: 'open_sansitalic';
   src: url('/assets/fonts/opensans-italic.woff2') format('woff2'),
-       url('/assets/fonts/opensans-italic.woff') format('woff');
+    url('/assets/fonts/opensans-italic.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 
-body, a {
+body,
+a {
   font-family: 'open_sansregular';
 }
 
@@ -36,4 +37,3 @@ b {
 i {
   font-family: 'open_sansitalic';
 }
-

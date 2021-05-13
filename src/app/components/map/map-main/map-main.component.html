@@ -7,19 +7,41 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div class="block" id="form">
     <mat-form-field>
       <mat-label>Select Map</mat-label>
-      <mat-select [(value)]="selected" [(ngModel)]="selected" (selectionChange)="goToMap()">
+      <mat-select
+        [(value)]="selected"
+        [(ngModel)]="selected"
+        (selectionChange)="goToMap()"
+      >
         <mat-option>Select Map</mat-option>
-        <mat-option *ngFor="let vm of maps | async; trackBy: trackByMaps" [value]="vm">{{vm.name}}</mat-option>
+        <mat-option
+          *ngFor="let vm of maps | async; trackBy: trackByMaps"
+          [value]="vm"
+          >{{ vm.name }}</mat-option
+        >
       </mat-select>
     </mat-form-field>
   </div>
-  
+
   <div class="block">
-    <button mat-flat-button color="primary" class="action-button" type="button" (click)="buildMap()"> New Map </button>
+    <button
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      type="button"
+      (click)="buildMap()"
+    >
+      New Map
+    </button>
   </div>
 
   <div class="block" *ngIf="readMap && !build">
-    <button mat-flat-button color="primary" class="action-button" type="button" (click)="delete()">
+    <button
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      type="button"
+      (click)="delete()"
+    >
       Delete Map
     </button>
   </div>
@@ -27,51 +49,76 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div>
   <div class="block" *ngIf="!build && readMap">
-    <button mat-flat-button color="primary" class="action-button" type="button" (click)="editClicked()">
-        {{ editMode == true ? 'Discard Changes' :  'Edit' }}
+    <button
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      type="button"
+      (click)="editClicked()"
+    >
+      {{ editMode == true ? 'Discard Changes' : 'Edit' }}
     </button>
   </div>
-  <div class="block" *ngIf="mapInitialized && ((readMap && editMode && !build) || (build))">
-    <button mat-flat-button color="primary" class="action-button" type="button" (click)="editProperties()">
+  <div
+    class="block"
+    *ngIf="mapInitialized && ((readMap && editMode && !build) || build)"
+  >
+    <button
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      type="button"
+      (click)="editProperties()"
+    >
       Edit Properties
     </button>
   </div>
-  <div id="rightmost" class="block" *ngIf="mapInitialized && ((readMap && editMode && !build) || (build))">
-    <button mat-flat-button color="primary" class="action-button" type="button" (click)="save()">
+  <div
+    id="rightmost"
+    class="block"
+    *ngIf="mapInitialized && ((readMap && editMode && !build) || build)"
+  >
+    <button
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      type="button"
+      (click)="save()"
+    >
       Save
     </button>
   </div>
 
   <app-map-team-display
     *ngIf="readMap && !editMode && !build"
-    mapIdInput = {{mapId}}
-    imageUrlInput = {{this.selected.imageUrl}}
-    (mapSwitched) = "redirectToMap($event)"
+    mapIdInput="{{ mapId }}"
+    imageUrlInput="{{ this.selected.imageUrl }}"
+    (mapSwitched)="redirectToMap($event)"
   >
   </app-map-team-display>
-  
+
   <app-map
     *ngIf="readMap && editMode && !build"
-    (initEmitter) = "mapInit($event)"
-    mapIdInput = {{mapId}}
+    (initEmitter)="mapInit($event)"
+    mapIdInput="{{ mapId }}"
   ></app-map>
 </div>
 
 <ng-template #newMapDialog>
   <app-new-map
-    viewId = {{viewId}}
-    [creating] = "creatingMap"
-    (mapCreated) = "mapCreated($event)"
+    viewId="{{ viewId }}"
+    [creating]="creatingMap"
+    (mapCreated)="mapCreated($event)"
   ></app-new-map>
 </ng-template>
 
 <ng-template #editPropsDialog>
   <app-new-map
-    viewId = {{viewId}}
-    [creating] = "creatingMap"
-    (propertiesChanged) = "propertiesChanged($event)"
-    name = {{selected.name}}
-    url = {{selected.imageUrl}}
-    [teamsInput] = "selected.teamIds"
+    viewId="{{ viewId }}"
+    [creating]="creatingMap"
+    (propertiesChanged)="propertiesChanged($event)"
+    name="{{ selected.name }}"
+    url="{{ selected.imageUrl }}"
+    [teamsInput]="selected.teamIds"
   ></app-new-map>
 </ng-template>

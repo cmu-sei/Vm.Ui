@@ -118,7 +118,7 @@ export class AddPointComponent implements OnInit {
       this.id,
       this.form.get('label').value,
       query,
-      multiple,
+      multiple
     );
 
     this.machineEmitter.emit(point);
@@ -126,7 +126,9 @@ export class AddPointComponent implements OnInit {
 
   onDelete(): void {
     // Send a clickpoint with fields set to -1 to signal that it should be deleted
-    this.machineEmitter.emit(new Clickpoint(-1, -1, -1, [], this.id, '', '', false));
+    this.machineEmitter.emit(
+      new Clickpoint(-1, -1, -1, [], this.id, '', '', false)
+    );
   }
 
   getMapUrl(m: VmMap): string {
