@@ -32,12 +32,12 @@ export const ROUTES: Routes = [
     component: VmMainComponent,
     canActivate: [ComnAuthGuardService],
   },
-  { 
-    path: 'views/:viewId/map', 
-    component: MapMainComponent, 
-    canActivate: [ComnAuthGuardService]
+  {
+    path: 'views/:viewId/map',
+    component: MapMainComponent,
+    canActivate: [ComnAuthGuardService],
   },
- 
+
   // TODO: deprecated, remove when safe to do so
   {
     path: 'exercises/:viewId/auto-deploy',
@@ -69,6 +69,9 @@ export const ROUTES: Routes = [
 
 @NgModule({
   exports: [RouterModule],
-  imports: [CommonModule, RouterModule.forRoot(ROUTES, { relativeLinkResolution: 'legacy' })],
+  imports: [
+    CommonModule,
+    RouterModule.forRoot(ROUTES, { relativeLinkResolution: 'legacy' }),
+  ],
 })
 export class AppRoutingModule {}

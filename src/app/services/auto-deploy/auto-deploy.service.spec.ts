@@ -8,12 +8,14 @@ import { AutoDeployService } from './auto-deploy.service';
 describe('AutoDeployService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AutoDeployService]
+      providers: [AutoDeployService],
     });
   });
 
-  it('should be created', inject([AutoDeployService], (service: AutoDeployService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [AutoDeployService],
+    (service: AutoDeployService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });
-

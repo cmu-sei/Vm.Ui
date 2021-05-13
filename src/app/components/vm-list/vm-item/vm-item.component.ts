@@ -10,18 +10,15 @@ import { VmModel } from '../../../state/vms/vm.model';
 @Component({
   selector: 'vm-item',
   templateUrl: './vm-item.component.html',
-  styleUrls: ['./vm-item.component.scss']
+  styleUrls: ['./vm-item.component.scss'],
 })
 export class VmItemComponent implements OnInit {
   @Input('vm') vm: VmModel;
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
 
-  constructor(
-    public themeService: ThemeService,
-  ) { }
+  constructor(public themeService: ThemeService) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   // Local Component functions
   openInTab(url: string) {
@@ -33,5 +30,4 @@ export class VmItemComponent implements OnInit {
     const val = <{ [name: string]: string }>{ name: vmName, url };
     this.openVmHere.emit(val);
   }
-
 }

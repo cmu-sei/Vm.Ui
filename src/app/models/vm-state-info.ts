@@ -2,6 +2,6 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 export interface VmStateInfo {
-    id: string;
-    state: string;
+  id: string;
+  state: string;
 }

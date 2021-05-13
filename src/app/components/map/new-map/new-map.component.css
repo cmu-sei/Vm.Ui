@@ -4,9 +4,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 */
 
 #setupForm {
-    text-align: center;
+  text-align: center;
 }
 
 form {
-    display: inline-block;
-  }
+  display: inline-block;
+}

@@ -13,9 +13,8 @@ describe('MapVmSelectComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MapVmSelectComponent ]
-    })
-    .compileComponents();
+      declarations: [MapVmSelectComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

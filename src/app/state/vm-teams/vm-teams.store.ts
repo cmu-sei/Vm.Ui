@@ -12,9 +12,7 @@ export interface VmTeamsState extends EntityState<VmTeam, string> {}
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'vm-teams' })
 export class VmTeamsStore extends EntityStore<VmTeamsState> {
-
   constructor() {
     super();
   }
-
 }

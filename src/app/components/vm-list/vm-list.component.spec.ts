@@ -9,12 +9,13 @@ describe('VmListComponent', () => {
   let component: VmListComponent;
   let fixture: ComponentFixture<VmListComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ VmListComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [VmListComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VmListComponent);
@@ -26,4 +27,3 @@ describe('VmListComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

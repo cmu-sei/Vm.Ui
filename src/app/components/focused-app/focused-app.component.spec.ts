@@ -9,12 +9,13 @@ describe('FocusedAppComponent', () => {
   let component: FocusedAppComponent;
   let fixture: ComponentFixture<FocusedAppComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FocusedAppComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [FocusedAppComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FocusedAppComponent);
@@ -26,4 +27,3 @@ describe('FocusedAppComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

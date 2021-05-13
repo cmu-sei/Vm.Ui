@@ -162,7 +162,7 @@ $custom-typography: mat-typography-config(
   .icon-20px {
     height: 20px;
     width: 20px;
-  }     
+  }
 
   .icon-color {
     color: map-get($theme, 'text');
@@ -221,4 +221,3 @@ $dark-theme: cmu-theme(
   $cmu-dark-theme-background,
   true
 );
-

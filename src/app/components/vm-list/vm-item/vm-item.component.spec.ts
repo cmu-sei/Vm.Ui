@@ -13,9 +13,8 @@ describe('VmItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ VmItemComponent ]
-    })
-    .compileComponents();
+      declarations: [VmItemComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

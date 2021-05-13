@@ -31,12 +31,10 @@ export class VmService {
     private router: Router,
     private vmsService: VmsService
   ) {
-    this.viewId = this.router.routerState.snapshot.root.firstChild.params[
-      'viewId'
-    ];
-    this.teamId = this.router.routerState.snapshot.root.firstChild.params[
-      'teamId'
-    ];
+    this.viewId =
+      this.router.routerState.snapshot.root.firstChild.params['viewId'];
+    this.teamId =
+      this.router.routerState.snapshot.root.firstChild.params['teamId'];
 
     this.vmUrl = `${settings.settings.ApiUrl}/views/${this.viewId}/vms`;
     this.teamUrl = `${settings.settings.ApiUrl}/teams/${this.teamId}/vms`;
@@ -61,13 +59,11 @@ export class VmService {
     let params = new HttpParams();
     params = params.append('includePersonal', includePersonal.toString());
     params = params.append('onlyMine', onlyMine.toString());
-    return this.http
-      .get<Array<VmModel>>(this.vmUrl, { params: params })
-      .pipe(
-        tap((entities) => {
-          this.vmsStore.set(entities);
-        })
-      );
+    return this.http.get<Array<VmModel>>(this.vmUrl, { params: params }).pipe(
+      tap((entities) => {
+        this.vmsStore.set(entities);
+      })
+    );
   }
 
   public GetTeamVms(

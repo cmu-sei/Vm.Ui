@@ -33,7 +33,6 @@ import { VmService } from '../../state/vms/vms.service';
   styleUrls: ['./vm-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class VmListComponent implements OnInit, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<VmModel>(
     new Array<VmModel>()
@@ -55,9 +54,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public onAdminTeam: Observable<boolean>;
   public currentPanelIndex: number;
 
-  @ViewChildren('groupPaginators') groupPaginators = new QueryList<MatPaginator>();
+  @ViewChildren('groupPaginators') groupPaginators =
+    new QueryList<MatPaginator>();
   @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChildren('groupSelectContainers') groupSelects = new QueryList<SelectContainerComponent>();
+  @ViewChildren('groupSelectContainers') groupSelects =
+    new QueryList<SelectContainerComponent>();
   @ViewChild('selectContainer') selectContainer: SelectContainerComponent;
 
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
@@ -154,12 +155,16 @@ export class VmListComponent implements OnInit, AfterViewInit {
           this.vmApiResponded = false;
         }
       );
-    
-    this.onAdminTeam = this.playerTeamService.getMyViewTeams(this.vmService.viewId).pipe(
-      switchMap((teams: Team[]) => {
-        return of(teams.some(t => t.permissions.some(p => p.key == 'ViewAdmin')))
-      })
-    )
+
+    this.onAdminTeam = this.playerTeamService
+      .getMyViewTeams(this.vmService.viewId)
+      .pipe(
+        switchMap((teams: Team[]) => {
+          return of(
+            teams.some((t) => t.permissions.some((p) => p.key == 'ViewAdmin'))
+          );
+        })
+      );
   }
 
   ngAfterViewInit() {
@@ -290,21 +295,25 @@ export class VmListComponent implements OnInit, AfterViewInit {
   groupVms(): void {
     const teams = new Set<string>();
     for (const vm of this.vmModelDataSource.filteredData) {
-      vm.teamIds.map(id => teams.add(id));
+      vm.teamIds.map((id) => teams.add(id));
     }
 
-    this.playerTeamService.getViewTeams(this.vmService.viewId).subscribe(results => {
-      for (let team of results) {
-        if (teams.has(team.id)) {
-          const vms = this.vmModelDataSource.filteredData.filter(vm => vm.teamIds.includes(team.id));
-          const group = new VmGroup(team.name, team.id, vms);
-          this.groupByTeams.push(group);
-  
-          this.groupByTeams.sort((a,b) => a.team.localeCompare(b.team));
-          this.cd.markForCheck();
+    this.playerTeamService
+      .getViewTeams(this.vmService.viewId)
+      .subscribe((results) => {
+        for (let team of results) {
+          if (teams.has(team.id)) {
+            const vms = this.vmModelDataSource.filteredData.filter((vm) =>
+              vm.teamIds.includes(team.id)
+            );
+            const group = new VmGroup(team.name, team.id, vms);
+            this.groupByTeams.push(group);
+
+            this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
+            this.cd.markForCheck();
+          }
         }
-      }
-    });
+      });
   }
 
   /**
@@ -315,13 +324,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
       group.dataSource.data = [];
     }
 
-    this.vmModelDataSource.filteredData.map(vm => {
+    this.vmModelDataSource.filteredData.map((vm) => {
       const teamIds = vm.teamIds;
       for (let team of teamIds) {
-        const group = this.groupByTeams.find(g => g.tid == team);
+        const group = this.groupByTeams.find((g) => g.tid == team);
         group.dataSource.data.push(vm);
       }
-    })
+    });
   }
 
   toggleSort() {
@@ -361,7 +370,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.performAction(VmAction.Shutdown, 'Shutdown', 'shutdown');
   }
 
-
   private performAction(action: VmAction, title: string, actionName: string) {
     this.dialogService
       .confirm(
@@ -376,11 +384,17 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
           switch (action) {
             case VmAction.PowerOff:
-              return this.vmService.powerOff(this.selectedVms.map(vm => vm.id));
+              return this.vmService.powerOff(
+                this.selectedVms.map((vm) => vm.id)
+              );
             case VmAction.PowerOn:
-              return this.vmService.powerOn(this.selectedVms.map(vm => vm.id));
+              return this.vmService.powerOn(
+                this.selectedVms.map((vm) => vm.id)
+              );
             case VmAction.Shutdown:
-              return this.vmService.shutdown(this.selectedVms.map(vm => vm.id));
+              return this.vmService.shutdown(
+                this.selectedVms.map((vm) => vm.id)
+              );
           }
         }),
         take(1)
@@ -418,7 +432,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   shouldDisableSelect(vm: VmModel) {
     return vm.powerState.toString() == 'Unknown' ? undefined : vm;
   }
- 
+
   /*
     Operator behaviors:
     Negation: get search results that don't include this term. Example foo -bar
@@ -568,7 +582,7 @@ class SearchTerm {
 class VmGroup {
   team: string;
   tid: string;
-  dataSource: MatTableDataSource<VmModel>
+  dataSource: MatTableDataSource<VmModel>;
 
   constructor(team: string, tid: string, vms: VmModel[]) {
     this.team = team;

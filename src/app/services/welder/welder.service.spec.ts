@@ -8,7 +8,7 @@ import { WelderService } from './welder.service';
 describe('WelderService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [WelderService]
+      providers: [WelderService],
     });
   });
 
@@ -16,4 +16,3 @@ describe('WelderService', () => {
     expect(service).toBeTruthy();
   }));
 });
-

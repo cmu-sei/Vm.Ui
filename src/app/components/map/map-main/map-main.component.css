@@ -4,21 +4,21 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 */
 
 .row {
-    width: 100%;
-    text-align: center;
+  width: 100%;
+  text-align: center;
 }
 
 .block {
-    width: 100px;
-    display: inline-block;
-    margin-left: 25px;
-    margin-right: 25px;
+  width: 100px;
+  display: inline-block;
+  margin-left: 25px;
+  margin-right: 25px;
 }
 
 #form {
-    margin-right: 100px;
+  margin-right: 100px;
 }
 
 #rightmost {
-    margin-left: 10px;
+  margin-left: 10px;
 }

@@ -11,12 +11,13 @@ describe('TeamUsersComponent', () => {
   let component: TeamUsersComponent;
   let fixture: ComponentFixture<TeamUsersComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ TeamUsersComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [TeamUsersComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TeamUsersComponent);

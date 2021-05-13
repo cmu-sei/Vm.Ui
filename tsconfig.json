@@ -11,8 +11,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es2020",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"]
   }
 }

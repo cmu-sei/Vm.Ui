@@ -75,9 +75,7 @@ export class AppComponent implements OnDestroy {
     );
     iconRegistry.addSvgIcon(
       'ic_gear',
-      sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_gear.svg'
-      )
+      sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/ic_gear.svg')
     );
 
     this.theme$.pipe(takeUntil(this.unsubscribe$)).subscribe((theme) => {

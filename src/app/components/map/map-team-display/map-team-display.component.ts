@@ -31,7 +31,7 @@ export class MapTeamDisplayComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private vmMapsQuery: VmMapsQuery,
-    private dialog: MatDialog,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -70,7 +70,8 @@ export class MapTeamDisplayComponent implements OnInit {
     const viewId = this.route.snapshot.params['viewId'];
 
     if (urls.length == 1) {
-      const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const guidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       const url = urls[0];
       // If the url is just a guid, we are redirecting to a map. This is a special case and will behave as if the user
       // selected the new map from the drop down. This approach works because the only maps available
@@ -90,7 +91,7 @@ export class MapTeamDisplayComponent implements OnInit {
       }
     } else {
       this.dialog.open(MapVmSelectComponent, {
-        data: { vms: urls, viewId: viewId }
+        data: { vms: urls, viewId: viewId },
       });
     }
   }
