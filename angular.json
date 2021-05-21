@@ -26,6 +26,9 @@
             "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             },
+            "allowedCommonJsDependencies": [
+               "uuid"
+            ],
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
