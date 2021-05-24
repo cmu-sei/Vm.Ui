@@ -69,7 +69,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
       </div>
     </div>
     <div *ngIf="showIps" fxLayout="column" class="content">
-      <label *ngFor="let address of getIpAddresses(vm)">
+      <label class="text" *ngFor="let address of getIpAddresses(vm)">
         {{ address }}
       </label>
     </div>

@@ -277,18 +277,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
     );
   }
 
-  public getIpAddresses(vm: VmModel): string[] {
-    if (vm.ipAddresses == null) {
-      return [];
-    }
-
-    if (this.ipv4Only) {
-      return vm.ipAddresses.filter((x) => !x.includes(':'));
-    } else {
-      return vm.ipAddresses;
-    }
-  }
-
   /**
    * Split the VMs up into groups by their teams.
    */
