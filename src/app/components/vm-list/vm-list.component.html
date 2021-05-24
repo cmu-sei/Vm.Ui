@@ -182,12 +182,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               *ngIf="vm.powerState.toString() !== 'Unknown'"
               [dtsSelectItem]="vm"
               [vm]="vm"
+              [ipv4Only]="ipv4Only"
               (openVmHere)="openHere($event)"
             >
             </vm-item>
             <vm-item
               *ngIf="vm.powerState.toString() === 'Unknown'"
               [vm]="vm"
+              [ipv4Only]="ipv4Only"
               (openVmHere)="openHere($event)"
             >
             </vm-item>
@@ -227,12 +229,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           *ngIf="vm.powerState.toString() !== 'Unknown'"
           [dtsSelectItem]="vm"
           [vm]="vm"
+          [ipv4Only]="ipv4Only"
           (openVmHere)="openHere($event)"
         >
         </vm-item>
         <vm-item
           *ngIf="vm.powerState.toString() === 'Unknown'"
           [vm]="vm"
+          [ipv4Only]="ipv4Only"
           (openVmHere)="openHere($event)"
         >
         </vm-item>
