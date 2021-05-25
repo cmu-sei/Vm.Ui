@@ -32,7 +32,7 @@ export class VmItemComponent implements OnInit {
     const val = <{ [name: string]: string }>{ name: vmName, url };
     this.openVmHere.emit(val);
   }
- 
+
   public getIpAddresses(vm: VmModel): string[] {
     if (vm.ipAddresses == null) {
       return [];
