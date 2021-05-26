@@ -46,7 +46,7 @@
     "ngx-drag-to-select": "^4.0.0",
     "oidc-client": "^1.11.5",
     "prettier": "^2.3.0",
-    "rxjs": "^6.6.7",
+    "rxjs": "^7.1.0",
     "string-natural-compare": "^3.0.1",
     "tslib": "^2.2.0",
     "tslint-config-prettier": "^1.18.0",
