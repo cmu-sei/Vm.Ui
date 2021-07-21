@@ -36,7 +36,7 @@
     "@angular/platform-browser": "^12.1.0",
     "@angular/platform-browser-dynamic": "^12.1.0",
     "@angular/router": "^12.1.0",
-    "@cmusei/crucible-common": "0.1.0",
+    "@cmusei/crucible-common": "0.1.1",
     "@datorama/akita": "^6.2.0",
     "@microsoft/signalr": "^5.0.8",
     "@types/uuid": "^8.3.1",
