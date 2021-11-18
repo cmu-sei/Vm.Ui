@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="row">
+<div class="row" *ngIf="canEdit">
   <div class="block" id="form">
     <mat-form-field>
       <mat-label>Select Map</mat-label>
@@ -14,7 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       >
         <mat-option>Select Map</mat-option>
         <mat-option
-          *ngFor="let vm of maps | async; trackBy: trackByMaps"
+          *ngFor="let vm of maps; trackBy: trackByMaps"
           [value]="vm"
           >{{ vm.name }}</mat-option
         >
@@ -48,7 +48,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 </div>
 
 <div>
-  <div class="block" *ngIf="!build && readMap">
+  <div class="block" *ngIf="!build && readMap && canEdit">
     <button
       mat-flat-button
       color="primary"

@@ -5,27 +5,29 @@ import {
   AfterViewChecked,
   ChangeDetectorRef,
   Component,
+  OnDestroy,
   OnInit,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { VmMap, VmsService } from '../../../generated/vm-api';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.component';
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
+import { TeamsService } from '../../../services/teams/teams.service';
 
 @Component({
   selector: 'app-map-main',
   templateUrl: './map-main.component.html',
   styleUrls: ['./map-main.component.css'],
 })
-export class MapMainComponent implements OnInit, AfterViewChecked {
+export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   selected: VmMap;
   editMode: boolean;
   readMap: boolean;
@@ -43,13 +45,16 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
   @ViewChild('newMapDialog') newMapDialog: TemplateRef<NewMapComponent>;
   @ViewChild('editPropsDialog') editPropsDialog: TemplateRef<NewMapComponent>;
   private dialogRef: MatDialogRef<NewMapComponent>;
-  maps: Observable<VmMap[]>;
+  private unsubscribe$ = new Subject();
+  maps: VmMap[] = [];
+  canEdit: boolean;
 
   constructor(
     private vmsService: VmsService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private dialog: MatDialog,
+    private teamsService: TeamsService,
     private vmMapsService: VmMapsService,
     private vmMapQuery: VmMapsQuery
   ) {
@@ -57,14 +62,28 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    this.vmMapsService.get();
-
-    this.maps = this.route.params.pipe(
-      switchMap((params) => {
-        this.viewId = params['viewId'];
-        return this.vmMapQuery.getByViewId(this.viewId);
-      })
-    );
+    this.vmMapQuery.selectAll().pipe(takeUntil(this.unsubscribe$)).subscribe(maps => {
+      this.maps = maps;
+      if (maps && maps.length > 0) {
+        this.selected = maps[0];
+        this.goToMap();
+      }
+    });
+    this.route.params.pipe(takeUntil(this.unsubscribe$)).subscribe((params) => {
+      this.vmMapsService.unload();
+      this.viewId = params['viewId'];
+      if (this.viewId) {
+        this.teamsService.GetAllMyTeams(this.viewId).pipe(take(1)).subscribe((teams) => {
+          // There should only be 1 primary member, set that value for the current login
+          // Determine if the user is an "Admin" if their isPrimary team has canManage == true
+          const myPrimaryTeam = teams.filter((t) => t.isPrimary)[0];
+          if (myPrimaryTeam !== undefined) {
+            this.canEdit = myPrimaryTeam.canManage;
+          }
+        });
+        this.vmMapsService.getViewMaps(this.viewId);
+      }
+    });
   }
 
   ngAfterViewChecked() {
@@ -160,4 +179,10 @@ export class MapMainComponent implements OnInit, AfterViewChecked {
       this.goToMap();
     });
   }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
+
 }
