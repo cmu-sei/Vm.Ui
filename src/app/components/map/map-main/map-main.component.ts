@@ -12,8 +12,8 @@ import {
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
-import { switchMap, take, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { VmMap, VmsService } from '../../../generated/vm-api';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
@@ -65,7 +65,6 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     this.vmMapQuery.selectAll().pipe(takeUntil(this.unsubscribe$)).subscribe(maps => {
       this.maps = maps;
       if (maps && maps.length > 0) {
-        this.canEdit = maps.length > 1;
         this.selected = maps[0];
         this.goToMap();
       }
