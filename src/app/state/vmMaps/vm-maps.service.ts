@@ -22,6 +22,22 @@ export class VmMapsService {
       .subscribe((maps) => this.vmMapsStore.set(maps));
   }
 
+  getViewMaps(viewId: string) {
+    this.vmMapsStore.setLoading(true);
+    this.vmService
+      .getViewMaps(viewId)
+      .pipe(take(1))
+      .subscribe((maps) => this.vmMapsStore.set(maps));
+  }
+
+  getTeamMap(teamId: string) {
+    this.vmMapsStore.setLoading(true);
+    this.vmService
+      .getTeamMap(teamId)
+      .pipe(take(1))
+      .subscribe((map) => this.vmMapsStore.add(map));
+  }
+
   add(viewId: string, vmMap: VmMap) {
     this.vmService
       .createMap(viewId, vmMap)
@@ -41,5 +57,9 @@ export class VmMapsService {
       .deleteMap(id as string)
       .pipe(take(1))
       .subscribe(() => this.vmMapsStore.remove(id));
+  }
+
+  unload() {
+    this.vmMapsStore.set([]);
   }
 }
