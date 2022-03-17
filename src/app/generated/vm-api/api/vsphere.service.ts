@@ -13,7 +13,7 @@
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent, HttpParameterCodec, HttpContext 
+         HttpResponse, HttpEvent, HttpParameterCodec
         }       from '@angular/common/http';
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
@@ -108,10 +108,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public changeVsphereVirtualMachineNetwork(id: string, changeVsphereVirtualMachineNetwork?: ChangeVsphereVirtualMachineNetwork, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VsphereVirtualMachine>;
-    public changeVsphereVirtualMachineNetwork(id: string, changeVsphereVirtualMachineNetwork?: ChangeVsphereVirtualMachineNetwork, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VsphereVirtualMachine>>;
-    public changeVsphereVirtualMachineNetwork(id: string, changeVsphereVirtualMachineNetwork?: ChangeVsphereVirtualMachineNetwork, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VsphereVirtualMachine>>;
-    public changeVsphereVirtualMachineNetwork(id: string, changeVsphereVirtualMachineNetwork?: ChangeVsphereVirtualMachineNetwork, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public changeVsphereVirtualMachineNetwork(id: string, changeVsphereVirtualMachineNetwork?: ChangeVsphereVirtualMachineNetwork, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VsphereVirtualMachine>;
+    public changeVsphereVirtualMachineNetwork(id: string, changeVsphereVirtualMachineNetwork?: ChangeVsphereVirtualMachineNetwork, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VsphereVirtualMachine>>;
+    public changeVsphereVirtualMachineNetwork(id: string, changeVsphereVirtualMachineNetwork?: ChangeVsphereVirtualMachineNetwork, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VsphereVirtualMachine>>;
+    public changeVsphereVirtualMachineNetwork(id: string, changeVsphereVirtualMachineNetwork?: ChangeVsphereVirtualMachineNetwork, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling changeVsphereVirtualMachineNetwork.');
         }
@@ -139,10 +139,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         // to determine the Content-Type header
@@ -170,7 +166,6 @@ export class VsphereService {
         return this.httpClient.post<VsphereVirtualMachine>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/change-network`,
             changeVsphereVirtualMachineNetwork,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -186,10 +181,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VsphereVirtualMachine>;
-    public getVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VsphereVirtualMachine>>;
-    public getVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VsphereVirtualMachine>>;
-    public getVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public getVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VsphereVirtualMachine>;
+    public getVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VsphereVirtualMachine>>;
+    public getVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VsphereVirtualMachine>>;
+    public getVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getVsphereVirtualMachine.');
         }
@@ -217,10 +212,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -236,7 +227,6 @@ export class VsphereService {
 
         return this.httpClient.get<VsphereVirtualMachine>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}`,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -252,10 +242,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getVsphereVirtualMachineIsos(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<IsoResult>>;
-    public getVsphereVirtualMachineIsos(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<IsoResult>>>;
-    public getVsphereVirtualMachineIsos(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<IsoResult>>>;
-    public getVsphereVirtualMachineIsos(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public getVsphereVirtualMachineIsos(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<Array<IsoResult>>;
+    public getVsphereVirtualMachineIsos(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<Array<IsoResult>>>;
+    public getVsphereVirtualMachineIsos(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<Array<IsoResult>>>;
+    public getVsphereVirtualMachineIsos(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getVsphereVirtualMachineIsos.');
         }
@@ -283,10 +273,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -302,7 +288,6 @@ export class VsphereService {
 
         return this.httpClient.get<Array<IsoResult>>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/isos`,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -318,10 +303,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getVsphereVirtualMachineToolsStatus(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VirtualMachineToolsStatus>;
-    public getVsphereVirtualMachineToolsStatus(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VirtualMachineToolsStatus>>;
-    public getVsphereVirtualMachineToolsStatus(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VirtualMachineToolsStatus>>;
-    public getVsphereVirtualMachineToolsStatus(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public getVsphereVirtualMachineToolsStatus(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VirtualMachineToolsStatus>;
+    public getVsphereVirtualMachineToolsStatus(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VirtualMachineToolsStatus>>;
+    public getVsphereVirtualMachineToolsStatus(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VirtualMachineToolsStatus>>;
+    public getVsphereVirtualMachineToolsStatus(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getVsphereVirtualMachineToolsStatus.');
         }
@@ -349,10 +334,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -368,7 +349,6 @@ export class VsphereService {
 
         return this.httpClient.get<VirtualMachineToolsStatus>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/tools`,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -385,10 +365,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public mountVsphereVirtualMachineIso(id: string, mountVsphereIso?: MountVsphereIso, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VsphereVirtualMachine>;
-    public mountVsphereVirtualMachineIso(id: string, mountVsphereIso?: MountVsphereIso, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VsphereVirtualMachine>>;
-    public mountVsphereVirtualMachineIso(id: string, mountVsphereIso?: MountVsphereIso, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VsphereVirtualMachine>>;
-    public mountVsphereVirtualMachineIso(id: string, mountVsphereIso?: MountVsphereIso, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public mountVsphereVirtualMachineIso(id: string, mountVsphereIso?: MountVsphereIso, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VsphereVirtualMachine>;
+    public mountVsphereVirtualMachineIso(id: string, mountVsphereIso?: MountVsphereIso, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VsphereVirtualMachine>>;
+    public mountVsphereVirtualMachineIso(id: string, mountVsphereIso?: MountVsphereIso, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VsphereVirtualMachine>>;
+    public mountVsphereVirtualMachineIso(id: string, mountVsphereIso?: MountVsphereIso, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling mountVsphereVirtualMachineIso.');
         }
@@ -416,10 +396,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         // to determine the Content-Type header
@@ -447,7 +423,6 @@ export class VsphereService {
         return this.httpClient.post<VsphereVirtualMachine>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/mount-iso`,
             mountVsphereIso,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -463,10 +438,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public powerOffVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<string>;
-    public powerOffVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<string>>;
-    public powerOffVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<string>>;
-    public powerOffVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public powerOffVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<string>;
+    public powerOffVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<string>>;
+    public powerOffVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<string>>;
+    public powerOffVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling powerOffVsphereVirtualMachine.');
         }
@@ -494,10 +469,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -514,7 +485,6 @@ export class VsphereService {
         return this.httpClient.post<string>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/power-off`,
             null,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -530,10 +500,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public powerOnVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<string>;
-    public powerOnVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<string>>;
-    public powerOnVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<string>>;
-    public powerOnVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public powerOnVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<string>;
+    public powerOnVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<string>>;
+    public powerOnVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<string>>;
+    public powerOnVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling powerOnVsphereVirtualMachine.');
         }
@@ -561,10 +531,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -581,7 +547,6 @@ export class VsphereService {
         return this.httpClient.post<string>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/power-on`,
             null,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -597,10 +562,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public rebootVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<string>;
-    public rebootVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<string>>;
-    public rebootVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<string>>;
-    public rebootVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public rebootVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<string>;
+    public rebootVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<string>>;
+    public rebootVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<string>>;
+    public rebootVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling rebootVsphereVirtualMachine.');
         }
@@ -628,10 +593,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -648,7 +609,6 @@ export class VsphereService {
         return this.httpClient.post<string>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/reboot`,
             null,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -665,10 +625,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public setVsphereVirtualMachineResolution(id: string, setVsphereVirtualMachineResolution?: SetVsphereVirtualMachineResolution, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<string>;
-    public setVsphereVirtualMachineResolution(id: string, setVsphereVirtualMachineResolution?: SetVsphereVirtualMachineResolution, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<string>>;
-    public setVsphereVirtualMachineResolution(id: string, setVsphereVirtualMachineResolution?: SetVsphereVirtualMachineResolution, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<string>>;
-    public setVsphereVirtualMachineResolution(id: string, setVsphereVirtualMachineResolution?: SetVsphereVirtualMachineResolution, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public setVsphereVirtualMachineResolution(id: string, setVsphereVirtualMachineResolution?: SetVsphereVirtualMachineResolution, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<string>;
+    public setVsphereVirtualMachineResolution(id: string, setVsphereVirtualMachineResolution?: SetVsphereVirtualMachineResolution, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<string>>;
+    public setVsphereVirtualMachineResolution(id: string, setVsphereVirtualMachineResolution?: SetVsphereVirtualMachineResolution, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<string>>;
+    public setVsphereVirtualMachineResolution(id: string, setVsphereVirtualMachineResolution?: SetVsphereVirtualMachineResolution, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling setVsphereVirtualMachineResolution.');
         }
@@ -696,10 +656,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         // to determine the Content-Type header
@@ -727,7 +683,6 @@ export class VsphereService {
         return this.httpClient.post<string>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/set-resolution`,
             setVsphereVirtualMachineResolution,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -743,10 +698,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public shutdownVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<string>;
-    public shutdownVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<string>>;
-    public shutdownVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<string>>;
-    public shutdownVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public shutdownVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<string>;
+    public shutdownVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<string>>;
+    public shutdownVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<string>>;
+    public shutdownVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling shutdownVsphereVirtualMachine.');
         }
@@ -774,10 +729,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -794,7 +745,6 @@ export class VsphereService {
         return this.httpClient.post<string>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/shutdown`,
             null,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -810,10 +760,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public uploadFileToVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<string>;
-    public uploadFileToVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<string>>;
-    public uploadFileToVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<string>>;
-    public uploadFileToVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public uploadFileToVsphereVirtualMachine(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<string>;
+    public uploadFileToVsphereVirtualMachine(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<string>>;
+    public uploadFileToVsphereVirtualMachine(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<string>>;
+    public uploadFileToVsphereVirtualMachine(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling uploadFileToVsphereVirtualMachine.');
         }
@@ -841,10 +791,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -861,7 +807,6 @@ export class VsphereService {
         return this.httpClient.post<string>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/upload-file`,
             null,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -878,10 +823,10 @@ export class VsphereService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public validateVsphereVirtualMachineCredentials(id: string, validateVsphereVirtualMachineCredentials?: ValidateVsphereVirtualMachineCredentials, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<string>;
-    public validateVsphereVirtualMachineCredentials(id: string, validateVsphereVirtualMachineCredentials?: ValidateVsphereVirtualMachineCredentials, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<string>>;
-    public validateVsphereVirtualMachineCredentials(id: string, validateVsphereVirtualMachineCredentials?: ValidateVsphereVirtualMachineCredentials, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<string>>;
-    public validateVsphereVirtualMachineCredentials(id: string, validateVsphereVirtualMachineCredentials?: ValidateVsphereVirtualMachineCredentials, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public validateVsphereVirtualMachineCredentials(id: string, validateVsphereVirtualMachineCredentials?: ValidateVsphereVirtualMachineCredentials, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<string>;
+    public validateVsphereVirtualMachineCredentials(id: string, validateVsphereVirtualMachineCredentials?: ValidateVsphereVirtualMachineCredentials, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<string>>;
+    public validateVsphereVirtualMachineCredentials(id: string, validateVsphereVirtualMachineCredentials?: ValidateVsphereVirtualMachineCredentials, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<string>>;
+    public validateVsphereVirtualMachineCredentials(id: string, validateVsphereVirtualMachineCredentials?: ValidateVsphereVirtualMachineCredentials, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling validateVsphereVirtualMachineCredentials.');
         }
@@ -909,10 +854,6 @@ export class VsphereService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         // to determine the Content-Type header
@@ -940,7 +881,6 @@ export class VsphereService {
         return this.httpClient.post<string>(`${this.configuration.basePath}/api/vms/vsphere/${encodeURIComponent(String(id))}/actions/validate-credentials`,
             validateVsphereVirtualMachineCredentials,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

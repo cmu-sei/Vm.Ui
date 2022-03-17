@@ -13,7 +13,7 @@
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent, HttpParameterCodec, HttpContext 
+         HttpResponse, HttpEvent, HttpParameterCodec
         }       from '@angular/common/http';
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
@@ -99,10 +99,10 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createSession(createVmUsageLoggingSessionCommand?: CreateVmUsageLoggingSessionCommand, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VmUsageLoggingSession>;
-    public createSession(createVmUsageLoggingSessionCommand?: CreateVmUsageLoggingSessionCommand, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VmUsageLoggingSession>>;
-    public createSession(createVmUsageLoggingSessionCommand?: CreateVmUsageLoggingSessionCommand, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VmUsageLoggingSession>>;
-    public createSession(createVmUsageLoggingSessionCommand?: CreateVmUsageLoggingSessionCommand, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public createSession(createVmUsageLoggingSessionCommand?: CreateVmUsageLoggingSessionCommand, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VmUsageLoggingSession>;
+    public createSession(createVmUsageLoggingSessionCommand?: CreateVmUsageLoggingSessionCommand, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VmUsageLoggingSession>>;
+    public createSession(createVmUsageLoggingSessionCommand?: CreateVmUsageLoggingSessionCommand, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VmUsageLoggingSession>>;
+    public createSession(createVmUsageLoggingSessionCommand?: CreateVmUsageLoggingSessionCommand, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -127,10 +127,6 @@ export class VmUsageLoggingSessionService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         // to determine the Content-Type header
@@ -158,7 +154,6 @@ export class VmUsageLoggingSessionService {
         return this.httpClient.post<VmUsageLoggingSession>(`${this.configuration.basePath}/api/vmusageloggingsessions`,
             createVmUsageLoggingSessionCommand,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -174,10 +169,10 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteSession(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
-    public deleteSession(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
-    public deleteSession(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
-    public deleteSession(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public deleteSession(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json',}): Observable<any>;
+    public deleteSession(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json',}): Observable<HttpResponse<any>>;
+    public deleteSession(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json',}): Observable<HttpEvent<any>>;
+    public deleteSession(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling deleteSession.');
         }
@@ -203,10 +198,6 @@ export class VmUsageLoggingSessionService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -221,9 +212,7 @@ export class VmUsageLoggingSessionService {
         }
 
         return this.httpClient.delete<any>(`${this.configuration.basePath}/api/vmusageloggingsessions/${encodeURIComponent(String(id))}`,
-            null,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -240,10 +229,10 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public editSession(id: string, editVmUsageLoggingSessionCommand?: EditVmUsageLoggingSessionCommand, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VmUsageLoggingSession>;
-    public editSession(id: string, editVmUsageLoggingSessionCommand?: EditVmUsageLoggingSessionCommand, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VmUsageLoggingSession>>;
-    public editSession(id: string, editVmUsageLoggingSessionCommand?: EditVmUsageLoggingSessionCommand, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VmUsageLoggingSession>>;
-    public editSession(id: string, editVmUsageLoggingSessionCommand?: EditVmUsageLoggingSessionCommand, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public editSession(id: string, editVmUsageLoggingSessionCommand?: EditVmUsageLoggingSessionCommand, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VmUsageLoggingSession>;
+    public editSession(id: string, editVmUsageLoggingSessionCommand?: EditVmUsageLoggingSessionCommand, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VmUsageLoggingSession>>;
+    public editSession(id: string, editVmUsageLoggingSessionCommand?: EditVmUsageLoggingSessionCommand, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VmUsageLoggingSession>>;
+    public editSession(id: string, editVmUsageLoggingSessionCommand?: EditVmUsageLoggingSessionCommand, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling editSession.');
         }
@@ -271,10 +260,6 @@ export class VmUsageLoggingSessionService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         // to determine the Content-Type header
@@ -302,7 +287,6 @@ export class VmUsageLoggingSessionService {
         return this.httpClient.put<VmUsageLoggingSession>(`${this.configuration.basePath}/api/vmusageloggingsessions/${encodeURIComponent(String(id))}`,
             editVmUsageLoggingSessionCommand,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -318,10 +302,10 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public endSession(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VmUsageLoggingSession>;
-    public endSession(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VmUsageLoggingSession>>;
-    public endSession(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VmUsageLoggingSession>>;
-    public endSession(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public endSession(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VmUsageLoggingSession>;
+    public endSession(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VmUsageLoggingSession>>;
+    public endSession(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VmUsageLoggingSession>>;
+    public endSession(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling endSession.');
         }
@@ -349,10 +333,6 @@ export class VmUsageLoggingSessionService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -369,7 +349,6 @@ export class VmUsageLoggingSessionService {
         return this.httpClient.post<VmUsageLoggingSession>(`${this.configuration.basePath}/api/vmusageloggingsessions/${encodeURIComponent(String(id))}/endsession`,
             null,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -385,10 +364,10 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAllSessions(onlyActive?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<VmUsageLoggingSession>>;
-    public getAllSessions(onlyActive?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<VmUsageLoggingSession>>>;
-    public getAllSessions(onlyActive?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<VmUsageLoggingSession>>>;
-    public getAllSessions(onlyActive?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public getAllSessions(onlyActive?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<Array<VmUsageLoggingSession>>;
+    public getAllSessions(onlyActive?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<Array<VmUsageLoggingSession>>>;
+    public getAllSessions(onlyActive?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<Array<VmUsageLoggingSession>>>;
+    public getAllSessions(onlyActive?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         if (onlyActive !== undefined && onlyActive !== null) {
@@ -419,10 +398,6 @@ export class VmUsageLoggingSessionService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -438,7 +413,6 @@ export class VmUsageLoggingSessionService {
 
         return this.httpClient.get<Array<VmUsageLoggingSession>>(`${this.configuration.basePath}/api/vmusageloggingsessions`,
             {
-                context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
@@ -454,10 +428,10 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getIsLoggingEnabled(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VmUsageLoggingSession>;
-    public getIsLoggingEnabled(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VmUsageLoggingSession>>;
-    public getIsLoggingEnabled(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VmUsageLoggingSession>>;
-    public getIsLoggingEnabled(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public getIsLoggingEnabled(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VmUsageLoggingSession>;
+    public getIsLoggingEnabled(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VmUsageLoggingSession>>;
+    public getIsLoggingEnabled(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VmUsageLoggingSession>>;
+    public getIsLoggingEnabled(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -482,10 +456,6 @@ export class VmUsageLoggingSessionService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -501,7 +471,6 @@ export class VmUsageLoggingSessionService {
 
         return this.httpClient.get<VmUsageLoggingSession>(`${this.configuration.basePath}/api/vmusageloggingsessions/isloggingenabled`,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -517,10 +486,10 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getSession(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<VmUsageLoggingSession>;
-    public getSession(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<VmUsageLoggingSession>>;
-    public getSession(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<VmUsageLoggingSession>>;
-    public getSession(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public getSession(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VmUsageLoggingSession>;
+    public getSession(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VmUsageLoggingSession>>;
+    public getSession(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VmUsageLoggingSession>>;
+    public getSession(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getSession.');
         }
@@ -548,10 +517,6 @@ export class VmUsageLoggingSessionService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -567,7 +532,6 @@ export class VmUsageLoggingSessionService {
 
         return this.httpClient.get<VmUsageLoggingSession>(`${this.configuration.basePath}/api/vmusageloggingsessions/${encodeURIComponent(String(id))}`,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -583,10 +547,10 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getVmUsageCsvFile(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
-    public getVmUsageCsvFile(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
-    public getVmUsageCsvFile(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
-    public getVmUsageCsvFile(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public getVmUsageCsvFile(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json',}): Observable<any>;
+    public getVmUsageCsvFile(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json',}): Observable<HttpResponse<any>>;
+    public getVmUsageCsvFile(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json',}): Observable<HttpEvent<any>>;
+    public getVmUsageCsvFile(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json',}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getVmUsageCsvFile.');
         }
@@ -612,10 +576,6 @@ export class VmUsageLoggingSessionService {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
         }
 
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
 
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -631,7 +591,6 @@ export class VmUsageLoggingSessionService {
 
         return this.httpClient.get<any>(`${this.configuration.basePath}/api/vmusageloggingsessions/${encodeURIComponent(String(id))}/download`,
             {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
