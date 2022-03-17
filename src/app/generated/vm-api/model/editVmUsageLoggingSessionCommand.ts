@@ -11,7 +11,14 @@
  */
 
 
-export interface BulkPowerOperation { 
-    ids?: Array<string> | null;
+export interface EditVmUsageLoggingSessionCommand { 
+    /**
+     * Data for a VmUsageLoggingSession.
+     */
+    id?: string;
+    teamIds?: Array<string> | null;
+    sessionName?: string | null;
+    sessionStart?: string;
+    sessionEnd?: string;
 }
 

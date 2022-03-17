@@ -11,7 +11,10 @@
  */
 
 
-export interface BulkPowerOperation { 
-    ids?: Array<string> | null;
-}
+export type EventType = 'ViewCreated' | 'ViewDeleted';
+
+export const EventType = {
+    ViewCreated: 'ViewCreated' as EventType,
+    ViewDeleted: 'ViewDeleted' as EventType
+};
 

@@ -74,13 +74,15 @@ export class VmMainComponent implements OnInit, OnDestroy {
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }) {
+    console.log('Chad:  ', vmObj.name);
     // Only open if not already
     const index = this.openVms.findIndex((vm) => vm.name === vmObj.name);
+    // if (this.authService.)
     if (index === -1) {
       this.openVms.push(vmObj);
-      this.selectedTab = this.openVms.length + 1;
+      this.selectedTab = this.openVms.length + 2;
     } else {
-      this.selectedTab = index + 2;
+      this.selectedTab = index + 3;
     }
   }
 

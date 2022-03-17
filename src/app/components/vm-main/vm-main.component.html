@@ -25,6 +25,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         (openTab)="onOpenVmHere($event)"
       ></app-user-list>
     </mat-tab>
+    <mat-tab label="Usage Logging" #userTab>
+      <app-vm-usage-logging></app-vm-usage-logging>
+    </mat-tab>    
     <mat-tab *ngFor="let vm of openVms">
       <ng-template mat-tab-label>
         <button

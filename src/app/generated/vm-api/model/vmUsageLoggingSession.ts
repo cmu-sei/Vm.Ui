@@ -11,7 +11,14 @@
  */
 
 
-export interface BulkPowerOperation { 
-    ids?: Array<string> | null;
+/**
+ * A Logging session for Virtual Machines
+ */
+export interface VmUsageLoggingSession { 
+    id?: string;
+    teamIds?: Array<string> | null;
+    sessionName?: string | null;
+    sessionStart?: string;
+    sessionEnd?: string;
 }
 

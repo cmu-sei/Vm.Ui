@@ -9,9 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { EventType } from './eventType';
 
 
-export interface BulkPowerOperation { 
-    ids?: Array<string> | null;
+export interface WebhookEvent { 
+    id?: string;
+    type?: EventType;
+    timestamp?: string;
+    payload?: string | null;
 }
 

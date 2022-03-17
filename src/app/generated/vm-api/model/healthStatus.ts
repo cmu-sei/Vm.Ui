@@ -11,7 +11,11 @@
  */
 
 
-export interface BulkPowerOperation { 
-    ids?: Array<string> | null;
-}
+export type HealthStatus = 'Unhealthy' | 'Degraded' | 'Healthy';
+
+export const HealthStatus = {
+    Unhealthy: 'Unhealthy' as HealthStatus,
+    Degraded: 'Degraded' as HealthStatus,
+    Healthy: 'Healthy' as HealthStatus
+};
 
