@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="background" fxLayout="column" fxLayoutAlign="start stretch" fxFill>
+<div class="background" fxLayout="column" fxLayoutAlign="start stretch" fxFill *ngIf="currentUser$ | async as user">
   <mat-tab-group
     dynamicHeight
     animationDuration="0ms"
@@ -17,7 +17,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         (errors)="onErrors($event)"
       ></app-vm-list>
     </mat-tab>
-    <mat-tab label="User List" #userTab>
+    <mat-tab label="User List" *ngIf="user.isSystemAdmin" #userTab>
       <app-user-list
         [viewId]="viewId"
         [teams]="teams$ | async"

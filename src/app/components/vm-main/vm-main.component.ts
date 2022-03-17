@@ -6,12 +6,13 @@ import { ActivatedRoute } from '@angular/router';
 import { ComnAuthService, Theme } from '@cmusei/crucible-common';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, switchMap, takeUntil, take } from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
+import { User, UserService } from '../../generated/player-api';
 
 @Component({
   selector: 'app-vm-main',
@@ -28,7 +29,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private authService: ComnAuthService,
     public vmService: VmService,
-    private teamsQuery: VmTeamsQuery
+    private teamsQuery: VmTeamsQuery,
+    private userService: UserService
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -46,6 +48,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public readOnly$: Observable<boolean>;
   public viewId: string;
   public teams$ = this.teamsQuery.selectAll();
+  public currentUser$: Observable<User>;
+
 
   ngOnInit() {
     this.viewId = this.routerQuery.getParams('viewId');
@@ -71,18 +75,23 @@ export class VmMainComponent implements OnInit, OnDestroy {
       });
 
     this.readOnly$ = this.vmService.GetReadOnly(this.viewId);
+
+    this.currentUser$ = this.authService.user$.pipe(switchMap(u => {
+      return this.userService.getUser(u.profile.sub);
+    }));
+
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }) {
-    console.log('Chad:  ', vmObj.name);
+    const adminIndex = this.currentUser$.pipe(take(1), map(u => u.isSystemAdmin)) ? 1 : 0;
     // Only open if not already
     const index = this.openVms.findIndex((vm) => vm.name === vmObj.name);
     // if (this.authService.)
     if (index === -1) {
       this.openVms.push(vmObj);
-      this.selectedTab = this.openVms.length + 2;
+      this.selectedTab = this.openVms.length + 1 + adminIndex;
     } else {
-      this.selectedTab = index + 3;
+      this.selectedTab = index + 2 + adminIndex;
     }
   }
 
