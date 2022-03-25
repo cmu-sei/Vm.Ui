@@ -76,6 +76,8 @@ import { MapVmSelectComponent } from './components/map/map-vm-select/map-vm-sele
 import { VmItemComponent } from './components/vm-list/vm-item/vm-item.component';
 import { MessageDialogComponent } from './components/shared/message-dialog/message-dialog.component';
 import { VmUsageLoggingComponent } from './components/vm-usage-logging/vm-usage-logging.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 /** Custom options the configure the tooltip's default show/hide delays. */
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
@@ -108,6 +110,8 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatSelectModule,
     MatExpansionModule,
     ScrollingModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
 })
 export class AngularMaterialModule {}

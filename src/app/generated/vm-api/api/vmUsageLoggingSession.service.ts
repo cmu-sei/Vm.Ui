@@ -428,9 +428,9 @@ export class VmUsageLoggingSessionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getIsLoggingEnabled(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<VmUsageLoggingSession>;
-    public getIsLoggingEnabled(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<VmUsageLoggingSession>>;
-    public getIsLoggingEnabled(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<VmUsageLoggingSession>>;
+    public getIsLoggingEnabled(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<boolean>;
+    public getIsLoggingEnabled(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<boolean>>;
+    public getIsLoggingEnabled(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<boolean>>;
     public getIsLoggingEnabled(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
@@ -469,7 +469,7 @@ export class VmUsageLoggingSessionService {
             }
         }
 
-        return this.httpClient.get<VmUsageLoggingSession>(`${this.configuration.basePath}/api/vmusageloggingsessions/isloggingenabled`,
+        return this.httpClient.get<boolean>(`${this.configuration.basePath}/api/vmusageloggingsessions/isloggingenabled`,
             {
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
@@ -588,6 +588,7 @@ export class VmUsageLoggingSessionService {
                 responseType_ = 'blob';
             }
         }
+        responseType_ = 'blob';
 
         return this.httpClient.get<any>(`${this.configuration.basePath}/api/vmusageloggingsessions/${encodeURIComponent(String(id))}/download`,
             {

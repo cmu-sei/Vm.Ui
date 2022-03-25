@@ -13,6 +13,10 @@ import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
 import { User, UserService } from '../../generated/player-api';
+import {
+  VmUsageLoggingSession,
+  VmUsageLoggingSessionService,
+} from '../../generated/vm-api';
 
 @Component({
   selector: 'app-vm-main',
@@ -30,7 +34,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private authService: ComnAuthService,
     public vmService: VmService,
     private teamsQuery: VmTeamsQuery,
-    private userService: UserService
+    private userService: UserService,
+    private vmUsageLoggingSessionService: VmUsageLoggingSessionService
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -49,6 +54,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public viewId: string;
   public teams$ = this.teamsQuery.selectAll();
   public currentUser$: Observable<User>;
+  public loggingEnabled$: Observable<Boolean>;
 
 
   ngOnInit() {
@@ -76,14 +82,23 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
     this.readOnly$ = this.vmService.GetReadOnly(this.viewId);
 
-    this.currentUser$ = this.authService.user$.pipe(switchMap(u => {
-      return this.userService.getUser(u.profile.sub);
-    }));
+    this.currentUser$ = this.authService.user$.pipe(
+      switchMap((u) => {
+        return this.userService.getUser(u.profile.sub);
+      })
+    );
+
+    this.loggingEnabled$ = this.vmUsageLoggingSessionService.getIsLoggingEnabled();
 
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }) {
-    const adminIndex = this.currentUser$.pipe(take(1), map(u => u.isSystemAdmin)) ? 1 : 0;
+    const adminIndex = this.currentUser$.pipe(
+      take(1),
+      map((u) => u.isSystemAdmin)
+    )
+      ? 1
+      : 0;
     // Only open if not already
     const index = this.openVms.findIndex((vm) => vm.name === vmObj.name);
     // if (this.authService.)

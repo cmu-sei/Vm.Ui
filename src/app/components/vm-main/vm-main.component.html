@@ -17,7 +17,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         (errors)="onErrors($event)"
       ></app-vm-list>
     </mat-tab>
-    <mat-tab label="User List" *ngIf="user.isSystemAdmin" #userTab>
+    <mat-tab label="User List" #userTab>
       <app-user-list
         [viewId]="viewId"
         [teams]="teams$ | async"
@@ -25,7 +25,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         (openTab)="onOpenVmHere($event)"
       ></app-user-list>
     </mat-tab>
-    <mat-tab label="Usage Logging" #userTab>
+    <mat-tab label="Usage Logging" *ngIf="user.isSystemAdmin && loggingEnabled$ | async" #LogTab>
       <app-vm-usage-logging></app-vm-usage-logging>
     </mat-tab>    
     <mat-tab *ngFor="let vm of openVms">
