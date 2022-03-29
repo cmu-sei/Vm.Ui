@@ -15,8 +15,10 @@ export interface CreateVmUsageLoggingSessionCommand {
     /**
      * Data for a VmUsageLoggingSession.
      */
+    viewId?: string;
     teamIds?: Array<string> | null;
     sessionName?: string | null;
     sessionStart?: string;
+    sessionEnd?: string;
 }
 

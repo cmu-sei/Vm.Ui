@@ -13,7 +13,7 @@ table {
 }
 
 .button-cmd {
-    margin-left: 3px;
+    margin-left: 10px;
 }
 
 .refresh-button {
@@ -37,7 +37,12 @@ table {
 
 .session-full-width {
   margin-left: 20px;
-  width: 100%;
+  width: 420px;
+  min-width: 420px;
+}
+
+.teams-form-field {
+  margin-left: 20px;
 }
 
 .date-picker {

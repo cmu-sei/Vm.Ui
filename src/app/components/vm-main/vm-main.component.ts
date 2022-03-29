@@ -17,6 +17,7 @@ import {
   VmUsageLoggingSession,
   VmUsageLoggingSessionService,
 } from '../../generated/vm-api';
+import { TeamsService } from '../../services/teams/teams.service';
 
 @Component({
   selector: 'app-vm-main',
@@ -35,7 +36,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     public vmService: VmService,
     private teamsQuery: VmTeamsQuery,
     private userService: UserService,
-    private vmUsageLoggingSessionService: VmUsageLoggingSessionService
+    private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
+    private teamService: TeamsService
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -55,6 +57,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public teams$ = this.teamsQuery.selectAll();
   public currentUser$: Observable<User>;
   public loggingEnabled$: Observable<Boolean>;
+  public canManageTeam: Boolean = false;
 
 
   ngOnInit() {
@@ -89,6 +92,15 @@ export class VmMainComponent implements OnInit, OnDestroy {
     );
 
     this.loggingEnabled$ = this.vmUsageLoggingSessionService.getIsLoggingEnabled();
+
+    this.teamService.GetAllMyTeams(this.viewId ).pipe(take(1)).subscribe(tms => {
+      console.log(tms);
+      if (tms.find(tm => tm.canManage === true)) {
+          this.canManageTeam = true;
+      } else {
+        this.canManageTeam = false;
+      }
+    });
 
   }
 

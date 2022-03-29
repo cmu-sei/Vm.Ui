@@ -15,6 +15,7 @@ export interface EditVmUsageLoggingSessionCommand {
     /**
      * Data for a VmUsageLoggingSession.
      */
+    viewId?: string;
     id?: string;
     teamIds?: Array<string> | null;
     sessionName?: string | null;

@@ -15,6 +15,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Clipboard } from '@angular/cdk/clipboard';
 import {
   FormControl,
+  FormGroup,
   FormGroupDirective,
   NgForm,
   Validators,
@@ -22,6 +23,8 @@ import {
 import { ErrorStateMatcher } from '@angular/material/core';
 import { TeamService, Team } from '../../generated/player-api';
 import { saveAs } from 'file-saver';
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+import { DialogService } from '../../services/dialog/dialog.service';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -45,6 +48,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 })
 export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('formDirective') private formDirective: NgForm;
   dataSource = new MatTableDataSource<VmUsageLoggingSession>(
     new Array<VmUsageLoggingSession>()
   );
@@ -58,9 +62,12 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
     Validators.minLength(5),
   ]);
   sessionTeamsFormControl = new FormControl('', [Validators.required]);
-  sessionDateFormControl = new FormControl('', [Validators.required]);
 
   matcher = new MyErrorStateMatcher();
+
+  viewId: string;
+
+  CSHARP_MIN_DATE = '0001-01-01T00:00:00+00:00';
 
   public displayedColumns: string[] = [
     'id',
@@ -70,45 +77,29 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
     'sessionEnd',
   ];
 
-  timeValues: string[] = [
-    '00:00',
-    '01:00',
-    '02:00',
-    '03:00',
-    '04:00',
-    '05:00',
-    '06:00',
-    '07:00',
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-    '19:00',
-    '20:00',
-    '21:00',
-    '22:00',
-    '23:00',
-  ];
-
   newLogName = '';
   selectedTeams = [];
-  selectedDate = '';
-  selectedTime = '00:00';
+  startDate = '';
+  endDate = '';
+
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl(),
+  });
 
   constructor(
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
     private teamService: TeamService,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private routerQuery: RouterQuery,
+    private dialogService: DialogService
   ) {
+    this.viewId = this.routerQuery.getParams('viewId');
+
     this.vmLoggingSessions$ = this.refreshSessions$.pipe(
-      switchMap((_) => this.vmUsageLoggingSessionService.getAllSessions())
+      switchMap((_) =>
+        this.vmUsageLoggingSessionService.getAllSessions(this.viewId)
+      )
     );
 
     this.vmLoggingSessions$
@@ -118,7 +109,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
       });
 
     this.teamService
-      .getTeams()
+      .getViewTeams(this.viewId)
       .pipe(take(1))
       .subscribe((tms) => {
         this.systemTeams = tms;
@@ -140,35 +131,49 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   }
 
   downloadCSV(id: string, name: string) {
-    this.vmUsageLoggingSessionService.getVmUsageCsvFile(id).pipe(take(1)).subscribe(csv => {
-      console.log('chad', csv);
-      const blob = new Blob([csv], { type: 'text/csv' });
-      saveAs(blob, name + '.csv');
-    });
+    this.vmUsageLoggingSessionService
+      .getVmUsageCsvFile(id)
+      .pipe(take(1))
+      .subscribe((csv) => {
+        const blob = new Blob([csv], { type: 'text/csv' });
+        saveAs(blob, name + '.csv');
+      });
   }
 
   createNewSession() {
     if (
       !this.sessionNameFormControl.hasError('required') &&
       !this.sessionNameFormControl.hasError('minlength') &&
-      !this.sessionDateFormControl.hasError('required') &&
-      !this.sessionTeamsFormControl.hasError('required')
+      !this.sessionTeamsFormControl.hasError('required') &&
+      !this.range.controls.start.errors?.required &&
+      !this.range.controls.end.errors?.required
     ) {
+
       // 2022-03-17T04:00:00.000Z is the required format for sessionStart
-      const hourVal = Number(this.selectedTime.replace(':00', ''));
-      const startDt = new Date(this.selectedDate);
-      startDt.setHours(hourVal, 0, 0, 0);
+      const startDt = new Date(this.range.value.start);
+      startDt.setHours(0, 0, 0, 0);
+      const endDt = new Date(this.range.value.end);
+      startDt.setHours(0, 0, 0, 0);
       const tmIds: string[] = [];
       for (const team of this.selectedTeams) {
         tmIds.push(team.id);
       }
       const session: VmUsageLoggingSession = {
         sessionName: this.newLogName,
+        viewId: this.viewId,
         teamIds: tmIds,
         sessionStart: startDt.toISOString(),
+        sessionEnd: endDt.toISOString(),
       };
-      console.log(session);
-      this.vmUsageLoggingSessionService.createSession(session).pipe(take(1)).subscribe(_ => this.refresh());
+      this.vmUsageLoggingSessionService
+        .createSession(session)
+        .pipe(take(1))
+        .subscribe((_) => {
+          this.refresh();
+          this.selectedTeams = [];
+          this.newLogName = '';
+          this.formDirective.resetForm();
+        });
     }
   }
 
@@ -180,15 +185,36 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
     this.clipboard.copy(val);
   }
 
-  deleteSession(id: string) {}
+  deleteSession(id: string, name: string) {
+    this.dialogService
+      .confirm(
+        'Delete Logging Session:  ' + name,
+        'Are you sure that you want to delete all previously logged data?',
+        { buttonTrueText: 'Delete' }
+      )
+      .subscribe((result) => {
+        if (result['confirm']) {
+          this.vmUsageLoggingSessionService
+            .deleteSession(id)
+            .pipe(take(1))
+            .subscribe((_) => {
+              this.refresh();
+            });
+        }
+      });
+  }
+
+  isSessionActive(endDt: string): Boolean {
+    const sessionEnd = new Date(endDt);
+    return (
+      sessionEnd.getTime() <= new Date(this.CSHARP_MIN_DATE).getTime() ||
+      sessionEnd.getTime() > new Date().getTime()
+    );
+  }
 
   getTeamName(id: string): string {
     const team = this.systemTeams.find((t) => t.id === id);
     return team?.name;
-  }
-
-  dateChanged(evt: any) {
-    this.selectedDate = evt.value;
   }
 
   updateLogName(evt: any) {

@@ -5,16 +5,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div fxLayout="column" class="container" fxLayoutAlign="start center">
   <div fxLayout="row" class="create-section" fxLayoutAlign="start center">
-    <form class="session-form" fxLayout="row" fxLayoutAlign="start center">
-      <button
-        mat-raised-button
-        class="button-cmd"
-        color="primary"
-        type="submit"
-        (click)="createNewSession()"
-      >
-        Add
-      </button>
+    <form
+      [formGroup]="range"
+      class="session-form"
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      #formDirective="ngForm"
+    >
       <mat-form-field class="session-full-width" appearance="fill">
         <mat-label>Log Name</mat-label>
         <input
@@ -23,6 +20,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           [formControl]="sessionNameFormControl"
           [errorStateMatcher]="matcher"
           placeholder="Ex. Exercise RCC-E MC1 2022- Blue and Red Teams"
+          [(value)]="newLogName"
           (change)="updateLogName($event)"
         />
         <mat-hint>5 character minimum</mat-hint>
@@ -39,43 +37,59 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field class="session-full-width" appearance="fill">
+      <mat-form-field class="teams-form-field" appearance="fill">
         <mat-label>Teams</mat-label>
         <mat-error *ngIf="sessionTeamsFormControl.hasError('required')">
           Please select atleast 1 team
         </mat-error>
-        <mat-select [formControl]="sessionTeamsFormControl" multiple [(value)]="selectedTeams">
-          <mat-option *ngFor="let team of systemTeams" [value]="team"
-            >{{ team.name }} - {{ team.id }}</mat-option
-          >
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field class="date-picker" appearance="fill">
-        <mat-label>Choose a start date</mat-label>
-        <input
-          matInput
-          [formControl]="sessionDateFormControl"
-          [matDatepicker]="picker"
-          (dateChange)="dateChanged($event)"
-        />
-        <mat-error
-          *ngIf="sessionDateFormControl.hasError('required')"
+        <mat-select
+          [formControl]="sessionTeamsFormControl"
+          multiple
+          [(value)]="selectedTeams"
         >
-          Please specify a Date
-        </mat-error>        
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
+          <mat-option *ngFor="let team of systemTeams" [value]="team">{{
+            team.name
+          }}</mat-option>
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field class="date-picker" appearance="fill">
-        <mat-label>Time</mat-label>
-        <mat-select [(value)]="selectedTime">
-          <mat-option *ngFor="let time of timeValues" [value]="time">
-            {{ time }}
-          </mat-option>
-        </mat-select>
+        <mat-label>Choose a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input
+            matStartDate
+            formControlName="start"
+            placeholder="Start date"
+            required
+          />
+          <input
+            matEndDate
+            formControlName="end"
+            placeholder="End date"
+            required
+          />
+        </mat-date-range-input>
+        <mat-error
+          *ngIf="
+            range.controls.start.errors?.required ||
+            range.controls.end.errors?.required
+          "
+        >
+          Please specify a Date Range
+        </mat-error>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
+
+      <button
+        mat-raised-button
+        class="button-cmd"
+        color="primary"
+        type="submit"
+        (click)="createNewSession()"
+      >
+        Add
+      </button>
     </form>
   </div>
 
@@ -101,7 +115,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               mat-raised-button
               class="button-cmd"
               color="primary"
-              (click)="deleteSession(element.id)"
+              (click)="deleteSession(element.id, element.sessionName)"
             >
               Delete
             </button>
@@ -117,7 +131,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               mat-raised-button
               class="button-cmd"
               color="primary"
-              *ngIf="element.sessionEnd === '0001-01-01T00:00:00+00:00'"
+              *ngIf="isSessionActive(element.sessionEnd)"
               (click)="endSession(element.id)"
             >
               End
@@ -160,8 +174,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <ng-container matColumnDef="sessionEnd">
         <th mat-header-cell *matHeaderCellDef>Session End</th>
         <td mat-cell *matCellDef="let element">
-          <div *ngIf="element.sessionEnd === '0001-01-01T00:00:00+00:00'"></div>
-          <div *ngIf="element.sessionEnd !== '0001-01-01T00:00:00+00:00'">
+          <div *ngIf="element.sessionEnd === CSHARP_MIN_DATE"></div>
+          <div *ngIf="element.sessionEnd !== CSHARP_MIN_DATE">
             {{ element.sessionEnd | date: 'medium' }}
           </div>
         </td>

@@ -360,16 +360,21 @@ export class VmUsageLoggingSessionService {
 
     /**
      * Get all VmUsageLoggingSessions.
+     * @param viewId 
      * @param onlyActive 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAllSessions(onlyActive?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<Array<VmUsageLoggingSession>>;
-    public getAllSessions(onlyActive?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<Array<VmUsageLoggingSession>>>;
-    public getAllSessions(onlyActive?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<Array<VmUsageLoggingSession>>>;
-    public getAllSessions(onlyActive?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
+    public getAllSessions(viewId?: string, onlyActive?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<Array<VmUsageLoggingSession>>;
+    public getAllSessions(viewId?: string, onlyActive?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpResponse<Array<VmUsageLoggingSession>>>;
+    public getAllSessions(viewId?: string, onlyActive?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<HttpEvent<Array<VmUsageLoggingSession>>>;
+    public getAllSessions(viewId?: string, onlyActive?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json',}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (viewId !== undefined && viewId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>viewId, 'viewId');
+        }
         if (onlyActive !== undefined && onlyActive !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
             <any>onlyActive, 'onlyActive');

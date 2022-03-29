@@ -1692,6 +1692,15 @@
         "operationId": "GetAllSessions",
         "parameters": [
           {
+            "name": "viewId",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
             "name": "onlyActive",
             "in": "query",
             "description": "",
@@ -2751,13 +2760,17 @@
       "CreateVmUsageLoggingSessionCommand": {
         "type": "object",
         "properties": {
+          "viewId": {
+            "type": "string",
+            "description": "Data for a VmUsageLoggingSession.",
+            "format": "uuid"
+          },
           "teamIds": {
             "type": "array",
             "items": {
               "type": "string",
               "format": "uuid"
             },
-            "description": "Data for a VmUsageLoggingSession.",
             "nullable": true
           },
           "sessionName": {
@@ -2767,6 +2780,10 @@
           "sessionStart": {
             "type": "string",
             "format": "date-time"
+          },
+          "sessionEnd": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -2774,9 +2791,13 @@
       "EditVmUsageLoggingSessionCommand": {
         "type": "object",
         "properties": {
-          "id": {
+          "viewId": {
             "type": "string",
             "description": "Data for a VmUsageLoggingSession.",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
             "format": "uuid"
           },
           "teamIds": {
@@ -3251,6 +3272,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "viewId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "teamIds": {
             "type": "array",
             "items": {
@@ -3263,13 +3288,18 @@
             "type": "string",
             "nullable": true
           },
+          "createdDt": {
+            "type": "string",
+            "format": "date-time"
+          },
           "sessionStart": {
             "type": "string",
             "format": "date-time"
           },
           "sessionEnd": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "default": "0001-01-01T00:00:00+00:00"
           }
         },
         "additionalProperties": false,
