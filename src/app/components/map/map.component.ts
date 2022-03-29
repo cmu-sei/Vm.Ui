@@ -13,7 +13,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Clickpoint } from '../../models/clickpoint';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { AddPointComponent } from './add-point/add-point.component';
 import { Coordinate, VmMap, VmsService } from '../../generated/vm-api';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,7 +28,7 @@ import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css'],
+  styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit, OnChanges {
   machines: Clickpoint[];
@@ -53,6 +57,10 @@ export class MapComponent implements OnInit, OnChanges {
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;
+
+  private matDialogConfig: MatDialogConfig = {
+    width: '50vw',
+  };
 
   constructor(
     private dialog: MatDialog,
@@ -141,7 +149,10 @@ export class MapComponent implements OnInit, OnChanges {
     this.selectedURL = 'https://example.com';
     this.editing = false;
 
-    this.dialogRef = this.dialog.open(this.addPointDialog);
+    this.dialogRef = this.dialog.open(
+      this.addPointDialog,
+      this.matDialogConfig
+    );
   }
 
   receiveMachine(point: Clickpoint): void {
@@ -258,7 +269,10 @@ export class MapComponent implements OnInit, OnChanges {
     this.selectedLabel = c.label;
     this.editing = true;
 
-    this.dialogRef = this.dialog.open(this.addPointDialog);
+    this.dialogRef = this.dialog.open(
+      this.addPointDialog,
+      this.matDialogConfig
+    );
   }
 
   calcFontSize(radius: number): number {
