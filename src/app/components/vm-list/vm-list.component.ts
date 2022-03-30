@@ -48,7 +48,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public filterString = '';
   public showIps = false;
   public ipv4Only = true;
-  public selectedVms = new Array<VmModel>();
+  public selectedVms = new Array<string>();
   public sortByTeams = false;
   public groupByTeams = new Array<VmGroup>();
   public onAdminTeam: Observable<boolean>;
@@ -372,17 +372,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
           switch (action) {
             case VmAction.PowerOff:
-              return this.vmService.powerOff(
-                this.selectedVms.map((vm) => vm.id)
-              );
+              return this.vmService.powerOff(this.selectedVms);
             case VmAction.PowerOn:
-              return this.vmService.powerOn(
-                this.selectedVms.map((vm) => vm.id)
-              );
+              return this.vmService.powerOn(this.selectedVms);
             case VmAction.Shutdown:
-              return this.vmService.shutdown(
-                this.selectedVms.map((vm) => vm.id)
-              );
+              return this.vmService.shutdown(this.selectedVms);
           }
         }),
         take(1)
@@ -396,11 +390,16 @@ export class VmListComponent implements OnInit, AfterViewInit {
     return item.id;
   }
 
+  getVm(id: string): VmModel {
+    return this.vmModelDataSource.data.find((x) => x.id == id);
+  }
+
   /**
    * Open the selected VMs in Player tabs
    */
   public openSelectedHere() {
-    for (const vm of this.selectedVms) {
+    for (const id of this.selectedVms) {
+      const vm = this.getVm(id);
       const vmName = vm.name;
       const url = vm.url;
       const val = <{ [name: string]: string }>{ name: vmName, url };
@@ -412,9 +411,25 @@ export class VmListComponent implements OnInit, AfterViewInit {
    * Open the selected VMs in browser tabs
    */
   public openSelectedBrowser() {
-    for (const vm of this.selectedVms) {
+    for (const id of this.selectedVms) {
+      const vm = this.getVm(id);
       window.open(vm.url, '_blank');
     }
+  }
+
+  public clearSelections() {
+    this.dialogService
+      .confirm(
+        `Clear Selections`,
+        `Are you sure you want to clear your selections?`,
+        { buttonTrueText: 'Confirm' }
+      )
+      .pipe(filter((result) => result.wasCancelled === false))
+      .subscribe(() => {
+        this.selectContainer.clearSelection();
+        this.selectedVms.length = 0;
+        this.cd.markForCheck();
+      });
   }
 
   shouldDisableSelect(vm: VmModel) {
