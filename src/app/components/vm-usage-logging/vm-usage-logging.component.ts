@@ -25,6 +25,7 @@ import { TeamService, Team } from '../../generated/player-api';
 import { saveAs } from 'file-saver';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { DialogService } from '../../services/dialog/dialog.service';
+import { HttpHeaders } from '@angular/common/http';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -132,7 +133,9 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
 
   downloadCSV(id: string, name: string) {
     this.vmUsageLoggingSessionService
-      .getVmUsageCsvFile(id)
+      .getVmUsageCsvFile(id, 'body', false, {
+        httpHeaderAccept: 'application/octet-stream',
+      })
       .pipe(take(1))
       .subscribe((csv) => {
         const blob = new Blob([csv], { type: 'text/csv' });
@@ -148,7 +151,6 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
       !this.range.controls.start.errors?.required &&
       !this.range.controls.end.errors?.required
     ) {
-
       // 2022-03-17T04:00:00.000Z is the required format for sessionStart
       const startDt = new Date(this.range.value.start);
       startDt.setHours(0, 0, 0, 0);
