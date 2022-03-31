@@ -12,12 +12,8 @@ import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
-import { User, UserService } from '../../generated/player-api';
-import {
-  VmUsageLoggingSession,
-  VmUsageLoggingSessionService,
-} from '../../generated/vm-api';
-import { TeamsService } from '../../services/teams/teams.service';
+import { PermissionService, User, UserService } from '../../generated/player-api';
+import { VmUsageLoggingSessionService } from '../../generated/vm-api';
 
 @Component({
   selector: 'app-vm-main',
@@ -37,7 +33,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private teamsQuery: VmTeamsQuery,
     private userService: UserService,
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
-    private teamService: TeamsService
+    private permissionsService: PermissionService
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -58,6 +54,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public currentUser$: Observable<User>;
   public loggingEnabled$: Observable<Boolean>;
   public canManageTeam: Boolean = false;
+  public currentUserId: Observable<string>;
 
 
   ngOnInit() {
@@ -87,20 +84,18 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
     this.currentUser$ = this.authService.user$.pipe(
       switchMap((u) => {
+        this.permissionsService.getUserViewPermissions(this.viewId, u.profile.sub).pipe(take(1)).subscribe(pms => {
+          if (pms.find(pm => pm.key === 'ViewAdmin')) {
+            this.canManageTeam = true;
+          } else {
+            this.canManageTeam = false;
+          }
+        });
         return this.userService.getUser(u.profile.sub);
       })
     );
 
     this.loggingEnabled$ = this.vmUsageLoggingSessionService.getIsLoggingEnabled();
-
-    this.teamService.GetAllMyTeams(this.viewId ).pipe(take(1)).subscribe(tms => {
-      console.log(tms);
-      if (tms.find(tm => tm.canManage === true)) {
-          this.canManageTeam = true;
-      } else {
-        this.canManageTeam = false;
-      }
-    });
 
   }
 
