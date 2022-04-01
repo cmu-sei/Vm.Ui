@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="background" fxLayout="column" fxLayoutAlign="start stretch" fxFill>
+<div class="background" fxLayout="column" fxLayoutAlign="start stretch" fxFill *ngIf="currentUser$ | async as user">
   <mat-tab-group
     dynamicHeight
     animationDuration="0ms"
@@ -25,6 +25,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         (openTab)="onOpenVmHere($event)"
       ></app-user-list>
     </mat-tab>
+    <mat-tab label="Usage Logging" *ngIf="(user.isSystemAdmin || canManageTeam) && loggingEnabled$ | async" #LogTab>
+      <app-vm-usage-logging></app-vm-usage-logging>
+    </mat-tab>    
     <mat-tab *ngFor="let vm of openVms">
       <ng-template mat-tab-label>
         <button

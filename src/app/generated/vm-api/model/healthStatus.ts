@@ -16,14 +16,11 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface ProblemDetails { 
-  [key: string]: any | any;
+export type HealthStatus = 'Unhealthy' | 'Degraded' | 'Healthy';
 
-
-    type?: string | null;
-    title?: string | null;
-    status?: number | null;
-    detail?: string | null;
-    instance?: string | null;
-}
+export const HealthStatus = {
+    Unhealthy: 'Unhealthy' as HealthStatus,
+    Degraded: 'Degraded' as HealthStatus,
+    Healthy: 'Healthy' as HealthStatus
+};
 

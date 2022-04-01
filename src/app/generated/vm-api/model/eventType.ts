@@ -16,14 +16,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface ProblemDetails { 
-  [key: string]: any | any;
+export type EventType = 'ViewCreated' | 'ViewDeleted';
 
-
-    type?: string | null;
-    title?: string | null;
-    status?: number | null;
-    detail?: string | null;
-    instance?: string | null;
-}
+export const EventType = {
+    ViewCreated: 'ViewCreated' as EventType,
+    ViewDeleted: 'ViewDeleted' as EventType
+};
 

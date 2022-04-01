@@ -16,14 +16,14 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface ProblemDetails { 
-  [key: string]: any | any;
-
-
-    type?: string | null;
-    title?: string | null;
-    status?: number | null;
-    detail?: string | null;
-    instance?: string | null;
+export interface CreateVmUsageLoggingSessionCommand { 
+    /**
+     * Data for a VmUsageLoggingSession.
+     */
+    viewId?: string;
+    teamIds?: Array<string> | null;
+    sessionName?: string | null;
+    sessionStart?: string;
+    sessionEnd?: string;
 }
 

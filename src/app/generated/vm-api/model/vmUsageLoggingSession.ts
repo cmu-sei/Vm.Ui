@@ -16,14 +16,16 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface ProblemDetails { 
-  [key: string]: any | any;
-
-
-    type?: string | null;
-    title?: string | null;
-    status?: number | null;
-    detail?: string | null;
-    instance?: string | null;
+/**
+ * A Logging session for Virtual Machines
+ */
+export interface VmUsageLoggingSession { 
+    id?: string;
+    viewId?: string;
+    teamIds?: Array<string> | null;
+    sessionName?: string | null;
+    createdDt?: string;
+    sessionStart?: string;
+    sessionEnd?: string;
 }
 
