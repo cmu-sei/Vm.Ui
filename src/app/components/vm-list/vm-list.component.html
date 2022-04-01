@@ -64,6 +64,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
         </mat-form-field>
         <mat-menu #actionsMenu="matMenu">
+          <button mat-menu-item (click)="clearSelections()">
+            Clear Selections
+          </button>
           <button
             mat-menu-item
             (click)="powerOnSelected()"
@@ -180,7 +183,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >
             <vm-item
               *ngIf="vm.powerState.toString() !== 'Unknown'"
-              [dtsSelectItem]="vm"
+              [dtsSelectItem]="vm.id"
               [vm]="vm"
               [ipv4Only]="ipv4Only"
               [showIps]="showIps"
@@ -229,7 +232,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       >
         <vm-item
           *ngIf="vm.powerState.toString() !== 'Unknown'"
-          [dtsSelectItem]="vm"
+          [dtsSelectItem]="vm.id"
           [vm]="vm"
           [ipv4Only]="ipv4Only"
           [showIps]="showIps"
