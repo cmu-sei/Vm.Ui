@@ -11,11 +11,15 @@
  */
 
 
-export type PowerState = 'Unknown' | 'On' | 'Off' | 'Suspended';
-
-export const PowerState = {
-    Unknown: 'Unknown' as PowerState,
-    On: 'On' as PowerState,
-    Off: 'Off' as PowerState,
-    Suspended: 'Suspended' as PowerState
-};
+export interface VmUsageReport { 
+    sessionId?: string;
+    sessionName?: string;
+    sessionStart?: any;
+    sessionEnd?: any;
+    vmId?: string;
+    vmName?: string;
+    ipAddress?: string;
+    userId?: string;
+    userName?: string;
+    minutesActive?: number;
+}

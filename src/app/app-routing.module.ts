@@ -10,6 +10,7 @@ import { ConsoleComponent } from './components/console/console.component';
 import { VmMainComponent } from './components/vm-main/vm-main.component';
 import { WelderComponent } from './components/welder/welder.component';
 import { MapMainComponent } from './components/map/map-main/map-main.component';
+import { VmUsageReportingComponent } from './components/vm-usage-reporting/vm-usage-reporting.component';
 
 export const ROUTES: Routes = [
   {
@@ -37,29 +38,11 @@ export const ROUTES: Routes = [
     component: MapMainComponent,
     canActivate: [ComnAuthGuardService],
   },
-
-  // TODO: deprecated, remove when safe to do so
   {
-    path: 'exercises/:viewId/auto-deploy',
-    component: AutoDeployComponent,
+    path: 'usage',
+    component: VmUsageReportingComponent,
     canActivate: [ComnAuthGuardService],
   },
-  {
-    path: 'exercises/:viewName/:teamId/welder',
-    component: WelderComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  {
-    path: 'exercises/:viewId/vms/:name/console',
-    component: ConsoleComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  {
-    path: 'exercises/:viewId',
-    component: VmMainComponent,
-    canActivate: [ComnAuthGuardService],
-  },
-  // End depreceated routes
   {
     path: '**',
     component: VmMainComponent,
