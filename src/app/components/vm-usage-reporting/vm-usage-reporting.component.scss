@@ -82,8 +82,14 @@ table {
   display: flex;
   flex: 3;
   align-self: center;
+  justify-content: flex-end;
 }
 
 .mat-radio-button {
   margin-right: 40px;
+}
+
+.no-data-warning {
+  text-align: center;
+  font-size: 18px;
 }

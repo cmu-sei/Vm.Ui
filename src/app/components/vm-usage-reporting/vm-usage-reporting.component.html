@@ -9,6 +9,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
     <div class="header-date-range">
       <form
+        [formGroup]="range"
         class="session-form"
         fxLayout="row"
         fxLayoutAlign="start center"
@@ -19,15 +20,25 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-date-range-input [rangePicker]="picker">
             <input
               matStartDate
+              formControlName="start"
               placeholder="Start date"
               required
             />
             <input
               matEndDate
+              formControlName="end"
               placeholder="End date"
               required
             />
           </mat-date-range-input>
+          <mat-error
+            *ngIf="
+              range.controls.start.errors?.required ||
+              range.controls.end.errors?.required
+            "
+          >
+            Please specify a Date Range
+          </mat-error>
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-date-range-picker #picker></mat-date-range-picker>
         </mat-form-field>
@@ -37,8 +48,18 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           color="primary"
           type="submit"
           (click)="getReport()"
+          [disabled]="!readyToGet()"
         >
-          Submit
+          Get
+        </button>
+        <button
+          mat-raised-button
+          class="button-cmd"
+          color="primary"
+          (click)="downloadCSV()"
+          [disabled]="rawVmUsageList.length === 0"
+        >
+          CSV
         </button>
       </form>
     </div>
@@ -99,6 +120,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <tr mat-header-row *matHeaderRowDef="displayedColumns[reportFormatIndex]"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns[reportFormatIndex]"></tr>
     </table>
+  </div>
+  <div
+    *ngIf="rawVmUsageList.length === 0"
+    class="no-data-warning"
+  >
+    No data found for the selected date range.
   </div>
   <div>
     <mat-paginator

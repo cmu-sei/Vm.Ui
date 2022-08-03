@@ -76,6 +76,12 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
       'minutesActive'
     ]
   ];
+  startDate = new Date();
+  endDate = new Date();
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl(),
+  });
 
   constructor(
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
@@ -173,13 +179,26 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  readyToGet() {
+    if ((this.range.value.start && this.range.value.end) &&
+        (this.range.value.start.valueOf() !== this.startDate.valueOf() ||
+         this.range.value.end.valueOf() !== this.endDate.valueOf())) {
+      return true;
+    }
+    return false;
+  }
+
   getReport() {
-    if ('check dates' !== null) {
+    if (!this.range.controls.start.errors?.required &&
+        !this.range.controls.end.errors?.required) {
       this.dataSource.data = [];
+      this.rawVmUsageList = [];
       // 2022-03-17T04:00:00.000Z is the required format for sessionStart
-      const startDt = new Date('2022-07-01');
+      const startDt = new Date(this.range.value.start);
+      this.startDate = new Date(startDt.valueOf());
       startDt.setHours(0, 0, 0, 0);
-      const endDt = new Date('2022-07-31');
+      const endDt = new Date(this.range.value.end);
+      this.endDate = new Date(endDt.valueOf());
       endDt.setHours(23, 59, 59,999);
       this.vmUsageLoggingSessionService
         .getVmUsageReport(startDt.toISOString(), endDt.toISOString())
@@ -192,16 +211,45 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
 
   }
 
-  downloadCSV(id: string, name: string) {
-    this.vmUsageLoggingSessionService
-      .getVmUsageCsvFile(id, 'body', false, {
-        httpHeaderAccept: 'application/octet-stream',
-      })
-      .pipe(take(1))
-      .subscribe((csv) => {
-        const blob = new Blob([csv], { type: 'text/csv' });
-        saveAs(blob, name + '.csv');
-      });
+  downloadCSV() {
+    if (!this.rawVmUsageList || !this.rawVmUsageList.length) {
+      return;
+    }
+    const filename = 'VmUsageData.csv';
+    const separator = ',';
+    const keys = Object.keys(this.rawVmUsageList[0]);
+    const csvContent =
+      keys.join(separator) +
+      '\n' +
+      this.rawVmUsageList.map(row => {
+        return keys.map(k => {
+          let cell = row[k] === null || row[k] === undefined ? '' : row[k];
+          cell = cell instanceof Date
+            ? cell.toLocaleString()
+            : cell.toString().replace(/"/g, '""');
+          if (cell.search(/("|,|\n)/g) >= 0) {
+            cell = `"${cell}"`;
+          }
+          return cell;
+        }).join(separator);
+      }).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    if (navigator.msSaveBlob) { // IE 10+
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      const link = document.createElement('a');
+      if (link.download !== undefined) {
+        // Browsers that support HTML5 download attribute
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
   }
 
   ngOnDestroy() {
