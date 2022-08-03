@@ -18,6 +18,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -96,6 +97,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatTableModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatRadioModule,
     MatIconModule,
     MatMenuModule,
     MatPaginatorModule,

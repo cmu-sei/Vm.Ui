@@ -492,10 +492,10 @@ export class VmUsageLoggingSessionService {
 
         let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
         if (reportStart !== undefined && reportStart !== null) {
-            queryParameters = queryParameters.set('reportStart', <any>reportStart.toISOString());
+            queryParameters = queryParameters.set('reportStart', <any>reportStart);
         }
         if (reportEnd !== undefined && reportEnd !== null) {
-            queryParameters = queryParameters.set('reportEnd', <any>reportEnd.toISOString());
+            queryParameters = queryParameters.set('reportEnd', <any>reportEnd);
         }
 
         let headers = this.defaultHeaders;
