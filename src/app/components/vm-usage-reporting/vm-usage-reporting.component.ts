@@ -4,10 +4,9 @@
  */
 
 import { Component, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { switchMap, take, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import {
-  VmUsageLoggingSession,
   VmUsageLoggingSessionService,
   VmUsageReport
 } from '../../generated/vm-api';
@@ -18,15 +17,11 @@ import {
   FormControl,
   FormGroup,
   FormGroupDirective,
-  NgForm,
-  Validators,
+  NgForm
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { TeamService, Team } from '../../generated/player-api';
-import { saveAs } from 'file-saver';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { DialogService } from '../../services/dialog/dialog.service';
-import { HttpHeaders } from '@angular/common/http';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -85,7 +80,6 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
-    private teamService: TeamService,
     private clipboard: Clipboard,
     private routerQuery: RouterQuery,
     private dialogService: DialogService
