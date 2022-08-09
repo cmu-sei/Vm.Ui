@@ -7,6 +7,7 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
+
 import { CallbacksService } from './api/callbacks.service';
 import { FileService } from './api/file.service';
 import { HealthService } from './api/health.service';
@@ -18,7 +19,13 @@ import { VsphereService } from './api/vsphere.service';
   imports:      [],
   declarations: [],
   exports:      [],
-  providers: []
+  providers: [
+    CallbacksService,
+    FileService,
+    HealthService,
+    VmUsageLoggingSessionService,
+    VmsService,
+    VsphereService ]
 })
 export class ApiModule {
     public static forRoot(configurationFactory: () => Configuration): ModuleWithProviders<ApiModule> {
