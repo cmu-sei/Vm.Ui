@@ -60,7 +60,7 @@
     "@datorama/akita-ng-router-store": "^6.0.1",
     "@datorama/akita-ngdevtools": "^6.0.1",
     "@openapitools/openapi-generator-cli": "1.0.18-3.2.0",
-    "@types/jasmine": "^3.8.2",
+    "@types/jasmine": "^4.0.3",
     "@types/jasminewd2": "^2.0.10",
     "@types/node": "^16.4.11",
     "codelyzer": "^6.0.2",
