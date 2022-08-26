@@ -32,6 +32,7 @@ export * from './vmMapCreateForm';
 export * from './vmMapUpdateForm';
 export * from './vmUpdateForm';
 export * from './vmUsageLoggingSession';
+export * from './vmUsageReport';
 export * from './vmUser';
 export * from './vmUserTeam';
 export * from './vsphereVirtualMachine';

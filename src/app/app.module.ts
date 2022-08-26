@@ -18,6 +18,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -76,6 +77,7 @@ import { MapVmSelectComponent } from './components/map/map-vm-select/map-vm-sele
 import { VmItemComponent } from './components/vm-list/vm-item/vm-item.component';
 import { MessageDialogComponent } from './components/shared/message-dialog/message-dialog.component';
 import { VmUsageLoggingComponent } from './components/vm-usage-logging/vm-usage-logging.component';
+import { VmUsageReportingComponent } from './components/vm-usage-reporting/vm-usage-reporting.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
@@ -95,6 +97,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatTableModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatRadioModule,
     MatIconModule,
     MatMenuModule,
     MatPaginatorModule,
@@ -138,6 +141,7 @@ export class AngularMaterialModule {}
     VmItemComponent,
     MessageDialogComponent,
     VmUsageLoggingComponent,
+    VmUsageReportingComponent
   ],
   imports: [
     TableVirtualScrollModule,

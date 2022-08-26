@@ -16,13 +16,15 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface ProblemDetails { 
-  [key: string]: any | any;
-
-
-    type?: string;
-    title?: string;
-    status?: number;
-    detail?: string;
-    instance?: string;
+export interface VmUsageReport { 
+    sessionId?: string;
+    sessionName?: string;
+    sessionStart?: any;
+    sessionEnd?: any;
+    vmId?: string;
+    vmName?: string;
+    ipAddress?: string;
+    userId?: string;
+    userName?: string;
+    minutesActive?: number;
 }
