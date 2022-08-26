@@ -16,7 +16,7 @@ export class VmItemComponent implements OnInit {
   @Input('vm') vm: VmModel;
   @Input('ipv4Only') ipv4Only: boolean;
   @Input('showIps') showIps: boolean;
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
+  @Output() openVmHere = new EventEmitter<VmModel>();
 
   constructor(public themeService: ThemeService) {}
 
@@ -27,10 +27,9 @@ export class VmItemComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  openHere($event, vmName: string, url: string) {
+  openHere($event, vm: VmModel) {
     $event.preventDefault();
-    const val = <{ [name: string]: string }>{ name: vmName, url };
-    this.openVmHere.emit(val);
+    this.openVmHere.emit(vm);
   }
 
   public getIpAddresses(vm: VmModel): string[] {

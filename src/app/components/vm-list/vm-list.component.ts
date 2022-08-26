@@ -61,7 +61,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     new QueryList<SelectContainerComponent>();
   @ViewChild('selectContainer') selectContainer: SelectContainerComponent;
 
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
+  @Output() openVmHere = new EventEmitter<VmModel>();
   @Output() errors = new EventEmitter<{ [key: string]: string }>();
 
   @Input() set vms(val: VmModel[]) {
@@ -161,7 +161,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       .pipe(
         switchMap((teams: Team[]) => {
           return of(
-            teams.some((t) => t.permissions.some((p) => p.key == 'ViewAdmin'))
+            teams.some((t) => t.permissions.some((p) => p.key === 'ViewAdmin'))
           );
         })
       );
@@ -400,10 +400,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public openSelectedHere() {
     for (const id of this.selectedVms) {
       const vm = this.getVm(id);
-      const vmName = vm.name;
-      const url = vm.url;
-      const val = <{ [name: string]: string }>{ name: vmName, url };
-      this.openVmHere.emit(val);
+      this.openVmHere.emit(vm);
     }
   }
 

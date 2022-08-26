@@ -15,7 +15,8 @@ import {
   VmsService,
 } from '../../generated/vm-api';
 import { VmModel } from './vm.model';
-import { VmsStore } from './vms.store';
+import { VmsStore, } from './vms.store';
+import { VmsQuery } from './vms.query';
 
 @Injectable({ providedIn: 'root' })
 export class VmService {
@@ -26,6 +27,7 @@ export class VmService {
 
   constructor(
     private vmsStore: VmsStore,
+    private vmsQuery: VmsQuery,
     private http: HttpClient,
     private settings: ComnSettingsService,
     private router: Router,
@@ -56,12 +58,14 @@ export class VmService {
     includePersonal: boolean,
     onlyMine: boolean
   ): Observable<Array<VmModel>> {
+    this.vmsStore.setLoading(true);
     let params = new HttpParams();
     params = params.append('includePersonal', includePersonal.toString());
     params = params.append('onlyMine', onlyMine.toString());
     return this.http.get<Array<VmModel>>(this.vmUrl, { params: params }).pipe(
       tap((entities) => {
-        this.vmsStore.set(entities);
+        this.vmsStore.upsertMany(entities);
+        this.vmsStore.setLoading(false);
       })
     );
   }
@@ -111,3 +115,4 @@ export class VmService {
     return this.vmsService.bulkShutdown(args);
   }
 }
+

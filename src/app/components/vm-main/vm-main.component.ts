@@ -12,8 +12,15 @@ import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
-import { PermissionService, User, UserService } from '../../generated/player-api';
+import {
+  PermissionService,
+  User,
+  UserService,
+} from '../../generated/player-api';
 import { VmUsageLoggingSessionService } from '../../generated/vm-api';
+import { ThemeService } from '../../services/theme/theme.service';
+import { VmUISessionService } from '../../state/vm-ui-session/vm-ui-session.service';
+import { VmUISessionQuery } from '../../state/vm-ui-session/vm-ui-session.query';
 
 @Component({
   selector: 'app-vm-main',
@@ -33,7 +40,10 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private teamsQuery: VmTeamsQuery,
     private userService: UserService,
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
-    private permissionsService: PermissionService
+    private permissionsService: PermissionService,
+    private themeService: ThemeService,
+    private vmUISessionService: VmUISessionService,
+    private vmUISessionQuery: VmUISessionQuery
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -44,22 +54,20 @@ export class VmMainComponent implements OnInit, OnDestroy {
       });
   }
 
-  public openVms: Array<{ [name: string]: string }>;
+  public openVms: Array<VmModel>;
   public selectedTab: number;
   public vms$: Observable<VmModel[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
   public readOnly$: Observable<boolean>;
-  public viewId: string;
   public teams$ = this.teamsQuery.selectAll();
   public currentUser$: Observable<User>;
   public loggingEnabled$: Observable<Boolean>;
   public canManageTeam: Boolean = false;
   public currentUserId: Observable<string>;
-
+  public vms: Observable<VmModel[]>;
 
   ngOnInit() {
-    this.viewId = this.routerQuery.getParams('viewId');
-    this.openVms = new Array<{ [name: string]: string }>();
+    this.openVms = new Array<VmModel>();
     this.selectedTab = 0;
 
     this.vms$ = combineLatest([this.vmQuery.selectAll(), this.vmErrors$]).pipe(
@@ -71,35 +79,62 @@ export class VmMainComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.vmQuery.selectAll().pipe(takeUntil(this.unsubscribe$)).subscribe((vms) => {
+      if (vms.length > 0) {
+        this.vmUISessionService.getCurrentView();
+      }
+    });
+
+    combineLatest([this.vmQuery.selectAll(), this.vmUISessionQuery.selectAll()])
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(([vms, sessions]) => {
+        if (vms.length > 0 && sessions) {
+          console.log('sessions', sessions);
+          console.log('vms', vms);
+          const session = sessions.find((s) => s.id === this.vmUISessionService.getCurrentTeamId());
+          session.openedVmIds.forEach((vm) => {
+            console.log('open', vms.find((v) => v.id === vm));
+            this.onOpenVmHere(vms.find((v) => v.id === vm));
+          });
+        }
+      });
+
     this.signalRService
       .startConnection()
       .then(() => {
-        this.signalRService.joinView(this.viewId);
+        this.signalRService.joinView(this.vmUISessionService.getCurrentViewId());
       })
       .catch((err) => {
         console.log(err);
       });
 
-    this.readOnly$ = this.vmService.GetReadOnly(this.viewId);
+    this.readOnly$ = this.vmService.GetReadOnly(this.vmUISessionService.getCurrentViewId());
 
     this.currentUser$ = this.authService.user$.pipe(
       switchMap((u) => {
-        this.permissionsService.getUserViewPermissions(this.viewId, u.profile.sub).pipe(take(1)).subscribe(pms => {
-          if (pms.find(pm => pm.key === 'ViewAdmin')) {
-            this.canManageTeam = true;
-          } else {
-            this.canManageTeam = false;
-          }
-        });
+        this.permissionsService
+          .getUserViewPermissions(this.vmUISessionService.getCurrentViewId(), u.profile.sub)
+          .pipe(take(1))
+          .subscribe((pms) => {
+            if (pms.find((pm) => pm.key === 'ViewAdmin')) {
+              this.canManageTeam = true;
+            } else {
+              this.canManageTeam = false;
+            }
+          });
         return this.userService.getUser(u.profile.sub);
       })
     );
 
-    this.loggingEnabled$ = this.vmUsageLoggingSessionService.getIsLoggingEnabled();
-
+    this.loggingEnabled$ =
+      this.vmUsageLoggingSessionService.getIsLoggingEnabled();
   }
 
-  onOpenVmHere(vmObj: { [name: string]: string }) {
+  getCurrentViewId(): string {
+    return this.vmUISessionService.getCurrentViewId();
+  }
+
+  onOpenVmHere(vm: VmModel) {
     const adminIndex = this.currentUser$.pipe(
       take(1),
       map((u) => u.isSystemAdmin)
@@ -107,20 +142,21 @@ export class VmMainComponent implements OnInit, OnDestroy {
       ? 1
       : 0;
     // Only open if not already
-    const index = this.openVms.findIndex((vm) => vm.name === vmObj.name);
-    // if (this.authService.)
+    const index = this.openVms.findIndex((v) => v.id === vm.id);
     if (index === -1) {
-      this.openVms.push(vmObj);
+      this.openVms.push(vm);
       this.selectedTab = this.openVms.length + 1 + adminIndex;
+      this.vmUISessionService.setOpenedVm(vm, true);
     } else {
       this.selectedTab = index + 2 + adminIndex;
     }
   }
 
-  remove(name: string) {
-    const index = this.openVms.findIndex((vm) => vm.name === name);
+  remove(id: string) {
+    const index = this.openVms.findIndex((vm) => vm.id === id);
     if (index !== -1 && this.selectedTab > 1) {
       this.selectedTab = 0;
+      this.vmUISessionService.setOpenedVm(this.openVms[index], false);
       this.openVms.splice(index, 1);
     }
   }
@@ -135,7 +171,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.signalRService.leaveView(this.viewId);
+    this.signalRService.leaveView(this.vmUISessionService.getCurrentViewId());
     this.vmErrors$.complete();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();

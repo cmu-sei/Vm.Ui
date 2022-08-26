@@ -19,7 +19,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </mat-tab>
     <mat-tab label="User List" #userTab>
       <app-user-list
-        [viewId]="viewId"
+        [viewId]="getCurrentViewId()"
         [teams]="teams$ | async"
         [isActive]="userTab.isActive"
         (openTab)="onOpenVmHere($event)"
@@ -32,7 +32,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <ng-template mat-tab-label>
         <button
           mat-icon-button
-          (click)="remove(vm.name)"
+          (click)="remove(vm.id)"
           style="outline: none"
           title="Close {{ vm.name }}"
         >

@@ -46,13 +46,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
         <a
           class="vm-link"
           [attr.href]="vm.url"
-          (click)="
-            openHere(
-              $event,
-              vm.name,
-              this.themeService.addThemeQueryParam(vm.url)
-            )
-          "
+          (click)="openHere($event, vm)"
           >{{ vm.name }}</a
         >
       </div>
