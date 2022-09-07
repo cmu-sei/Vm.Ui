@@ -10,6 +10,7 @@ import { VmUISessionQuery } from './vm-ui-session.query';
 import { VmModel } from '../vms/vm.model';
 import { Team, TeamService } from '../../generated/player-api';
 import { take } from 'rxjs/operators';
+import { VmMainComponent } from '../../components/vm-main/vm-main.component';
 
 @Injectable({ providedIn: 'root' })
 export class VmUISessionService {
@@ -63,20 +64,20 @@ export class VmUISessionService {
     }
   }
 
-  setOpenedVm(vm: VmModel, isOpened: boolean) {
+  setOpenedVm(vmObj: { [name: string]: string }, isOpened: boolean) {
     const session = this.vmUISessionQuery.getEntity(this.teamId);
     if (isOpened) {
-      if (!session.openedVmIds.find((v) => v === vm.id)) {
-        const s = [...session.openedVmIds];
-        s.push(vm.id);
-        this.update(session.id, { openedVmIds: s });
+      if (!session.openedVms.find((v) => v.name === vmObj.name)) {
+        const s = [...session.openedVms];
+        s.push(vmObj);
+        this.update(session.id, { openedVms: s });
       }
     } else {
-      const index = session.openedVmIds.findIndex((v) => v === vm.id);
+      const index = session.openedVms.findIndex((v) => v.name === vmObj.name);
       if (index >= 0) {
-        const s = [...session.openedVmIds];
+        const s = [...session.openedVms];
         s.splice(index, 1);
-        this.update(session.id, { openedVmIds: s });
+        this.update(session.id, { openedVms: s });
       }
     }
   }

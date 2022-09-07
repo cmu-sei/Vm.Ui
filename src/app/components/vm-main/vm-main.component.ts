@@ -44,7 +44,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
   constructor(
     private vmQuery: VmsQuery,
     private signalRService: SignalRService,
-    private routerQuery: RouterQuery,
     private activatedRoute: ActivatedRoute,
     private authService: ComnAuthService,
     public vmService: VmService,
@@ -65,7 +64,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
       });
   }
 
-  public openVms: Array<VmModel>;
+  public openVms: Array<{ [name: string]: string }>;
   public selectedTab: number;
   public vms$: Observable<VmModel[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
@@ -78,7 +77,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public currentSession: VmUISession;
 
   ngOnInit() {
-    this.openVms = new Array<VmModel>();
+    this.openVms = new Array<{ [name: string]: string }>();
     this.selectedTab = 0;
 
     this.vms$ = combineLatest([this.vmQuery.selectAll(), this.vmErrors$]).pipe(
@@ -147,12 +146,9 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
           if (session) {
             this.currentSession = session;
-            session.openedVmIds.forEach((vm) => {
+            session.openedVms.forEach((vm) => {
               if (vm) {
-                this.onOpenVmHere(
-                  vms.find((v) => v.id === vm),
-                  true
-                );
+                this.onOpenVmHere(vm, true);
               }
             });
             this.selectedTab = session.tabOpened;
@@ -169,7 +165,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     return this.vmUISessionService.getCurrentViewId();
   }
 
-  onOpenVmHere(vm: VmModel, onLoading: boolean = false) {
+  onOpenVmHere(vmObj: { [name: string]: string }, onLoading: boolean = false) {
     const adminIndex = this.currentUser$.pipe(
       take(1),
       map((u) => u.isSystemAdmin)
@@ -178,11 +174,11 @@ export class VmMainComponent implements OnInit, OnDestroy {
       : 0;
 
     // Only open if not already
-    const index = this.openVms.findIndex((v) => v.id === vm.id);
+    const index = this.openVms.findIndex((v) => v.name === vmObj.name);
     if (index === -1) {
       // Not opened
-      this.openVms.push(vm);
-      this.vmUISessionService.setOpenedVm(vm, true);
+      this.openVms.push(vmObj);
+      this.vmUISessionService.setOpenedVm(vmObj, true);
       if (!onLoading) {
         this.setSelectedTab(this.openVms.length + 1 + adminIndex);
       }
@@ -206,14 +202,9 @@ export class VmMainComponent implements OnInit, OnDestroy {
     const index = this.openVms.findIndex((v) => v.name === vmObj.name);
     if (index === -1) {
       // Not opened
-      this.vms$.pipe(take(1)).subscribe((vms) => {
-        const vm = vms.find((v) => v.name === vmObj.name);
-        if (vm) {
-          this.openVms.push(vm);
-          this.vmUISessionService.setOpenedVm(vm, true);
-          this.setSelectedTab(this.openVms.length + 1 + adminIndex);
-        }
-      });
+      this.openVms.push(vmObj);
+      this.vmUISessionService.setOpenedVm(vmObj, true);
+      this.setSelectedTab(this.openVms.length + 1 + adminIndex);
     } else {
       // Already opened
       this.setSelectedTab(index + 2 + adminIndex);

@@ -10,7 +10,7 @@ export interface VmUISession {
   isShowIPv4OnlySelected: boolean;
   itemsPerPage: number;
   pageNumber: number;
-  openedVmIds: string[];
+  openedVms: Array<{ [name: string]: string }>;
 }
 
 export enum standardTabs {

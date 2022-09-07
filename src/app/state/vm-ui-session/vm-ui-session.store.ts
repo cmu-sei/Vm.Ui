@@ -14,7 +14,7 @@ export const initialVmUISession: VmUISession = {
   isShowIPv4OnlySelected: true,
   itemsPerPage: 50,
   pageNumber: 1,
-  openedVmIds: [],
+  openedVms: [],
 };
 
 @Injectable({ providedIn: 'root' })
