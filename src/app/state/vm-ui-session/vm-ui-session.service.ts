@@ -84,4 +84,8 @@ export class VmUISessionService {
   getCurrentTeamId(): string {
     return this.teamId;
   }
+
+  setOpenedTab(vmSession: VmUISession, index: number) {
+    this.update(vmSession.id, { tabOpened: index });
+  }
 }

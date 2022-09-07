@@ -4,7 +4,7 @@
 export interface VmUISession {
   id?: string;
   viewId?: string;
-  tabOpened: standardTabs | string;
+  tabOpened: standardTabs | number;
   searchValue: string;
   isShowIPsSelected: boolean;
   isShowIPv4OnlySelected: boolean;
