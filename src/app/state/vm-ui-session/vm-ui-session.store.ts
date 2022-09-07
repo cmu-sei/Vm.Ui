@@ -10,10 +10,8 @@ export interface VmUISessionState extends EntityState<VmUISession> {}
 export const initialVmUISession: VmUISession = {
   tabOpened: standardTabs.VMList,
   searchValue: '',
-  isShowIPsSelected: false,
-  isShowIPv4OnlySelected: true,
-  itemsPerPage: 50,
-  pageNumber: 1,
+  showIPsSelected: false,
+  showIPv4OnlySelected: true,
   openedVms: [],
 };
 

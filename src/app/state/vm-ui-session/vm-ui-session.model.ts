@@ -6,10 +6,8 @@ export interface VmUISession {
   viewId?: string;
   tabOpened: standardTabs | number;
   searchValue: string;
-  isShowIPsSelected: boolean;
-  isShowIPv4OnlySelected: boolean;
-  itemsPerPage: number;
-  pageNumber: number;
+  showIPsSelected: Boolean;
+  showIPv4OnlySelected: Boolean;
   openedVms: Array<{ [name: string]: string }>;
 }
 

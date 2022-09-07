@@ -21,6 +21,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [readOnly]="readOnly$ | async"
         (openVmHere)="onOpenVmHere($event)"
         (errors)="onErrors($event)"
+        [uiSession]="currentSession$ | async"
+        (searchValueChanged)="searchValueChanged($event)"
+        (showIPsSelectedChanged)="showIPsSelectedChanged($event)"
+        (showIPv4OnlySelectedChanged)="showIPv4OnlySelectedChanged($event)"
       ></app-vm-list>
     </mat-tab>
     <mat-tab label="User List" #userTab>
@@ -28,7 +32,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [viewId]="getCurrentViewId()"
         [teams]="teams$ | async"
         [isActive]="userTab.isActive"
-        (openTab)="onOpenVmHereUserFollow($event)"
+        (openTab)="onOpenVmHere($event)"
       ></app-user-list>
     </mat-tab>
     <mat-tab

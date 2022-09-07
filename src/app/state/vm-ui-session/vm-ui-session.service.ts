@@ -93,4 +93,22 @@ export class VmUISessionService {
   setOpenedTab(vmSession: VmUISession, index: number) {
     this.update(vmSession.id, { tabOpened: index });
   }
+
+  setSearchValueChanged(vmSession: VmUISession, value: string) {
+    if (vmSession) {
+      this.update(vmSession.id, { searchValue: value });
+    }
+  }
+
+  setShowIPsSelectedChanged(vmSession: VmUISession, value: Boolean) {
+    if (vmSession) {
+      this.update(vmSession.id, { showIPsSelected: value });
+    }
+  }
+
+  setShowIPv4OnlySelected(vmSession: VmUISession, value: Boolean) {
+    if (vmSession) {
+      this.update(vmSession.id, { showIPv4OnlySelected: value });
+    }
+  }
 }

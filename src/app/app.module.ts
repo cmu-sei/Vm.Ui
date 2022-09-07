@@ -173,10 +173,6 @@ export class AngularMaterialModule {}
     SystemMessageService,
     WelderService,
     {
-      provide: ErrorHandler,
-      useClass: ErrorService,
-    },
-    {
       provide: BASE_PATH,
       useFactory: getBasePath,
       deps: [ComnSettingsService],

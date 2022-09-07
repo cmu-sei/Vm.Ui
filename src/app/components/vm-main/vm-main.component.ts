@@ -75,6 +75,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public currentUserId: Observable<string>;
   public vms: Observable<VmModel[]>;
   public currentSession: VmUISession;
+  public currentSession$: Observable<VmUISession>;
 
   ngOnInit() {
     this.openVms = new Array<{ [name: string]: string }>();
@@ -145,6 +146,9 @@ export class VmMainComponent implements OnInit, OnDestroy {
           );
 
           if (session) {
+            this.currentSession$ = this.vmUISessionQuery.selectEntity(
+              (s) => s.id === session.id
+            );
             this.currentSession = session;
             session.openedVms.forEach((vm) => {
               if (vm) {
@@ -190,27 +194,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenVmHereUserFollow(vmObj: { [name: string]: string }) {
-    const adminIndex = this.currentUser$.pipe(
-      take(1),
-      map((u) => u.isSystemAdmin)
-    )
-      ? 1
-      : 0;
-
-    // Only open if not already
-    const index = this.openVms.findIndex((v) => v.name === vmObj.name);
-    if (index === -1) {
-      // Not opened
-      this.openVms.push(vmObj);
-      this.vmUISessionService.setOpenedVm(vmObj, true);
-      this.setSelectedTab(this.openVms.length + 1 + adminIndex);
-    } else {
-      // Already opened
-      this.setSelectedTab(index + 2 + adminIndex);
-    }
-  }
-
   remove(id: string) {
     const index = this.openVms.findIndex((vm) => vm.id === id);
     if (index !== -1) {
@@ -238,5 +221,23 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   onErrors(errors: { [key: string]: string }) {
     this.vmErrors$.next(errors);
+  }
+
+  searchValueChanged(value: string) {
+    if (this.currentSession.searchValue !== value) {
+      this.vmUISessionService.setSearchValueChanged(this.currentSession, value);
+    }
+  }
+
+  showIPsSelectedChanged(value: Boolean) {
+    if (this.currentSession.showIPsSelected !== value) {
+      this.vmUISessionService.setShowIPsSelectedChanged(this.currentSession, value);
+    }
+  }
+
+  showIPv4OnlySelectedChanged(value: Boolean) {
+    if (this.currentSession.showIPv4OnlySelected !== value) {
+      this.vmUISessionService.setShowIPv4OnlySelected(this.currentSession, value);
+    }
   }
 }
