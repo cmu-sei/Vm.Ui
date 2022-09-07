@@ -81,7 +81,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
     this.vmQuery.selectAll().pipe(takeUntil(this.unsubscribe$)).subscribe((vms) => {
       if (vms.length > 0) {
-        this.vmUISessionService.getCurrentView();
+        this.vmUISessionService.loadCurrentView();
       }
     });
 

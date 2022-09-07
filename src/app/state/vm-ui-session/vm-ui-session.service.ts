@@ -24,13 +24,14 @@ export class VmUISessionService {
   ) {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild.params['viewId'];
-    console.log('view', this.viewId);
-    this.teamService.getMyViewTeams(this.viewId).pipe(take(1)).subscribe((tms) => {
-      const teams = tms as Array<Team>;
-      const primaryTeam = teams.find((t) => t.isPrimary === true);
-      console.log(primaryTeam);
-      this.teamId = primaryTeam.id;
-    });
+    this.teamService
+      .getMyViewTeams(this.viewId)
+      .pipe(take(1))
+      .subscribe((tms) => {
+        const teams = tms as Array<Team>;
+        const primaryTeam = teams.find((t) => t.isPrimary === true);
+        this.teamId = primaryTeam.id;
+      });
   }
 
   add(session: VmUISession) {
@@ -45,18 +46,17 @@ export class VmUISessionService {
     this.vmUISessionStore.remove(id);
   }
 
-  getCurrentView() {
-    let session = this.vmUISessionQuery.getEntity(s => s.id === this.teamId);
-    console.log(session);
+  loadCurrentView() {
+    let session = this.vmUISessionQuery.getEntity((s) => s.id === this.teamId);
+    // If the session doesn't exist in Akita, then add a default session for the current team
     if (!session) {
       session = {
         ...initialVmUISession,
         id: this.teamId,
-        viewId: this.viewId
+        viewId: this.viewId,
       };
       this.add(session);
     }
-    return this.teamId;
   }
 
   setOpenedVm(vm: VmModel, isOpened: boolean) {
