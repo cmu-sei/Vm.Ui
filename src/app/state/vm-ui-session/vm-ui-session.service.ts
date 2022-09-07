@@ -47,15 +47,19 @@ export class VmUISessionService {
   }
 
   loadCurrentView() {
-    let session = this.vmUISessionQuery.getEntity((s) => s.id === this.teamId);
-    // If the session doesn't exist in Akita, then add a default session for the current team
-    if (!session) {
-      session = {
-        ...initialVmUISession,
-        id: this.teamId,
-        viewId: this.viewId,
-      };
-      this.add(session);
+    if (this.teamId) {
+      let session = this.vmUISessionQuery.getEntity(
+        (s) => s.id === this.teamId
+      );
+      // If the session doesn't exist in Akita, then add a default session for the current team
+      if (!session) {
+        session = {
+          ...initialVmUISession,
+          id: this.teamId,
+          viewId: this.viewId,
+        };
+        this.add(session);
+      }
     }
   }
 

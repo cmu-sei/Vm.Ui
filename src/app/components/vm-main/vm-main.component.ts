@@ -137,19 +137,26 @@ export class VmMainComponent implements OnInit, OnDestroy {
       .subscribe(([vms, sessions, user, logging]) => {
         if (vms.length > 0 && sessions && user && logging) {
           // Determine if Usage Logging tab is enabled
-          this.tabGroup._tabs.toArray()[2].disabled =
-            !((user.isSystemAdmin || this.canManageTeam) && logging.valueOf());
+          this.tabGroup._tabs.toArray()[2].disabled = !(
+            (user.isSystemAdmin || this.canManageTeam) &&
+            logging.valueOf()
+          );
           const session = sessions.find(
             (s) => s.id === this.vmUISessionService.getCurrentTeamId()
           );
-          this.currentSession = session;
-          session.openedVmIds.forEach((vm) => {
-            this.onOpenVmHere(
-              vms.find((v) => v.id === vm),
-              true
-            );
-          });
-          this.selectedTab = session.tabOpened;
+
+          if (session) {
+            this.currentSession = session;
+            session.openedVmIds.forEach((vm) => {
+              if (vm) {
+                this.onOpenVmHere(
+                  vms.find((v) => v.id === vm),
+                  true
+                );
+              }
+            });
+            this.selectedTab = session.tabOpened;
+          }
         }
       });
   }
@@ -184,6 +191,32 @@ export class VmMainComponent implements OnInit, OnDestroy {
       if (!onLoading) {
         this.setSelectedTab(index + 2 + adminIndex);
       }
+    }
+  }
+
+  onOpenVmHereUserFollow(vmObj: { [name: string]: string }) {
+    const adminIndex = this.currentUser$.pipe(
+      take(1),
+      map((u) => u.isSystemAdmin)
+    )
+      ? 1
+      : 0;
+
+    // Only open if not already
+    const index = this.openVms.findIndex((v) => v.name === vmObj.name);
+    if (index === -1) {
+      // Not opened
+      this.vms$.pipe(take(1)).subscribe((vms) => {
+        const vm = vms.find((v) => v.name === vmObj.name);
+        if (vm) {
+          this.openVms.push(vm);
+          this.vmUISessionService.setOpenedVm(vm, true);
+          this.setSelectedTab(this.openVms.length + 1 + adminIndex);
+        }
+      });
+    } else {
+      // Already opened
+      this.setSelectedTab(index + 2 + adminIndex);
     }
   }
 
