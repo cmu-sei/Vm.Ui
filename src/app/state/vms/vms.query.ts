@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Injectable } from '@angular/core';
-import { EntityUIQuery, QueryEntity, QueryConfig } from '@datorama/akita';
+import { QueryEntity, QueryConfig } from '@datorama/akita';
 import { VmsStore, VmsState } from './vms.store';
 import { VmModel } from './vm.model';
 import { VmsService } from '../../generated/vm-api';
@@ -19,7 +19,6 @@ const sortByFn = (a: VmModel, b: VmModel, state: VmsState) => {
 })
 @Injectable({ providedIn: 'root' })
 export class VmsQuery extends QueryEntity<VmsState> {
-
   constructor(protected store: VmsStore, private vmService: VmsService) {
     super(store);
   }
@@ -35,5 +34,4 @@ export class VmsQuery extends QueryEntity<VmsState> {
       filterBy: ({ viewId }) => viewId === id,
     });
   }
-
 }
