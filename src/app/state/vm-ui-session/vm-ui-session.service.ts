@@ -91,7 +91,7 @@ export class VmUISessionService {
   }
 
   setOpenedTab(vmSession: VmUISession, index: number) {
-    this.update(vmSession.id, { tabOpened: index });
+      this.update(vmSession.id, { tabOpened: index });
   }
 
   setSearchValueChanged(vmSession: VmUISession, value: string) {
