@@ -1,4 +1,4 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
+// Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Injectable } from '@angular/core';
@@ -7,10 +7,8 @@ import { ID } from '@datorama/akita';
 import { VmUISession } from './vm-ui-session.model';
 import { initialVmUISession, VmUISessionStore } from './vm-ui-session.store';
 import { VmUISessionQuery } from './vm-ui-session.query';
-import { VmModel } from '../vms/vm.model';
 import { Team, TeamService } from '../../generated/player-api';
 import { take } from 'rxjs/operators';
-import { VmMainComponent } from '../../components/vm-main/vm-main.component';
 
 @Injectable({ providedIn: 'root' })
 export class VmUISessionService {
