@@ -186,7 +186,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   onPage(pageEvent) {
-    console.log(pageEvent);
     this.pageEvent = pageEvent;
     if (!this.sortByTeams) {
       this.selectContainer.clearSelection();
