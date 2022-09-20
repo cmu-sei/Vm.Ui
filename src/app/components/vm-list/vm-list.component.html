@@ -109,6 +109,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             class="search-checkbox text"
             [(ngModel)]="showIps"
             color="primary"
+            (change)="showIpClicked($event)"
             >Show IPs</mat-checkbox
           >
           <mat-checkbox
@@ -116,6 +117,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             class="search-checkbox text"
             [(ngModel)]="ipv4Only"
             color="primary"
+            (change)="ipv4Clicked($event)"
             >IPv4 Only</mat-checkbox
           >
         </div>

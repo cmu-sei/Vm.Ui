@@ -15,6 +15,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
@@ -24,6 +25,7 @@ import { Team, TeamService } from '../../generated/player-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
+import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmService } from '../../state/vms/vms.service';
 
@@ -46,8 +48,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public uploadProgress = 0;
   public vmApiResponded = true;
   public filterString = '';
-  public showIps = false;
-  public ipv4Only = true;
+  public showIps: Boolean = false;
+  public ipv4Only: Boolean = true;
   public selectedVms = new Array<string>();
   public sortByTeams = false;
   public groupByTeams = new Array<VmGroup>();
@@ -69,6 +71,18 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   @Input() readOnly: boolean;
+
+  @Input() set uiSession(val: VmUISession) {
+    if (val) {
+      this.applyFilter(val.searchValue);
+      this.showIps = val.showIPsSelected;
+      this.ipv4Only = val.showIPv4OnlySelected;
+    }
+  }
+
+  @Output() showIPsSelectedChanged = new EventEmitter<Boolean>();
+  @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
+  @Output() searchValueChanged = new EventEmitter<string>();
 
   constructor(
     public vmService: VmService,
@@ -161,7 +175,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       .pipe(
         switchMap((teams: Team[]) => {
           return of(
-            teams.some((t) => t.permissions.some((p) => p.key == 'ViewAdmin'))
+            teams.some((t) => t.permissions.some((p) => p.key === 'ViewAdmin'))
           );
         })
       );
@@ -194,6 +208,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       this.filterGroups();
       this.groupSelects.get(this.currentPanelIndex).clearSelection();
     }
+    this.searchValueChanged.emit(filterValue);
   }
 
   /**
@@ -289,7 +304,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.playerTeamService
       .getViewTeams(this.vmService.viewId)
       .subscribe((results) => {
-        for (let team of results) {
+        for (const team of results) {
           if (teams.has(team.id)) {
             const vms = this.vmModelDataSource.filteredData.filter((vm) =>
               vm.teamIds.includes(team.id)
@@ -308,14 +323,14 @@ export class VmListComponent implements OnInit, AfterViewInit {
    * Filter the groups according to the current search term
    */
   filterGroups() {
-    for (let group of this.groupByTeams) {
+    for (const group of this.groupByTeams) {
       group.dataSource.data = [];
     }
 
     this.vmModelDataSource.filteredData.map((vm) => {
       const teamIds = vm.teamIds;
-      for (let team of teamIds) {
-        const group = this.groupByTeams.find((g) => g.tid == team);
+      for (const team of teamIds) {
+        const group = this.groupByTeams.find((g) => g.tid === team);
         group.dataSource.data.push(vm);
       }
     });
@@ -324,7 +339,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   toggleSort() {
     this.sortByTeams = !this.sortByTeams;
     // If we haven't already, group the VMs by team
-    if (this.groupByTeams.length == 0) {
+    if (this.groupByTeams.length === 0) {
       this.groupVms();
     }
   }
@@ -335,7 +350,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   panelClicked(index: number) {
     // The index has changed, so the user clicked a new panel. Clear the old drag to select selection
-    if (index != this.currentPanelIndex) {
+    if (index !== this.currentPanelIndex) {
       this.groupSelects.toArray()[this.currentPanelIndex].clearSelection();
       this.currentPanelIndex = index;
     }
@@ -391,7 +406,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   getVm(id: string): VmModel {
-    return this.vmModelDataSource.data.find((x) => x.id == id);
+    return this.vmModelDataSource.data.find((x) => x.id === id);
   }
 
   /**
@@ -433,7 +448,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   shouldDisableSelect(vm: VmModel) {
-    return vm.powerState.toString() == 'Unknown' ? undefined : vm;
+    return vm.powerState.toString() === 'Unknown' ? undefined : vm;
   }
 
   /*
@@ -445,7 +460,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     keywords/operations can be escaped with \, no need to do so inside quotes though
   */
   private parseSearch(search: string) {
-    let parsed = new Array<SearchTerm>();
+    const parsed = new Array<SearchTerm>();
     const tokens = search.split(' ');
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i];
@@ -491,12 +506,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
   }
 
   private isUnOp(tok: string): boolean {
-    return tok == '-';
+    return tok === '-';
   }
 
   private isBinOp(tok: string): boolean {
     const lower = tok.toLowerCase();
-    return lower == 'or';
+    return lower === 'or';
   }
 
   private isEscaped(tok: string): boolean {
@@ -512,12 +527,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
     const token = tokens[i];
     const lower = tokens[i + 1].toLowerCase();
     let term: SearchTerm;
-    if (lower == 'or') {
+    if (lower === 'or') {
       // Look ahead to find any other ORs
       term = new SearchTerm(SearchOperator.Or, [token]);
       let j = i + 1;
       for (; j < tokens.length; j += 2) {
-        if (tokens[j].toLowerCase() == 'or') {
+        if (tokens[j].toLowerCase() === 'or') {
           if (j + 1 > tokens.length - 1) {
             break;
           }
@@ -540,7 +555,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   private parseExactMatch(i: number, tokens: string[]): [SearchTerm, number] {
     // Replace twice in case this the only quoted token
     const token = tokens[i];
-    let term = new SearchTerm(SearchOperator.Exact, [
+    const term = new SearchTerm(SearchOperator.Exact, [
       token.replace('"', '').replace('"', ''),
     ]);
     if (!token.endsWith('"')) {
@@ -557,6 +572,16 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
     return [term, i + 1];
   }
+
+  ipv4Clicked(event: MatCheckboxChange) {
+    this.showIPv4OnlySelectedChanged.emit(event.checked);
+  }
+
+  showIpClicked(event: MatCheckboxChange) {
+    this.showIPsSelectedChanged.emit(event.checked);
+  }
+
+
 }
 
 enum VmAction {

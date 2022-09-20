@@ -15,7 +15,7 @@ import {
   VmsService,
 } from '../../generated/vm-api';
 import { VmModel } from './vm.model';
-import { VmsStore } from './vms.store';
+import { VmsStore, } from './vms.store';
 
 @Injectable({ providedIn: 'root' })
 export class VmService {

@@ -1,19 +1,35 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComnAuthService, Theme } from '@cmusei/crucible-common';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { map, switchMap, takeUntil, take } from 'rxjs/operators';
+import {
+  map,
+  switchMap,
+  takeUntil,
+  take,
+  tap,
+  skipWhile,
+} from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
-import { PermissionService, User, UserService } from '../../generated/player-api';
+import {
+  PermissionService,
+  User,
+  UserService,
+} from '../../generated/player-api';
 import { VmUsageLoggingSessionService } from '../../generated/vm-api';
+import { ThemeService } from '../../services/theme/theme.service';
+import { VmUISessionService } from '../../state/vm-ui-session/vm-ui-session.service';
+import { VmUISessionQuery } from '../../state/vm-ui-session/vm-ui-session.query';
+import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
+import { MatTabGroup } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-vm-main',
@@ -21,19 +37,23 @@ import { VmUsageLoggingSessionService } from '../../generated/vm-api';
   styleUrls: ['./vm-main.component.scss'],
 })
 export class VmMainComponent implements OnInit, OnDestroy {
+  @ViewChild('vmTabGroup', { static: false }) tabGroup: MatTabGroup;
+
   unsubscribe$: Subject<null> = new Subject<null>();
 
   constructor(
     private vmQuery: VmsQuery,
     private signalRService: SignalRService,
-    private routerQuery: RouterQuery,
     private activatedRoute: ActivatedRoute,
     private authService: ComnAuthService,
     public vmService: VmService,
     private teamsQuery: VmTeamsQuery,
     private userService: UserService,
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
-    private permissionsService: PermissionService
+    private permissionsService: PermissionService,
+    private themeService: ThemeService,
+    private vmUISessionService: VmUISessionService,
+    private vmUISessionQuery: VmUISessionQuery
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -49,16 +69,15 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public vms$: Observable<VmModel[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
   public readOnly$: Observable<boolean>;
-  public viewId: string;
   public teams$ = this.teamsQuery.selectAll();
   public currentUser$: Observable<User>;
-  public loggingEnabled$: Observable<Boolean>;
   public canManageTeam: Boolean = false;
   public currentUserId: Observable<string>;
-
+  public vms: Observable<VmModel[]>;
+  public currentSession: VmUISession;
+  public currentSession$: Observable<VmUISession>;
 
   ngOnInit() {
-    this.viewId = this.routerQuery.getParams('viewId');
     this.openVms = new Array<{ [name: string]: string }>();
     this.selectedTab = 0;
 
@@ -68,59 +87,118 @@ export class VmMainComponent implements OnInit, OnDestroy {
           ...y,
           lastError: errors[y.id],
         }));
+      }),
+      tap(() => {
+        this.vmUISessionService.loadCurrentView();
       })
     );
 
     this.signalRService
       .startConnection()
       .then(() => {
-        this.signalRService.joinView(this.viewId);
+        this.signalRService.joinView(
+          this.vmUISessionService.getCurrentViewId()
+        );
       })
       .catch((err) => {
         console.log(err);
       });
 
-    this.readOnly$ = this.vmService.GetReadOnly(this.viewId);
+    this.readOnly$ = this.vmService.GetReadOnly(
+      this.vmUISessionService.getCurrentViewId()
+    );
 
     this.currentUser$ = this.authService.user$.pipe(
       switchMap((u) => {
-        this.permissionsService.getUserViewPermissions(this.viewId, u.profile.sub).pipe(take(1)).subscribe(pms => {
-          if (pms.find(pm => pm.key === 'ViewAdmin')) {
-            this.canManageTeam = true;
-          } else {
-            this.canManageTeam = false;
-          }
-        });
+        this.permissionsService
+          .getUserViewPermissions(
+            this.vmUISessionService.getCurrentViewId(),
+            u.profile.sub
+          )
+          .pipe(take(1))
+          .subscribe((pms) => {
+            if (pms.find((pm) => pm.key === 'ViewAdmin')) {
+              this.canManageTeam = true;
+            } else {
+              this.canManageTeam = false;
+            }
+          });
         return this.userService.getUser(u.profile.sub);
       })
     );
 
-    this.loggingEnabled$ = this.vmUsageLoggingSessionService.getIsLoggingEnabled();
+    combineLatest([
+      this.vmQuery.selectAll(),
+      this.vmUISessionQuery.selectAll(),
+      this.currentUser$,
+      this.vmUsageLoggingSessionService.getIsLoggingEnabled(),
+    ])
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(([vms, sessions, user, logging]) => {
+        if (vms.length > 0 && sessions && user && logging) {
+          // Determine if Usage Logging tab is enabled
+          this.tabGroup._tabs.toArray()[2].disabled = !(
+            (user.isSystemAdmin || this.canManageTeam) &&
+            logging.valueOf()
+          );
+          const session = sessions.find(
+            (s) => s.id === this.vmUISessionService.getCurrentTeamId()
+          );
 
+          if (session) {
+            this.currentSession$ = this.vmUISessionQuery.selectEntity(
+              (s) => s.id === session.id
+            );
+            this.currentSession = session;
+            session.openedVms.forEach((vm) => {
+              if (vm) {
+                this.onOpenVmHere(vm, true);
+              }
+            });
+            this.selectedTab = session.tabOpened;
+          }
+        }
+      });
   }
 
-  onOpenVmHere(vmObj: { [name: string]: string }) {
+  setSelectedTab(index: number) {
+    this.vmUISessionService.setOpenedTab(this.currentSession, index);
+  }
+
+  getCurrentViewId(): string {
+    return this.vmUISessionService.getCurrentViewId();
+  }
+
+  onOpenVmHere(vmObj: { [name: string]: string }, onLoading: boolean = false) {
     const adminIndex = this.currentUser$.pipe(
       take(1),
       map((u) => u.isSystemAdmin)
     )
       ? 1
       : 0;
+
     // Only open if not already
-    const index = this.openVms.findIndex((vm) => vm.name === vmObj.name);
-    // if (this.authService.)
+    const index = this.openVms.findIndex((v) => v.name === vmObj.name);
     if (index === -1) {
+      // Not opened
       this.openVms.push(vmObj);
-      this.selectedTab = this.openVms.length + 1 + adminIndex;
+      this.vmUISessionService.setOpenedVm(vmObj, true);
+      if (!onLoading) {
+        this.setSelectedTab(this.openVms.length + 1 + adminIndex);
+      }
     } else {
-      this.selectedTab = index + 2 + adminIndex;
+      // Already opened
+      if (!onLoading) {
+        this.setSelectedTab(index + 2 + adminIndex);
+      }
     }
   }
 
-  remove(name: string) {
-    const index = this.openVms.findIndex((vm) => vm.name === name);
-    if (index !== -1 && this.selectedTab > 1) {
-      this.selectedTab = 0;
+  remove(id: string) {
+    const index = this.openVms.findIndex((vm) => vm.id === id);
+    if (index !== -1) {
+      this.setSelectedTab(0);
+      this.vmUISessionService.setOpenedVm(this.openVms[index], false);
       this.openVms.splice(index, 1);
     }
   }
@@ -128,14 +206,14 @@ export class VmMainComponent implements OnInit, OnDestroy {
   openInNewTab(vmObj: { [name: string]: string }) {
     const index = this.openVms.findIndex((vm) => vm.name === vmObj.name);
     if (index !== -1) {
-      this.selectedTab = 0;
+      this.setSelectedTab(0);
       this.openVms.splice(index, 1);
       window.open(vmObj.url, '_blank');
     }
   }
 
   ngOnDestroy() {
-    this.signalRService.leaveView(this.viewId);
+    this.signalRService.leaveView(this.vmUISessionService.getCurrentViewId());
     this.vmErrors$.complete();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
@@ -143,5 +221,23 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   onErrors(errors: { [key: string]: string }) {
     this.vmErrors$.next(errors);
+  }
+
+  searchValueChanged(value: string) {
+    if (this.currentSession.searchValue !== value) {
+      this.vmUISessionService.setSearchValueChanged(this.currentSession, value);
+    }
+  }
+
+  showIPsSelectedChanged(value: Boolean) {
+    if (this.currentSession.showIPsSelected !== value) {
+      this.vmUISessionService.setShowIPsSelectedChanged(this.currentSession, value);
+    }
+  }
+
+  showIPv4OnlySelectedChanged(value: Boolean) {
+    if (this.currentSession.showIPv4OnlySelected !== value) {
+      this.vmUISessionService.setShowIPv4OnlySelected(this.currentSession, value);
+    }
   }
 }

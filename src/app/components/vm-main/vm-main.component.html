@@ -2,12 +2,18 @@
 Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
-
-<div class="background" fxLayout="column" fxLayoutAlign="start stretch" fxFill *ngIf="currentUser$ | async as user">
-  <mat-tab-group
+<div
+  class="background"
+  fxLayout="column"
+  fxLayoutAlign="start stretch"
+  fxFill
+  *ngIf="currentUser$ | async as user"
+>
+  <mat-tab-group #vmTabGroup
     dynamicHeight
     animationDuration="0ms"
-    [(selectedIndex)]="selectedTab"
+    [selectedIndex]="selectedTab"
+    (selectedIndexChange)="setSelectedTab($event)"
   >
     <mat-tab label="VM List">
       <app-vm-list
@@ -15,24 +21,31 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [readOnly]="readOnly$ | async"
         (openVmHere)="onOpenVmHere($event)"
         (errors)="onErrors($event)"
+        [uiSession]="currentSession$ | async"
+        (searchValueChanged)="searchValueChanged($event)"
+        (showIPsSelectedChanged)="showIPsSelectedChanged($event)"
+        (showIPv4OnlySelectedChanged)="showIPv4OnlySelectedChanged($event)"
       ></app-vm-list>
     </mat-tab>
     <mat-tab label="User List" #userTab>
       <app-user-list
-        [viewId]="viewId"
+        [viewId]="getCurrentViewId()"
         [teams]="teams$ | async"
         [isActive]="userTab.isActive"
         (openTab)="onOpenVmHere($event)"
       ></app-user-list>
     </mat-tab>
-    <mat-tab label="Usage Logging" *ngIf="(user.isSystemAdmin || canManageTeam) && loggingEnabled$ | async" #LogTab>
+    <mat-tab
+      label="Usage Logging"
+      #LogTab
+    >
       <app-vm-usage-logging></app-vm-usage-logging>
-    </mat-tab>    
+    </mat-tab>
     <mat-tab *ngFor="let vm of openVms">
       <ng-template mat-tab-label>
         <button
           mat-icon-button
-          (click)="remove(vm.name)"
+          (click)="remove(vm.id)"
           style="outline: none"
           title="Close {{ vm.name }}"
         >
