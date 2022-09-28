@@ -4,16 +4,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComnAuthService, Theme } from '@cmusei/crucible-common';
-import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import {
-  map,
-  switchMap,
-  takeUntil,
-  take,
-  tap,
-  skipWhile,
-} from 'rxjs/operators';
+import { map, switchMap, takeUntil, take, tap } from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
@@ -25,7 +17,6 @@ import {
   UserService,
 } from '../../generated/player-api';
 import { VmUsageLoggingSessionService } from '../../generated/vm-api';
-import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISessionService } from '../../state/vm-ui-session/vm-ui-session.service';
 import { VmUISessionQuery } from '../../state/vm-ui-session/vm-ui-session.query';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
@@ -51,7 +42,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
     private permissionsService: PermissionService,
-    private themeService: ThemeService,
     private vmUISessionService: VmUISessionService,
     private vmUISessionQuery: VmUISessionQuery
   ) {
@@ -71,11 +61,13 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public readOnly$: Observable<boolean>;
   public teams$ = this.teamsQuery.selectAll();
   public currentUser$: Observable<User>;
-  public canManageTeam: Boolean = false;
+  public canManageTeam = false;
   public currentUserId: Observable<string>;
   public vms: Observable<VmModel[]>;
   public currentSession: VmUISession;
   public currentSession$: Observable<VmUISession>;
+  public usageLoggingEnabled = false;
+  public showUsageLogging = false;
 
   ngOnInit() {
     this.openVms = new Array<{ [name: string]: string }>();
@@ -135,12 +127,11 @@ export class VmMainComponent implements OnInit, OnDestroy {
     ])
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(([vms, sessions, user, logging]) => {
-        if (vms.length > 0 && sessions && user && logging) {
+        if (vms && sessions && user && logging != null) {
           // Determine if Usage Logging tab is enabled
-          this.tabGroup._tabs.toArray()[2].disabled = !(
-            (user.isSystemAdmin || this.canManageTeam) &&
-            logging.valueOf()
-          );
+          this.usageLoggingEnabled = logging;
+          this.showUsageLogging = user.isSystemAdmin || this.canManageTeam;
+
           const session = sessions.find(
             (s) => s.id === this.vmUISessionService.getCurrentTeamId()
           );
@@ -231,13 +222,19 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   showIPsSelectedChanged(value: Boolean) {
     if (this.currentSession.showIPsSelected !== value) {
-      this.vmUISessionService.setShowIPsSelectedChanged(this.currentSession, value);
+      this.vmUISessionService.setShowIPsSelectedChanged(
+        this.currentSession,
+        value
+      );
     }
   }
 
   showIPv4OnlySelectedChanged(value: Boolean) {
     if (this.currentSession.showIPv4OnlySelected !== value) {
-      this.vmUISessionService.setShowIPv4OnlySelected(this.currentSession, value);
+      this.vmUISessionService.setShowIPv4OnlySelected(
+        this.currentSession,
+        value
+      );
     }
   }
 }

@@ -9,7 +9,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   fxFill
   *ngIf="currentUser$ | async as user"
 >
-  <mat-tab-group #vmTabGroup
+  <mat-tab-group
+    #vmTabGroup
     dynamicHeight
     animationDuration="0ms"
     [selectedIndex]="selectedTab"
@@ -28,18 +29,24 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       ></app-vm-list>
     </mat-tab>
     <mat-tab label="User List" #userTab>
-      <app-user-list
-        [viewId]="getCurrentViewId()"
-        [teams]="teams$ | async"
-        [isActive]="userTab.isActive"
-        (openTab)="onOpenVmHere($event)"
-      ></app-user-list>
+      <ng-template matTabContent>
+        <app-user-list
+          [viewId]="getCurrentViewId()"
+          [teams]="teams$ | async"
+          [isActive]="userTab.isActive"
+          (openTab)="onOpenVmHere($event)"
+        ></app-user-list>
+      </ng-template>
     </mat-tab>
     <mat-tab
+      *ngIf="showUsageLogging"
       label="Usage Logging"
       #LogTab
+      [disabled]="!usageLoggingEnabled"
     >
-      <app-vm-usage-logging></app-vm-usage-logging>
+      <ng-template matTabContent>
+        <app-vm-usage-logging></app-vm-usage-logging>
+      </ng-template>
     </mat-tab>
     <mat-tab *ngFor="let vm of openVms">
       <ng-template mat-tab-label>

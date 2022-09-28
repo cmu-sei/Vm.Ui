@@ -91,13 +91,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private teamsService: TeamsService,
     private playerTeamService: TeamService,
     private cd: ChangeDetectorRef
-  ) {}
-
-  ngOnInit() {
+  ) {
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.defaultPageSize;
+  }
 
+  ngOnInit() {
     // Create a filterPredicate that tells the Search to ONLY search on the name column
     this.vmModelDataSource.filterPredicate = (
       data: VmModel,
@@ -203,7 +203,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
     if (!this.sortByTeams) {
-      this.selectContainer.clearSelection();
+      this.selectContainer?.clearSelection();
     } else {
       this.filterGroups();
       this.groupSelects.get(this.currentPanelIndex).clearSelection();
@@ -580,8 +580,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
   showIpClicked(event: MatCheckboxChange) {
     this.showIPsSelectedChanged.emit(event.checked);
   }
-
-
 }
 
 enum VmAction {
