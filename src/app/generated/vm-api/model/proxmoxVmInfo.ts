@@ -9,18 +9,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ProxmoxVmType } from './proxmoxVmType';
 
 
-/**
- * A Logging session for Virtual Machines
- */
-export interface VmUsageLoggingSession { 
-    id?: string;
-    viewId?: string;
-    teamIds?: Array<string> | null;
-    sessionName?: string | null;
-    createdDt?: string;
-    sessionStart?: string;
-    sessionEnd?: string;
+export interface ProxmoxVmInfo { 
+    /**
+     * The unique integer Id of the VM in Proxmox
+     */
+    id?: number;
+    /**
+     * The node that this VM is currently running on
+     */
+    node?: string | null;
+    type?: ProxmoxVmType;
 }
 

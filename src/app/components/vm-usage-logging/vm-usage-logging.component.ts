@@ -134,7 +134,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   downloadCSV(id: string, name: string) {
     this.vmUsageLoggingSessionService
       .getVmUsageCsvFile(id, 'body', false, {
-        httpHeaderAccept: 'application/octet-stream',
+        httpHeaderAccept: 'text/csv',
       })
       .pipe(take(1))
       .subscribe((csv) => {
