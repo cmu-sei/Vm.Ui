@@ -1,5 +1,5 @@
 <!--
-Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+Copyright 2022 Carnegie Mellon University. All Rights Reserved. 
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
@@ -59,12 +59,24 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
       <div class="open-tab-icon">
         <button
           mat-icon-button
-          style="outline: none"
+          style="outline: none; padding: 0;"
           class="text"
           (click)="openInTab(this.themeService.addThemeQueryParam(vm.url))"
           title="Open in Browser Tab"
         >
           <mat-icon class="tab-icon" svgIcon="ic_open_tab"></mat-icon>
+        </button>
+      </div>
+      <div class="team-owenership-tab-icon">
+        <button
+          *ngIf="canManageTeam"
+          mat-icon-button
+          style="outline: none;"
+          class="text"
+          (click)="onContextMenu($event)"
+          title="Team Ownership"
+        >
+          <mat-icon class="team-ownership-icon" svgIcon="ic_chevron_right_black_24px"></mat-icon>
         </button>
       </div>
     </div>
@@ -74,4 +86,20 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
       </label>
     </div>
   </div>
+  <div style="visibility: hidden; position: fixed"
+  [style.left]="contextMenuPosition.x"
+  [style.top]="contextMenuPosition.y"
+  [matMenuTriggerFor]="contextMenu">
+  </div>
 </ng-template>
+<mat-menu #contextMenu="matMenu">
+  <div class="menu-top"><span>Available to the following teams:</span></div>
+	<ng-template matMenuContent let-item="item">
+		<mat-checkbox #menuItems *ngFor="let item of teamsList; let i = index;"
+    class="menu-item"
+    [checked]="isVmOnTeam(vm.teamIds, item.id)"
+    (click)="$event.stopPropagation()"
+    (change)="onTeamSelect(vm.id, vm.teamIds, item.id)"
+    >{{ item.name }}</mat-checkbox>
+	</ng-template>
+</mat-menu>

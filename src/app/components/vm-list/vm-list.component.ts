@@ -1,4 +1,4 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
+// Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { HttpEventType } from '@angular/common/http';
@@ -70,7 +70,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.vmModelDataSource.data = val;
   }
 
-  @Input() readOnly: boolean;
+  @Input() readOnly: Boolean;
 
   @Input() set uiSession(val: VmUISession) {
     if (val) {
@@ -80,9 +80,13 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  @Input() canManageTeam: Boolean;
+
   @Output() showIPsSelectedChanged = new EventEmitter<Boolean>();
   @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
   @Output() searchValueChanged = new EventEmitter<string>();
+
+  teamsList$: Observable<Team[]>;
 
   constructor(
     public vmService: VmService,
@@ -179,6 +183,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
           );
         })
       );
+
+    if (this.canManageTeam) {
+      this.teamsList$ = this.playerTeamService.getViewTeams(this.vmService.viewId);
+    }
   }
 
   ngAfterViewInit() {
