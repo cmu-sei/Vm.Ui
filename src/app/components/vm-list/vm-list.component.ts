@@ -22,6 +22,7 @@ import { SelectContainerComponent } from 'ngx-drag-to-select';
 import { Observable, of } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { Team, TeamService } from '../../generated/player-api';
+import { PowerState } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
@@ -53,7 +54,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public selectedVms = new Array<string>();
   public sortByTeams = false;
   public groupByTeams = new Array<VmGroup>();
-  public onAdminTeam: Observable<boolean>;
   public currentPanelIndex: number;
 
   @ViewChildren('groupPaginators') groupPaginators =
@@ -68,6 +68,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   @Input() set vms(val: VmModel[]) {
     this.vmModelDataSource.data = val;
+    this.allModels = val;
   }
 
   @Input() readOnly: Boolean;
@@ -87,6 +88,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
   @Output() searchValueChanged = new EventEmitter<string>();
 
   teamsList$: Observable<Team[]>;
+
+  allModels: VmModel[];
+  vmFilterBy: any = 'optionAll';
 
   constructor(
     public vmService: VmService,
@@ -174,16 +178,6 @@ export class VmListComponent implements OnInit, AfterViewInit {
         }
       );
 
-    this.onAdminTeam = this.playerTeamService
-      .getMyViewTeams(this.vmService.viewId)
-      .pipe(
-        switchMap((teams: Team[]) => {
-          return of(
-            teams.some((t) => t.permissions.some((p) => p.key === 'ViewAdmin'))
-          );
-        })
-      );
-
     if (this.canManageTeam) {
       this.teamsList$ = this.playerTeamService.getViewTeams(this.vmService.viewId);
     }
@@ -217,6 +211,22 @@ export class VmListComponent implements OnInit, AfterViewInit {
       this.groupSelects.get(this.currentPanelIndex).clearSelection();
     }
     this.searchValueChanged.emit(filterValue);
+  }
+
+  /**
+   * Called by UI to filter by Power state
+   */
+  applyFilterByPower() {
+    if (this.vmFilterBy === 'optionPoweredOn') {
+      this.vmModelDataSource.data = this.allModels.filter((vm) => vm.powerState.toString() === PowerState.On);
+    } else if (this.vmFilterBy === 'optionPoweredOff') {
+      this.vmModelDataSource.data = this.allModels.filter((vm) => vm.powerState.toString() === PowerState.Off);
+    } else if (this.vmFilterBy === 'optionSuspended') {
+      this.vmModelDataSource.data = this.allModels.filter((vm) => vm.powerState.toString() === PowerState.Suspended);
+    } else {
+      // Show all 'optionAll'
+      this.vmModelDataSource.data = this.allModels;
+    }
   }
 
   /**

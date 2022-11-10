@@ -51,8 +51,7 @@
 }
 
 .upload-padding {
-  margin-left: 10px;
-  min-width: 150px;
+  min-width: 130px;
 }
 
 .select-button {
@@ -70,4 +69,14 @@
   height: 20px;
   margin-bottom: 5px;
   margin-left: 5px;
+}
+
+.filter-list {
+  height: 30px;
+  font-size: smaller;
+  margin-left: 20px;
+}
+
+.filter-list-select {
+  width: 125px;
 }
