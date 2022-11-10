@@ -5,6 +5,7 @@ api/api.ts
 api/callbacks.service.ts
 api/file.service.ts
 api/health.service.ts
+api/proxmox.service.ts
 api/vmUsageLoggingSession.service.ts
 api/vms.service.ts
 api/vsphere.service.ts
@@ -30,6 +31,9 @@ model/nicOptions.ts
 model/permissions.ts
 model/powerState.ts
 model/problemDetails.ts
+model/proxmoxConsole.ts
+model/proxmoxVmInfo.ts
+model/proxmoxVmType.ts
 model/setVsphereVirtualMachineResolution.ts
 model/simpleTeam.ts
 model/teamIsoResult.ts
@@ -40,10 +44,13 @@ model/vmCreateForm.ts
 model/vmMap.ts
 model/vmMapCreateForm.ts
 model/vmMapUpdateForm.ts
+model/vmType.ts
 model/vmUpdateForm.ts
 model/vmUsageLoggingSession.ts
+model/vmUsageReport.ts
 model/vmUser.ts
 model/vmUserTeam.ts
 model/vsphereVirtualMachine.ts
 model/webhookEvent.ts
+param.ts
 variables.ts

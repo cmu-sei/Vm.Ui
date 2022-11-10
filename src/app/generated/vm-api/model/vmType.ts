@@ -16,18 +16,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface VmUser { 
-    /**
-     * User\'s unique Id
-     */
-    userId?: string;
-    /**
-     * User\'s name
-     */
-    username?: string | null;
-    /**
-     * Id of the Vm this User is currently viewing, if any
-     */
-    activeVmId?: string | null;
-}
+export type VmType = 'Unknown' | 'Vsphere' | 'Proxmox' | 'Azure';
+
+export const VmType = {
+    Unknown: 'Unknown' as VmType,
+    Vsphere: 'Vsphere' as VmType,
+    Proxmox: 'Proxmox' as VmType,
+    Azure: 'Azure' as VmType
+};
 
