@@ -1,5 +1,5 @@
 <!--
-Copyright 2021 Carnegie Mellon University. All Rights Reserved.
+Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
@@ -138,7 +138,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           fxLayout="column"
           fxLayoutAlign="space-around center"
           class="filter-list"
-          *ngIf="canManageTeam"
         >
           <mat-form-field class="filter-list-select">
             <mat-label>Show</mat-label>
@@ -147,10 +146,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               class="filter-list-select"
               (selectionChange)="applyFilterByPower()"
             >
-              <mat-option value="optionAll">All VM's</mat-option>
-              <mat-option value="optionPoweredOn">Only Powered On</mat-option>
-              <mat-option value="optionPoweredOff">Only Powered Off</mat-option>
-              <mat-option value="optionSuspended">Suspended</mat-option>
+              <mat-option value="All">All VM's</mat-option>
+              <mat-option value="On">Powered On</mat-option>
+              <mat-option value="Off">Powered Off</mat-option>
+              <mat-option value="Suspended">Suspended</mat-option>
             </mat-select>
           </mat-form-field>
         </div>

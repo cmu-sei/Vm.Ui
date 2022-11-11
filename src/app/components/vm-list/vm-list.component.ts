@@ -90,7 +90,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   teamsList$: Observable<Team[]>;
 
   allModels: VmModel[];
-  vmFilterBy: any = 'optionAll';
+  vmFilterBy: any = 'All';
 
   constructor(
     public vmService: VmService,
@@ -217,15 +217,11 @@ export class VmListComponent implements OnInit, AfterViewInit {
    * Called by UI to filter by Power state
    */
   applyFilterByPower() {
-    if (this.vmFilterBy === 'optionPoweredOn') {
-      this.vmModelDataSource.data = this.allModels.filter((vm) => vm.powerState.toString() === PowerState.On);
-    } else if (this.vmFilterBy === 'optionPoweredOff') {
-      this.vmModelDataSource.data = this.allModels.filter((vm) => vm.powerState.toString() === PowerState.Off);
-    } else if (this.vmFilterBy === 'optionSuspended') {
-      this.vmModelDataSource.data = this.allModels.filter((vm) => vm.powerState.toString() === PowerState.Suspended);
-    } else {
-      // Show all 'optionAll'
+    if (this.vmFilterBy === 'All') {
+      // Show all
       this.vmModelDataSource.data = this.allModels;
+    } else {
+      this.vmModelDataSource.data = this.allModels.filter((vm) => vm.powerState.toString() === this.vmFilterBy);
     }
   }
 
