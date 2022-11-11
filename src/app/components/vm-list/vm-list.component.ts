@@ -68,7 +68,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   @Input() set vms(val: VmModel[]) {
     this.vmModelDataSource.data = val;
-    this.allModels = val;
+    this.allVms = val;
   }
 
   @Input() readOnly: Boolean;
@@ -89,7 +89,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   teamsList$: Observable<Team[]>;
 
-  allModels: VmModel[];
+  allVms: VmModel[];
   vmFilterBy: any = 'All';
 
   constructor(
@@ -219,9 +219,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
   applyFilterByPower() {
     if (this.vmFilterBy === 'All') {
       // Show all
-      this.vmModelDataSource.data = this.allModels;
+      this.vmModelDataSource.data = this.allVms;
     } else {
-      this.vmModelDataSource.data = this.allModels.filter((vm) => vm.powerState.toString() === this.vmFilterBy);
+      this.vmModelDataSource.data = this.allVms.filter((vm) => vm.powerState.toString() === this.vmFilterBy);
     }
   }
 
