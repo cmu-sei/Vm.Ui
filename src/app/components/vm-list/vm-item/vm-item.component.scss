@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+Copyright 2022 Carnegie Mellon University. All Rights Reserved. 
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
@@ -29,13 +29,43 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 
 .open-tab-icon {
   margin-left: 0px;
-  padding-right: 4em;
+  padding-right: 1em;
+  width: 20px;
 }
 
 .tab-icon {
   width: 16px;
 }
 
+.team-owenership-tab-icon {
+  margin-left: 0px;
+  padding-right: 1em;
+  width: 20px;
+}
+
+.team-ownership-icon {
+  transform: rotate(90deg);
+  width: 25px;
+}
+
 .pending {
   opacity: 0.5;
+}
+
+.menu-item {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 0.5rem 1rem;
+}
+
+::ng-deep .mat-menu-content{
+  max-height: 470px; 
+  overflow-y: scroll;
+}
+
+.menu-top {
+  font-family: open_sansbold; 
+  font-size: smaller;
+  margin-left: 5px;
 }

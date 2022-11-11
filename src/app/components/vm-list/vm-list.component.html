@@ -190,6 +190,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               [ipv4Only]="ipv4Only"
               [showIps]="showIps"
               (openVmHere)="openHere($event)"
+              [teamsList]="teamsList$ | async"
+              [canManageTeam]="canManageTeam"
             >
             </vm-item>
             <vm-item
@@ -198,6 +200,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               [ipv4Only]="ipv4Only"
               [showIps]="showIps"
               (openVmHere)="openHere($event)"
+              [teamsList]="teamsList$ | async"
+              [canManageTeam]="canManageTeam"
             >
             </vm-item>
           </div>
@@ -239,6 +243,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           [ipv4Only]="ipv4Only"
           [showIps]="showIps"
           (openVmHere)="openHere($event)"
+          [teamsList]="teamsList$ | async"
+          [canManageTeam]="canManageTeam"
         >
         </vm-item>
         <vm-item
@@ -247,6 +253,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           [ipv4Only]="ipv4Only"
           [showIps]="showIps"
           (openVmHere)="openHere($event)"
+          [teamsList]="teamsList$ | async"
+          [canManageTeam]="canManageTeam"
         >
         </vm-item>
       </div>
