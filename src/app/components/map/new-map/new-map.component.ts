@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 import { FileModel, FileService } from '../../../generated/player-api';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,7 +17,7 @@ import { map } from 'rxjs/operators';
 })
 export class NewMapComponent implements OnInit {
   teams: SimpleTeam[];
-  form: FormGroup;
+  form: UntypedFormGroup;
   images: Image[];
 
   @Input() viewId: string;
@@ -31,7 +31,7 @@ export class NewMapComponent implements OnInit {
 
   constructor(
     private vmService: VmsService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private vmMapsService: VmMapsService,
     private fileService: FileService
   ) {}

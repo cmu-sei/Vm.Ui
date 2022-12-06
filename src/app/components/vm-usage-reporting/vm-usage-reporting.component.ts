@@ -14,8 +14,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Clipboard } from '@angular/cdk/clipboard';
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   FormGroupDirective,
   NgForm
 } from '@angular/forms';
@@ -26,7 +26,7 @@ import { DialogService } from '../../services/dialog/dialog.service';
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
-    control: FormControl | null,
+    control: UntypedFormControl | null,
     form: FormGroupDirective | NgForm | null
   ): boolean {
     const isSubmitted = form && form.submitted;
@@ -79,9 +79,9 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
   ];
   startDate = new Date();
   endDate = new Date();
-  range = new FormGroup({
-    start: new FormControl(),
-    end: new FormControl(),
+  range = new UntypedFormGroup({
+    start: new UntypedFormControl(),
+    end: new UntypedFormControl(),
   });
 
   constructor(

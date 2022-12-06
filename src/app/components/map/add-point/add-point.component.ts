@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -29,10 +29,10 @@ export class AddPointComponent implements OnInit {
 
   @Output() machineEmitter = new EventEmitter<Clickpoint>();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   vmsFiltered: Observable<VmModel[]>;
   vmMapsFiltered: Observable<VmMap[]>;
-  control: FormControl;
+  control: UntypedFormControl;
   viewId: string;
   custom: boolean;
 
@@ -45,14 +45,14 @@ export class AddPointComponent implements OnInit {
 
   ngOnInit() {
     this.custom = false;
-    this.control = new FormControl();
+    this.control = new UntypedFormControl();
 
     // Default values come from map component
-    this.form = new FormGroup({
-      rad: new FormControl({ value: this.rad, disabled: false }),
-      url: new FormControl({ value: '', disabled: false }),
-      label: new FormControl({ value: this.label, disabled: false }),
-      customUrl: new FormControl({ value: this.url, disabled: true }),
+    this.form = new UntypedFormGroup({
+      rad: new UntypedFormControl({ value: this.rad, disabled: false }),
+      url: new UntypedFormControl({ value: '', disabled: false }),
+      label: new UntypedFormControl({ value: this.label, disabled: false }),
+      customUrl: new UntypedFormControl({ value: this.url, disabled: true }),
     });
 
     // Get VM Maps in view

@@ -14,8 +14,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Clipboard } from '@angular/cdk/clipboard';
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   FormGroupDirective,
   NgForm,
   Validators,
@@ -30,7 +30,7 @@ import { HttpHeaders } from '@angular/common/http';
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
-    control: FormControl | null,
+    control: UntypedFormControl | null,
     form: FormGroupDirective | NgForm | null
   ): boolean {
     const isSubmitted = form && form.submitted;
@@ -58,11 +58,11 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   vmLoggingSessions$: Observable<VmUsageLoggingSession[]>;
   refreshSessions$ = new BehaviorSubject<boolean>(true);
 
-  sessionNameFormControl = new FormControl('', [
+  sessionNameFormControl = new UntypedFormControl('', [
     Validators.required,
     Validators.minLength(5),
   ]);
-  sessionTeamsFormControl = new FormControl('', [Validators.required]);
+  sessionTeamsFormControl = new UntypedFormControl('', [Validators.required]);
 
   matcher = new MyErrorStateMatcher();
 
@@ -83,9 +83,9 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   startDate = '';
   endDate = '';
 
-  range = new FormGroup({
-    start: new FormControl(),
-    end: new FormControl(),
+  range = new UntypedFormGroup({
+    start: new UntypedFormControl(),
+    end: new UntypedFormControl(),
   });
 
   constructor(
