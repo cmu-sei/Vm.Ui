@@ -22,7 +22,7 @@ import {
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { TeamService, Team } from '../../generated/player-api';
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { HttpHeaders } from '@angular/common/http';

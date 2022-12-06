@@ -50,7 +50,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
   align-content: center;
 }
 
@@ -81,15 +81,15 @@ body {
 .cssLayoutRowStartCenter {
   display: flex;
   flex-direction: row;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
-  align-content: start;
+  align-content: flex-start;
 }
 
 .cssLayoutRowEndCenter {
   display: flex;
   flex-direction: row;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
   align-content: center;
 }
