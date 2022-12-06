@@ -38,6 +38,12 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   }
 }
 
+declare global {
+  interface Navigator {
+      msSaveBlob?: (blob: any, defaultName?: string) => boolean;
+  }
+}
+
 @Component({
   selector: 'app-vm-usage-reporting',
   templateUrl: './vm-usage-reporting.component.html',

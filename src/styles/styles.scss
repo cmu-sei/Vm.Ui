@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 /* VENDER IMPORTS */
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import '~ngx-drag-to-select/ngx-drag-to-select.css';
 @include mat.core();
 /* END VENDER IMPORTS */
