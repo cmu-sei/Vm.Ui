@@ -5,8 +5,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div class="page">
   <div class="vm-list-container mat-elevation-z8" *ngIf="vmApiResponded">
-    <div fxLayout="column">
-      <div fxLayout="row" fxLayoutAlign="start center">
+    <div class="cssLayoutColumnStartCenter">
+      <div class="cssLayoutRowStartCenter">
         <div class="sp-icon">
           <img
             height="75"
@@ -14,7 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             alt="Virtual Machines"
           />
         </div>
-        <div fxLayout="column" fxLayoutAlign="center start" class="text">
+        <div class="cssLayoutColumnCenterStart text">
           <div class="title-text"><b>Virtual Machines</b></div>
 
           <button
@@ -24,9 +24,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [matMenuTriggerFor]="actionsMenu"
           >
             <div
-              class="select-button"
-              fxLayout="row"
-              fxLayoutAlign="center center"
+              class="cssLayoutRowCenterCenter select-button"
             >
               {{ selectedVms.length }} selected
               <mat-icon class="gear-icon" svgIcon="ic_gear"></mat-icon>
@@ -50,7 +48,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <button
             matSuffix
             *ngIf="filterString != ''"
-            fxLayoutAlign="start center"
+            class="cssLayoutRowStartCenter"
             mat-icon-button
             (click)="clearFilter()"
             style="outline: none"
@@ -104,7 +102,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
         </mat-menu>
 
-        <div fxLayout="column" fxLayoutAlign="space-around center">
+        <div class="cssLayoutColumnSpaceCenter">
           <mat-checkbox
             class="search-checkbox text"
             [(ngModel)]="showIps"
@@ -122,8 +120,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >
         </div>
         <div
-          fxLayout="column"
-          fxLayoutAlign="space-around center"
+          class="cssLayoutColumnSpaceCenter"
           *ngIf="canManageTeam"
         >
           <mat-checkbox
@@ -135,8 +132,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </mat-checkbox>
         </div>
         <div
-          fxLayout="column"
-          fxLayoutAlign="space-around center"
+          class="cssLayoutColumnSpaceCenter"
           class="filter-list"
         >
           <mat-form-field class="filter-list-select">
@@ -153,7 +149,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="upload-padding" fxLayout="row" fxLayoutAlign="end center">
+        <div class="upload-padding cssLayoutRowEndCenter">
           <button
             mat-stroked-button
             class="text"

@@ -35,3 +35,61 @@ body {
   height: 100%;
   margin: 0;
 }
+
+
+/* The following acts as drop in replacement for the deprecation of Angular FlexLayout */
+.cssLayoutColumnCenterCenter {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.cssLayoutColumnCenterStart {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  align-content: center;
+}
+
+.cssLayoutColumnSpaceCenter {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.cssLayoutRowSpaceCenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.cssLayoutRowCenterCenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.cssLayoutRowStartCenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  align-content: start;
+}
+
+.cssLayoutRowEndCenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+  align-content: center;
+}
