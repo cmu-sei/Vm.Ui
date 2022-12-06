@@ -4,7 +4,6 @@
 import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
@@ -151,7 +150,6 @@ export class AngularMaterialModule {}
     AngularMaterialModule,
     ReactiveFormsModule,
     FormsModule,
-    FlexLayoutModule,
     ComnSettingsModule.forRoot(),
     ComnAuthModule.forRoot(),
     [
