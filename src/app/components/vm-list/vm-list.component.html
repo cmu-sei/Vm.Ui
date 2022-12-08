@@ -1,12 +1,12 @@
 <!--
-Copyright 2021 Carnegie Mellon University. All Rights Reserved.
+Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
 <div class="page">
   <div class="vm-list-container mat-elevation-z8" *ngIf="vmApiResponded">
-    <div fxLayout="column">
-      <div fxLayout="row" fxLayoutAlign="start center">
+    <div class="cssLayoutColumnStartCenter">
+      <div class="cssLayoutRowStartCenter">
         <div class="sp-icon">
           <img
             height="75"
@@ -14,7 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             alt="Virtual Machines"
           />
         </div>
-        <div fxLayout="column" fxLayoutAlign="center start" class="text">
+        <div class="cssLayoutColumnCenterStart text">
           <div class="title-text"><b>Virtual Machines</b></div>
 
           <button
@@ -24,9 +24,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [matMenuTriggerFor]="actionsMenu"
           >
             <div
-              class="select-button"
-              fxLayout="row"
-              fxLayoutAlign="center center"
+              class="cssLayoutRowCenterCenter select-button"
             >
               {{ selectedVms.length }} selected
               <mat-icon class="gear-icon" svgIcon="ic_gear"></mat-icon>
@@ -50,7 +48,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <button
             matSuffix
             *ngIf="filterString != ''"
-            fxLayoutAlign="start center"
+            class="cssLayoutRowStartCenter"
             mat-icon-button
             (click)="clearFilter()"
             style="outline: none"
@@ -104,7 +102,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
         </mat-menu>
 
-        <div fxLayout="column" fxLayoutAlign="space-around center">
+        <div class="cssLayoutColumnSpaceCenter">
           <mat-checkbox
             class="search-checkbox text"
             [(ngModel)]="showIps"
@@ -122,9 +120,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >
         </div>
         <div
-          fxLayout="column"
-          fxLayoutAlign="space-around center"
-          *ngIf="onAdminTeam | async"
+          class="cssLayoutColumnSpaceCenter"
+          *ngIf="canManageTeam"
         >
           <mat-checkbox
             class="search-checkbox text"
@@ -134,7 +131,25 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             Sort by Team
           </mat-checkbox>
         </div>
-        <div class="upload-padding" fxLayout="row" fxLayoutAlign="end center">
+        <div
+          class="cssLayoutColumnSpaceCenter"
+          class="filter-list"
+        >
+          <mat-form-field class="filter-list-select">
+            <mat-label>Show</mat-label>
+            <mat-select
+              [(value)]="vmFilterBy"
+              class="filter-list-select"
+              (selectionChange)="applyFilterByPower()"
+            >
+              <mat-option value="All">All VM's</mat-option>
+              <mat-option value="On">Powered On</mat-option>
+              <mat-option value="Off">Powered Off</mat-option>
+              <mat-option value="Suspended">Suspended</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="upload-padding cssLayoutRowEndCenter">
           <button
             mat-stroked-button
             class="text"

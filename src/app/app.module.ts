@@ -4,7 +4,6 @@
 import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
@@ -120,76 +119,74 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
 export class AngularMaterialModule {}
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    VmListComponent,
-    VmMainComponent,
-    FocusedAppComponent,
-    AutoDeployComponent,
-    ConsoleComponent,
-    ConfirmDialogComponent,
-    SystemMessageComponent,
-    WelderComponent,
-    MapMainComponent,
-    MapComponent,
-    MapTeamDisplayComponent,
-    NewMapComponent,
-    AddPointComponent,
-    UserListComponent,
-    TeamUsersComponent,
-    MapVmSelectComponent,
-    VmItemComponent,
-    MessageDialogComponent,
-    VmUsageLoggingComponent,
-    VmUsageReportingComponent
-  ],
-  imports: [
-    TableVirtualScrollModule,
-    HttpClientModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    AngularMaterialModule,
-    ReactiveFormsModule,
-    FormsModule,
-    FlexLayoutModule,
-    ComnSettingsModule.forRoot(),
-    ComnAuthModule.forRoot(),
-    [
-      environment.production ? [] : AkitaNgDevtools.forRoot(),
-      AkitaNgRouterStoreModule,
+    declarations: [
+        AppComponent,
+        VmListComponent,
+        VmMainComponent,
+        FocusedAppComponent,
+        AutoDeployComponent,
+        ConsoleComponent,
+        ConfirmDialogComponent,
+        SystemMessageComponent,
+        WelderComponent,
+        MapMainComponent,
+        MapComponent,
+        MapTeamDisplayComponent,
+        NewMapComponent,
+        AddPointComponent,
+        UserListComponent,
+        TeamUsersComponent,
+        MapVmSelectComponent,
+        VmItemComponent,
+        MessageDialogComponent,
+        VmUsageLoggingComponent,
+        VmUsageReportingComponent
     ],
-    DragToSelectModule.forRoot(),
-    // App routing order matters; We must import the AppRoutingModule last in order to maintain the wildcard PageNotFoundComponent.
-    AppRoutingModule,
-  ],
-  providers: [
-    VmService,
-    VmMapsService,
-    VmMapsQuery,
-    AutoDeployService,
-    FileService,
-    TeamsService,
-    DialogService,
-    SystemMessageService,
-    WelderService,
-    {
-      provide: ErrorHandler,
-      useClass: ErrorService,
-    },
-    {
-      provide: BASE_PATH,
-      useFactory: getBasePath,
-      deps: [ComnSettingsService],
-    },
-    { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
-    {
-      provide: PLAYER_BASE_PATH,
-      useFactory: getPlayerBasePath,
-      deps: [ComnSettingsService],
-    },
-  ],
-  bootstrap: [AppComponent],
-  entryComponents: [ConfirmDialogComponent, SystemMessageComponent],
+    imports: [
+        TableVirtualScrollModule,
+        HttpClientModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        AngularMaterialModule,
+        ReactiveFormsModule,
+        FormsModule,
+        ComnSettingsModule.forRoot(),
+        ComnAuthModule.forRoot(),
+        [
+            environment.production ? [] : AkitaNgDevtools.forRoot(),
+            AkitaNgRouterStoreModule,
+        ],
+        DragToSelectModule.forRoot(),
+        // App routing order matters; We must import the AppRoutingModule last in order to maintain the wildcard PageNotFoundComponent.
+        AppRoutingModule,
+    ],
+    providers: [
+        VmService,
+        VmMapsService,
+        VmMapsQuery,
+        AutoDeployService,
+        FileService,
+        TeamsService,
+        DialogService,
+        SystemMessageService,
+        WelderService,
+        {
+            provide: ErrorHandler,
+            useClass: ErrorService,
+        },
+        {
+            provide: BASE_PATH,
+            useFactory: getBasePath,
+            deps: [ComnSettingsService],
+        },
+        { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
+        {
+            provide: PLAYER_BASE_PATH,
+            useFactory: getPlayerBasePath,
+            deps: [ComnSettingsService],
+        },
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {}
 

@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 /* VENDER IMPORTS */
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import '~ngx-drag-to-select/ngx-drag-to-select.css';
 @include mat.core();
 /* END VENDER IMPORTS */
@@ -34,4 +34,62 @@ html,
 body {
   height: 100%;
   margin: 0;
+}
+
+
+/* The following acts as drop in replacement for the deprecation of Angular FlexLayout */
+.cssLayoutColumnCenterCenter {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.cssLayoutColumnCenterStart {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  align-content: center;
+}
+
+.cssLayoutColumnSpaceCenter {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.cssLayoutRowSpaceCenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.cssLayoutRowCenterCenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.cssLayoutRowStartCenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: flex-start;
+}
+
+.cssLayoutRowEndCenter {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  align-content: center;
 }
