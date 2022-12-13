@@ -12,10 +12,10 @@ import {
   BulkPowerOperation,
   BulkPowerOperationResponse,
   Permissions,
+  Vm,
   VmsService,
 } from '../../generated/vm-api';
-import { VmModel } from './vm.model';
-import { VmsStore, } from './vms.store';
+import { VmsStore } from './vms.store';
 
 @Injectable({ providedIn: 'root' })
 export class VmService {
@@ -40,11 +40,11 @@ export class VmService {
     this.teamUrl = `${settings.settings.ApiUrl}/teams/${this.teamId}/vms`;
   }
 
-  add(vm: VmModel) {
+  add(vm: Vm) {
     this.vmsStore.add(vm);
   }
 
-  update(id, vm: Partial<VmModel>) {
+  update(id, vm: Partial<Vm>) {
     this.vmsStore.update(id, vm);
   }
 
@@ -55,11 +55,11 @@ export class VmService {
   public GetViewVms(
     includePersonal: boolean,
     onlyMine: boolean
-  ): Observable<Array<VmModel>> {
+  ): Observable<Array<Vm>> {
     let params = new HttpParams();
     params = params.append('includePersonal', includePersonal.toString());
     params = params.append('onlyMine', onlyMine.toString());
-    return this.http.get<Array<VmModel>>(this.vmUrl, { params: params }).pipe(
+    return this.http.get<Array<Vm>>(this.vmUrl, { params: params }).pipe(
       tap((entities) => {
         this.vmsStore.set(entities);
       })
@@ -69,19 +69,16 @@ export class VmService {
   public GetTeamVms(
     includePersonal: boolean,
     onlyMine: boolean
-  ): Observable<Array<VmModel>> {
+  ): Observable<Array<Vm>> {
     let params = new HttpParams();
     params = params.append('includePersonal', includePersonal.toString());
     params = params.append('onlyMine', onlyMine.toString());
-    return this.http.get<Array<VmModel>>(this.teamUrl, { params: params });
+    return this.http.get<Array<Vm>>(this.teamUrl, { params: params });
   }
 
-  public GetViewVmsByName(
-    viewId: string,
-    name: string
-  ): Observable<Array<VmModel>> {
+  public GetViewVmsByName(viewId: string, name: string): Observable<Array<Vm>> {
     const url = `${this.settings.settings.ApiUrl}/views/${viewId}/vms?name=${name}`;
-    return this.http.get<Array<VmModel>>(url);
+    return this.http.get<Array<Vm>>(url);
   }
 
   public GetReadOnly(viewId: string): Observable<boolean> {

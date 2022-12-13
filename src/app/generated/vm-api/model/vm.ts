@@ -61,5 +61,9 @@ export interface Vm {
     consoleConnectionInfo?: ConsoleConnectionInfo;
     type?: VmType;
     proxmoxVmInfo?: ProxmoxVmInfo;
+    /**
+     * If false, only allow opening this VM in a new tab
+     */
+    embeddable?: boolean;
 }
 

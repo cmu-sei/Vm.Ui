@@ -7,7 +7,6 @@ import { ComnAuthService, Theme } from '@cmusei/crucible-common';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, switchMap, takeUntil, take, tap } from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
-import { VmModel } from '../../state/vms/vm.model';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
@@ -16,7 +15,7 @@ import {
   User,
   UserService,
 } from '../../generated/player-api';
-import { VmUsageLoggingSessionService } from '../../generated/vm-api';
+import { Vm, VmUsageLoggingSessionService } from '../../generated/vm-api';
 import { VmUISessionService } from '../../state/vm-ui-session/vm-ui-session.service';
 import { VmUISessionQuery } from '../../state/vm-ui-session/vm-ui-session.query';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
@@ -56,14 +55,14 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   public openVms: Array<{ [name: string]: string }>;
   public selectedTab: number;
-  public vms$: Observable<VmModel[]>;
+  public vms$: Observable<Vm[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
   public readOnly$: Observable<boolean>;
   public teams$ = this.teamsQuery.selectAll();
   public currentUser$: Observable<User>;
   public canManageTeam = false;
   public currentUserId: Observable<string>;
-  public vms: Observable<VmModel[]>;
+  public vms: Observable<Vm[]>;
   public currentSession: VmUISession;
   public currentSession$: Observable<VmUISession>;
   public usageLoggingEnabled = false;

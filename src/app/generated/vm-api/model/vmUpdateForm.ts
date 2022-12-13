@@ -25,5 +25,9 @@ export interface VmUpdateForm {
     allowedNetworks?: Array<string> | null;
     consoleConnectionInfo?: ConsoleConnectionInfo;
     proxmoxVmInfo?: ProxmoxVmInfo;
+    /**
+     * If false, only allow opening this VM in a new tab
+     */
+    embeddable?: boolean;
 }
 

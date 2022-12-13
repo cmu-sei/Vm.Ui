@@ -3,9 +3,9 @@
 
 import { Injectable } from '@angular/core';
 import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
-import { VmModel } from './vm.model';
+import { Vm } from '../../generated/vm-api';
 
-export interface VmsState extends EntityState<VmModel> {}
+export interface VmsState extends EntityState<Vm> {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'vms' })

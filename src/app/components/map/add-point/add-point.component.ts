@@ -9,7 +9,6 @@ import { switchMap } from 'rxjs/operators';
 import { Vm, VmMap } from '../../../generated/vm-api';
 import { Clickpoint } from '../../../models/clickpoint';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
-import { VmModel } from '../../../state/vms/vm.model';
 import { VmsQuery } from '../../../state/vms/vms.query';
 import { VmService } from '../../../state/vms/vms.service';
 
@@ -30,7 +29,7 @@ export class AddPointComponent implements OnInit {
   @Output() machineEmitter = new EventEmitter<Clickpoint>();
 
   form: UntypedFormGroup;
-  vmsFiltered: Observable<VmModel[]>;
+  vmsFiltered: Observable<Vm[]>;
   vmMapsFiltered: Observable<VmMap[]>;
   control: UntypedFormControl;
   viewId: string;
@@ -106,8 +105,8 @@ export class AddPointComponent implements OnInit {
     } else if (this.isVmMap(urlVal)) {
       query = (urlVal as VmMap).id;
     } else {
-      // If here, the only remaining possible value is a VmModel
-      query = (urlVal as VmModel).name;
+      // If here, the only remaining possible value is a Vm
+      query = (urlVal as Vm).name;
     }
 
     const point = new Clickpoint(
@@ -144,7 +143,7 @@ export class AddPointComponent implements OnInit {
     return 'coordinates' in object;
   }
 
-  private isVmModel(object: any): object is VmModel {
+  private isVmModel(object: any): object is Vm {
     return 'powerState' in object;
   }
 }

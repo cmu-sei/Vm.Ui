@@ -667,7 +667,7 @@ export class VmUsageLoggingSessionService {
     /**
      * Get VM Usage Report for a timespan.
      * @param reportStart The start date/time for the report.
-     * @param reportEnd The end date/time for the report.
+     * @param reportEnd IThe end date/time for the report.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
