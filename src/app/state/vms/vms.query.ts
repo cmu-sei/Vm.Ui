@@ -4,13 +4,12 @@
 import { Injectable } from '@angular/core';
 import { QueryEntity, QueryConfig } from '@datorama/akita';
 import { VmsStore, VmsState } from './vms.store';
-import { VmModel } from './vm.model';
-import { VmsService } from '../../generated/vm-api';
+import { Vm, VmsService } from '../../generated/vm-api';
 import { Observable } from 'rxjs';
 
 const naturalCompare = require('string-natural-compare');
 
-const sortByFn = (a: VmModel, b: VmModel, state: VmsState) => {
+const sortByFn = (a: Vm, b: Vm, state: VmsState) => {
   return naturalCompare(a.name, b.name, { caseInsensitive: true });
 };
 
@@ -23,15 +22,9 @@ export class VmsQuery extends QueryEntity<VmsState> {
     super(store);
   }
 
-  getAllWithName(param: string): Observable<VmModel[]> {
+  getAllWithName(param: string): Observable<Vm[]> {
     return this.selectAll({
       filterBy: ({ name }) => name.toLowerCase().includes(param.toLowerCase()),
-    });
-  }
-
-  getByViewId(id: string): Observable<VmModel[]> {
-    return this.selectAll({
-      filterBy: ({ viewId }) => viewId === id,
     });
   }
 }

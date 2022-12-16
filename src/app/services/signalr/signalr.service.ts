@@ -4,12 +4,11 @@
 import { Inject, Injectable } from '@angular/core';
 import { ComnAuthService } from '@cmusei/crucible-common';
 import * as signalR from '@microsoft/signalr';
-import { BASE_PATH, VmUserTeam } from '../../generated/vm-api';
+import { BASE_PATH, Vm, VmUserTeam } from '../../generated/vm-api';
 import { createVmTeam } from '../../state/vm-teams/vm-team.model';
 import { VmTeamsService } from '../../state/vm-teams/vm-teams.service';
 import { createVmUser, VmUser } from '../../state/vm-users/vm-user.model';
 import { VmUsersService } from '../../state/vm-users/vm-users.service';
-import { VmModel } from '../../state/vms/vm.model';
 import { VmService } from '../../state/vms/vms.service';
 
 @Injectable({
@@ -149,8 +148,8 @@ export class SignalRService {
   private addVmHandlers() {
     this.hubConnection.on(
       'VmUpdated',
-      (vm: VmModel, modifiedProperties: string[]) => {
-        let model: Partial<VmModel> = vm;
+      (vm: Vm, modifiedProperties: string[]) => {
+        let model: Partial<Vm> = vm;
         if (modifiedProperties != null) {
           model = {};
 
@@ -163,7 +162,7 @@ export class SignalRService {
       }
     );
 
-    this.hubConnection.on('VmCreated', (vm: VmModel) => {
+    this.hubConnection.on('VmCreated', (vm: Vm) => {
       this.vmService.add(vm);
     });
 

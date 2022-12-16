@@ -19,15 +19,14 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectContainerComponent } from 'ngx-drag-to-select';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { Team, TeamService } from '../../generated/player-api';
-import { PowerState } from '../../generated/vm-api';
+import { Vm } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
-import { VmModel } from '../../state/vms/vm.model';
 import { VmService } from '../../state/vms/vms.service';
 
 @Component({
@@ -37,9 +36,7 @@ import { VmService } from '../../state/vms/vms.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VmListComponent implements OnInit, AfterViewInit {
-  public vmModelDataSource = new MatTableDataSource<VmModel>(
-    new Array<VmModel>()
-  );
+  public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());
   public displayedColumns: string[] = ['name'];
 
   // MatPaginator Output
@@ -66,7 +63,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
   @Output() errors = new EventEmitter<{ [key: string]: string }>();
 
-  @Input() set vms(val: VmModel[]) {
+  @Input() set vms(val: Vm[]) {
     this.vmModelDataSource.data = val;
     this.allVms = val;
   }
@@ -89,7 +86,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   teamsList$: Observable<Team[]>;
 
-  allVms: VmModel[];
+  allVms: Vm[];
   vmFilterBy: any = 'All';
 
   constructor(
@@ -107,10 +104,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     // Create a filterPredicate that tells the Search to ONLY search on the name column
-    this.vmModelDataSource.filterPredicate = (
-      data: VmModel,
-      filters: string
-    ) => {
+    this.vmModelDataSource.filterPredicate = (data: Vm, filters: string) => {
       const matchFilter = [];
       const filterArray = this.parseSearch(filters);
       const name = data.name;
@@ -179,7 +173,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
       );
 
     if (this.canManageTeam) {
-      this.teamsList$ = this.playerTeamService.getViewTeams(this.vmService.viewId);
+      this.teamsList$ = this.playerTeamService.getViewTeams(
+        this.vmService.viewId
+      );
     }
   }
 
@@ -221,7 +217,9 @@ export class VmListComponent implements OnInit, AfterViewInit {
       // Show all
       this.vmModelDataSource.data = this.allVms;
     } else {
-      this.vmModelDataSource.data = this.allVms.filter((vm) => vm.powerState.toString() === this.vmFilterBy);
+      this.vmModelDataSource.data = this.allVms.filter(
+        (vm) => vm.powerState.toString() === this.vmFilterBy
+      );
     }
   }
 
@@ -425,7 +423,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     return item.id;
   }
 
-  getVm(id: string): VmModel {
+  getVm(id: string): Vm {
     return this.vmModelDataSource.data.find((x) => x.id === id);
   }
 
@@ -435,10 +433,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
   public openSelectedHere() {
     for (const id of this.selectedVms) {
       const vm = this.getVm(id);
-      const vmName = vm.name;
-      const url = vm.url;
-      const val = <{ [name: string]: string }>{ name: vmName, url };
-      this.openVmHere.emit(val);
+      if (vm.embeddable === true) {
+        const vmName = vm.name;
+        const url = vm.url;
+        const val = <{ [name: string]: string }>{ name: vmName, url };
+        this.openVmHere.emit(val);
+      }
     }
   }
 
@@ -467,7 +467,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       });
   }
 
-  shouldDisableSelect(vm: VmModel) {
+  shouldDisableSelect(vm: Vm) {
     return vm.powerState.toString() === 'Unknown' ? undefined : vm;
   }
 
@@ -629,11 +629,11 @@ class SearchTerm {
 class VmGroup {
   team: string;
   tid: string;
-  dataSource: MatTableDataSource<VmModel>;
+  dataSource: MatTableDataSource<Vm>;
 
-  constructor(team: string, tid: string, vms: VmModel[]) {
+  constructor(team: string, tid: string, vms: Vm[]) {
     this.team = team;
     this.tid = tid;
-    this.dataSource = new MatTableDataSource<VmModel>(vms);
+    this.dataSource = new MatTableDataSource<Vm>(vms);
   }
 }
