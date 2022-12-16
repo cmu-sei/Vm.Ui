@@ -383,6 +383,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
     this.performAction(VmAction.PowerOn, 'Power On', 'power on');
   }
 
+  public rebootSelected() {
+    this.performAction(VmAction.Reboot, 'Reboot', 'reboot');
+  }
+
   public shutdownSelected() {
     this.performAction(VmAction.Shutdown, 'Shutdown', 'shutdown');
   }
@@ -406,6 +410,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
               return this.vmService.powerOn(this.selectedVms);
             case VmAction.Shutdown:
               return this.vmService.shutdown(this.selectedVms);
+            case VmAction.Reboot:
+              return this.vmService.reboot(this.selectedVms);
           }
         }),
         take(1)
@@ -600,6 +606,7 @@ enum VmAction {
   PowerOn,
   PowerOff,
   Shutdown,
+  Reboot
 }
 
 enum SearchOperator {
