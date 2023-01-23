@@ -9,10 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AnyType } from './anyType';
 
 
 export interface ProblemDetails { 
-  [key: string]: any;
+  [key: string]: AnyType | any;
 
 
     type?: string | null;

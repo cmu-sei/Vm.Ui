@@ -3323,6 +3323,10 @@
           },
           "proxmoxVmInfo": {
             "$ref": "#/components/schemas/ProxmoxVmInfo"
+          },
+          "embeddable": {
+            "type": "boolean",
+            "description": "If false, only allow opening this VM in a new tab"
           }
         },
         "additionalProperties": false
@@ -3370,6 +3374,10 @@
           },
           "proxmoxVmInfo": {
             "$ref": "#/components/schemas/ProxmoxVmInfo"
+          },
+          "embeddable": {
+            "type": "boolean",
+            "description": "If false, only allow opening this VM in a new tab"
           }
         },
         "additionalProperties": false
@@ -3513,6 +3521,10 @@
           },
           "proxmoxVmInfo": {
             "$ref": "#/components/schemas/ProxmoxVmInfo"
+          },
+          "embeddable": {
+            "type": "boolean",
+            "description": "If false, only allow opening this VM in a new tab"
           }
         },
         "additionalProperties": false
