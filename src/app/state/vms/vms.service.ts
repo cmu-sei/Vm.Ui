@@ -107,4 +107,9 @@ export class VmService {
     const args: BulkPowerOperation = { ids: ids };
     return this.vmsService.bulkShutdown(args);
   }
+
+  public reboot(ids: string[]): Observable<BulkPowerOperationResponse> {
+    const operation: BulkPowerOperation = { ids: ids };
+    return this.vmsService.bulkReboot(operation);
+  }
 }

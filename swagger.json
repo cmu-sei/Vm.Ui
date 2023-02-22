@@ -167,6 +167,58 @@
         }
       }
     },
+    "/api/vms/proxmox/{id}/console": {
+      "get": {
+        "tags": [
+          "Proxmox"
+        ],
+        "summary": "Retrieve the Url and Ticket for accessing a Proxmox virtual machine's NoVNC console",
+        "operationId": "getProxmoxConsole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProxmoxConsole"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProxmoxConsole"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProxmoxConsole"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/vms": {
       "get": {
         "tags": [
@@ -353,7 +405,7 @@
         "tags": [
           "Vms"
         ],
-        "summary": "Updates a new Virtual Machine",
+        "summary": "Updates a Virtual Machine",
         "description": "Updates a Virtual Machine with the attributes specified\r\n<para />\r\nAccessible to a User with management permissions on a team the Virtual Machine is in",
         "operationId": "updateVm",
         "parameters": [
@@ -912,6 +964,66 @@
         ],
         "summary": "Power off multiple Virtual Machines",
         "operationId": "bulkPowerOff",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPowerOperation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkPowerOperationResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vms/actions/reboot": {
+      "post": {
+        "tags": [
+          "Vms"
+        ],
+        "summary": "Reboot multiple Virtual Machines",
+        "operationId": "bulkReboot",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1884,7 +1996,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "CSV File",
+            "content": {
+              "text/csv": { }
+            }
           },
           "default": {
             "description": "Problem response",
@@ -3024,6 +3139,46 @@
         },
         "additionalProperties": { }
       },
+      "ProxmoxConsole": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "ticket": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProxmoxVmInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The unique integer Id of the VM in Proxmox",
+            "format": "int32"
+          },
+          "node": {
+            "type": "string",
+            "description": "The node that this VM is currently running on",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/ProxmoxVmType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProxmoxVmType": {
+        "enum": [
+          "QEMU",
+          "LXC"
+        ],
+        "type": "string"
+      },
       "SetVsphereVirtualMachineResolution": {
         "type": "object",
         "properties": {
@@ -3113,6 +3268,10 @@
             "description": "Url to the Vm's console",
             "nullable": true
           },
+          "defaultUrl": {
+            "type": "boolean",
+            "description": "True if this VM's Url has not been explicitly set and a default value has been computed"
+          },
           "name": {
             "type": "string",
             "description": "The Vm's name",
@@ -3158,13 +3317,22 @@
           },
           "consoleConnectionInfo": {
             "$ref": "#/components/schemas/ConsoleConnectionInfo"
+          },
+          "type": {
+            "$ref": "#/components/schemas/VmType"
+          },
+          "proxmoxVmInfo": {
+            "$ref": "#/components/schemas/ProxmoxVmInfo"
+          },
+          "embeddable": {
+            "type": "boolean",
+            "description": "If false, only allow opening this VM in a new tab"
           }
         },
         "additionalProperties": false
       },
       "VmCreateForm": {
         "required": [
-          "id",
           "name",
           "teamIds"
         ],
@@ -3172,7 +3340,8 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "url": {
             "type": "string",
@@ -3202,6 +3371,13 @@
           },
           "consoleConnectionInfo": {
             "$ref": "#/components/schemas/ConsoleConnectionInfo"
+          },
+          "proxmoxVmInfo": {
+            "$ref": "#/components/schemas/ProxmoxVmInfo"
+          },
+          "embeddable": {
+            "type": "boolean",
+            "description": "If false, only allow opening this VM in a new tab"
           }
         },
         "additionalProperties": false
@@ -3306,6 +3482,15 @@
         },
         "additionalProperties": false
       },
+      "VmType": {
+        "enum": [
+          "Unknown",
+          "Vsphere",
+          "Proxmox",
+          "Azure"
+        ],
+        "type": "string"
+      },
       "VmUpdateForm": {
         "required": [
           "name"
@@ -3333,6 +3518,13 @@
           },
           "consoleConnectionInfo": {
             "$ref": "#/components/schemas/ConsoleConnectionInfo"
+          },
+          "proxmoxVmInfo": {
+            "$ref": "#/components/schemas/ProxmoxVmInfo"
+          },
+          "embeddable": {
+            "type": "boolean",
+            "description": "If false, only allow opening this VM in a new tab"
           }
         },
         "additionalProperties": false
@@ -3546,7 +3738,7 @@
             "authorizationUrl": "http://localhost:5000/connect/authorize",
             "tokenUrl": "http://localhost:5000/connect/token",
             "scopes": {
-              "player player-vm": "public api access"
+              "openid profile player player-vm": "public api access"
             }
           }
         }
@@ -3556,7 +3748,7 @@
   "security": [
     {
       "oauth2": [
-        "player player-vm"
+        "openid profile player player-vm"
       ]
     }
   ]

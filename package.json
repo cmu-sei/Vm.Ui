@@ -3,7 +3,8 @@
   "version": "3.0.4",
   "license": "MIT",
   "config": {
-    "openapiArgs": "--additional-properties ngVersion=12.1 --additional-properties modelPropertyNaming=original --type-mappings=DateTime=string"
+    "openapiArgs": "--additional-properties ngVersion=14.2 --additional-properties modelPropertyNaming=original --type-mappings=DateTime=string",
+    "deleteGeneratedCommand": "rimraf src/app/generated/vm-api/*"
   },
   "scripts": {
     "ng": "ng",
@@ -16,8 +17,8 @@
     "docker:stack": "docker stack deploy -c ./docker/api.yml vm_stack",
     "docker:stack:proxy": "docker stack deploy -c ./docker/api.yml -c ./docker/api-proxy.yml vm_stack",
     "docker:destroy": "docker stack rm vm_stack",
-    "swagger:gen": "rimraf src/app/generated/vm-api/* && curl --insecure http://localhost:4302/swagger/v1/swagger.json --output swagger.json && node_modules/@openapitools/openapi-generator-cli/bin/openapi-generator-cli generate -i ./swagger.json -g typescript-angular -o src/app/generated/vm-api %npm_package_config_openapiArgs%",
-    "swagger:gen-docker": "rimraf src/app/generated/vm-api/* && cross-env-shell docker run --rm -v $INIT_CWD:/local openapitools/openapi-generator-cli:v6.2.0 generate -i http://host.docker.internal:4302/swagger/v1/swagger.json?format=openapi -g typescript-angular -o /local/src/app/generated/vm-api %npm_package_config_openapiArgs%",
+    "swagger:gen": "rimraf src/app/generated/vm-api/* && curl --insecure http://localhost:4302/swagger/v1/swagger.json --output swagger.json && @openapitools/openapi-generator-cli generate -i ./swagger.json -g typescript-angular -o src/app/generated/vm-api %npm_package_config_openapiArgs%",
+    "swagger:gen-docker": "cross-var $npm_package_config_deleteGeneratedCommand && cross-env-shell docker run --rm -v $INIT_CWD:/local openapitools/openapi-generator-cli:v6.2.0 generate -i http://host.docker.internal:4302/swagger/v1/swagger.json?format=openapi -g typescript-angular -o /local/src/app/generated/vm-api $npm_package_config_openapiArgs",
     "swagger:gen-docker-player": "rimraf src/app/generated/player-api/* && cross-env-shell docker run --rm -v $INIT_CWD:/local openapitools/openapi-generator-cli:v6.2.0 generate -i http://host.docker.internal:4300/swagger/v1/swagger.json?format=openapi -g typescript-angular -o /local/src/app/generated/player-api --skip-validate-spec %npm_package_config_openapiArgs%"
   },
   "scriptComments": {
