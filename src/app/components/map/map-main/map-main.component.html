@@ -47,7 +47,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </div>
 </div>
 
-<div>
+<span>
   <div class="block" *ngIf="!build && readMap && canEdit">
     <button
       mat-flat-button
@@ -89,20 +89,26 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </button>
   </div>
 
-  <app-map-team-display
-    *ngIf="readMap && !editMode && !build"
-    mapIdInput="{{ mapId }}"
-    imageUrlInput="{{ this.selected.imageUrl }}"
-    (mapSwitched)="redirectToMap($event)"
-  >
-  </app-map-team-display>
+  <ng-container *ngIf="readMap && !build; else noMap">
+    <app-map-team-display
+      *ngIf="!editMode"
+      mapIdInput="{{ mapId }}"
+      imageUrlInput="{{ this.selected.imageUrl }}"
+      (mapSwitched)="redirectToMap($event)"
+    >
+    </app-map-team-display>
 
-  <app-map
-    *ngIf="readMap && editMode && !build"
-    (initEmitter)="mapInit($event)"
-    mapIdInput="{{ mapId }}"
-  ></app-map>
-</div>
+    <app-map
+      *ngIf="editMode"
+      (initEmitter)="mapInit($event)"
+      mapIdInput="{{ mapId }}"
+    ></app-map>
+  </ng-container>
+
+  <ng-template #noMap>
+    <h1 class="center">No Map is assigned to this Team</h1>
+  </ng-template>
+</span>
 
 <ng-template #newMapDialog>
   <app-new-map
