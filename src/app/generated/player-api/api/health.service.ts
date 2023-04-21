@@ -19,9 +19,9 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { ProblemDetails } from '../model/problemDetails';
+import { HealthStatus } from '../model/healthStatus';
 // @ts-ignore
-import { ViewMembership } from '../model/viewMembership';
+import { ProblemDetails } from '../model/problemDetails';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -32,7 +32,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class ViewMembershipService {
+export class HealthService {
 
     protected basePath = 'http://localhost';
     public defaultHeaders = new HttpHeaders();
@@ -94,19 +94,15 @@ export class ViewMembershipService {
     }
 
     /**
-     * Gets a specific View Membership by id
-     * Returns the View Membership with the id specified  &lt;para /&gt;  Accessible to Super Users, View Admins for the memberships\&#39; View, or the User that the membership belongs to
-     * @param id The id of the View Membership
+     * Checks the liveliness health endpoint
+     * Returns a HealthStatus of the liveliness health check
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getViewMembership(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewMembership>;
-    public getViewMembership(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewMembership>>;
-    public getViewMembership(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewMembership>>;
-    public getViewMembership(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling getViewMembership.');
-        }
+    public healthGetLiveliness(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HealthStatus>;
+    public healthGetLiveliness(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<HealthStatus>>;
+    public healthGetLiveliness(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<HealthStatus>>;
+    public healthGetLiveliness(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -148,8 +144,8 @@ export class ViewMembershipService {
             }
         }
 
-        let localVarPath = `/api/view-memberships/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<ViewMembership>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/health/live`;
+        return this.httpClient.request<HealthStatus>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -162,19 +158,15 @@ export class ViewMembershipService {
     }
 
     /**
-     * Gets all View Memberships for a User
-     * Returns a list of all of the Permissions in the system.  &lt;para /&gt;  Accessible to Super Users or the specified User
-     * @param userId 
+     * Checks the readiness health endpoint
+     * Returns a HealthStatus of the readiness health check
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getViewMemberships(userId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<ViewMembership>>;
-    public getViewMemberships(userId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<ViewMembership>>>;
-    public getViewMemberships(userId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<ViewMembership>>>;
-    public getViewMemberships(userId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
-        if (userId === null || userId === undefined) {
-            throw new Error('Required parameter userId was null or undefined when calling getViewMemberships.');
-        }
+    public healthGetReadiness(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HealthStatus>;
+    public healthGetReadiness(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<HealthStatus>>;
+    public healthGetReadiness(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<HealthStatus>>;
+    public healthGetReadiness(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -216,8 +208,8 @@ export class ViewMembershipService {
             }
         }
 
-        let localVarPath = `/api/users/${this.configuration.encodeParam({name: "userId", value: userId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/view-memberships`;
-        return this.httpClient.request<Array<ViewMembership>>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/health/ready`;
+        return this.httpClient.request<HealthStatus>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

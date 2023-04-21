@@ -21,6 +21,7 @@ import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.co
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
 import { TeamsService } from '../../../services/teams/teams.service';
+import { DialogService } from '../../../services/dialog/dialog.service';
 
 @Component({
   selector: 'app-map-main',
@@ -56,31 +57,38 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     private dialog: MatDialog,
     private teamsService: TeamsService,
     private vmMapsService: VmMapsService,
-    private vmMapQuery: VmMapsQuery
+    private vmMapQuery: VmMapsQuery,
+    private dialogService: DialogService
   ) {
     this.mapInitialized = false;
   }
 
   ngOnInit(): void {
-    this.vmMapQuery.selectAll().pipe(takeUntil(this.unsubscribe$)).subscribe(maps => {
-      this.maps = maps;
-      if (maps && maps.length > 0) {
-        this.selected = maps[0];
-        this.goToMap();
-      }
-    });
+    this.vmMapQuery
+      .selectAll()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((maps) => {
+        this.maps = maps;
+        if (maps && maps.length > 0) {
+          this.selected = maps[0];
+          this.goToMap();
+        }
+      });
     this.route.params.pipe(takeUntil(this.unsubscribe$)).subscribe((params) => {
       this.vmMapsService.unload();
       this.viewId = params['viewId'];
       if (this.viewId) {
-        this.teamsService.GetAllMyTeams(this.viewId).pipe(take(1)).subscribe((teams) => {
-          // There should only be 1 primary member, set that value for the current login
-          // Determine if the user is an "Admin" if their isPrimary team has canManage == true
-          const myPrimaryTeam = teams.filter((t) => t.isPrimary)[0];
-          if (myPrimaryTeam !== undefined) {
-            this.canEdit = myPrimaryTeam.canManage;
-          }
-        });
+        this.teamsService
+          .GetAllMyTeams(this.viewId)
+          .pipe(take(1))
+          .subscribe((teams) => {
+            // There should only be 1 primary member, set that value for the current login
+            // Determine if the user is an "Admin" if their isPrimary team has canManage == true
+            const myPrimaryTeam = teams.filter((t) => t.isPrimary)[0];
+            if (myPrimaryTeam !== undefined) {
+              this.canEdit = myPrimaryTeam.canManage;
+            }
+          });
         this.vmMapsService.getViewMaps(this.viewId);
       }
     });
@@ -111,9 +119,18 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   }
 
   delete() {
-    this.vmMapsService.remove(this.selected.id);
-    this.selected = undefined;
-    this.goToMap();
+    this.dialogService
+      .confirm('Delete Map?', 'Are you sure you want to delete this Map?', {
+        buttonTrueText: 'Confirm',
+      })
+      .pipe(take(1))
+      .subscribe((result) => {
+        if (!result.wasCancelled) {
+          this.vmMapsService.remove(this.selected.id);
+          this.selected = undefined;
+          this.goToMap();
+        }
+      });
   }
 
   save() {
@@ -167,7 +184,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
     this.vmMapQuery.getById(id).subscribe((m) => {
       this.selected = m;
-      this.buildChild.ngOnInit();
+      this.buildChild?.ngOnInit();
       this.dialogRef.close();
     });
   }
@@ -184,5 +201,4 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
-
 }

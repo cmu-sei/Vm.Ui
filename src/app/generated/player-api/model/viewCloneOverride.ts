@@ -11,13 +11,8 @@
  */
 
 
-export interface ViewMembership { 
-    id?: string;
-    userId?: string;
-    userName?: string | null;
-    viewId?: string;
-    viewName?: string | null;
-    primaryTeamId?: string;
-    primaryTeamName?: string | null;
+export interface ViewCloneOverride { 
+    name?: string | null;
+    description?: string | null;
 }
 

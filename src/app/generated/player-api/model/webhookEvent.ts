@@ -9,15 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { EventType } from './eventType';
 
 
-export interface ViewMembership { 
-    id?: string;
-    userId?: string;
-    userName?: string | null;
-    viewId?: string;
-    viewName?: string | null;
-    primaryTeamId?: string;
-    primaryTeamName?: string | null;
+export interface WebhookEvent { 
+    readonly id?: string;
+    type?: EventType;
+    readonly timestamp?: string;
+    payload?: string | null;
 }
 

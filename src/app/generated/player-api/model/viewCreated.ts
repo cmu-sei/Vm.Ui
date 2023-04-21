@@ -11,13 +11,9 @@
  */
 
 
-export interface ViewMembership { 
-    id?: string;
-    userId?: string;
-    userName?: string | null;
+export interface ViewCreated { 
     viewId?: string;
+    parentId?: string | null;
     viewName?: string | null;
-    primaryTeamId?: string;
-    primaryTeamName?: string | null;
 }
 
