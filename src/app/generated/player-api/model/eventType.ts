@@ -1,5 +1,7 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 /**
  * Player API
@@ -14,9 +16,10 @@
  */
 
 
-export interface InlineObject1 { 
-    Name?: string | null;
-    TeamIds?: Array<string> | null;
-    ToUpload?: Blob | null;
-}
+export type EventType = 'ViewCreated' | 'ViewDeleted';
+
+export const EventType = {
+    ViewCreated: 'ViewCreated' as EventType,
+    ViewDeleted: 'ViewDeleted' as EventType
+};
 

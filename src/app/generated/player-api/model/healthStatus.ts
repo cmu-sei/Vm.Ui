@@ -14,15 +14,13 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Permission } from './permission';
 
 
-export interface User { 
-    id?: string;
-    name?: string | null;
-    roleId?: string | null;
-    roleName?: string | null;
-    permissions?: Array<Permission> | null;
-    isSystemAdmin?: boolean;
-}
+export type HealthStatus = 'Unhealthy' | 'Degraded' | 'Healthy';
+
+export const HealthStatus = {
+    Unhealthy: 'Unhealthy' as HealthStatus,
+    Degraded: 'Degraded' as HealthStatus,
+    Healthy: 'Healthy' as HealthStatus
+};
 

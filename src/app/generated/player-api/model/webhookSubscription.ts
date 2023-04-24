@@ -14,15 +14,17 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Permission } from './permission';
+import { EventType } from './eventType';
 
 
-export interface User { 
+export interface WebhookSubscription { 
     id?: string;
     name?: string | null;
-    roleId?: string | null;
-    roleName?: string | null;
-    permissions?: Array<Permission> | null;
-    isSystemAdmin?: boolean;
+    callbackUri?: string | null;
+    clientId?: string | null;
+    clientSecret?: string | null;
+    readonly clientSecretSet?: boolean;
+    lastError?: string | null;
+    eventTypes?: Array<EventType> | null;
 }
 

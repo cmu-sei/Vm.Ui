@@ -1,5 +1,7 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 /**
  * Player API
@@ -14,9 +16,7 @@
  */
 
 
-export interface InlineObject { 
+export interface ViewDeleted { 
     viewId?: string;
-    teamIds?: Array<string> | null;
-    ToUpload?: Array<Blob> | null;
 }
 

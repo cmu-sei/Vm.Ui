@@ -1,5 +1,7 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 /**
  * Player API
@@ -17,11 +19,12 @@ import { NotificationType } from './notificationType';
 
 
 export interface Notification { 
+    key?: number;
     fromId?: string;
     fromType?: NotificationType;
     toId?: string;
     toType?: NotificationType;
-    broadcastTime?: Date;
+    broadcastTime?: string;
     toName?: string | null;
     fromName?: string | null;
     subject?: string | null;
