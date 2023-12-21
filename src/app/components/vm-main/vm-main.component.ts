@@ -184,8 +184,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     }
   }
 
-  remove(id: string) {
-    const index = this.openVms.findIndex((vm) => vm.id === id);
+  remove(name: string) {
+    const index = this.openVms.findIndex((vm) => vm.name === name);
     if (index !== -1) {
       this.setSelectedTab(0);
       this.vmUISessionService.setOpenedVm(this.openVms[index], false);
