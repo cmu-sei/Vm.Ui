@@ -2,10 +2,7 @@
 Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
-<div
-  class="background"
-  *ngIf="currentUser$ | async as user"
->
+<div class="background" *ngIf="currentUser$ | async as user">
   <mat-tab-group
     #vmTabGroup
     dynamicHeight
@@ -50,7 +47,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <ng-template mat-tab-label>
         <button
           mat-icon-button
-          (click)="remove(vm.id)"
+          (click)="remove(vm.name)"
           style="outline: none"
           title="Close {{ vm.name }}"
         >
