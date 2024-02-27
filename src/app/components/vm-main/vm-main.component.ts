@@ -19,12 +19,40 @@ import { Vm, VmUsageLoggingSessionService } from '../../generated/vm-api';
 import { VmUISessionService } from '../../state/vm-ui-session/vm-ui-session.service';
 import { VmUISessionQuery } from '../../state/vm-ui-session/vm-ui-session.query';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
-import { MatTabGroup } from '@angular/material/tabs';
+import {
+  MatTabGroup,
+  MatTab,
+  MatTabContent,
+  MatTabLabel,
+} from '@angular/material/tabs';
+import { FocusedAppComponent } from '../focused-app/focused-app.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
+import { VmUsageLoggingComponent } from '../vm-usage-logging/vm-usage-logging.component';
+import { UserListComponent } from '../user-list/user-list.component';
+import { VmListComponent } from '../vm-list/vm-list.component';
+import { NgIf, NgFor, AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-vm-main',
   templateUrl: './vm-main.component.html',
   styleUrls: ['./vm-main.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    MatTabGroup,
+    MatTab,
+    VmListComponent,
+    MatTabContent,
+    UserListComponent,
+    VmUsageLoggingComponent,
+    NgFor,
+    MatTabLabel,
+    MatIconButton,
+    MatIcon,
+    FocusedAppComponent,
+    AsyncPipe,
+  ],
 })
 export class VmMainComponent implements OnInit, OnDestroy {
   @ViewChild('vmTabGroup', { static: false }) tabGroup: MatTabGroup;
@@ -42,7 +70,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
     private permissionsService: PermissionService,
     private vmUISessionService: VmUISessionService,
-    private vmUISessionQuery: VmUISessionQuery
+    private vmUISessionQuery: VmUISessionQuery,
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -81,14 +109,14 @@ export class VmMainComponent implements OnInit, OnDestroy {
       }),
       tap(() => {
         this.vmUISessionService.loadCurrentView();
-      })
+      }),
     );
 
     this.signalRService
       .startConnection()
       .then(() => {
         this.signalRService.joinView(
-          this.vmUISessionService.getCurrentViewId()
+          this.vmUISessionService.getCurrentViewId(),
         );
       })
       .catch((err) => {
@@ -96,7 +124,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
       });
 
     this.readOnly$ = this.vmService.GetReadOnly(
-      this.vmUISessionService.getCurrentViewId()
+      this.vmUISessionService.getCurrentViewId(),
     );
 
     this.currentUser$ = this.authService.user$.pipe(
@@ -104,7 +132,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
         this.permissionsService
           .getUserViewPermissions(
             this.vmUISessionService.getCurrentViewId(),
-            u.profile.sub
+            u.profile.sub,
           )
           .pipe(take(1))
           .subscribe((pms) => {
@@ -115,7 +143,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
             }
           });
         return this.userService.getUser(u.profile.sub);
-      })
+      }),
     );
 
     combineLatest([
@@ -132,12 +160,12 @@ export class VmMainComponent implements OnInit, OnDestroy {
           this.showUsageLogging = user.isSystemAdmin || this.canManageTeam;
 
           const session = sessions.find(
-            (s) => s.id === this.vmUISessionService.getCurrentTeamId()
+            (s) => s.id === this.vmUISessionService.getCurrentTeamId(),
           );
 
           if (session) {
             this.currentSession$ = this.vmUISessionQuery.selectEntity(
-              (s) => s.id === session.id
+              (s) => s.id === session.id,
             );
             this.currentSession = session;
             session.openedVms.forEach((vm) => {
@@ -162,7 +190,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   onOpenVmHere(vmObj: { [name: string]: string }, onLoading: boolean = false) {
     const adminIndex = this.currentUser$.pipe(
       take(1),
-      map((u) => u.isSystemAdmin)
+      map((u) => u.isSystemAdmin),
     )
       ? 1
       : 0;
@@ -223,7 +251,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     if (this.currentSession.showIPsSelected !== value) {
       this.vmUISessionService.setShowIPsSelectedChanged(
         this.currentSession,
-        value
+        value,
       );
     }
   }
@@ -232,7 +260,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     if (this.currentSession.showIPv4OnlySelected !== value) {
       this.vmUISessionService.setShowIPv4OnlySelected(
         this.currentSession,
-        value
+        value,
       );
     }
   }

@@ -1,12 +1,21 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+} from '@angular/material/dialog';
 import { Component, Inject } from '@angular/core';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
+  standalone: true,
+  imports: [MatDialogTitle, MatDialogContent, MatDialogActions, MatButton],
 })
 export class ConfirmDialogComponent {
   public title: string;
@@ -17,7 +26,7 @@ export class ConfirmDialogComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<ConfirmDialogComponent>
+    public dialogRef: MatDialogRef<ConfirmDialogComponent>,
   ) {
     this.dialogRef.disableClose = true;
     this.buttonFalseText = this.data['buttonFalseText'];

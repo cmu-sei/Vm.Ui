@@ -5,113 +5,106 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div class="page">
   <div class="vm-list-container mat-elevation-z8" *ngIf="vmApiResponded">
-    <div class="cssLayoutColumnStartCenter">
-      <div class="cssLayoutRowStartCenter">
-        <div class="sp-icon">
+    <div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="ms-2">
           <img
             height="75"
             src="assets/img/SP_Icon_Virtual.png"
             alt="Virtual Machines"
           />
         </div>
-        <div class="cssLayoutColumnCenterStart text">
-          <div class="title-text"><b>Virtual Machines</b></div>
+        <div class="d-flex flex-column align-items-center">
+          <div><b>Virtual Machines</b></div>
 
           <button
             *ngIf="!readOnly"
             mat-stroked-button
-            class="action-button"
             [matMenuTriggerFor]="actionsMenu"
           >
-            <div
-              class="cssLayoutRowCenterCenter select-button"
-            >
-              {{ selectedVms.length }} selected
-              <mat-icon class="gear-icon" svgIcon="ic_gear"></mat-icon>
-            </div>
+            {{ selectedVms.length }} selected
+            <mat-icon svgIcon="ic_gear" iconPositionEnd></mat-icon>
           </button>
+
+          <mat-menu #actionsMenu="matMenu">
+            <button mat-menu-item (click)="clearSelections()">
+              Clear Selections
+            </button>
+            <button
+              mat-menu-item
+              (click)="powerOnSelected()"
+              [disabled]="selectedVms.length === 0"
+            >
+              Power On
+            </button>
+            <button
+              mat-menu-item
+              (click)="powerOffSelected()"
+              [disabled]="selectedVms.length === 0"
+            >
+              Power Off
+            </button>
+            <button
+              mat-menu-item
+              (click)="rebootSelected()"
+              [disabled]="selectedVms.length === 0"
+            >
+              Reboot
+            </button>
+            <button
+              mat-menu-item
+              (click)="shutdownSelected()"
+              [disabled]="selectedVms.length === 0"
+            >
+              Shutdown
+            </button>
+            <button
+              mat-menu-item
+              (click)="openSelectedHere()"
+              [disabled]="selectedVms.length === 0"
+            >
+              Open in Player tab
+            </button>
+            <button
+              mat-menu-item
+              (click)="openSelectedBrowser()"
+              [disabled]="selectedVms.length === 0"
+            >
+              Open in browser tab
+            </button>
+          </mat-menu>
         </div>
-        <mat-icon
-          class="text"
-          style="transform: scale(0.85); margin-right: 5px; margin-left: 25px"
-          svgIcon="ic_magnify_search"
-        ></mat-icon>
-        <mat-form-field style="width: 320px">
+
+        <mat-form-field class="w-20" subscriptSizing="dynamic">
+          <mat-label>Search</mat-label>
           <input
-            class="text"
             name="vmSearch"
             matInput
+            type="text"
             [(ngModel)]="filterString"
             (keyup)="applyFilter($event.target.value)"
-            placeholder="Search"
           />
+          <mat-icon
+            style="transform: scale(0.85)"
+            svgIcon="ic_magnify_search"
+            matPrefix
+          ></mat-icon>
           <button
-            matSuffix
             *ngIf="filterString != ''"
-            class="cssLayoutRowStartCenter"
+            matSuffix
             mat-icon-button
             (click)="clearFilter()"
-            style="outline: none"
             title="Clear Search"
           >
             <mat-icon
-              class="text"
               style="transform: scale(0.85)"
               svgIcon="ic_cancel_circle"
             ></mat-icon>
           </button>
         </mat-form-field>
-        <mat-menu #actionsMenu="matMenu">
-          <button mat-menu-item (click)="clearSelections()">
-            Clear Selections
-          </button>
-          <button
-            mat-menu-item
-            (click)="powerOnSelected()"
-            [disabled]="selectedVms.length === 0"
-          >
-            Power On
-          </button>
-          <button
-            mat-menu-item
-            (click)="powerOffSelected()"
-            [disabled]="selectedVms.length === 0"
-          >
-            Power Off
-          </button>
-          <button
-            mat-menu-item
-            (click)="rebootSelected()"
-            [disabled]="selectedVms.length === 0"
-          >
-            Reboot
-          </button>          
-          <button
-            mat-menu-item
-            (click)="shutdownSelected()"
-            [disabled]="selectedVms.length === 0"
-          >
-            Shutdown
-          </button>
-          <button
-            mat-menu-item
-            (click)="openSelectedHere()"
-            [disabled]="selectedVms.length === 0"
-          >
-            Open in Player tab
-          </button>
-          <button
-            mat-menu-item
-            (click)="openSelectedBrowser()"
-            [disabled]="selectedVms.length === 0"
-          >
-            Open in browser tab
-          </button>
-        </mat-menu>
 
-        <div class="cssLayoutColumnSpaceCenter">
+        <div class="d-flex flex-column">
           <mat-checkbox
-            class="search-checkbox text"
             [(ngModel)]="showIps"
             color="primary"
             (change)="showIpClicked($event)"
@@ -119,44 +112,32 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >
           <mat-checkbox
             *ngIf="showIps"
-            class="search-checkbox text"
             [(ngModel)]="ipv4Only"
             color="primary"
             (change)="ipv4Clicked($event)"
             >IPv4 Only</mat-checkbox
           >
         </div>
-        <div
-          class="cssLayoutColumnSpaceCenter"
-          *ngIf="canManageTeam"
-        >
-          <mat-checkbox
-            class="search-checkbox text"
-            color="primary"
-            (click)="toggleSort()"
-          >
+        <div *ngIf="canManageTeam">
+          <mat-checkbox color="primary" (click)="toggleSort()">
             Sort by Team
           </mat-checkbox>
         </div>
-        <div
-          class="cssLayoutColumnSpaceCenter"
-          class="filter-list"
-        >
-          <mat-form-field class="filter-list-select">
-            <mat-label>Show</mat-label>
-            <mat-select
-              [(value)]="vmFilterBy"
-              class="filter-list-select"
-              (selectionChange)="applyFilterByPower()"
-            >
-              <mat-option value="All">All VM's</mat-option>
-              <mat-option value="On">Powered On</mat-option>
-              <mat-option value="Off">Powered Off</mat-option>
-              <mat-option value="Suspended">Suspended</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="upload-padding cssLayoutRowEndCenter">
+
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Show</mat-label>
+          <mat-select
+            [(value)]="vmFilterBy"
+            (selectionChange)="applyFilterByPower()"
+          >
+            <mat-option value="All">All Machines</mat-option>
+            <mat-option value="On">Powered On</mat-option>
+            <mat-option value="Off">Powered Off</mat-option>
+            <mat-option value="Suspended">Suspended</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div>
           <button
             mat-stroked-button
             class="text"
@@ -172,12 +153,42 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             #fileInput
             type="file"
             multiple
-            style="display: none"
+            [hidden]="true"
             (change)="uploadIso(fileInput)"
           />
         </div>
       </div>
     </div>
+
+    <dts-select-container
+      *ngIf="!sortByTeams"
+      #selectContainer
+      [(selectedItems)]="selectedVms"
+    >
+      <div
+        class="flex-container"
+        *ngFor="
+          let vm of vmModelDataSource.filteredData
+            | slice
+              : pageEvent.pageIndex * pageEvent.pageSize
+              : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
+          trackBy: trackByVmId
+        "
+        [matTooltip]="vm.lastError"
+      >
+        <vm-item
+          [dtsSelectItem]="vm.id"
+          [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
+          [vm]="vm"
+          [ipv4Only]="ipv4Only"
+          [showIps]="showIps"
+          (openVmHere)="openHere($event)"
+          [teamsList]="teamsList$ | async"
+          [canManageTeam]="canManageTeam"
+        >
+        </vm-item>
+      </div>
+    </dts-select-container>
 
     <div *ngIf="sortByTeams">
       <mat-expansion-panel
@@ -201,23 +212,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 | slice
                   : pageEvent.pageIndex * pageEvent.pageSize
                   : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
-              let i = index;
               trackBy: trackByVmId
             "
+            [matTooltip]="vm.lastError"
           >
             <vm-item
-              *ngIf="vm.powerState.toString() !== 'Unknown'"
               [dtsSelectItem]="vm.id"
-              [vm]="vm"
-              [ipv4Only]="ipv4Only"
-              [showIps]="showIps"
-              (openVmHere)="openHere($event)"
-              [teamsList]="teamsList$ | async"
-              [canManageTeam]="canManageTeam"
-            >
-            </vm-item>
-            <vm-item
-              *ngIf="vm.powerState.toString() === 'Unknown'"
+              [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
               [vm]="vm"
               [ipv4Only]="ipv4Only"
               [showIps]="showIps"
@@ -242,45 +243,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-expansion-panel>
     </div>
 
-    <dts-select-container
-      #selectContainer
-      [(selectedItems)]="selectedVms"
-      *ngIf="!sortByTeams"
-    >
-      <div
-        class="flex-container"
-        *ngFor="
-          let vm of vmModelDataSource.filteredData
-            | slice
-              : pageEvent.pageIndex * pageEvent.pageSize
-              : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
-          trackBy: trackByVmId
-        "
-        [matTooltip]="vm.lastError"
-      >
-        <vm-item
-          *ngIf="vm.powerState.toString() !== 'Unknown'"
-          [dtsSelectItem]="vm.id"
-          [vm]="vm"
-          [ipv4Only]="ipv4Only"
-          [showIps]="showIps"
-          (openVmHere)="openHere($event)"
-          [teamsList]="teamsList$ | async"
-          [canManageTeam]="canManageTeam"
-        >
-        </vm-item>
-        <vm-item
-          *ngIf="vm.powerState.toString() === 'Unknown'"
-          [vm]="vm"
-          [ipv4Only]="ipv4Only"
-          [showIps]="showIps"
-          (openVmHere)="openHere($event)"
-          [teamsList]="teamsList$ | async"
-          [canManageTeam]="canManageTeam"
-        >
-        </vm-item>
-      </div>
-    </dts-select-container>
     <div [hidden]="sortByTeams">
       <mat-paginator
         #paginator

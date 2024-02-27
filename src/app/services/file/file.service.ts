@@ -13,7 +13,7 @@ export class FileService {
   constructor(
     private http: HttpClient,
     private settings: ComnSettingsService,
-    private router: Router
+    private router: Router,
   ) {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild.params['viewId'];
@@ -30,8 +30,8 @@ export class FileService {
         'POST',
         `${this.settings.settings.ApiUrl}/views/${this.viewId}/isos`,
         payload,
-        { reportProgress: true }
-      )
+        { reportProgress: true },
+      ),
     );
   }
 }

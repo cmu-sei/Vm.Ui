@@ -3,10 +3,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<h2>{{ editing ? 'Edit' : 'Add' }} Click Point</h2>
+<h2 matDialogTitle class="text-center">
+  {{ editing ? 'Edit' : 'Add' }} Click Point
+</h2>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div fxLayout="column">
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="size">
+  <div class="mx-2 d-flex flex-column">
     <mat-form-field>
       <mat-label>Radius</mat-label>
       <input type="number" matNativeControl formControlName="rad" />
@@ -56,7 +58,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <input type="text" matNativeControl formControlName="label" />
     </mat-form-field>
   </div>
-  <div fxLayout="row" fxLayoutAlign="space-around center">
+  <div class="d-flex justify-content-center gap-2">
     <button
       mat-flat-button
       color="primary"

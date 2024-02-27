@@ -3,14 +3,17 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<h2>{{ creating ? 'New Map' : 'Edit Properties' }}</h2>
-<div id="setupForm">
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <mat-form-field fxLayout="row">
+<h2 matDialogTitle class="text-center">
+  {{ creating ? 'New Map' : 'Edit Properties' }}
+</h2>
+
+<div id="setupForm" class="size mx-2">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-column">
+    <mat-form-field>
       <mat-label>Name</mat-label>
       <input type="string" matInput formControlName="name" />
     </mat-form-field>
-    <mat-form-field fxLayout="row">
+    <mat-form-field>
       <mat-label>Select Image</mat-label>
       <mat-select matNativeControl formControlName="viewImage">
         <mat-option *ngFor="let img of images" [value]="img.blob">{{
@@ -18,11 +21,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         }}</mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field fxLayout="row">
+    <mat-form-field>
       <mat-label>External Image URL</mat-label>
       <input type="string" matInput formControlName="imageURL" />
     </mat-form-field>
-    <mat-form-field fxLayout="row">
+    <mat-form-field>
       <mat-label>Teams</mat-label>
       <mat-select multiple matNativeControl formControlName="teamIDs">
         <mat-option *ngFor="let team of teams" [value]="team.id">{{
@@ -31,15 +34,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-select>
     </mat-form-field>
 
-    <div fxLayout="row" fxLayoutAlign="space-around center">
-      <button
-        mat-flat-button
-        color="primary"
-        class="action-button"
-        type="submit"
-      >
-        Submit
-      </button>
+    <div>
+      <button mat-flat-button color="primary" type="submit">Submit</button>
     </div>
   </form>
 </div>

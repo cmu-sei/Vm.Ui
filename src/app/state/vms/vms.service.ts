@@ -29,7 +29,7 @@ export class VmService {
     private http: HttpClient,
     private settings: ComnSettingsService,
     private router: Router,
-    private vmsService: VmsService
+    private vmsService: VmsService,
   ) {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild.params['viewId'];
@@ -54,7 +54,7 @@ export class VmService {
 
   public GetViewVms(
     includePersonal: boolean,
-    onlyMine: boolean
+    onlyMine: boolean,
   ): Observable<Array<Vm>> {
     let params = new HttpParams();
     params = params.append('includePersonal', includePersonal.toString());
@@ -62,13 +62,13 @@ export class VmService {
     return this.http.get<Array<Vm>>(this.vmUrl, { params: params }).pipe(
       tap((entities) => {
         this.vmsStore.set(entities);
-      })
+      }),
     );
   }
 
   public GetTeamVms(
     includePersonal: boolean,
-    onlyMine: boolean
+    onlyMine: boolean,
   ): Observable<Array<Vm>> {
     let params = new HttpParams();
     params = params.append('includePersonal', includePersonal.toString());
@@ -89,7 +89,7 @@ export class VmService {
         } else {
           return false;
         }
-      })
+      }),
     );
   }
 

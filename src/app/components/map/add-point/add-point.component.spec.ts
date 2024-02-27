@@ -9,13 +9,11 @@ describe('AddPointComponent', () => {
   let component: AddPointComponent;
   let fixture: ComponentFixture<AddPointComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [AddPointComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [AddPointComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AddPointComponent);

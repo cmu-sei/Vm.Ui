@@ -9,9 +9,13 @@ import { VmService } from '../../state/vms/vms.service';
   selector: 'app-console',
   templateUrl: './console.component.html',
   styleUrls: ['./console.component.scss'],
+  standalone: true,
 })
 export class ConsoleComponent implements OnInit {
-  constructor(private vmService: VmService, private route: ActivatedRoute) {}
+  constructor(
+    private vmService: VmService,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
     const viewId = this.route.snapshot.params['viewId'];
@@ -27,7 +31,7 @@ export class ConsoleComponent implements OnInit {
           }
         }
       },
-      (err) => {}
+      (err) => {},
     );
   }
 }

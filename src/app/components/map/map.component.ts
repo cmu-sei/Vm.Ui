@@ -24,11 +24,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgFor, AddPointComponent],
 })
 export class MapComponent implements OnInit, OnChanges {
   machines: Clickpoint[];
@@ -68,7 +71,7 @@ export class MapComponent implements OnInit, OnChanges {
     private router: Router,
     private vmMapsService: VmMapsService,
     private vmMapsQuery: VmMapsQuery,
-    private vmsService: VmsService
+    private vmsService: VmsService,
   ) {}
 
   ngOnInit(): void {
@@ -120,8 +123,8 @@ export class MapComponent implements OnInit, OnChanges {
               coord.id,
               coord.label,
               '',
-              false
-            )
+              false,
+            ),
           );
         }
       }
@@ -151,7 +154,7 @@ export class MapComponent implements OnInit, OnChanges {
 
     this.dialogRef = this.dialog.open(
       this.addPointDialog,
-      this.matDialogConfig
+      this.matDialogConfig,
     );
   }
 
@@ -196,7 +199,7 @@ export class MapComponent implements OnInit, OnChanges {
         const start = query.substring(0, query.lastIndexOf('['));
         const range = query.substring(
           query.lastIndexOf('[') + 1,
-          query.lastIndexOf(']')
+          query.lastIndexOf(']'),
         );
         const numbers = range.split(',');
         const lower = parseInt(numbers[0]);
@@ -271,7 +274,7 @@ export class MapComponent implements OnInit, OnChanges {
 
     this.dialogRef = this.dialog.open(
       this.addPointDialog,
-      this.matDialogConfig
+      this.matDialogConfig,
     );
   }
 

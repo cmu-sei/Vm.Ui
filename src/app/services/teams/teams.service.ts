@@ -11,7 +11,10 @@ import { TeamData } from '../../models/team-data';
 export class TeamsService {
   playerApiUrl: string;
 
-  constructor(private http: HttpClient, @Inject(BASE_PATH) basePath: string) {
+  constructor(
+    private http: HttpClient,
+    @Inject(BASE_PATH) basePath: string,
+  ) {
     this.playerApiUrl = basePath;
   }
 

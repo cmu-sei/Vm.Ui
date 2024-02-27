@@ -9,13 +9,11 @@ describe('MapTeamDisplayComponent', () => {
   let component: MapTeamDisplayComponent;
   let fixture: ComponentFixture<MapTeamDisplayComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [MapTeamDisplayComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MapTeamDisplayComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MapTeamDisplayComponent);

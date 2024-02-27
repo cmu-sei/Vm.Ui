@@ -26,7 +26,7 @@ export class SignalRService {
     private vmService: VmService,
     private vmUsersService: VmUsersService,
     private vmTeamsService: VmTeamsService,
-    @Inject(BASE_PATH) basePath: string
+    @Inject(BASE_PATH) basePath: string,
   ) {
     this.apiUrl = basePath;
 
@@ -83,7 +83,7 @@ export class SignalRService {
     this.viewId = viewId;
 
     this.startConnection().then(() =>
-      this.hubConnection.invoke('JoinView', viewId)
+      this.hubConnection.invoke('JoinView', viewId),
     );
   }
 
@@ -91,7 +91,7 @@ export class SignalRService {
     this.viewId = null;
 
     this.startConnection().then(() =>
-      this.hubConnection.invoke('LeaveView', viewId)
+      this.hubConnection.invoke('LeaveView', viewId),
     );
   }
 
@@ -107,7 +107,7 @@ export class SignalRService {
           // in order to optimize for the constant updates of individual users active consoles
           // rather than the initial loading of teams and users
           this.vmTeamsService.set(
-            vmUserTeams.map((x) => createVmTeam(x, viewId))
+            vmUserTeams.map((x) => createVmTeam(x, viewId)),
           );
 
           const users = new Map<string, VmUser>();
@@ -136,7 +136,7 @@ export class SignalRService {
     this.joinUsers = false;
 
     this.startConnection().then(() =>
-      this.hubConnection.invoke('LeaveViewUsers', viewId)
+      this.hubConnection.invoke('LeaveViewUsers', viewId),
     );
   }
 
@@ -159,7 +159,7 @@ export class SignalRService {
         }
 
         this.vmService.update(vm.id, model);
-      }
+      },
     );
 
     this.hubConnection.on('VmCreated', (vm: Vm) => {
@@ -176,7 +176,7 @@ export class SignalRService {
       'ActiveVirtualMachine',
       (vmId: string, userId: string) => {
         this.vmUsersService.update(userId, { activeVmId: vmId });
-      }
+      },
     );
   }
 }
@@ -185,11 +185,11 @@ class RetryPolicy {
   constructor(
     private maxSeconds: number,
     private minJitterSeconds: number,
-    private maxJitterSeconds: number
+    private maxJitterSeconds: number,
   ) {}
 
   nextRetryDelayInMilliseconds(
-    retryContext: signalR.RetryContext
+    retryContext: signalR.RetryContext,
   ): number | null {
     let nextRetrySeconds = Math.pow(2, retryContext.previousRetryCount + 1);
 
@@ -199,7 +199,7 @@ class RetryPolicy {
 
     nextRetrySeconds +=
       Math.floor(
-        Math.random() * (this.maxJitterSeconds - this.minJitterSeconds + 1)
+        Math.random() * (this.maxJitterSeconds - this.minJitterSeconds + 1),
       ) + this.minJitterSeconds; // Add Jitter
 
     return nextRetrySeconds * 1000;

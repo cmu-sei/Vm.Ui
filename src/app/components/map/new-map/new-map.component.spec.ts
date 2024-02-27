@@ -9,13 +9,11 @@ describe('NewMapComponent', () => {
   let component: NewMapComponent;
   let fixture: ComponentFixture<NewMapComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [NewMapComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [NewMapComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NewMapComponent);

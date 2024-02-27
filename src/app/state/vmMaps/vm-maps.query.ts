@@ -33,7 +33,7 @@ export class VmMapsQuery extends QueryEntity<VmMapsState> {
   getMapCoordinates(mapId: string): Observable<Coordinate[]> {
     return this.selectEntity(mapId).pipe(
       filterNil,
-      map((m) => m.coordinates)
+      map((m) => m.coordinates),
     );
   }
 }

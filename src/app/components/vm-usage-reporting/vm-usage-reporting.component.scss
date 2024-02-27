@@ -18,12 +18,16 @@ table {
   width: 100%;
 }
 
-tr.mat-header-row { height: 36px; }
+tr.mat-mdc-header-row {
+  height: 36px;
+}
 
-tr.mat-row { height: 24px; }
+tr.mat-mdc-row {
+  height: 24px;
+}
 
 .button-cmd {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 .refresh-button {
@@ -36,13 +40,6 @@ tr.mat-row { height: 24px; }
 
 .small-font {
   font-size: small;
-}
-
-.session-form {
-  margin-left: 10px;
-  min-width: 350px;
-  max-width: 350px;
-  width: 100%;
 }
 
 .session-full-width {
@@ -93,7 +90,7 @@ tr.mat-row { height: 24px; }
   margin-left: 48px;
 }
 
-.mat-radio-button {
+.mat-mdc-radio-button {
   margin-right: 40px;
 }
 

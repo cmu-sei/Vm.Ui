@@ -8,6 +8,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   selector: 'app-focused-app',
   templateUrl: './focused-app.component.html',
   styleUrls: ['./focused-app.component.scss'],
+  standalone: true,
 })
 export class FocusedAppComponent implements OnInit {
   @Input() vmUrl: string;

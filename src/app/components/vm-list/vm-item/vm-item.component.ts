@@ -12,11 +12,19 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ThemeService } from '../../../services/theme/theme.service';
-import { MatMenuTrigger } from '@angular/material/menu';
+import {
+  MatMenuTrigger,
+  MatMenu,
+  MatMenuContent,
+} from '@angular/material/menu';
 import { Team } from '../../../generated/player-api/model/team';
 import { Vm, VmsService } from '../../../generated/vm-api';
 import { take } from 'rxjs/operators';
 import { VmService } from '../../../state/vms/vms.service';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { NgTemplateOutlet, NgClass, NgIf, NgFor } from '@angular/common';
 
 export interface Item {
   id: number;
@@ -27,6 +35,19 @@ export interface Item {
   selector: 'vm-item',
   templateUrl: './vm-item.component.html',
   styleUrls: ['./vm-item.component.scss'],
+  standalone: true,
+  imports: [
+    NgTemplateOutlet,
+    NgClass,
+    NgIf,
+    MatIcon,
+    MatIconButton,
+    NgFor,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuContent,
+    MatCheckbox,
+  ],
 })
 export class VmItemComponent implements OnInit {
   @Input() vm: Vm;
@@ -42,7 +63,7 @@ export class VmItemComponent implements OnInit {
   constructor(
     public themeService: ThemeService,
     public vmsService: VmsService,
-    public vmService: VmService
+    public vmService: VmService,
   ) {}
 
   ngOnInit(): void {}
@@ -104,7 +125,7 @@ export class VmItemComponent implements OnInit {
     if (this.ipv4Only) {
       return vm.ipAddresses.filter((x) => !x.includes(':'));
     } else {
-      return vm.ipAddresses;
+      return vm.ipAddresses.concat(['1.2.3.4', '127.0.0.1', '3.4.5.6']);
     }
   }
 }

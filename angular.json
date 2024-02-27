@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "player.vm.ui": {
+    "player-vm-ui": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -14,33 +14,48 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
-            "assets": ["src/assets"],
-            "styles": ["src/styles/styles.scss"],
-            "stylePreprocessorOptions": {
-              "includePaths": ["src/styles"]
+            "outputPath": {
+              "base": "dist"
             },
-            "allowedCommonJsDependencies": ["uuid"],
+            "index": "src/index.html",
+            "tsConfig": "src/tsconfig.app.json",
+            "polyfills": ["zone.js"],
+            "assets": [
+              "src/assets",
+              {
+                "glob": "auth-callback-silent.html",
+                "input": "node_modules/@cmusei/crucible-common/src/lib/comn-auth/assets/",
+                "output": "/"
+              }
+            ],
+            "styles": [
+              "src/styles/styles.scss",
+              "./node_modules/bootstrap/scss/bootstrap-utilities.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles",
+                "./node_modules/bootstrap/scss/bootstrap-utilities.scss"
+              ]
+            },
+            "allowedCommonJsDependencies": [],
             "scripts": [],
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
-            "namedChunks": true
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
+                },
+                {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
                 }
               ],
               "optimization": true,
@@ -48,33 +63,41 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "player.vm.ui:build",
             "port": 4303
           },
           "configurations": {
             "production": {
-              "browserTarget": "player.vm.ui:build:production"
+              "buildTarget": "player-vm-ui:build:production"
+            },
+            "development": {
+              "buildTarget": "player-vm-ui:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "player.vm.ui:build"
+            "buildTarget": "player-vm-ui:build"
           }
         },
         "test": {
@@ -82,16 +105,19 @@
           "options": {
             "main": "src/test.ts",
             "karmaConfig": "./karma.conf.js",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
-            "styles": ["src/styles.css"],
+            "styles": [
+              "src/styles.css",
+              "./node_modules/bootstrap/scss/bootstrap-utilities.scss"
+            ],
             "assets": ["src/assets", "src/favicon.ico"]
           }
         }
       }
     },
-    "player.vm.ui-e2e": {
+    "player-vm.ui-e2e": {
       "root": "e2e",
       "sourceRoot": "e2e",
       "projectType": "application",
@@ -100,7 +126,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "player.vm.ui:serve"
+            "devServerTarget": "player-vm-ui:serve"
           }
         }
       }

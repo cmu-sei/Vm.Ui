@@ -3,32 +3,27 @@
 
 /* VENDER IMPORTS */
 @use '@angular/material' as mat;
-@import '~ngx-drag-to-select/ngx-drag-to-select.css';
 @include mat.core();
+
+@import '../../node_modules/ngx-drag-to-select/ngx-drag-to-select.css';
 /* END VENDER IMPORTS */
+
+/* BOOTSTRAP IMPORTS */
+/* Required */
+@import '../../node_modules/bootstrap/scss/functions';
+@import '../../node_modules/bootstrap/scss/variables';
+@import '../../node_modules/bootstrap/scss/variables-dark';
+@import '../../node_modules/bootstrap/scss/maps';
+@import '../../node_modules/bootstrap/scss/mixins';
+@import '../../node_modules/bootstrap/scss/root';
+
+/* Optional */
+@import '../../node_modules/bootstrap/scss/utilities';
+/* END BOOTSRAP IMPORTS */
 
 /* LOCAL IMPORTS */
 @import 'theme';
 /* END LOCAL IMPORTS */
-
-.light-theme {
-  @include mat.all-component-themes($light-theme);
-  @include globals($light-theme);
-}
-
-.dark-theme {
-  @include mat.all-component-themes($dark-theme);
-  @include globals($dark-theme);
-}
-
-/* The following overrides transparent select options after upgrading to Angular 7 */
-.mat-select-panel {
-  background: #fff;
-}
-.mat-select-panel:not([class*='mat-elevation-z']) {
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
-    0 1px 10px 0 rgba(0, 0, 0, 0.12);
-}
 
 html,
 body {
@@ -36,60 +31,37 @@ body {
   margin: 0;
 }
 
-
-/* The following acts as drop in replacement for the deprecation of Angular FlexLayout */
-.cssLayoutColumnCenterCenter {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  align-content: center;
+app-root {
+  display: block;
+  height: 100%;
 }
 
-.cssLayoutColumnCenterStart {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  align-content: center;
+.mat-mdc-paginator,
+.mat-expansion-panel,
+.mat-mdc-table {
+  background-color: var(--mat-app-background-color) !important;
 }
 
-.cssLayoutColumnSpaceCenter {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  align-content: center;
-}
+// Must go AFTER bootstrap imports
 
-.cssLayoutRowSpaceCenter {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  align-content: center;
-}
+$utilities: map-merge(
+  $utilities,
+  (
+    'width':
+      map-merge(
+        map-get($utilities, 'width'),
+        (
+          values:
+            map-merge(
+              map-get(map-get($utilities, 'width'), 'values'),
+              (
+                20: 20%,
+              )
+            ),
+        )
+      ),
+  )
+);
 
-.cssLayoutRowCenterCenter {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-}
-
-.cssLayoutRowStartCenter {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  align-content: flex-start;
-}
-
-.cssLayoutRowEndCenter {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  align-content: center;
-}
+// Must go AFTER utilities customizations
+@import 'bootstrap/scss/utilities/api';

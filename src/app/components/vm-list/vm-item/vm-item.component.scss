@@ -21,6 +21,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 .vm-link {
   text-decoration: underline;
   cursor: pointer;
+  color: var(--mat-app-text-color, inherit);
 }
 
 .error {
@@ -33,19 +34,13 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
   width: 20px;
 }
 
-.tab-icon {
-  width: 16px;
-}
-
-.team-owenership-tab-icon {
-  margin-left: 0px;
-  padding-right: 1em;
-  width: 20px;
-}
-
 .team-ownership-icon {
   transform: rotate(90deg);
-  width: 25px;
+}
+
+.tab-button {
+  transform: scale(0.75);
+  margin-right: -15px;
 }
 
 .pending {
@@ -59,15 +54,16 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
   padding: 0.5rem 1rem;
 }
 
-::ng-deep .mat-menu-content{
-  max-height: 470px; 
+::ng-deep .mat-mdc-menu-content {
+  max-height: 470px;
   overflow-y: scroll;
 }
 
 .menu-top {
-  font-family: open_sansbold; 
+  font-family: open_sansbold;
   font-size: smaller;
   margin-left: 5px;
+  color: var(--mat-app-text-color, inherit);
 }
 
 .flex-none {

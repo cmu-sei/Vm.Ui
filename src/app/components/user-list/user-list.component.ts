@@ -18,12 +18,44 @@ import { VmTeam } from '../../state/vm-teams/vm-team.model';
 import { VmUser } from '../../state/vm-users/vm-user.model';
 import { VmUsersQuery } from '../../state/vm-users/vm-users.query';
 import { SignalRService } from '../../services/signalr/signalr.service';
+import { TeamUsersComponent } from './team-users/team-users.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatInput } from '@angular/material/input';
+import { MatIcon } from '@angular/material/icon';
+import {
+  MatFormField,
+  MatPrefix,
+  MatSuffix,
+} from '@angular/material/form-field';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    MatFormField,
+    MatIcon,
+    MatPrefix,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    NgIf,
+    MatIconButton,
+    MatSuffix,
+    MatTooltip,
+    MatButton,
+    MatCheckbox,
+    MatAccordion,
+    NgFor,
+    TeamUsersComponent,
+    AsyncPipe,
+  ],
 })
 export class UserListComponent {
   @Input() viewId: string;
@@ -61,7 +93,7 @@ export class UserListComponent {
 
   constructor(
     private signalRService: SignalRService,
-    private vmUsersQuery: VmUsersQuery
+    private vmUsersQuery: VmUsersQuery,
   ) {}
 
   private setActive(): void {

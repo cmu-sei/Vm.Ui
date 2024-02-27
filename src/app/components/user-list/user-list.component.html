@@ -4,9 +4,9 @@
 -->
 
 <div>
-  <div class="cssLayoutRowStartCenter control-padding">
-    <mat-icon svgIcon="ic_magnify_search"></mat-icon>
-    <mat-form-field class="searchBox">
+  <div class="d-flex align-items-center gap-3 ms-2">
+    <mat-form-field subscriptSizing="dynamic" class="searchBox">
+      <mat-icon matPrefix svgIcon="ic_magnify_search"></mat-icon>
       <input
         matInput
         [(ngModel)]="searchTerm"

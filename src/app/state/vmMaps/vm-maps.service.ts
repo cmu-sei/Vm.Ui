@@ -11,7 +11,7 @@ import { VmMapsStore } from './vm-maps.store';
 export class VmMapsService {
   constructor(
     private vmMapsStore: VmMapsStore,
-    private vmService: VmsService
+    private vmService: VmsService,
   ) {}
 
   get() {

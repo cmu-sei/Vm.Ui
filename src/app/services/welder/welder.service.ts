@@ -9,7 +9,10 @@ import { ComnSettingsService } from '@cmusei/crucible-common';
 export class WelderService {
   private readonly deployUrl: string;
 
-  constructor(private http: HttpClient, private settings: ComnSettingsService) {
+  constructor(
+    private http: HttpClient,
+    private settings: ComnSettingsService,
+  ) {
     this.deployUrl = `${settings.settings.WelderUrl}`;
   }
 

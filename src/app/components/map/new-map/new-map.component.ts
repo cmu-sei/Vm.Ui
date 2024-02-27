@@ -2,18 +2,41 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 import { FileModel, FileService } from '../../../generated/player-api';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { MatButton } from '@angular/material/button';
+import { MatOption } from '@angular/material/core';
+import { NgFor } from '@angular/common';
+import { MatSelect } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatDialogTitle } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-new-map',
   templateUrl: './new-map.component.html',
-  styleUrls: ['./new-map.component.css'],
+  styleUrls: ['./new-map.component.scss'],
+  standalone: true,
+  imports: [
+    MatDialogTitle,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatSelect,
+    NgFor,
+    MatOption,
+    MatButton,
+  ],
 })
 export class NewMapComponent implements OnInit {
   teams: SimpleTeam[];
@@ -33,7 +56,7 @@ export class NewMapComponent implements OnInit {
     private vmService: VmsService,
     private formBuilder: UntypedFormBuilder,
     private vmMapsService: VmMapsService,
-    private fileService: FileService
+    private fileService: FileService,
   ) {}
 
   ngOnInit(): void {
@@ -112,7 +135,7 @@ export class NewMapComponent implements OnInit {
         name,
         this.form.get('imageURL').value as string,
         teams,
-        mapId
+        mapId,
       );
     } else {
       this.propertiesChanged.emit([
@@ -128,7 +151,7 @@ export class NewMapComponent implements OnInit {
     return this.fileService.download(id).pipe(
       map((data) => {
         return data;
-      })
+      }),
     );
   }
 
@@ -136,7 +159,7 @@ export class NewMapComponent implements OnInit {
     name: string,
     imageUrl: string,
     teams: string[],
-    mapId: string
+    mapId: string,
   ): void {
     // Save an empty map (no coordinates)
     let payload = <VmMap>{

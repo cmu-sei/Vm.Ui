@@ -19,7 +19,7 @@ export class VmUISessionService {
     private vmUISessionStore: VmUISessionStore,
     private vmUISessionQuery: VmUISessionQuery,
     private router: Router,
-    private teamService: TeamService
+    private teamService: TeamService,
   ) {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild.params['viewId'];
@@ -48,7 +48,7 @@ export class VmUISessionService {
   loadCurrentView() {
     if (this.teamId) {
       let session = this.vmUISessionQuery.getEntity(
-        (s) => s.id === this.teamId
+        (s) => s.id === this.teamId,
       );
       // If the session doesn't exist in Akita, then add a default session for the current team
       if (!session) {
@@ -89,7 +89,7 @@ export class VmUISessionService {
   }
 
   setOpenedTab(vmSession: VmUISession, index: number) {
-      this.update(vmSession.id, { tabOpened: index });
+    this.update(vmSession.id, { tabOpened: index });
   }
 
   setSearchValueChanged(vmSession: VmUISession, value: string) {

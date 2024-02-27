@@ -6,11 +6,10 @@ import { QueryEntity, QueryConfig } from '@datorama/akita';
 import { VmsStore, VmsState } from './vms.store';
 import { Vm, VmsService } from '../../generated/vm-api';
 import { Observable } from 'rxjs';
-
-const naturalCompare = require('string-natural-compare');
+import stringNaturalCompare from 'string-natural-compare';
 
 const sortByFn = (a: Vm, b: Vm, state: VmsState) => {
-  return naturalCompare(a.name, b.name, { caseInsensitive: true });
+  return stringNaturalCompare(a.name, b.name, { caseInsensitive: true });
 };
 
 @QueryConfig({
@@ -18,7 +17,10 @@ const sortByFn = (a: Vm, b: Vm, state: VmsState) => {
 })
 @Injectable({ providedIn: 'root' })
 export class VmsQuery extends QueryEntity<VmsState> {
-  constructor(protected store: VmsStore, private vmService: VmsService) {
+  constructor(
+    protected store: VmsStore,
+    private vmService: VmsService,
+  ) {
     super(store);
   }
 
