@@ -5,10 +5,11 @@
     "baseUrl": "./",
     "types": []
   },
-  "files": ["main.ts", "polyfills.ts"],
+  "files": ["main.ts"],
   "include": ["src/**/*.d.ts"],
   "angularCompilerOptions": {
-    "strictTemplates": false,
-    "strictInjectionParameters": false
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false
   }
 }

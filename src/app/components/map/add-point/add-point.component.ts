@@ -2,7 +2,12 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -11,11 +16,39 @@ import { Clickpoint } from '../../../models/clickpoint';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { VmsQuery } from '../../../state/vms/vms.query';
 import { VmService } from '../../../state/vms/vms.service';
+import { MatButton } from '@angular/material/button';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { NgFor, AsyncPipe } from '@angular/common';
+import { MatOptgroup, MatOption } from '@angular/material/core';
+import {
+  MatAutocompleteTrigger,
+  MatAutocomplete,
+} from '@angular/material/autocomplete';
+import { MatInput } from '@angular/material/input';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatDialogTitle } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-add-point',
   templateUrl: './add-point.component.html',
-  styleUrls: ['./add-point.component.css'],
+  styleUrls: ['./add-point.component.scss'],
+  standalone: true,
+  imports: [
+    MatDialogTitle,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatAutocompleteTrigger,
+    MatAutocomplete,
+    MatOptgroup,
+    NgFor,
+    MatOption,
+    MatCheckbox,
+    FormsModule,
+    MatButton,
+    AsyncPipe,
+  ],
 })
 export class AddPointComponent implements OnInit {
   @Input() xPos: number;
@@ -39,7 +72,7 @@ export class AddPointComponent implements OnInit {
     private route: ActivatedRoute,
     private vmMapsQuery: VmMapsQuery,
     private VmAkitaService: VmService,
-    private vmsQuery: VmsQuery
+    private vmsQuery: VmsQuery,
   ) {}
 
   ngOnInit() {
@@ -59,7 +92,7 @@ export class AddPointComponent implements OnInit {
       switchMap((params) => {
         const viewId = params['viewId'];
         return this.vmMapsQuery.getByViewId(viewId);
-      })
+      }),
     );
 
     // Get VMs in view
@@ -72,8 +105,8 @@ export class AddPointComponent implements OnInit {
       .valueChanges.subscribe(
         (value) =>
           (this.vmMapsFiltered = this.vmMapsQuery.getAllWithName(
-            typeof value === 'string' ? value : value.name
-          ))
+            typeof value === 'string' ? value : value.name,
+          )),
       );
 
     // Set up filter for VMs
@@ -82,8 +115,8 @@ export class AddPointComponent implements OnInit {
       .valueChanges.subscribe(
         (value) =>
           (this.vmsFiltered = this.vmsQuery.getAllWithName(
-            typeof value === 'string' ? value : value.name
-          ))
+            typeof value === 'string' ? value : value.name,
+          )),
       );
   }
 
@@ -117,7 +150,7 @@ export class AddPointComponent implements OnInit {
       this.id,
       this.form.get('label').value,
       query,
-      multiple
+      multiple,
     );
 
     this.machineEmitter.emit(point);
@@ -126,7 +159,7 @@ export class AddPointComponent implements OnInit {
   onDelete(): void {
     // Send a clickpoint with fields set to -1 to signal that it should be deleted
     this.machineEmitter.emit(
-      new Clickpoint(-1, -1, -1, [], this.id, '', '', false)
+      new Clickpoint(-1, -1, -1, [], this.id, '', '', false),
     );
   }
 

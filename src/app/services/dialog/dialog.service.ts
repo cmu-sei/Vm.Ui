@@ -27,7 +27,7 @@ export class DialogService {
   public message(
     title: string,
     message: string,
-    data?: MatDialogConfig
+    data?: MatDialogConfig,
   ): Observable<any> {
     let dialogRef = this.dialog.open(MessageDialogComponent, {
       data: data || {},

@@ -19,7 +19,7 @@ export class Clickpoint {
     id: string,
     label: string,
     query: string,
-    multiple: boolean
+    multiple: boolean,
   ) {
     this.xPosition = x;
     this.yPosition = y;

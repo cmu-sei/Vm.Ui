@@ -16,6 +16,6 @@ describe('AutoDeployService', () => {
     [AutoDeployService],
     (service: AutoDeployService) => {
       expect(service).toBeTruthy();
-    }
+    },
   ));
 });

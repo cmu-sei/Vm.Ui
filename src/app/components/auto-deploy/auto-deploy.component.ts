@@ -8,11 +8,15 @@ import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AutoDeployService } from '../../services/auto-deploy/auto-deploy.service';
 import { VmService } from '../../state/vms/vms.service';
+import { MatButton } from '@angular/material/button';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-auto-deploy',
   templateUrl: './auto-deploy.component.html',
   styleUrls: ['./auto-deploy.component.scss'],
+  standalone: true,
+  imports: [NgIf, MatButton],
 })
 export class AutoDeployComponent implements OnInit, OnDestroy {
   public showDeployButton = false;
@@ -25,7 +29,7 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
     public autoDeployService: AutoDeployService,
     public vmService: VmService,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit() {
@@ -43,14 +47,14 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
               if (!result.DefaultTemplateConfigured) {
                 this.snackBar.open(
-                  'A default workstation has not been configured for your Team.'
+                  'A default workstation has not been configured for your Team.',
                 );
                 this.deployButtonDisabled = true;
                 this.showDeployButton = true;
               } else if (result.RoomFull) {
                 // tslint:disable-next-line:max-line-length
                 this.snackBar.open(
-                  "Your team's workstation allocation is full. Please contact an administrator to request additional capacity."
+                  "Your team's workstation allocation is full. Please contact an administrator to request additional capacity.",
                 );
                 this.deployButtonDisabled = true;
                 this.showDeployButton = true;
@@ -62,7 +66,7 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
       },
       (err) => {
         console.log(err);
-      }
+      },
     );
   }
 
@@ -71,7 +75,7 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
       () => {
         this.deployButtonDisabled = true;
         this.snackBar.open(
-          'Request Received. Please wait while your workstation is provisioned.'
+          'Request Received. Please wait while your workstation is provisioned.',
         );
 
         interval(5000)
@@ -81,7 +85,7 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
       (err) => {
         console.log(err);
         this.deployButtonDisabled = false;
-      }
+      },
     );
     this.deployButtonDisabled = true;
   }

@@ -11,7 +11,19 @@ import {
   VmUsageLoggingSessionService,
 } from '../../generated/vm-api';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import {
+  MatTableDataSource,
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow,
+} from '@angular/material/table';
 import { Clipboard } from '@angular/cdk/clipboard';
 import {
   UntypedFormControl,
@@ -19,19 +31,42 @@ import {
   FormGroupDirective,
   NgForm,
   Validators,
+  ReactiveFormsModule,
 } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
+import {
+  ErrorStateMatcher,
+  MatNativeDateModule,
+  MatOption,
+  provideNativeDateAdapter,
+} from '@angular/material/core';
 import { TeamService, Team } from '../../generated/player-api';
 import { saveAs } from 'file-saver-es';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { DialogService } from '../../services/dialog/dialog.service';
-import { HttpHeaders } from '@angular/common/http';
+import { MatButton } from '@angular/material/button';
+import {
+  MatDateRangeInput,
+  MatStartDate,
+  MatEndDate,
+  MatDatepickerToggle,
+  MatDateRangePicker,
+} from '@angular/material/datepicker';
+import { MatSelect } from '@angular/material/select';
+import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { MatInput } from '@angular/material/input';
+import {
+  MatFormField,
+  MatLabel,
+  MatHint,
+  MatError,
+  MatSuffix,
+} from '@angular/material/form-field';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(
@@ -46,12 +81,45 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   selector: 'app-vm-usage-logging',
   templateUrl: './vm-usage-logging.component.html',
   styleUrls: ['./vm-usage-logging.component.scss'],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatHint,
+    NgIf,
+    MatError,
+    MatSelect,
+    NgFor,
+    MatOption,
+    MatDateRangeInput,
+    MatStartDate,
+    MatEndDate,
+    MatDatepickerToggle,
+    MatSuffix,
+    MatDateRangePicker,
+    MatButton,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatPaginator,
+    DatePipe,
+  ],
+  providers: [provideNativeDateAdapter()],
 })
 export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild('formDirective') private formDirective: NgForm;
   dataSource = new MatTableDataSource<VmUsageLoggingSession>(
-    new Array<VmUsageLoggingSession>()
+    new Array<VmUsageLoggingSession>(),
   );
   systemTeams = new Array<Team>();
   unsubscribe$: Subject<null> = new Subject<null>();
@@ -93,14 +161,14 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
     private teamService: TeamService,
     private clipboard: Clipboard,
     private routerQuery: RouterQuery,
-    private dialogService: DialogService
+    private dialogService: DialogService,
   ) {
     this.viewId = this.routerQuery.getParams('viewId');
 
     this.vmLoggingSessions$ = this.refreshSessions$.pipe(
       switchMap((_) =>
-        this.vmUsageLoggingSessionService.getAllSessions(this.viewId)
-      )
+        this.vmUsageLoggingSessionService.getAllSessions(this.viewId),
+      ),
     );
 
     this.vmLoggingSessions$
@@ -172,7 +240,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
         .pipe(take(1))
         .subscribe((_) => {
           this.refresh();
-          this.selectedTeams = [];
+          this.sessionTeamsFormControl.reset();
           this.newLogName = '';
           this.formDirective.resetForm();
         });
@@ -192,7 +260,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
       .confirm(
         'Delete Logging Session:  ' + name,
         'Are you sure that you want to delete all previously logged data?',
-        { buttonTrueText: 'Delete' }
+        { buttonTrueText: 'Delete' },
       )
       .subscribe((result) => {
         if (result['confirm']) {

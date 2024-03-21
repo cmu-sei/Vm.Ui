@@ -3,95 +3,93 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="container cssLayoutColumnStartCenter">
-  <div class="cssLayoutRowStartCenter create-section">
-    <form
-      [formGroup]="range"
-      class="session-form cssLayoutRowStartCenter"
-      #formDirective="ngForm"
-    >
-      <mat-form-field class="session-full-width" appearance="fill">
-        <mat-label>Log Name</mat-label>
-        <input
-          type=""
-          matInput
-          [formControl]="sessionNameFormControl"
-          [errorStateMatcher]="matcher"
-          placeholder="Ex. Exercise Name - Date - Team"
-          [(value)]="newLogName"
-          (change)="updateLogName($event)"
-        />
-        <mat-hint>5 character minimum</mat-hint>
-        <mat-error
-          *ngIf="
-            sessionNameFormControl.hasError('minlength') &&
-            !sessionNameFormControl.hasError('required')
-          "
-        >
-          Please enter a Log Name
-        </mat-error>
-        <mat-error *ngIf="sessionNameFormControl.hasError('required')">
-          Log Name is <strong>required</strong>
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="teams-form-field" appearance="fill">
-        <mat-label>Teams</mat-label>
-        <mat-error *ngIf="sessionTeamsFormControl.hasError('required')">
-          Please select atleast 1 team
-        </mat-error>
-        <mat-select
-          [formControl]="sessionTeamsFormControl"
-          multiple
-          [(value)]="selectedTeams"
-        >
-          <mat-option *ngFor="let team of systemTeams" [value]="team">{{
-            team.name
-          }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field class="date-picker" appearance="fill">
-        <mat-label>Choose a date range</mat-label>
-        <mat-date-range-input [rangePicker]="picker">
-          <input
-            matStartDate
-            formControlName="start"
-            placeholder="Start date"
-            required
-          />
-          <input
-            matEndDate
-            formControlName="end"
-            placeholder="End date"
-            required
-          />
-        </mat-date-range-input>
-        <mat-error
-          *ngIf="
-            range.controls.start.errors?.required ||
-            range.controls.end.errors?.required
-          "
-        >
-          Please specify a Date Range
-        </mat-error>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
-
-      <button
-        mat-raised-button
-        class="button-cmd"
-        color="primary"
-        type="submit"
-        (click)="createNewSession()"
+<div class="container">
+  <form
+    [formGroup]="range"
+    #formDirective="ngForm"
+    class="mb-3 d-flex align-items-center gap-2"
+  >
+    <mat-form-field class="session-full-width">
+      <mat-label>Log Name</mat-label>
+      <input
+        type=""
+        matInput
+        [formControl]="sessionNameFormControl"
+        [errorStateMatcher]="matcher"
+        placeholder="Ex. Exercise Name - Date - Team"
+        [(value)]="newLogName"
+        (change)="updateLogName($event)"
+      />
+      <mat-hint>5 character minimum</mat-hint>
+      <mat-error
+        *ngIf="
+          sessionNameFormControl.hasError('minlength') &&
+          !sessionNameFormControl.hasError('required')
+        "
       >
-        Add
-      </button>
-    </form>
-  </div>
+        Please enter a Log Name
+      </mat-error>
+      <mat-error *ngIf="sessionNameFormControl.hasError('required')">
+        Log Name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
 
-  <div class="refresh-button">
+    <mat-form-field class="teams-form-field">
+      <mat-label>Teams</mat-label>
+      <mat-error *ngIf="sessionTeamsFormControl.hasError('required')">
+        Please select atleast 1 team
+      </mat-error>
+      <mat-select
+        [formControl]="sessionTeamsFormControl"
+        multiple
+        [(value)]="selectedTeams"
+      >
+        <mat-option *ngFor="let team of systemTeams" [value]="team">{{
+          team.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="date-picker">
+      <mat-label>Choose a date range</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input
+          matStartDate
+          formControlName="start"
+          placeholder="Start date"
+          required
+        />
+        <input
+          matEndDate
+          formControlName="end"
+          placeholder="End date"
+          required
+        />
+      </mat-date-range-input>
+      <mat-error
+        *ngIf="
+          range.controls.start.errors?.required ||
+          range.controls.end.errors?.required
+        "
+      >
+        Please specify a Date Range
+      </mat-error>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      class="button-cmd"
+      color="primary"
+      type="submit"
+      (click)="createNewSession()"
+    >
+      Add
+    </button>
+  </form>
+
+  <div class="">
     <button
       mat-raised-button
       class="button-cmd"
@@ -108,7 +106,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>ID</th>
         <td mat-cell *matCellDef="let element">
-          <div class="cssLayoutRowStartCenter">
+          <div class="d-flex gap-3">
             <button
               mat-raised-button
               class="button-cmd"

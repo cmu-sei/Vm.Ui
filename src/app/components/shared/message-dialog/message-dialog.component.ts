@@ -4,12 +4,20 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+  MatDialogTitle,
+  MatDialogActions,
+} from '@angular/material/dialog';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'message-dialog',
   templateUrl: './message-dialog.component.html',
   styleUrls: ['./message-dialog.component.scss'],
+  standalone: true,
+  imports: [MatDialogTitle, MatDialogActions, MatButton],
 })
 export class MessageDialogComponent implements OnInit {
   public title: string;
@@ -19,7 +27,7 @@ export class MessageDialogComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<MessageDialogComponent>
+    public dialogRef: MatDialogRef<MessageDialogComponent>,
   ) {
     this.dialogRef.disableClose = true;
   }

@@ -5,16 +5,10 @@ import { Injectable } from '@angular/core';
 import { QueryEntity, QueryConfig } from '@datorama/akita';
 import { VmUISessionStore, VmUISessionState } from './vm-ui-session.store';
 
-
-@QueryConfig({
-})
+@QueryConfig({})
 @Injectable({ providedIn: 'root' })
 export class VmUISessionQuery extends QueryEntity<VmUISessionState> {
-
   constructor(protected store: VmUISessionStore) {
     super(store);
   }
-
-
-
 }

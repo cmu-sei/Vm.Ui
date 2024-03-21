@@ -13,7 +13,7 @@ describe('VmItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [VmItemComponent],
+      imports: [VmItemComponent],
     }).compileComponents();
   });
 

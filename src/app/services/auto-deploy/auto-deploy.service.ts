@@ -13,7 +13,7 @@ export class AutoDeployService {
   constructor(
     private http: HttpClient,
     private settings: ComnSettingsService,
-    private router: Router
+    private router: Router,
   ) {
     this.deployUrl = `${settings.settings.DeployApiUrl}`;
   }
@@ -25,7 +25,7 @@ export class AutoDeployService {
   deployToView(viewId: string) {
     return this.http.post<any>(
       `${this.deployUrl}/views/${viewId}/workstations`,
-      null
+      null,
     );
   }
 }

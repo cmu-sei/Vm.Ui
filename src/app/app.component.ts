@@ -5,15 +5,18 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, HostBinding, OnDestroy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
 import { ComnAuthQuery, ComnAuthService, Theme } from '@cmusei/crucible-common';
+import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  standalone: true,
+  imports: [RouterOutlet],
 })
 export class AppComponent implements OnDestroy {
   @HostBinding('class') componentCssClass: string;
@@ -24,63 +27,70 @@ export class AppComponent implements OnDestroy {
     sanitizer: DomSanitizer,
     private overlayContainer: OverlayContainer,
     private authQuery: ComnAuthQuery,
-    private activatedRoute: ActivatedRoute,
-    private authService: ComnAuthService
+    private routerQuery: RouterQuery,
+    private authService: ComnAuthService,
   ) {
     iconRegistry.addSvgIcon(
       'monitor',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/monitor.svg')
+      sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/monitor.svg'),
     );
     iconRegistry.addSvgIcon(
       'ic_clear_black_24px',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_clear_black_24px.svg'
-      )
+        'assets/svg-icons/ic_clear_black_24px.svg',
+      ),
     );
     iconRegistry.addSvgIcon(
       'ic_chevron_right_black_24px',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_chevron_right_black_24px.svg'
-      )
+        'assets/svg-icons/ic_chevron_right_black_24px.svg',
+      ),
     );
     iconRegistry.addSvgIcon(
       'ic_open_tab',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_open_tab.svg'
-      )
+        'assets/svg-icons/ic_open_tab.svg',
+      ),
     );
     iconRegistry.addSvgIcon(
       'ic_cancel_circle',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_cancel_circle.svg'
-      )
+        'assets/svg-icons/ic_cancel_circle.svg',
+      ),
     );
     iconRegistry.addSvgIcon(
       'ic_magnify_search',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_magnify_glass_48px.svg'
-      )
+        'assets/svg-icons/ic_magnify_glass_48px.svg',
+      ),
     );
     iconRegistry.addSvgIcon(
       'power_icon',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_power_settings_new_black_48px.svg'
-      )
+        'assets/svg-icons/ic_power_settings_new_black_48px.svg',
+      ),
     );
     iconRegistry.addSvgIcon(
       'ic_expand_more_24px',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_expand_more_24px.svg'
-      )
+        'assets/svg-icons/ic_expand_more_24px.svg',
+      ),
     );
     iconRegistry.addSvgIcon(
       'ic_gear',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/ic_gear.svg')
+      sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/ic_gear.svg'),
     );
 
     this.theme$.pipe(takeUntil(this.unsubscribe$)).subscribe((theme) => {
       this.setTheme(theme);
     });
+
+    this.routerQuery
+      .selectQueryParams('theme')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((theme) => {
+        this.authService.setUserTheme(theme);
+      });
   }
 
   setTheme(theme: Theme) {

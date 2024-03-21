@@ -6,6 +6,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <mat-tab-group
     #vmTabGroup
     dynamicHeight
+    mat-stretch-tabs="false"
     animationDuration="0ms"
     [selectedIndex]="selectedTab"
     (selectedIndexChange)="setSelectedTab($event)"
@@ -63,7 +64,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           style="outline: none"
           title="Open in Browser Tab"
         >
-          <mat-icon style="width: 15px" svgIcon="ic_open_tab"></mat-icon>
+          <mat-icon svgIcon="ic_open_tab"></mat-icon>
         </button>
       </ng-template>
       <ng-template matTabContent>

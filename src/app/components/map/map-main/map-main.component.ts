@@ -22,11 +22,32 @@ import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
 import { TeamsService } from '../../../services/teams/teams.service';
 import { DialogService } from '../../../services/dialog/dialog.service';
+import { MatButton } from '@angular/material/button';
+import { MatOption } from '@angular/material/core';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatSelect } from '@angular/material/select';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-map-main',
   templateUrl: './map-main.component.html',
-  styleUrls: ['./map-main.component.css'],
+  styleUrls: ['./map-main.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    ReactiveFormsModule,
+    FormsModule,
+    MatOption,
+    NgFor,
+    MatButton,
+    MapTeamDisplayComponent,
+    MapComponent,
+    NewMapComponent,
+  ],
 })
 export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   selected: VmMap;
@@ -58,7 +79,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     private teamsService: TeamsService,
     private vmMapsService: VmMapsService,
     private vmMapQuery: VmMapsQuery,
-    private dialogService: DialogService
+    private dialogService: DialogService,
   ) {
     this.mapInitialized = false;
   }
@@ -114,7 +135,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   }
 
   // Track changes in the map select by map IDs
-  trackByMaps(item: VmMap): string {
+  trackByMaps(index: number, item: VmMap): string {
     return item.id;
   }
 

@@ -15,10 +15,13 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectContainerComponent } from 'ngx-drag-to-select';
+import {
+  SelectContainerComponent,
+  DragToSelectModule,
+} from 'ngx-drag-to-select';
 import { Observable } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { Team, TeamService } from '../../generated/player-api';
@@ -28,12 +31,63 @@ import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
 import { VmService } from '../../state/vms/vms.service';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+} from '@angular/material/expansion';
+import { VmItemComponent } from './vm-item/vm-item.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatInput } from '@angular/material/input';
+import {
+  MatFormField,
+  MatLabel,
+  MatPrefix,
+  MatSuffix,
+} from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { NgIf, NgFor, AsyncPipe, SlicePipe } from '@angular/common';
 
 @Component({
   selector: 'app-vm-list',
   templateUrl: './vm-list.component.html',
   styleUrls: ['./vm-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    MatButton,
+    MatMenuTrigger,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    MatPrefix,
+    MatIconButton,
+    MatSuffix,
+    MatCheckbox,
+    MatSelect,
+    MatOption,
+    DragToSelectModule,
+    NgFor,
+    MatTooltip,
+    VmItemComponent,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatPaginator,
+    AsyncPipe,
+    SlicePipe,
+  ],
 })
 export class VmListComponent implements OnInit, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());
@@ -95,7 +149,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private teamsService: TeamsService,
     private playerTeamService: TeamService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
   ) {
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
@@ -121,7 +175,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
             break;
           case SearchOperator.Or:
             const truthVal = f.value.some((tok) =>
-              name.toLowerCase().includes(tok)
+              name.toLowerCase().includes(tok),
             );
             customFilter.push(truthVal);
             break;
@@ -141,7 +195,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
               break;
             case SearchOperator.Or:
               const truthVal = f.value.some((tok) =>
-                address.toLowerCase().includes(tok)
+                address.toLowerCase().includes(tok),
               );
               customFilter.push(truthVal);
               break;
@@ -169,12 +223,12 @@ export class VmListComponent implements OnInit, AfterViewInit {
         (error) => {
           console.log('The VM API is not responding.  ' + error.message);
           this.vmApiResponded = false;
-        }
+        },
       );
 
     if (this.canManageTeam) {
       this.teamsList$ = this.playerTeamService.getViewTeams(
-        this.vmService.viewId
+        this.vmService.viewId,
       );
     }
   }
@@ -218,7 +272,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       this.vmModelDataSource.data = this.allVms;
     } else {
       this.vmModelDataSource.data = this.allVms.filter(
-        (vm) => vm.powerState.toString() === this.vmFilterBy
+        (vm) => vm.powerState.toString() === this.vmFilterBy,
       );
     }
   }
@@ -262,8 +316,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
           this.dialogService
             .confirm(
               'Upload iso for?',
-              'Please choose if you want this iso to be public or for your team only:',
-              { buttonTrueText: 'Public', buttonFalseText: 'My Team Only' }
+              'Please choose if you want this iso to be public or for your team only',
+              { buttonTrueText: 'Public', buttonFalseText: 'My Team Only' },
             )
             .pipe(take(1))
             .subscribe((result) => {
@@ -300,7 +354,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
         this.uploading = false;
         this.cd.detectChanges();
         this.dialogService.message('Upload Failed', 'Error: ' + err);
-      }
+      },
     );
   }
 
@@ -319,7 +373,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
         for (const team of results) {
           if (teams.has(team.id)) {
             const vms = this.vmModelDataSource.filteredData.filter((vm) =>
-              vm.teamIds.includes(team.id)
+              vm.teamIds.includes(team.id),
             );
             const group = new VmGroup(team.name, team.id, vms);
             this.groupByTeams.push(group);
@@ -394,7 +448,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       .confirm(
         `${title}`,
         `Are you sure you want to ${actionName} ${this.selectedVms.length} selected machines?`,
-        { buttonTrueText: 'Confirm' }
+        { buttonTrueText: 'Confirm' },
       )
       .pipe(
         filter((result) => result.wasCancelled === false),
@@ -412,7 +466,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
               return this.vmService.reboot(this.selectedVms);
           }
         }),
-        take(1)
+        take(1),
       )
       .subscribe((x) => {
         this.errors.emit(x.errors);
@@ -457,7 +511,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
       .confirm(
         `Clear Selections`,
         `Are you sure you want to clear your selections?`,
-        { buttonTrueText: 'Confirm' }
+        { buttonTrueText: 'Confirm' },
       )
       .pipe(filter((result) => result.wasCancelled === false))
       .subscribe(() => {
@@ -600,13 +654,18 @@ export class VmListComponent implements OnInit, AfterViewInit {
   showIpClicked(event: MatCheckboxChange) {
     this.showIPsSelectedChanged.emit(event.checked);
   }
+
+  getData(datasource: Vm[]): Vm[] {
+    // To make type checks happy
+    return datasource;
+  }
 }
 
 enum VmAction {
   PowerOn,
   PowerOff,
   Shutdown,
-  Reboot
+  Reboot,
 }
 
 enum SearchOperator {

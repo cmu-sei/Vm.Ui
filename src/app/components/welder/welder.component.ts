@@ -8,11 +8,15 @@ import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WelderService } from '../../services/welder/welder.service';
 import { VmService } from '../../state/vms/vms.service';
+import { MatButton } from '@angular/material/button';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-welder',
   templateUrl: './welder.component.html',
   styleUrls: ['./welder.component.scss'],
+  standalone: true,
+  imports: [NgIf, MatButton, NgFor],
 })
 export class WelderComponent implements OnInit, OnDestroy {
   public showDeployButton = false;
@@ -27,7 +31,7 @@ export class WelderComponent implements OnInit, OnDestroy {
     public welderService: WelderService,
     public vmService: VmService,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit() {
@@ -52,7 +56,7 @@ export class WelderComponent implements OnInit, OnDestroy {
                 this.snackBar.open(response.toString());
               }
             },
-            (err) => console.log(err)
+            (err) => console.log(err),
           );
         }
       });
@@ -65,13 +69,13 @@ export class WelderComponent implements OnInit, OnDestroy {
       (response) => {
         console.log(response);
         this.snackBar.open(
-          'Request received. Please wait while your workstations are provisioned.'
+          'Request received. Please wait while your workstations are provisioned.',
         );
       },
       (err) => {
         console.log(err);
         this.deployButtonDisabled = false;
-      }
+      },
     );
   }
 
@@ -97,7 +101,7 @@ export class WelderComponent implements OnInit, OnDestroy {
       },
       (err) => {
         console.log(err);
-      }
+      },
     );
   }
 

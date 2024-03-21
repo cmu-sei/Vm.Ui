@@ -9,13 +9,11 @@ describe('AutoDeployComponent', () => {
   let component: AutoDeployComponent;
   let fixture: ComponentFixture<AutoDeployComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [AutoDeployComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [AutoDeployComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AutoDeployComponent);

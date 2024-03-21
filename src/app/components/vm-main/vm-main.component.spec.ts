@@ -9,13 +9,11 @@ describe('VmMainComponent', () => {
   let component: VmMainComponent;
   let fixture: ComponentFixture<VmMainComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [VmMainComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [VmMainComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VmMainComponent);

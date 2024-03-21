@@ -3,43 +3,38 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="cssLayoutRowStartCenter">
+<div>
   <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
 </div>
 
 <ng-template #vmTemplate>
-  <div
-    class="cssLayoutColumnCenterCenter"
-    [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }"
-  >
-    <div class="vm-content" class="cssLayoutRowStartCenter">
-      <div class="flex-none">
-        <button mat-icon-button>
-          <mat-icon
-            *ngIf="
-              vm.powerState !== undefined &&
-              vm.powerState.toString() === 'Unknown'
-            "
-            style="color: red"
-            svgIcon="monitor"
-            title="Power state unknown"
-          ></mat-icon>
-          <mat-icon
-            *ngIf="
-              vm.powerState !== undefined && vm.powerState.toString() === 'On'
-            "
-            class="text"
-            svgIcon="monitor"
-          ></mat-icon>
-          <mat-icon
-            *ngIf="
-              vm.powerState !== undefined && vm.powerState.toString() === 'Off'
-            "
-            style="color: red"
-            svgIcon="power_icon"
-            title="Powered Off"
-          ></mat-icon>
-        </button>
+  <div [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }">
+    <div class="vm-content" class="d-flex align-items-center">
+      <div class="m-2">
+        <mat-icon
+          *ngIf="
+            vm.powerState !== undefined &&
+            vm.powerState.toString() === 'Unknown'
+          "
+          style="color: red"
+          svgIcon="monitor"
+          title="Power state unknown"
+        ></mat-icon>
+        <mat-icon
+          *ngIf="
+            vm.powerState !== undefined && vm.powerState.toString() === 'On'
+          "
+          class="text"
+          svgIcon="monitor"
+        ></mat-icon>
+        <mat-icon
+          *ngIf="
+            vm.powerState !== undefined && vm.powerState.toString() === 'Off'
+          "
+          style="color: red"
+          svgIcon="power_icon"
+          title="Powered Off"
+        ></mat-icon>
       </div>
       <div class="content">
         <a
@@ -56,23 +51,18 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
           >{{ vm.name }}</a
         >
       </div>
-      <div class="open-tab-icon">
+      <div class="d-flex">
         <button
           mat-icon-button
-          style="outline: none; padding: 0"
-          class="text"
+          class="tab-button"
           (click)="openInTab(this.themeService.addThemeQueryParam(vm.url))"
           title="Open in Browser Tab"
         >
-          <mat-icon class="tab-icon" svgIcon="ic_open_tab"></mat-icon>
+          <mat-icon svgIcon="ic_open_tab"></mat-icon>
         </button>
-      </div>
-      <div class="team-owenership-tab-icon">
         <button
           *ngIf="canManageTeam"
           mat-icon-button
-          style="outline: none"
-          class="text"
           (click)="onContextMenu($event)"
           title="Team Ownership"
         >
@@ -83,7 +73,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
         </button>
       </div>
     </div>
-    <div *ngIf="showIps" class="cssLayoutStartCenterCenter content">
+    <div *ngIf="showIps" class="d-flex flex-column align-items-center content">
       <label class="text" *ngFor="let address of getIpAddresses(vm)">
         {{ address }}
       </label>

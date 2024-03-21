@@ -13,7 +13,7 @@ describe('MessageDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MessageDialogComponent],
+      imports: [MessageDialogComponent],
     }).compileComponents();
   });
 

@@ -3,53 +3,50 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="row" *ngIf="canEdit">
-  <div class="block" id="form">
-    <mat-form-field>
-      <mat-label>Select Map</mat-label>
-      <mat-select
-        [(value)]="selected"
-        [(ngModel)]="selected"
-        (selectionChange)="goToMap()"
-      >
-        <mat-option>Select Map</mat-option>
-        <mat-option
-          *ngFor="let vm of maps; trackBy: trackByMaps"
-          [value]="vm"
-          >{{ vm.name }}</mat-option
-        >
-      </mat-select>
-    </mat-form-field>
-  </div>
-
-  <div class="block">
-    <button
-      mat-flat-button
-      color="primary"
-      class="action-button"
-      type="button"
-      (click)="buildMap()"
+<div
+  class="pt-1 d-flex align-items-center justify-content-center gap-2"
+  *ngIf="canEdit"
+>
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Select Map</mat-label>
+    <mat-select
+      [(value)]="selected"
+      [(ngModel)]="selected"
+      (selectionChange)="goToMap()"
     >
-      New Map
-    </button>
-  </div>
+      <mat-option>Select Map</mat-option>
+      <mat-option *ngFor="let vm of maps; trackBy: trackByMaps" [value]="vm">{{
+        vm.name
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
 
-  <div class="block" *ngIf="readMap && !build">
-    <button
-      mat-flat-button
-      color="primary"
-      class="action-button"
-      type="button"
-      (click)="delete()"
-    >
-      Delete Map
-    </button>
-  </div>
+  <button
+    mat-flat-button
+    color="primary"
+    class="action-button"
+    type="button"
+    (click)="buildMap()"
+  >
+    New Map
+  </button>
+
+  <button
+    *ngIf="readMap && !build"
+    mat-flat-button
+    color="primary"
+    class="action-button"
+    type="button"
+    (click)="delete()"
+  >
+    Delete Map
+  </button>
 </div>
 
 <span>
-  <div class="block" *ngIf="!build && readMap && canEdit">
+  <div class="mb-1 d-flex align-items-center gap-2">
     <button
+      *ngIf="!build && readMap && canEdit"
       mat-flat-button
       color="primary"
       class="action-button"
@@ -58,12 +55,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     >
       {{ editMode == true ? 'Discard Changes' : 'Edit' }}
     </button>
-  </div>
-  <div
-    class="block"
-    *ngIf="mapInitialized && ((readMap && editMode && !build) || build)"
-  >
+
     <button
+      *ngIf="mapInitialized && ((readMap && editMode && !build) || build)"
       mat-flat-button
       color="primary"
       class="action-button"
@@ -72,13 +66,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     >
       Edit Properties
     </button>
-  </div>
-  <div
-    id="rightmost"
-    class="block"
-    *ngIf="mapInitialized && ((readMap && editMode && !build) || build)"
-  >
+
     <button
+      *ngIf="mapInitialized && ((readMap && editMode && !build) || build)"
       mat-flat-button
       color="primary"
       class="action-button"

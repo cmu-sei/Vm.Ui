@@ -13,9 +13,8 @@ describe('VmUsageLoggingComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ VmUsageLoggingComponent ]
-    })
-    .compileComponents();
+      imports: [VmUsageLoggingComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -10,9 +10,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="header-date-range">
       <form
         [formGroup]="range"
-        class="session-form"
-        fxLayout="row"
-        fxLayoutAlign="start center"
+        class="session-form d-flex align-items-center"
         #formDirective="ngForm"
       >
         <mat-form-field class="date-picker" appearance="fill">
@@ -39,7 +37,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >
             Please specify a Date Range
           </mat-error>
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
           <mat-date-range-picker #picker></mat-date-range-picker>
         </mat-form-field>
         <button
@@ -66,7 +67,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="header-report-format">
       <mat-radio-group [ngModel]="reportFormatIndex">
         <mat-radio-button
-          *ngFor="let format of reportFormatList; let i=index;"
+          *ngFor="let format of reportFormatList; let i = index"
           [value]="i"
           (click)="setReportFormat(i)"
         >
@@ -76,7 +77,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
   </div>
 
-  <div class="mat-elevation-z8 table-container" *ngIf="dataSource && dataSource.data && dataSource.data.length > 0">
+  <div
+    class="mat-elevation-z8 table-container"
+    *ngIf="dataSource && dataSource.data && dataSource.data.length > 0"
+  >
     <table mat-table [dataSource]="dataSource">
       <!-- User Name Column -->
       <ng-container matColumnDef="userName">
@@ -87,17 +91,22 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </ng-container>
       <!-- Session Name Column -->
       <ng-container matColumnDef="sessionName">
-        <th mat-header-cell class="standard-column" *matHeaderCellDef>Session</th>
+        <th mat-header-cell class="standard-column" *matHeaderCellDef>
+          Session
+        </th>
         <td mat-cell class="standard-column" *matCellDef="let element">
           {{ element.sessionName }}
         </td>
       </ng-container>
       <!-- Session Duration Column -->
       <ng-container matColumnDef="sessionDuration">
-        <th mat-header-cell class="standard-column" *matHeaderCellDef>Duration</th>
+        <th mat-header-cell class="standard-column" *matHeaderCellDef>
+          Duration
+        </th>
         <td mat-cell class="standard-column" *matCellDef="let element">
           <span *ngIf="element.sessionName > ' '">
-            {{ element.sessionStart | date: 'MM/dd/yyy HH:mm' }} - {{ element.sessionEnd | date: 'MM/dd/yyy HH:mm' }}
+            {{ element.sessionStart | date: 'MM/dd/yyy HH:mm' }} -
+            {{ element.sessionEnd | date: 'MM/dd/yyy HH:mm' }}
           </span>
         </td>
       </ng-container>
@@ -111,20 +120,25 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
       <!-- Minutes Active Column -->
       <ng-container matColumnDef="minutesActive">
-        <th mat-header-cell class="minutes-active-column" *matHeaderCellDef>Active Minutes</th>
+        <th mat-header-cell class="minutes-active-column" *matHeaderCellDef>
+          Active Minutes
+        </th>
         <td mat-cell class="minutes-active-column" *matCellDef="let element">
           {{ element.minutesActive }}
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns[reportFormatIndex]"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns[reportFormatIndex]"></tr>
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns[reportFormatIndex]"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns[reportFormatIndex]"
+      ></tr>
     </table>
   </div>
-  <div
-    *ngIf="rawVmUsageList.length === 0"
-    class="no-data-warning"
-  >
+  <div *ngIf="rawVmUsageList.length === 0" class="no-data-warning">
     No data found for the selected date range.
   </div>
   <div>
