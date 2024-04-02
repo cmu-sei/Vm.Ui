@@ -165,30 +165,32 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       #selectContainer
       [(selectedItems)]="selectedVms"
     >
-      <div
-        class="flex-container"
-        *ngFor="
-          let vm of vmModelDataSource.filteredData
-            | slice
-              : pageEvent.pageIndex * pageEvent.pageSize
-              : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
-          trackBy: trackByVmId
-        "
-        [matTooltip]="vm.lastError"
-      >
-        <vm-item
-          class="w-100"
-          [dtsSelectItem]="vm.id"
-          [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
-          [vm]="vm"
-          [ipv4Only]="ipv4Only"
-          [showIps]="showIps"
-          (openVmHere)="openHere($event)"
-          [teamsList]="teamsList$ | async"
-          [canManageTeam]="canManageTeam"
+      <ng-container *ngIf="teamsList$ | async as teamsList">
+        <div
+          class="flex-container"
+          *ngFor="
+            let vm of vmModelDataSource.filteredData
+              | slice
+                : pageEvent.pageIndex * pageEvent.pageSize
+                : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
+            trackBy: trackByVmId
+          "
+          [matTooltip]="vm.lastError"
         >
-        </vm-item>
-      </div>
+          <vm-item
+            class="w-100"
+            [dtsSelectItem]="vm.id"
+            [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
+            [vm]="vm"
+            [ipv4Only]="ipv4Only"
+            [showIps]="showIps"
+            (openVmHere)="openHere($event)"
+            [teamsList]="teamsList"
+            [canManageTeam]="canManageTeam"
+          >
+          </vm-item>
+        </div>
+      </ng-container>
     </dts-select-container>
 
     <div *ngIf="sortByTeams">
@@ -206,29 +208,31 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           [(selectedItems)]="selectedVms"
           (mousedown)="panelClicked(iter)"
         >
-          <div
-            class="flex-container"
-            *ngFor="
-              let vm of group.dataSource.data
-                | slice
-                  : pageEvent.pageIndex * pageEvent.pageSize
-                  : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
-              trackBy: trackByVmId
-            "
-            [matTooltip]="vm.lastError"
-          >
-            <vm-item
-              [dtsSelectItem]="vm.id"
-              [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
-              [vm]="vm"
-              [ipv4Only]="ipv4Only"
-              [showIps]="showIps"
-              (openVmHere)="openHere($event)"
-              [teamsList]="teamsList$ | async"
-              [canManageTeam]="canManageTeam"
+          <ng-container *ngIf="teamsList$ | async as teamsList">
+            <div
+              class="flex-container"
+              *ngFor="
+                let vm of group.dataSource.data
+                  | slice
+                    : pageEvent.pageIndex * pageEvent.pageSize
+                    : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
+                trackBy: trackByVmId
+              "
+              [matTooltip]="vm.lastError"
             >
-            </vm-item>
-          </div>
+              <vm-item
+                [dtsSelectItem]="vm.id"
+                [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
+                [vm]="vm"
+                [ipv4Only]="ipv4Only"
+                [showIps]="showIps"
+                (openVmHere)="openHere($event)"
+                [teamsList]="teamsList"
+                [canManageTeam]="canManageTeam"
+              >
+              </vm-item>
+            </div>
+          </ng-container>
         </dts-select-container>
         <mat-paginator
           #groupPaginators
