@@ -9,7 +9,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 
 <ng-template #vmTemplate>
   <div [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }">
-    <div class="vm-content" class="d-flex align-items-center">
+    <div class="d-flex align-items-center">
       <div
         class="m-2 vm-menu-button"
         (click)="canManageTeam && onContextMenu($event)"
