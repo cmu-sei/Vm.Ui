@@ -22,7 +22,7 @@ import {
   SelectContainerComponent,
   DragToSelectModule,
 } from 'ngx-drag-to-select';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { Team, TeamService } from '../../generated/player-api';
 import { Vm } from '../../generated/vm-api';
@@ -138,7 +138,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
   @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
   @Output() searchValueChanged = new EventEmitter<string>();
 
-  teamsList$: Observable<Team[]>;
+  teamsList$: Observable<Team[]> = of([]);
 
   allVms: Vm[];
   vmFilterBy: any = 'All';
