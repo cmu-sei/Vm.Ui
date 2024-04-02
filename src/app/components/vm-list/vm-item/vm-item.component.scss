@@ -5,7 +5,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 
 .content {
   text-align: left;
-  font-size: 70%;
+  font-size: 80%;
   padding-bottom: 0.5em;
   padding-top: 0.2em;
   padding-left: 0.1em;
@@ -15,7 +15,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 }
 
 .vm-content {
-  width: 225px;
+  width: 300px;
 }
 
 .vm-link {
@@ -68,4 +68,8 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 
 .flex-none {
   flex: 0%;
+}
+
+.vm-menu-button {
+  cursor: pointer;
 }
