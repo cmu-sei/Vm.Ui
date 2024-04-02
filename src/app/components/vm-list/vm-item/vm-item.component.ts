@@ -125,7 +125,7 @@ export class VmItemComponent implements OnInit {
     if (this.ipv4Only) {
       return vm.ipAddresses.filter((x) => !x.includes(':'));
     } else {
-      return vm.ipAddresses.concat(['1.2.3.4', '127.0.0.1', '3.4.5.6']);
+      return vm.ipAddresses;
     }
   }
 }

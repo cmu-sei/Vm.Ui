@@ -10,7 +10,10 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 <ng-template #vmTemplate>
   <div [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }">
     <div class="vm-content" class="d-flex align-items-center">
-      <div class="m-2">
+      <div
+        class="m-2 vm-menu-button"
+        (click)="canManageTeam && onContextMenu($event)"
+      >
         <mat-icon
           *ngIf="
             vm.powerState !== undefined &&
@@ -50,27 +53,6 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
           "
           >{{ vm.name }}</a
         >
-      </div>
-      <div class="d-flex">
-        <button
-          mat-icon-button
-          class="tab-button"
-          (click)="openInTab(this.themeService.addThemeQueryParam(vm.url))"
-          title="Open in Browser Tab"
-        >
-          <mat-icon svgIcon="ic_open_tab"></mat-icon>
-        </button>
-        <button
-          *ngIf="canManageTeam"
-          mat-icon-button
-          (click)="onContextMenu($event)"
-          title="Team Ownership"
-        >
-          <mat-icon
-            class="team-ownership-icon"
-            svgIcon="ic_chevron_right_black_24px"
-          ></mat-icon>
-        </button>
       </div>
     </div>
     <div *ngIf="showIps" class="d-flex flex-column align-items-center content">
