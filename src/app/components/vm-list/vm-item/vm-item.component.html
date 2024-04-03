@@ -42,7 +42,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
       <div class="content">
         <a
           class="vm-link"
-          [attr.href]="vm.url"
+          [attr.href]="this.themeService.addThemeQueryParam(vm.url)"
           (click)="
             openHere(
               $event,
