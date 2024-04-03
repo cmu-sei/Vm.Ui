@@ -73,14 +73,16 @@ export class VmItemComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  openHere($event, vmName: string, url: string, embeddable: boolean) {
-    $event.preventDefault();
-
-    if (embeddable) {
+  openHere(
+    event: MouseEvent,
+    vmName: string,
+    url: string,
+    embeddable: boolean,
+  ) {
+    if (embeddable && !event.ctrlKey) {
+      event.preventDefault();
       const val = <{ [name: string]: string }>{ name: vmName, url };
       this.openVmHere.emit(val);
-    } else {
-      this.openInTab(url);
     }
   }
 
