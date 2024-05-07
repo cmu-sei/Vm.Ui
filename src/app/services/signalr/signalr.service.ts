@@ -120,6 +120,10 @@ export class SignalRService {
                 if (!existing.teamIds.includes(t.id)) {
                   existing.teamIds.push(t.id);
                 }
+
+                if (u.activeVmId != null) {
+                  existing.activeVmId = u.activeVmId;
+                }
               } else {
                 const newUser = createVmUser(u, t.id);
                 users.set(u.userId, newUser);
