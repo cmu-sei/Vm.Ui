@@ -9,6 +9,8 @@ import {
   Input,
   Output,
   EventEmitter,
+  ViewChild,
+  AfterViewInit,
 } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import {
@@ -34,7 +36,7 @@ import {
   MatRowDef,
   MatRow,
 } from '@angular/material/table';
-import { NgStyle, NgIf, AsyncPipe } from '@angular/common';
+import { NgStyle, NgIf, AsyncPipe, DatePipe } from '@angular/common';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {
   MatExpansionPanel,
@@ -42,6 +44,7 @@ import {
   MatExpansionPanelTitle,
   MatExpansionPanelDescription,
 } from '@angular/material/expansion';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-team-users',
@@ -72,9 +75,11 @@ import {
     MatRowDef,
     MatRow,
     AsyncPipe,
+    DatePipe,
+    MatSortModule,
   ],
 })
-export class TeamUsersComponent {
+export class TeamUsersComponent implements AfterViewInit {
   @Input() team: VmTeam = null;
 
   @Input() set hideInactive(val: boolean) {
@@ -100,11 +105,18 @@ export class TeamUsersComponent {
   public userDatasource = new TableVirtualScrollDataSource<VmUser>(
     new Array<VmUser>(),
   );
-  public displayedColumns: string[] = ['name', 'vm'];
+  public displayedColumns: string[] = [
+    'username',
+    'activeVmId',
+    'lastVmId',
+    'lastSeen',
+  ];
   public itemSize = 48;
   public headerSize = 56;
   public maxSize = this.itemSize * 7;
   public tableHeight = '0px';
+
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     public vmsQuery: VmsQuery,
@@ -116,24 +128,49 @@ export class TeamUsersComponent {
     };
   }
 
-  public openInTab(user: VmUser) {
-    window.open(this.getUrl(user), '_blank');
+  ngAfterViewInit() {
+    this.userDatasource.sort = this.sort;
   }
 
-  public openHere($event, user: VmUser) {
+  public openUserInTab(user: VmUser) {
+    window.open(this.getFollowUrl(user), '_blank');
+  }
+
+  public openUserHere($event, user: VmUser) {
     $event.preventDefault();
-    const url = this.getUrl(user);
+    const url = this.getFollowUrl(user);
     const val = <{ [name: string]: string }>{ name: user.username, url };
     this.openTab.emit(val);
   }
 
-  private getUrl(user: VmUser) {
+  public openInTab(url: string) {
+    window.open(this.getThemedUrl(url), '_blank');
+  }
+
+  public openVmHere($event, url: string, tabName: string) {
+    $event.preventDefault();
+    const vmUrl = this.getVmUrl(url);
+    const val = <{ [name: string]: string }>{ name: tabName, url: vmUrl };
+    this.openTab.emit(val);
+  }
+
+  public getFollowUrl(user: VmUser) {
     return this.themeService.addThemeQueryParam(
       this.settingsService.settings.UserFollowUrl.replace(
         '{userId}',
         user.userId,
       ).replace('{viewId}', this.team.viewId),
     );
+  }
+
+  public getVmUrl(url: string) {
+    const val = new URL(url);
+    val.searchParams.set('readOnly', 'true');
+    return this.getThemedUrl(val.toString());
+  }
+
+  public getThemedUrl(url: string) {
+    return this.themeService.addThemeQueryParam(url);
   }
 
   private updateDataSource() {

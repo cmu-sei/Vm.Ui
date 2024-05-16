@@ -6,6 +6,7 @@
 .link {
   text-decoration: underline;
   cursor: pointer;
+  color: var(--mat-app-text-color, inherit);
 }
 
 .user-spacing {

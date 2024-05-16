@@ -60,7 +60,7 @@ import {
 export class UserListComponent {
   @Input() viewId: string;
   @Input() set teams(val: Array<VmTeam>) {
-    this._teams = val;
+    this._teams = val.sort((a, b) => a.name.localeCompare(b.name));
     this.userQueryMap.clear();
 
     val.forEach((t) => {
