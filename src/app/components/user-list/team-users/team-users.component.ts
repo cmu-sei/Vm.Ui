@@ -87,6 +87,16 @@ export class TeamUsersComponent implements AfterViewInit {
     this.updateDataSource();
   }
 
+  @Input() set recentOnly(val: boolean) {
+    this.recentOnlyInternal = val;
+    this.updateDataSource();
+  }
+
+  @Input() set recentMinutes(val: number) {
+    this.recentMinutesInternal = val;
+    this.updateDataSource();
+  }
+
   @Input() set users(val: Array<VmUser>) {
     this.userList = val;
     this.updateDataSource();
@@ -101,6 +111,8 @@ export class TeamUsersComponent implements AfterViewInit {
 
   private userList: Array<VmUser>;
   private hideInactiveInternal = false;
+  private recentOnlyInternal = false;
+  private recentMinutesInternal = 0;
 
   public userDatasource = new TableVirtualScrollDataSource<VmUser>(
     new Array<VmUser>(),
@@ -174,13 +186,26 @@ export class TeamUsersComponent implements AfterViewInit {
   }
 
   private updateDataSource() {
-    if (this.hideInactiveInternal) {
-      this.userDatasource.data = this.userList.filter(
-        (x) => x.activeVmId != null,
-      );
-    } else {
-      this.userDatasource.data = this.userList;
-    }
+    const recent = new Date();
+    recent.setMinutes(recent.getMinutes() - this.recentMinutesInternal);
+
+    this.userDatasource.data = this.userList.filter((x) => {
+      let filter = true;
+
+      if (this.hideInactiveInternal) {
+        filter = x.activeVmId != null;
+      }
+
+      if (this.recentOnlyInternal) {
+        if (!x.lastSeen) {
+          return false;
+        }
+        const time = new Date(x.lastSeen);
+        filter = filter && time > recent;
+      }
+
+      return filter;
+    });
 
     this.calculateTableHeight();
   }
