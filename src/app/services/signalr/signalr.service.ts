@@ -178,8 +178,17 @@ export class SignalRService {
   private addUserHandlers() {
     this.hubConnection.on(
       'ActiveVirtualMachine',
-      (vmId: string, userId: string) => {
-        this.vmUsersService.update(userId, { activeVmId: vmId });
+      (vmId: string, userId: string, lastSeen: string) => {
+        const vmUser: Partial<VmUser> = {
+          activeVmId: vmId,
+        };
+
+        if (vmId != null && lastSeen != null) {
+          vmUser.lastVmId = vmId;
+          vmUser.lastSeen = lastSeen;
+        }
+
+        this.vmUsersService.update(userId, vmUser);
       },
     );
   }

@@ -31,6 +31,7 @@ import {
   MatPrefix,
   MatSuffix,
 } from '@angular/material/form-field';
+import { MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-user-list',
@@ -55,12 +56,14 @@ import {
     NgFor,
     TeamUsersComponent,
     AsyncPipe,
+    MatOption,
+    MatSelect,
   ],
 })
 export class UserListComponent {
   @Input() viewId: string;
   @Input() set teams(val: Array<VmTeam>) {
-    this._teams = val;
+    this._teams = val.sort((a, b) => a.name.localeCompare(b.name));
     this.userQueryMap.clear();
 
     val.forEach((t) => {
@@ -80,6 +83,8 @@ export class UserListComponent {
 
   public _teams: Array<VmTeam>;
   public hideInactive = false;
+  public recentOnly = false;
+  public recentMinutes = 15;
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
 
@@ -115,6 +120,10 @@ export class UserListComponent {
 
   public setHideInactive(value: boolean) {
     this.hideInactive = value;
+  }
+
+  public setRecentOnly(value: boolean) {
+    this.recentOnly = value;
   }
 
   public trackByTeamId(item: VmTeam) {

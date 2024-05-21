@@ -9,6 +9,8 @@ export class VmUser implements User {
   userId?: string;
   username?: string | null;
   activeVmId?: string | null;
+  lastVmId?: string | null;
+  lastSeen?: string | null;
   teamIds?: Array<string> | null;
 }
 

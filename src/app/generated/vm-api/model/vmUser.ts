@@ -29,5 +29,7 @@ export interface VmUser {
      * Id of the Vm this User is currently viewing, if any
      */
     activeVmId?: string | null;
+    lastVmId?: string | null;
+    lastSeen?: string | null;
 }
 

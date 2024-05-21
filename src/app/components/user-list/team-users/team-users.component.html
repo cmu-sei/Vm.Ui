@@ -18,26 +18,18 @@
     headerHeight="headerSize"
     [ngStyle]="{ height: tableHeight }"
   >
-    <mat-table [dataSource]="userDatasource" class="mat-elevation-z8">
+    <mat-table [dataSource]="userDatasource" matSort class="mat-elevation-z8">
       <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+      <ng-container matColumnDef="username">
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Name</mat-header-cell
+        >
         <mat-cell *matCellDef="let element">
-          <div class="open-tab-icon">
-            <button
-              mat-icon-button
-              style="outline: none"
-              class="text"
-              (click)="openInTab(element)"
-              matTooltip="Follow {{ element.username }} in new browser tab"
-            >
-              <mat-icon class="tab-icon" svgIcon="ic_open_tab"></mat-icon>
-            </button>
-          </div>
           <a
             class="link"
-            (click)="openHere($event, element)"
+            (click)="openUserHere($event, element)"
             matTooltip="Follow {{ element.username }}"
+            [attr.href]="getFollowUrl(element)"
           >
             {{ element.username }}
           </a>
@@ -45,8 +37,10 @@
       </ng-container>
 
       <!-- Vm Column -->
-      <ng-container matColumnDef="vm">
-        <mat-header-cell *matHeaderCellDef>Virtual Machine</mat-header-cell>
+      <ng-container matColumnDef="activeVmId">
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Virtual Machine</mat-header-cell
+        >
         <mat-cell *matCellDef="let element">
           <div
             *ngIf="
@@ -59,6 +53,40 @@
           <ng-template #noVm>
             <div>None</div>
           </ng-template>
+        </mat-cell>
+      </ng-container>
+
+      <!-- LastVm Column -->
+      <ng-container matColumnDef="lastVmId">
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Last Virtual Machine</mat-header-cell
+        >
+        <mat-cell *matCellDef="let element">
+          <a
+            *ngIf="
+              this.vmsQuery.selectEntity(element.lastVmId) | async as vm;
+              else noVm
+            "
+            class="link"
+            (click)="openVmHere($event, vm.url, vm.name)"
+            matTooltip="Open {{ vm.name }}"
+            [attr.href]="getVmUrl(vm.url)"
+          >
+            {{ vm.name }}
+          </a>
+          <ng-template #noVm>
+            <div>None</div>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+
+      <!-- LastSeen Column -->
+      <ng-container matColumnDef="lastSeen">
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Last Seen</mat-header-cell
+        >
+        <mat-cell *matCellDef="let element">
+          <div>{{ element.lastSeen | date: 'short' }}</div>
         </mat-cell>
       </ng-container>
 
