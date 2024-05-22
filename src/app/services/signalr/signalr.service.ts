@@ -4,10 +4,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { ComnAuthService } from '@cmusei/crucible-common';
 import * as signalR from '@microsoft/signalr';
-import { BASE_PATH, Vm, VmUserTeam } from '../../generated/vm-api';
+import { BASE_PATH, Vm, VmUser, VmUserTeam } from '../../generated/vm-api';
 import { createVmTeam } from '../../state/vm-teams/vm-team.model';
 import { VmTeamsService } from '../../state/vm-teams/vm-teams.service';
-import { createVmUser, VmUser } from '../../state/vm-users/vm-user.model';
 import { VmUsersService } from '../../state/vm-users/vm-users.service';
 import { VmService } from '../../state/vms/vms.service';
 
@@ -110,28 +109,7 @@ export class SignalRService {
             vmUserTeams.map((x) => createVmTeam(x, viewId)),
           );
 
-          const users = new Map<string, VmUser>();
-
-          vmUserTeams.forEach((t) => {
-            t.users.forEach((u) => {
-              const existing = users.get(u.userId);
-
-              if (existing != null) {
-                if (!existing.teamIds.includes(t.id)) {
-                  existing.teamIds.push(t.id);
-                }
-
-                if (u.activeVmId != null) {
-                  existing.activeVmId = u.activeVmId;
-                }
-              } else {
-                const newUser = createVmUser(u, t.id);
-                users.set(u.userId, newUser);
-              }
-            });
-          });
-
-          this.vmUsersService.set([...users.values()]);
+          this.vmUsersService.set(vmUserTeams.map((x) => x.users).flat());
         });
     });
   }
@@ -178,7 +156,12 @@ export class SignalRService {
   private addUserHandlers() {
     this.hubConnection.on(
       'ActiveVirtualMachine',
-      (vmId: string, userId: string, lastSeen: string) => {
+      (
+        vmId: string,
+        userId: string,
+        lastSeen: string,
+        teamIds: Array<string>,
+      ) => {
         const vmUser: Partial<VmUser> = {
           activeVmId: vmId,
         };
@@ -188,7 +171,9 @@ export class SignalRService {
           vmUser.lastSeen = lastSeen;
         }
 
-        this.vmUsersService.update(userId, vmUser);
+        teamIds.forEach((x) => {
+          this.vmUsersService.update(`${userId}:${x}`, vmUser);
+        });
       },
     );
   }

@@ -6,8 +6,8 @@
 import { Injectable } from '@angular/core';
 import { QueryConfig, QueryEntity } from '@datorama/akita';
 import { Observable } from 'rxjs';
-import { VmUser } from './vm-user.model';
 import { VmUsersStore, VmUsersState } from './vm-users.store';
+import { VmUser } from '../../generated/vm-api';
 
 @QueryConfig({
   sortBy: 'username',
@@ -20,7 +20,7 @@ export class VmUsersQuery extends QueryEntity<VmUsersState> {
 
   public selectByTeam(teamId: string): Observable<Array<VmUser>> {
     return this.selectAll({
-      filterBy: (entity) => entity.teamIds.includes(teamId),
+      filterBy: (entity) => entity.teamId == teamId,
     });
   }
 }

@@ -4,8 +4,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { VmUser } from './vm-user.model';
 import { VmUsersStore } from './vm-users.store';
+import { VmUser } from '../../generated/vm-api';
 
 @Injectable({ providedIn: 'root' })
 export class VmUsersService {
