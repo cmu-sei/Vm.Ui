@@ -23,6 +23,8 @@ model/coordinateCreateForm.ts
 model/createVmUsageLoggingSessionCommand.ts
 model/editVmUsageLoggingSessionCommand.ts
 model/eventType.ts
+model/fileVmUrlResponse.ts
+model/getFileUrlVsphereVirtualMachine.ts
 model/healthStatus.ts
 model/isoFile.ts
 model/isoResult.ts

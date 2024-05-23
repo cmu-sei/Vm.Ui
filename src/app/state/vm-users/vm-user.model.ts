@@ -6,17 +6,11 @@
 import { VmUser as User } from '../../generated/vm-api';
 
 export class VmUser implements User {
+  id?: string;
   userId?: string;
+  teamId?: string;
   username?: string | null;
   activeVmId?: string | null;
   lastVmId?: string | null;
   lastSeen?: string | null;
-  teamIds?: Array<string> | null;
-}
-
-export function createVmUser(params: Partial<User>, teamId: string) {
-  const user = { ...params } as VmUser;
-  user.teamIds = new Array<string>();
-  user.teamIds.push(teamId);
-  return user;
 }

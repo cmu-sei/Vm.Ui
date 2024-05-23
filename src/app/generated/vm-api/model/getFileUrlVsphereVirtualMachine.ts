@@ -16,24 +16,9 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface VmUser { 
-    /**
-     * User\'s unique Id
-     */
-    userId?: string;
-    /**
-     * User\'s primary Team when the activity took place
-     */
-    teamId?: string;
-    /**
-     * User\'s name
-     */
+export interface GetFileUrlVsphereVirtualMachine { 
     username?: string | null;
-    /**
-     * Id of the Vm this User is currently viewing, if any
-     */
-    activeVmId?: string | null;
-    lastVmId?: string | null;
-    lastSeen?: string | null;
+    password?: string | null;
+    filePath?: string | null;
 }
 

@@ -10,9 +10,16 @@ import { VmUser } from './vm-user.model';
 export interface VmUsersState extends EntityState<VmUser, string> {}
 
 @Injectable({ providedIn: 'root' })
-@StoreConfig({ name: 'vm-users', idKey: 'userId' })
+@StoreConfig({ name: 'vm-users', idKey: 'id' })
 export class VmUsersStore extends EntityStore<VmUsersState> {
   constructor() {
     super();
+  }
+
+  akitaPreAddEntity(entity: VmUser) {
+    return {
+      ...entity,
+      id: `${entity.userId}:${entity.teamId}`,
+    };
   }
 }

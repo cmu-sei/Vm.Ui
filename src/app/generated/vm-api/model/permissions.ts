@@ -16,9 +16,11 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export type Permissions = 'ReadOnly';
+export type Permissions = 'ReadOnly' | 'ViewAdmin' | 'SystemAdmin';
 
 export const Permissions = {
-    ReadOnly: 'ReadOnly' as Permissions
+    ReadOnly: 'ReadOnly' as Permissions,
+    ViewAdmin: 'ViewAdmin' as Permissions,
+    SystemAdmin: 'SystemAdmin' as Permissions
 };
 

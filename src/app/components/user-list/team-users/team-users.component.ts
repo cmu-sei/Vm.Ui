@@ -19,7 +19,6 @@ import {
 } from 'ng-table-virtual-scroll';
 import { ThemeService } from '../../../services/theme/theme.service';
 import { VmTeam } from '../../../state/vm-teams/vm-team.model';
-import { VmUser } from '../../../state/vm-users/vm-user.model';
 import { VmsQuery } from '../../../state/vms/vms.query';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -45,6 +44,7 @@ import {
   MatExpansionPanelDescription,
 } from '@angular/material/expansion';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { VmUser } from '../../../generated/vm-api';
 
 @Component({
   selector: 'app-team-users',
@@ -171,7 +171,9 @@ export class TeamUsersComponent implements AfterViewInit {
       this.settingsService.settings.UserFollowUrl.replace(
         '{userId}',
         user.userId,
-      ).replace('{viewId}', this.team.viewId),
+      )
+        .replace('{viewId}', this.team.viewId)
+        .concat(`?teamId=${this.team.id}`),
     );
   }
 

@@ -15,7 +15,6 @@ import { MatAccordion } from '@angular/material/expansion';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { VmTeam } from '../../state/vm-teams/vm-team.model';
-import { VmUser } from '../../state/vm-users/vm-user.model';
 import { VmUsersQuery } from '../../state/vm-users/vm-users.query';
 import { SignalRService } from '../../services/signalr/signalr.service';
 import { TeamUsersComponent } from './team-users/team-users.component';
@@ -32,6 +31,7 @@ import {
   MatSuffix,
 } from '@angular/material/form-field';
 import { MatOption, MatSelect } from '@angular/material/select';
+import { VmUser } from '../../generated/vm-api';
 
 @Component({
   selector: 'app-user-list',
