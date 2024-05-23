@@ -14,10 +14,3 @@ export class VmUser implements User {
   lastVmId?: string | null;
   lastSeen?: string | null;
 }
-
-// export function createVmUser(params: Partial<User>, teamId: string) {
-//   const user = { ...params } as VmUser;
-//   user.teamIds = new Array<string>();
-//   user.teamIds.push(teamId);
-//   return user;
-// }
