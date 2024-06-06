@@ -148,22 +148,26 @@ export class TeamUsersComponent implements AfterViewInit {
     window.open(this.getFollowUrl(user), '_blank');
   }
 
-  public openUserHere($event, user: VmUser) {
-    $event.preventDefault();
-    const url = this.getFollowUrl(user);
-    const val = <{ [name: string]: string }>{ name: user.username, url };
-    this.openTab.emit(val);
+  public openUserHere(event: MouseEvent, user: VmUser) {
+    if (!event.ctrlKey) {
+      event.preventDefault();
+      const url = this.getFollowUrl(user);
+      const val = <{ [name: string]: string }>{ name: user.username, url };
+      this.openTab.emit(val);
+    }
   }
 
   public openInTab(url: string) {
     window.open(this.getThemedUrl(url), '_blank');
   }
 
-  public openVmHere($event, url: string, tabName: string) {
-    $event.preventDefault();
-    const vmUrl = this.getVmUrl(url);
-    const val = <{ [name: string]: string }>{ name: tabName, url: vmUrl };
-    this.openTab.emit(val);
+  public openVmHere(event: MouseEvent, url: string, tabName: string) {
+    if (!event.ctrlKey) {
+      event.preventDefault();
+      const vmUrl = this.getVmUrl(url);
+      const val = <{ [name: string]: string }>{ name: tabName, url: vmUrl };
+      this.openTab.emit(val);
+    }
   }
 
   public getFollowUrl(user: VmUser) {
