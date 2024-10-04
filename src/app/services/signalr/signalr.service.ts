@@ -46,6 +46,7 @@ export class SignalRService {
         },
       })
       .withAutomaticReconnect(new RetryPolicy(60, 0, 5))
+      .withStatefulReconnect()
       .build();
 
     this.hubConnection.onreconnected(() => {
