@@ -5,9 +5,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div
   class="pt-1 d-flex align-items-center justify-content-center gap-2"
-  *ngIf="canEdit"
 >
-  <mat-form-field subscriptSizing="dynamic">
+  <mat-form-field
+    *ngIf="maps.length > 1 || canEdit" 
+    subscriptSizing="dynamic" 
+  >
     <mat-label>Select Map</mat-label>
     <mat-select
       [(value)]="selected"
@@ -22,6 +24,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </mat-form-field>
 
   <button
+    *ngIf="canEdit"
     mat-flat-button
     color="primary"
     class="action-button"
@@ -32,7 +35,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </button>
 
   <button
-    *ngIf="readMap && !build"
+    *ngIf="readMap && !build && canEdit"
     mat-flat-button
     color="primary"
     class="action-button"
