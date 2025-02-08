@@ -18,7 +18,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         (openVmHere)="onOpenVmHere($event)"
         (errors)="onErrors($event)"
         [uiSession]="currentSession$ | async"
-        [canManageTeam]="canManageTeam"
+        [canManageView]="canManageView$ | async"
+        [canViewView]="canViewView$ | async"
         (searchValueChanged)="searchValueChanged($event)"
         (showIPsSelectedChanged)="showIPsSelectedChanged($event)"
         (showIPv4OnlySelectedChanged)="showIPv4OnlySelectedChanged($event)"
@@ -35,7 +36,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </ng-template>
     </mat-tab>
     <mat-tab
-      *ngIf="showUsageLogging"
+      *ngIf="showUsageLogging$ | async"
       label="Usage Logging"
       #LogTab
       [disabled]="!usageLoggingEnabled"

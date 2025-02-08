@@ -9,6 +9,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
   QueryList,
@@ -22,10 +23,14 @@ import {
   SelectContainerComponent,
   DragToSelectModule,
 } from 'ngx-drag-to-select';
-import { Observable, of } from 'rxjs';
-import { filter, switchMap, take } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { filter, map, switchMap, take } from 'rxjs/operators';
 import { Team, TeamService } from '../../generated/player-api';
-import { Vm } from '../../generated/vm-api';
+import {
+  AppTeamPermission,
+  AppViewPermission,
+  Vm,
+} from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
@@ -52,6 +57,8 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { NgIf, NgFor, AsyncPipe, SlicePipe } from '@angular/common';
+import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-vm-list',
@@ -89,7 +96,7 @@ import { NgIf, NgFor, AsyncPipe, SlicePipe } from '@angular/common';
     SlicePipe,
   ],
 })
-export class VmListComponent implements OnInit, AfterViewInit {
+export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());
   public displayedColumns: string[] = ['name'];
 
@@ -132,7 +139,8 @@ export class VmListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  @Input() canManageTeam: Boolean;
+  @Input() canViewView: Boolean;
+  @Input() canManageView: Boolean;
 
   @Output() showIPsSelectedChanged = new EventEmitter<Boolean>();
   @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
@@ -143,6 +151,28 @@ export class VmListComponent implements OnInit, AfterViewInit {
   allVms: Vm[];
   vmFilterBy: any = 'All';
 
+  canUploadTeamIsos$ = this.userPermissionsService.can(
+    null,
+    null,
+    true,
+    AppTeamPermission.UploadTeamIsos,
+  );
+
+  canUploadViewIsos$ = this.userPermissionsService.can(
+    null,
+    null,
+    true,
+    null,
+    AppViewPermission.UploadViewIsos,
+  );
+
+  canUploadViewIsos = toSignal(this.canUploadViewIsos$);
+
+  canUploadIsos$ = combineLatest([
+    this.canUploadTeamIsos$,
+    this.canUploadViewIsos$,
+  ]).pipe(map(([x, y]) => x || y));
+
   constructor(
     public vmService: VmService,
     private fileService: FileService,
@@ -150,6 +180,7 @@ export class VmListComponent implements OnInit, AfterViewInit {
     private teamsService: TeamsService,
     private playerTeamService: TeamService,
     private cd: ChangeDetectorRef,
+    private userPermissionsService: UserPermissionsService,
   ) {
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
@@ -225,8 +256,10 @@ export class VmListComponent implements OnInit, AfterViewInit {
           this.vmApiResponded = false;
         },
       );
+  }
 
-    if (this.canManageTeam) {
+  ngOnChanges() {
+    if (this.canViewView) {
       this.teamsList$ = this.playerTeamService.getViewTeams(
         this.vmService.viewId,
       );
@@ -294,44 +327,28 @@ export class VmListComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    let isAdmin = true;
-    this.teamsService
-      .GetAllMyTeams(this.vmService.viewId)
-      .pipe(take(1))
-      .subscribe((teams) => {
-        // There should only be 1 primary member, set that value for the current login
-        // Determine if the user is an "Admin" if their isPrimary team has canManage == true
-        const myPrimaryTeam = teams.filter((t) => t.isPrimary)[0];
-        if (myPrimaryTeam !== undefined) {
-          isAdmin = myPrimaryTeam.canManage;
-        } else {
-          isAdmin = false;
-          console.log('User does not have a primary team');
-        }
+    const qf = fileSelector.files[0];
 
-        const qf = fileSelector.files[0];
-
-        if (isAdmin) {
-          // First prompt the user to confirm if the iso is available for the team or the entire view
-          this.dialogService
-            .confirm(
-              'Upload iso for?',
-              'Please choose if you want this iso to be public or for your team only',
-              { buttonTrueText: 'Public', buttonFalseText: 'My Team Only' },
-            )
-            .pipe(take(1))
-            .subscribe((result) => {
-              if (result['wasCancelled'] === false) {
-                const isForAll = result['confirm'];
-                this.sendIsoFile(isForAll, qf);
-              }
-            });
-        } else {
-          // The user is not an admin therfore iso's are only uploaded for the team
-          this.sendIsoFile(false, qf);
-        }
-        fileSelector.value = '';
-      });
+    if (this.canUploadViewIsos()) {
+      // First prompt the user to confirm if the iso is available for the team or the entire view
+      this.dialogService
+        .confirm(
+          'Upload iso for?',
+          'Please choose if you want this iso to be public or for your team only',
+          { buttonTrueText: 'Public', buttonFalseText: 'My Team Only' },
+        )
+        .pipe(take(1))
+        .subscribe((result) => {
+          if (result['wasCancelled'] === false) {
+            const isForAll = result['confirm'];
+            this.sendIsoFile(isForAll, qf);
+          }
+        });
+    } else {
+      // The user is not an admin therfore iso's are only uploaded for the team
+      this.sendIsoFile(false, qf);
+    }
+    fileSelector.value = '';
   }
 
   sendIsoFile(isForAll: boolean, file: File) {

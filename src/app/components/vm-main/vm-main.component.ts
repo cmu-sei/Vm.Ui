@@ -4,7 +4,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComnAuthService, Theme } from '@cmusei/crucible-common';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  forkJoin,
+  Observable,
+  Subject,
+} from 'rxjs';
 import { map, switchMap, takeUntil, take, tap } from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmsQuery } from '../../state/vms/vms.query';
@@ -12,10 +18,17 @@ import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
 import {
   PermissionService,
+  TeamPermissionService,
   User,
   UserService,
 } from '../../generated/player-api';
-import { Vm, VmUsageLoggingSessionService } from '../../generated/vm-api';
+import {
+  AppSystemPermission,
+  AppTeamPermission,
+  AppViewPermission,
+  Vm,
+  VmUsageLoggingSessionService,
+} from '../../generated/vm-api';
 import { VmUISessionService } from '../../state/vm-ui-session/vm-ui-session.service';
 import { VmUISessionQuery } from '../../state/vm-ui-session/vm-ui-session.query';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
@@ -32,6 +45,7 @@ import { VmUsageLoggingComponent } from '../vm-usage-logging/vm-usage-logging.co
 import { UserListComponent } from '../user-list/user-list.component';
 import { VmListComponent } from '../vm-list/vm-list.component';
 import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 
 @Component({
   selector: 'app-vm-main',
@@ -71,6 +85,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionService,
     private vmUISessionService: VmUISessionService,
     private vmUISessionQuery: VmUISessionQuery,
+    private teamPermissionsService: TeamPermissionService,
+    private userPermissionsService: UserPermissionsService,
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -85,7 +101,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public selectedTab: number;
   public vms$: Observable<Vm[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
-  public readOnly$: Observable<boolean>;
   public teams$ = this.teamsQuery.selectAll();
   public currentUser$: Observable<User>;
   public canManageTeam = false;
@@ -94,9 +109,50 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public currentSession: VmUISession;
   public currentSession$: Observable<VmUISession>;
   public usageLoggingEnabled = false;
-  public showUsageLogging = false;
+
+  public canViewViews$ = this.userPermissionsService.can(
+    AppSystemPermission.ViewViews,
+  );
+
+  public canViewView$ = this.userPermissionsService.can(
+    null,
+    null,
+    true,
+    null,
+    AppViewPermission.ViewView,
+  );
+
+  public canManageView$ = this.userPermissionsService.can(
+    null,
+    null,
+    true,
+    null,
+    AppViewPermission.ManageView,
+  );
+
+  public readOnly$ = this.userPermissionsService
+    .can(
+      null,
+      null,
+      true,
+      AppTeamPermission.EditTeam,
+      AppViewPermission.EditView,
+    )
+    .pipe(map((x) => !x));
+
+  public showUsageLogging$ = combineLatest([
+    this.canViewViews$,
+    this.canViewView$,
+  ]).pipe(map(([x, y]) => x || y));
 
   ngOnInit() {
+    forkJoin([
+      this.userPermissionsService.load(),
+      this.userPermissionsService.loadTeamPermissions(
+        this.vmUISessionService.getCurrentViewId(),
+      ),
+    ]).subscribe();
+
     this.openVms = new Array<{ [name: string]: string }>();
     this.selectedTab = 0;
 
@@ -123,25 +179,21 @@ export class VmMainComponent implements OnInit, OnDestroy {
         console.log(err);
       });
 
-    this.readOnly$ = this.vmService.GetReadOnly(
-      this.vmUISessionService.getCurrentViewId(),
-    );
-
     this.currentUser$ = this.authService.user$.pipe(
       switchMap((u) => {
-        this.permissionsService
-          .getUserViewPermissions(
-            this.vmUISessionService.getCurrentViewId(),
-            u.profile.sub,
-          )
-          .pipe(take(1))
-          .subscribe((pms) => {
-            if (pms.find((pm) => pm.key === 'ViewAdmin')) {
-              this.canManageTeam = true;
-            } else {
-              this.canManageTeam = false;
-            }
-          });
+        // this.permissionsService
+        //   .getUserViewPermissions(
+        //     this.vmUISessionService.getCurrentViewId(),
+        //     u.profile.sub,
+        //   )
+        //   .pipe(take(1))
+        //   .subscribe((pms) => {
+        //     if (pms.find((pm) => pm.key === 'ViewAdmin')) {
+        //       this.canManageTeam = true;
+        //     } else {
+        //       this.canManageTeam = false;
+        //     }
+        //   });
         return this.userService.getUser(u.profile.sub);
       }),
     );
@@ -157,7 +209,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
         if (vms && sessions && user && logging != null) {
           // Determine if Usage Logging tab is enabled
           this.usageLoggingEnabled = logging;
-          this.showUsageLogging = user.isSystemAdmin || this.canManageTeam;
 
           const session = sessions.find(
             (s) => s.id === this.vmUISessionService.getCurrentTeamId(),
@@ -188,9 +239,9 @@ export class VmMainComponent implements OnInit, OnDestroy {
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }, onLoading: boolean = false) {
-    const adminIndex = this.currentUser$.pipe(
+    const adminIndex = this.showUsageLogging$.pipe(
       take(1),
-      map((u) => u.isSystemAdmin),
+      map((x) => x),
     )
       ? 1
       : 0;

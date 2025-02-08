@@ -14,6 +14,9 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/appSystemPermission.ts
+model/appTeamPermission.ts
+model/appViewPermission.ts
 model/bulkPowerOperation.ts
 model/bulkPowerOperationResponse.ts
 model/changeVsphereVirtualMachineNetwork.ts
