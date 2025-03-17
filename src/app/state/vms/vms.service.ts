@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ID } from '@datorama/akita';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import {
   BulkPowerOperation,
@@ -79,18 +79,6 @@ export class VmService {
   public GetViewVmsByName(viewId: string, name: string): Observable<Array<Vm>> {
     const url = `${this.settings.settings.ApiUrl}/views/${viewId}/vms?name=${name}`;
     return this.http.get<Array<Vm>>(url);
-  }
-
-  public GetReadOnly(viewId: string): Observable<boolean> {
-    return this.vmsService.getViewPermissions(viewId).pipe(
-      map((x) => {
-        if (x.includes(Permissions.ReadOnly)) {
-          return true;
-        } else {
-          return false;
-        }
-      }),
-    );
   }
 
   public powerOn(ids: string[]): Observable<BulkPowerOperationResponse> {

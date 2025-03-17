@@ -118,7 +118,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             >IPv4 Only</mat-checkbox
           >
         </div>
-        <div *ngIf="canManageTeam">
+        <div *ngIf="canViewView">
           <mat-checkbox color="primary" (click)="toggleSort()">
             Sort by Team
           </mat-checkbox>
@@ -142,7 +142,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             mat-stroked-button
             class="text"
             (click)="fileInput.click()"
-            *ngIf="!uploading"
+            *ngIf="!uploading && canUploadIsos$ | async"
           >
             Upload File
           </button>
@@ -186,7 +186,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [showIps]="showIps"
             (openVmHere)="openHere($event)"
             [teamsList]="teamsList"
-            [canManageTeam]="canManageTeam"
+            [canManageTeam]="canManageView"
           >
           </vm-item>
         </div>
@@ -228,7 +228,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [showIps]="showIps"
                 (openVmHere)="openHere($event)"
                 [teamsList]="teamsList"
-                [canManageTeam]="canManageTeam"
+                [canManageTeam]="canManageView"
               >
               </vm-item>
             </div>

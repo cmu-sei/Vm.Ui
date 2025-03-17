@@ -16,12 +16,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface Permission { 
-    id?: string;
-    name?: string | null;
-    key?: string | null;
-    value?: string | null;
-    description?: string | null;
-    immutable?: boolean;
+export interface EditTeamMembershipCommand { 
+    roleId?: string | null;
 }
 

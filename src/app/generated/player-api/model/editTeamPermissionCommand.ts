@@ -16,9 +16,8 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface TeamForm { 
-    id?: string;
+export interface EditTeamPermissionCommand { 
     name?: string | null;
-    roleId?: string | null;
+    description?: string | null;
 }
 

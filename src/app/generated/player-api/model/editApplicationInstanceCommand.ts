@@ -16,7 +16,9 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface TeamMembershipForm { 
-    roleId?: string | null;
+export interface EditApplicationInstanceCommand { 
+    teamId: string;
+    applicationId: string;
+    displayOrder?: number;
 }
 

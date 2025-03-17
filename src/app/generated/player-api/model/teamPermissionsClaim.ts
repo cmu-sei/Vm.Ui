@@ -16,10 +16,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface ApplicationInstanceForm { 
-    id?: string;
-    teamId: string;
-    applicationId: string;
-    displayOrder?: number;
+export interface TeamPermissionsClaim { 
+    viewId?: string;
+    teamId?: string;
+    isPrimary?: boolean;
+    permissionValues?: Array<string> | null;
 }
 

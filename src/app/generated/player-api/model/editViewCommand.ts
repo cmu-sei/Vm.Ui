@@ -14,11 +14,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ViewStatus } from './viewStatus';
 
 
-export interface PermissionForm { 
-    key?: string | null;
-    value?: string | null;
+export interface EditViewCommand { 
+    name?: string | null;
     description?: string | null;
+    status?: ViewStatus;
 }
 

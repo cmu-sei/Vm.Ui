@@ -16,8 +16,11 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface ViewCloneOverride { 
+export interface CreateApplicationTemplateCommand { 
     name?: string | null;
-    description?: string | null;
+    url?: string | null;
+    icon?: string | null;
+    embeddable?: boolean;
+    loadInBackground?: boolean;
 }
 

@@ -14,14 +14,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ViewStatus } from './viewStatus';
 
 
-export interface ViewForm { 
-    id?: string;
+export interface EditTeamCommand { 
     name?: string | null;
-    description?: string | null;
-    status?: ViewStatus;
-    createAdminTeam?: boolean;
+    roleId?: string | null;
 }
 

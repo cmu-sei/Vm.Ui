@@ -20,6 +20,7 @@ import { Permission } from './permission';
 export interface Role { 
     id?: string;
     name?: string | null;
+    allPermissions?: boolean;
     permissions?: Array<Permission> | null;
 }
 

@@ -14,14 +14,13 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { TeamPermissionModel } from './teamPermissionModel';
 
 
-export interface Permission { 
+export interface TeamRole { 
     id?: string;
     name?: string | null;
-    key?: string | null;
-    value?: string | null;
-    description?: string | null;
-    immutable?: boolean;
+    allPermissions?: boolean;
+    permissions?: Array<TeamPermissionModel> | null;
 }
 

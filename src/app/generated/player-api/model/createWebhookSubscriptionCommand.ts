@@ -14,14 +14,14 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { EventType } from './eventType';
 
 
-export interface Permission { 
-    id?: string;
+export interface CreateWebhookSubscriptionCommand { 
     name?: string | null;
-    key?: string | null;
-    value?: string | null;
-    description?: string | null;
-    immutable?: boolean;
+    callbackUri?: string | null;
+    clientId?: string | null;
+    clientSecret?: string | null;
+    eventTypes?: Array<EventType> | null;
 }
 

@@ -14,7 +14,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Permission } from './permission';
+import { TeamPermissionModel } from './teamPermissionModel';
 
 
 export interface Team { 
@@ -23,7 +23,7 @@ export interface Team {
     viewId?: string;
     roleId?: string | null;
     roleName?: string | null;
-    permissions?: Array<Permission> | null;
+    permissions?: Array<TeamPermissionModel> | null;
     canManage?: boolean;
     isMember?: boolean;
     isPrimary?: boolean;

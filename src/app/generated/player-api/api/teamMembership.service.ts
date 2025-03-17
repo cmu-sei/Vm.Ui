@@ -24,11 +24,11 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { EditTeamMembershipCommand } from '../model/editTeamMembershipCommand';
+// @ts-ignore
 import { ProblemDetails } from '../model/problemDetails';
 // @ts-ignore
 import { TeamMembership } from '../model/teamMembership';
-// @ts-ignore
-import { TeamMembershipForm } from '../model/teamMembershipForm';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -101,16 +101,16 @@ export class TeamMembershipService {
     }
 
     /**
-     * Gets a specific Team Membership by id
-     * Returns the Team Membership with the id specified  &lt;para /&gt;  Accessible to Super Users, View Admins for the membership\&#39;s View, or the User that the membership belongs to
-     * @param id The id of the Team Membership
+     * Gets a specific Team Membership by id.
+     * Returns the Team Membership with the id specified.
+     * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getTeamMembership(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<TeamMembership>;
-    public getTeamMembership(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<TeamMembership>>;
-    public getTeamMembership(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<TeamMembership>>;
-    public getTeamMembership(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public getTeamMembership(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<TeamMembership>;
+    public getTeamMembership(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<TeamMembership>>;
+    public getTeamMembership(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<TeamMembership>>;
+    public getTeamMembership(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getTeamMembership.');
         }
@@ -128,9 +128,7 @@ export class TeamMembershipService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'text/plain',
-                'application/json',
-                'text/json'
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -169,22 +167,22 @@ export class TeamMembershipService {
     }
 
     /**
-     * Gets all Team Memberships for a User by View
-     * Returns a list of all of the Permissions in the system.  &lt;para /&gt;  Accessible to Super Users or the specified User
-     * @param viewId 
+     * Gets all Team Memberships for a User by View.
+     * Returns a list of all of the Permissions in the system.
      * @param userId 
+     * @param viewId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getTeamMemberships(viewId: string, userId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<TeamMembership>>;
-    public getTeamMemberships(viewId: string, userId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<TeamMembership>>>;
-    public getTeamMemberships(viewId: string, userId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<TeamMembership>>>;
-    public getTeamMemberships(viewId: string, userId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
-        if (viewId === null || viewId === undefined) {
-            throw new Error('Required parameter viewId was null or undefined when calling getTeamMemberships.');
-        }
+    public getTeamMemberships(userId: string, viewId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<TeamMembership>>;
+    public getTeamMemberships(userId: string, viewId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<TeamMembership>>>;
+    public getTeamMemberships(userId: string, viewId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<TeamMembership>>>;
+    public getTeamMemberships(userId: string, viewId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (userId === null || userId === undefined) {
             throw new Error('Required parameter userId was null or undefined when calling getTeamMemberships.');
+        }
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling getTeamMemberships.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -200,9 +198,7 @@ export class TeamMembershipService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'text/plain',
-                'application/json',
-                'text/json'
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -241,17 +237,17 @@ export class TeamMembershipService {
     }
 
     /**
-     * Updates a Team Membership
-     * Updates a Team Membership with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or a User on an Admin Team within the specified View
-     * @param id The id of the Team Membership
-     * @param teamMembershipForm The updated Team Membership values
+     * Updates a Team Membership.
+     * Updates a Team Membership with the attributes specified.
+     * @param id 
+     * @param editTeamMembershipCommand 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateTeamMembership(id: string, teamMembershipForm?: TeamMembershipForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<TeamMembership>;
-    public updateTeamMembership(id: string, teamMembershipForm?: TeamMembershipForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<TeamMembership>>;
-    public updateTeamMembership(id: string, teamMembershipForm?: TeamMembershipForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<TeamMembership>>;
-    public updateTeamMembership(id: string, teamMembershipForm?: TeamMembershipForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public updateTeamMembership(id: string, editTeamMembershipCommand?: EditTeamMembershipCommand, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<TeamMembership>;
+    public updateTeamMembership(id: string, editTeamMembershipCommand?: EditTeamMembershipCommand, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<TeamMembership>>;
+    public updateTeamMembership(id: string, editTeamMembershipCommand?: EditTeamMembershipCommand, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<TeamMembership>>;
+    public updateTeamMembership(id: string, editTeamMembershipCommand?: EditTeamMembershipCommand, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling updateTeamMembership.');
         }
@@ -269,9 +265,7 @@ export class TeamMembershipService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'text/plain',
-                'application/json',
-                'text/json'
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -287,9 +281,7 @@ export class TeamMembershipService {
 
         // to determine the Content-Type header
         const consumes: string[] = [
-            'application/json',
-            'text/json',
-            'application/*+json'
+            'application/json'
         ];
         const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
         if (httpContentTypeSelected !== undefined) {
@@ -311,7 +303,7 @@ export class TeamMembershipService {
         return this.httpClient.request<TeamMembership>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: teamMembershipForm,
+                body: editTeamMembershipCommand,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

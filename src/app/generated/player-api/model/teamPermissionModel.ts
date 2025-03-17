@@ -16,7 +16,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface RoleForm { 
+export interface TeamPermissionModel { 
+    id?: string;
     name?: string | null;
+    description?: string | null;
+    immutable?: boolean;
 }
 
