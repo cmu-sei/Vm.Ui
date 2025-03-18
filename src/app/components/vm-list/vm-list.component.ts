@@ -311,6 +311,8 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.vmFilterBy === 'All') {
       // Show all
       this.vmModelDataSource.data = this.allVms;
+    } else if (this.vmFilterBy === 'Snapshots') {
+      this.vmModelDataSource.data = this.allVms.filter((vm) => vm.hasSnapshot);
     } else {
       this.vmModelDataSource.data = this.allVms.filter(
         (vm) => vm.powerState.toString() === this.vmFilterBy,
