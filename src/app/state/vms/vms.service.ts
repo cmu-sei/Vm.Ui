@@ -6,12 +6,11 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ID } from '@datorama/akita';
-import { Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import {
   BulkPowerOperation,
   BulkPowerOperationResponse,
-  Permissions,
   Vm,
   VmsService,
 } from '../../generated/vm-api';
@@ -99,5 +98,10 @@ export class VmService {
   public reboot(ids: string[]): Observable<BulkPowerOperationResponse> {
     const operation: BulkPowerOperation = { ids: ids };
     return this.vmsService.bulkReboot(operation);
+  }
+
+  public revert(ids: string[]): Observable<BulkPowerOperationResponse> {
+    const operation: BulkPowerOperation = { ids: ids };
+    return this.vmsService.bulkRevert(operation);
   }
 }

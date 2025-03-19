@@ -14,13 +14,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AppViewPermission } from './appViewPermission';
+import { AppTeamPermission } from './appTeamPermission';
 
 
-export type Permissions = 'ReadOnly' | 'ViewAdmin' | 'SystemAdmin';
-
-export const Permissions = {
-    ReadOnly: 'ReadOnly' as Permissions,
-    ViewAdmin: 'ViewAdmin' as Permissions,
-    SystemAdmin: 'SystemAdmin' as Permissions
-};
+export interface VmPermissionResult { 
+    viewPermissions?: Array<AppViewPermission> | null;
+    teamPermissions?: Array<AppTeamPermission> | null;
+}
 

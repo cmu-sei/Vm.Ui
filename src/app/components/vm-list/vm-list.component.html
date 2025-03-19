@@ -58,6 +58,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             >
               Shutdown
             </button>
+            @if (canRevertVms$ | async) {
+              <button
+                mat-menu-item
+                (click)="revertSelected()"
+                [disabled]="selectedVms.length === 0"
+              >
+                Revert
+              </button>
+            }
             <button
               mat-menu-item
               (click)="openSelectedHere()"
@@ -134,6 +143,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             <mat-option value="On">Powered On</mat-option>
             <mat-option value="Off">Powered Off</mat-option>
             <mat-option value="Suspended">Suspended</mat-option>
+            <mat-option
+              value="Snapshots"
+              matTooltip="Vms that have at least one snapshot"
+              >Snapshots</mat-option
+            >
           </mat-select>
         </mat-form-field>
 

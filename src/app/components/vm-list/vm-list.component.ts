@@ -166,6 +166,14 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     AppViewPermission.UploadViewIsos,
   );
 
+  canRevertVms$ = this.userPermissionsService.can(
+    null,
+    null,
+    true,
+    null,
+    AppViewPermission.RevertVms,
+  );
+
   canUploadViewIsos = toSignal(this.canUploadViewIsos$);
 
   canUploadIsos$ = combineLatest([
@@ -303,6 +311,8 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.vmFilterBy === 'All') {
       // Show all
       this.vmModelDataSource.data = this.allVms;
+    } else if (this.vmFilterBy === 'Snapshots') {
+      this.vmModelDataSource.data = this.allVms.filter((vm) => vm.hasSnapshot);
     } else {
       this.vmModelDataSource.data = this.allVms.filter(
         (vm) => vm.powerState.toString() === this.vmFilterBy,
@@ -460,6 +470,10 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     this.performAction(VmAction.Shutdown, 'Shutdown', 'shutdown');
   }
 
+  public revertSelected() {
+    this.performAction(VmAction.Revert, 'Revert', 'revert');
+  }
+
   private performAction(action: VmAction, title: string, actionName: string) {
     this.dialogService
       .confirm(
@@ -481,6 +495,8 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
               return this.vmService.shutdown(this.selectedVms);
             case VmAction.Reboot:
               return this.vmService.reboot(this.selectedVms);
+            case VmAction.Revert:
+              return this.vmService.revert(this.selectedVms);
           }
         }),
         take(1),
@@ -683,6 +699,7 @@ enum VmAction {
   PowerOff,
   Shutdown,
   Reboot,
+  Revert,
 }
 
 enum SearchOperator {
