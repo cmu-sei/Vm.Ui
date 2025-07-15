@@ -4,7 +4,6 @@
 export interface TeamData {
   id: string;
   name: string;
-  canManage: boolean;
   isMember: boolean;
   isPrimary: boolean;
 }
