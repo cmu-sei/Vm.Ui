@@ -12,22 +12,26 @@ import {
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
-import { VmMap, VmsService } from '../../../generated/vm-api';
+import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
+import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import {
+  AppTeamPermission,
+  AppViewPermission,
+  VmMap,
+} from '../../../generated/vm-api';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.component';
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
-import { TeamsService } from '../../../services/teams/teams.service';
 import { DialogService } from '../../../services/dialog/dialog.service';
 import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { UserPermissionsService } from '../../../services/permissions/user-permissions.service';
 
 @Component({
   selector: 'app-map-main',
@@ -47,6 +51,7 @@ import { NgIf, NgFor } from '@angular/common';
     MapTeamDisplayComponent,
     MapComponent,
     NewMapComponent,
+    AsyncPipe,
   ],
 })
 export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
@@ -69,51 +74,85 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   private dialogRef: MatDialogRef<NewMapComponent>;
   private unsubscribe$ = new Subject();
   maps: VmMap[] = [];
-  canEdit: boolean;
+  canEdit$: Observable<boolean>;
 
   constructor(
-    private vmsService: VmsService,
+    private permissionsService: UserPermissionsService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private dialog: MatDialog,
-    private teamsService: TeamsService,
     private vmMapsService: VmMapsService,
     private vmMapQuery: VmMapsQuery,
     private dialogService: DialogService,
   ) {
     this.mapInitialized = false;
+    this.route.params
+      .pipe(
+        tap((params) => {
+          this.vmMapsService.unload();
+          this.viewId = params['viewId'];
+        }),
+        filter(() => !!this.viewId),
+        tap(() => {
+          this.vmMapsService.getViewMaps(this.viewId!);
+          this.canEdit$ = this.permissionsService.can(
+            null,
+            null,
+            true,
+            AppTeamPermission.ManageTeam,
+            AppViewPermission.ManageView,
+          );
+        }),
+        switchMap(() =>
+          forkJoin([
+            this.permissionsService.load(),
+            this.permissionsService.loadTeamPermissions(this.viewId!),
+          ]),
+        ),
+        switchMap(() => this.getFilteredMaps(this.viewId!)),
+        tap((filteredMaps) => {
+          this.maps = filteredMaps;
+          if (filteredMaps.length > 0) {
+            this.selected = filteredMaps[0];
+            this.goToMap();
+          }
+        }),
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe();
   }
 
-  ngOnInit(): void {
-    this.vmMapQuery
-      .selectAll()
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((maps) => {
-        this.maps = maps;
-        if (maps && maps.length > 0) {
-          this.selected = maps[0];
-          this.goToMap();
-        }
-      });
-    this.route.params.pipe(takeUntil(this.unsubscribe$)).subscribe((params) => {
-      this.vmMapsService.unload();
-      this.viewId = params['viewId'];
-      if (this.viewId) {
-        this.teamsService
-          .GetAllMyTeams(this.viewId)
-          .pipe(take(1))
-          .subscribe((teams) => {
-            // There should only be 1 primary member, set that value for the current login
-            // Determine if the user is an "Admin" if their isPrimary team has canManage == true
-            const myPrimaryTeam = teams.filter((t) => t.isPrimary)[0];
-            if (myPrimaryTeam !== undefined) {
-              this.canEdit = myPrimaryTeam.canManage;
-            }
-          });
-        this.vmMapsService.getViewMaps(this.viewId);
-      }
-    });
+  private getFilteredMaps(viewId: string): Observable<VmMap[]> {
+    return this.vmMapQuery.selectAll().pipe(
+      switchMap((maps) =>
+        this.permissionsService.getPrimaryTeamId(viewId).pipe(
+          switchMap((primaryTeamId) => {
+            const checks$ = maps.map((x) => {
+              const hasPrimaryTeam = x.teamIds?.includes(primaryTeamId);
+              if (!hasPrimaryTeam) return of(null);
+              return this.permissionsService
+                .can(
+                  null,
+                  null,
+                  true,
+                  AppTeamPermission.ViewTeam,
+                  AppViewPermission.ViewView,
+                )
+                .pipe(map((allowed) => (allowed ? x : null)));
+            });
+
+            return combineLatest(checks$).pipe(
+              map((results): VmMap[] =>
+                results.filter((x): x is VmMap => x !== null),
+              ),
+            );
+          }),
+        ),
+      ),
+    );
   }
+
+  ngOnInit(): void {}
 
   ngAfterViewChecked() {
     this.changeDetector.detectChanges();
