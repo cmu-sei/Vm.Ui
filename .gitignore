@@ -44,4 +44,5 @@ testem.log
 Thumbs.db
 .vs/
 .vscode/
-src/assets/config/settings.env.json
+
+*/assets/config/settings.env.json*
