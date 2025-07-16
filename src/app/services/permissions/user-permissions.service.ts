@@ -52,6 +52,17 @@ export class UserPermissionsService {
     return this.permissions$.pipe(map((x) => x.includes(permission)));
   }
 
+  getPrimaryTeamId(viewId: string) {
+    return this.teamPermissions$.pipe(
+      map((x) => {
+        const match = x.find(
+          (team) => team.viewId === viewId && team.isPrimary,
+        );
+        return match?.teamId;
+      }),
+    );
+  }
+
   can(
     permission: AppSystemPermission,
     teamId?: string,
