@@ -3,28 +3,13 @@
 
 /* VENDER IMPORTS */
 @use '@angular/material' as mat;
+@use 'theme' as *;
+
 @include mat.elevation-classes();
 @include mat.app-background();
 
 @import '../../node_modules/ngx-drag-to-select/ngx-drag-to-select.css';
 /* END VENDER IMPORTS */
-
-/* BOOTSTRAP IMPORTS */
-/* Required */
-@import '../../node_modules/bootstrap/scss/functions';
-@import '../../node_modules/bootstrap/scss/variables';
-@import '../../node_modules/bootstrap/scss/variables-dark';
-@import '../../node_modules/bootstrap/scss/maps';
-@import '../../node_modules/bootstrap/scss/mixins';
-@import '../../node_modules/bootstrap/scss/root';
-
-/* Optional */
-@import '../../node_modules/bootstrap/scss/utilities';
-/* END BOOTSRAP IMPORTS */
-
-/* LOCAL IMPORTS */
-@import 'theme';
-/* END LOCAL IMPORTS */
 
 html,
 body {
@@ -43,26 +28,7 @@ app-root {
   background-color: var(--mat-app-background-color) !important;
 }
 
-// Must go AFTER bootstrap imports
-
-$utilities: map-merge(
-  $utilities,
-  (
-    'width':
-      map-merge(
-        map-get($utilities, 'width'),
-        (
-          values:
-            map-merge(
-              map-get(map-get($utilities, 'width'), 'values'),
-              (
-                20: 20%,
-              )
-            ),
-        )
-      ),
-  )
-);
-
-// Must go AFTER utilities customizations
-@import 'bootstrap/scss/utilities/api';
+// Custom width utility class to supplement Bootstrap
+.w-20 {
+  width: 20% !important;
+}
