@@ -4,97 +4,108 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <div class="pt-1 d-flex align-items-center justify-content-center gap-2">
-  <mat-form-field
-    *ngIf="maps.length > 1 || (canEdit$ | async)"
-    subscriptSizing="dynamic"
-  >
-    <mat-label>Select Map</mat-label>
-    <mat-select
-      [(value)]="selected"
-      [(ngModel)]="selected"
-      (selectionChange)="goToMap()"
-    >
-      <mat-option>Select Map</mat-option>
-      <mat-option *ngFor="let vm of maps; trackBy: trackByMaps" [value]="vm">{{
-        vm.name
-      }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+  @if (maps.length > 1 || (canEdit$ | async)) {
+    <mat-form-field
+      subscriptSizing="dynamic"
+      >
+      <mat-label>Select Map</mat-label>
+      <mat-select
+        [(value)]="selected"
+        [(ngModel)]="selected"
+        (selectionChange)="goToMap()"
+        >
+        <mat-option>Select Map</mat-option>
+        @for (vm of maps; track trackByMaps($index, vm)) {
+          <mat-option [value]="vm">{{
+            vm.name
+          }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
 
-  <button
-    *ngIf="canEdit$ | async"
-    mat-flat-button
-    color="primary"
-    class="action-button"
-    type="button"
-    (click)="buildMap()"
-  >
-    New Map
-  </button>
+  @if (canEdit$ | async) {
+    <button
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      type="button"
+      (click)="buildMap()"
+      >
+      New Map
+    </button>
+  }
 
-  <button
-    *ngIf="readMap && !build && (canEdit$ | async)"
-    mat-flat-button
-    color="primary"
-    class="action-button"
-    type="button"
-    (click)="delete()"
-  >
-    Delete Map
-  </button>
+  @if (readMap && !build && (canEdit$ | async)) {
+    <button
+      mat-flat-button
+      color="primary"
+      class="action-button"
+      type="button"
+      (click)="delete()"
+      >
+      Delete Map
+    </button>
+  }
 </div>
 
 <span>
   <div class="mb-1 d-flex align-items-center gap-2">
-    <button
-      *ngIf="!build && readMap && (canEdit$ | async)"
-      mat-flat-button
-      color="primary"
-      class="action-button"
-      type="button"
-      (click)="editClicked()"
-    >
-      {{ editMode == true ? 'Discard Changes' : 'Edit' }}
-    </button>
+    @if (!build && readMap && (canEdit$ | async)) {
+      <button
+        mat-flat-button
+        color="primary"
+        class="action-button"
+        type="button"
+        (click)="editClicked()"
+        >
+        {{ editMode == true ? 'Discard Changes' : 'Edit' }}
+      </button>
+    }
 
-    <button
-      *ngIf="mapInitialized && ((readMap && editMode && !build) || build)"
-      mat-flat-button
-      color="primary"
-      class="action-button"
-      type="button"
-      (click)="editProperties()"
-    >
-      Edit Properties
-    </button>
+    @if (mapInitialized && ((readMap && editMode && !build) || build)) {
+      <button
+        mat-flat-button
+        color="primary"
+        class="action-button"
+        type="button"
+        (click)="editProperties()"
+        >
+        Edit Properties
+      </button>
+    }
 
-    <button
-      *ngIf="mapInitialized && ((readMap && editMode && !build) || build)"
-      mat-flat-button
-      color="primary"
-      class="action-button"
-      type="button"
-      (click)="save()"
-    >
-      Save
-    </button>
+    @if (mapInitialized && ((readMap && editMode && !build) || build)) {
+      <button
+        mat-flat-button
+        color="primary"
+        class="action-button"
+        type="button"
+        (click)="save()"
+        >
+        Save
+      </button>
+    }
   </div>
 
-  <ng-container *ngIf="readMap && !build; else noMap">
-    <app-map-team-display
-      *ngIf="!editMode"
-      mapIdInput="{{ mapId }}"
-      imageUrlInput="{{ this.selected.imageUrl }}"
-      (mapSwitched)="redirectToMap($event)"
-    >
-    </app-map-team-display>
-
-    <app-map
-      *ngIf="editMode"
-      (initEmitter)="mapInit($event)"
-      mapIdInput="{{ mapId }}"
-    ></app-map>
-  </ng-container>
+  @if (readMap && !build) {
+    @if (!editMode) {
+      <app-map-team-display
+        mapIdInput="{{ mapId }}"
+        imageUrlInput="{{ this.selected.imageUrl }}"
+        (mapSwitched)="redirectToMap($event)"
+        >
+      </app-map-team-display>
+    }
+    @if (editMode) {
+      <app-map
+        (initEmitter)="mapInit($event)"
+        mapIdInput="{{ mapId }}"
+      ></app-map>
+    }
+  } @else {
+    <h1 class="center">No Map is assigned to this Team</h1>
+  }
 
   <ng-template #noMap>
     <h1 class="center">No Map is assigned to this Team</h1>

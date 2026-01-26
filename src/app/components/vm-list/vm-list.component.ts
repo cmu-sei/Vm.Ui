@@ -56,7 +56,7 @@ import {
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { NgIf, NgFor, AsyncPipe, SlicePipe } from '@angular/common';
+import { AsyncPipe, SlicePipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -66,34 +66,32 @@ import { toSignal } from '@angular/core/rxjs-interop';
     styleUrls: ['./vm-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        NgIf,
-        MatButton,
-        MatMenuTrigger,
-        MatIcon,
-        MatMenu,
-        MatMenuItem,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        ReactiveFormsModule,
-        FormsModule,
-        MatPrefix,
-        MatIconButton,
-        MatSuffix,
-        MatCheckbox,
-        MatSelect,
-        MatOption,
-        DragToSelectModule,
-        NgFor,
-        MatTooltip,
-        VmItemComponent,
-        MatExpansionPanel,
-        MatExpansionPanelHeader,
-        MatExpansionPanelTitle,
-        MatPaginator,
-        AsyncPipe,
-        SlicePipe,
-    ]
+    MatButton,
+    MatMenuTrigger,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    MatPrefix,
+    MatIconButton,
+    MatSuffix,
+    MatCheckbox,
+    MatSelect,
+    MatOption,
+    DragToSelectModule,
+    MatTooltip,
+    VmItemComponent,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatPaginator,
+    AsyncPipe,
+    SlicePipe
+]
 })
 export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());

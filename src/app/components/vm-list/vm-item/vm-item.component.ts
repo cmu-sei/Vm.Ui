@@ -24,7 +24,7 @@ import { VmService } from '../../../state/vms/vms.service';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { NgTemplateOutlet, NgClass, NgIf, NgFor } from '@angular/common';
+import { NgTemplateOutlet, NgClass } from '@angular/common';
 
 export interface Item {
   id: number;
@@ -36,17 +36,15 @@ export interface Item {
     templateUrl: './vm-item.component.html',
     styleUrls: ['./vm-item.component.scss'],
     imports: [
-        NgTemplateOutlet,
-        NgClass,
-        NgIf,
-        MatIcon,
-        MatIconButton,
-        NgFor,
-        MatMenuTrigger,
-        MatMenu,
-        MatMenuContent,
-        MatCheckbox,
-    ]
+    NgTemplateOutlet,
+    NgClass,
+    MatIcon,
+    MatIconButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuContent,
+    MatCheckbox
+]
 })
 export class VmItemComponent implements OnInit {
   @Input() vm: Vm;

@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
-import { NgFor } from '@angular/common';
+
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -26,16 +26,15 @@ import { MatDialogTitle } from '@angular/material/dialog';
     templateUrl: './new-map.component.html',
     styleUrls: ['./new-map.component.scss'],
     imports: [
-        MatDialogTitle,
-        ReactiveFormsModule,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        MatSelect,
-        NgFor,
-        MatOption,
-        MatButton,
-    ]
+    MatDialogTitle,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatButton
+]
 })
 export class NewMapComponent implements OnInit {
   teams: SimpleTeam[];

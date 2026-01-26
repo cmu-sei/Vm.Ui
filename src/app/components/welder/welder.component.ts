@@ -9,13 +9,13 @@ import { takeUntil } from 'rxjs/operators';
 import { WelderService } from '../../services/welder/welder.service';
 import { VmService } from '../../state/vms/vms.service';
 import { MatButton } from '@angular/material/button';
-import { NgIf, NgFor } from '@angular/common';
+
 
 @Component({
     selector: 'app-welder',
     templateUrl: './welder.component.html',
     styleUrls: ['./welder.component.scss'],
-    imports: [NgIf, MatButton, NgFor]
+    imports: [MatButton]
 })
 export class WelderComponent implements OnInit, OnDestroy {
   public showDeployButton = false;

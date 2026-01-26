@@ -5,6 +5,7 @@ import {
   enableProdMode,
   ErrorHandler,
   importProvidersFrom,
+  provideZoneChangeDetection
 } from '@angular/core';
 import { environment } from './environments/environment';
 import { enableAkitaProdMode, persistState } from '@datorama/akita';
@@ -77,7 +78,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(
+    provideZoneChangeDetection(),importProvidersFrom(
       ComnSettingsModule.forRoot(),
       ComnAuthModule.forRoot(),
       [

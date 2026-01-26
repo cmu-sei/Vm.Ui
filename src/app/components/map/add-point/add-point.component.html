@@ -23,21 +23,25 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [matAutocomplete]="auto"
         formControlName="url"
         [attr.disabled]="custom ? true : null"
-      />
+        />
       <mat-autocomplete
         #urlSelect
         #auto="matAutocomplete"
         [displayWith]="display"
-      >
+        >
         <mat-optgroup label="VMs">
-          <mat-option *ngFor="let vm of vmsFiltered | async" [value]="vm">{{
-            vm.name
-          }}</mat-option>
+          @for (vm of vmsFiltered | async; track vm) {
+            <mat-option [value]="vm">{{
+              vm.name
+            }}</mat-option>
+          }
         </mat-optgroup>
         <mat-optgroup label="Maps">
-          <mat-option *ngFor="let m of vmMapsFiltered | async" [value]="m">{{
-            m.name
-          }}</mat-option>
+          @for (m of vmMapsFiltered | async; track m) {
+            <mat-option [value]="m">{{
+              m.name
+            }}</mat-option>
+          }
         </mat-optgroup>
       </mat-autocomplete>
     </mat-form-field>
@@ -51,7 +55,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         formControlName="customUrl"
         #customUrlField
         [attr.disabled]="!custom ? true : null"
-      />
+        />
     </mat-form-field>
     <mat-form-field>
       <mat-label>Label</mat-label>
@@ -65,7 +69,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       class="action-button"
       type="button"
       type="submit"
-    >
+      >
       Save
     </button>
     <button
@@ -74,7 +78,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       color="primary"
       class="action-button"
       (click)="onDelete()"
-    >
+      >
       Delete
     </button>
   </div>

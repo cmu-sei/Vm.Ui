@@ -21,7 +21,7 @@ import { TeamUsersComponent } from './team-users/team-users.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIconButton, MatButton } from '@angular/material/button';
-import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
@@ -39,25 +39,23 @@ import { VmUser } from '../../generated/vm-api';
     styleUrls: ['./user-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        MatFormField,
-        MatIcon,
-        MatPrefix,
-        MatInput,
-        ReactiveFormsModule,
-        FormsModule,
-        NgIf,
-        MatIconButton,
-        MatSuffix,
-        MatTooltip,
-        MatButton,
-        MatCheckbox,
-        MatAccordion,
-        NgFor,
-        TeamUsersComponent,
-        AsyncPipe,
-        MatOption,
-        MatSelect,
-    ]
+    MatFormField,
+    MatIcon,
+    MatPrefix,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    MatIconButton,
+    MatSuffix,
+    MatTooltip,
+    MatButton,
+    MatCheckbox,
+    MatAccordion,
+    TeamUsersComponent,
+    AsyncPipe,
+    MatOption,
+    MatSelect
+]
 })
 export class UserListComponent {
   @Input() viewId: string;

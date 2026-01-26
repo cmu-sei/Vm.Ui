@@ -8,7 +8,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
-import { NgFor } from '@angular/common';
+
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -18,15 +18,14 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
     templateUrl: './map-vm-select.component.html',
     styleUrls: ['./map-vm-select.component.scss'],
     imports: [
-        MatFormField,
-        MatLabel,
-        MatSelect,
-        ReactiveFormsModule,
-        FormsModule,
-        NgFor,
-        MatOption,
-        MatButton,
-    ]
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    ReactiveFormsModule,
+    FormsModule,
+    MatOption,
+    MatButton
+]
 })
 export class MapVmSelectComponent implements OnInit {
   public selected: string[];

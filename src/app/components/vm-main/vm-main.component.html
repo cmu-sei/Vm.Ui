@@ -2,77 +2,82 @@
 Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
-<div class="background" *ngIf="currentUser$ | async as user">
-  <mat-tab-group
-    #vmTabGroup
-    dynamicHeight
-    mat-stretch-tabs="false"
-    animationDuration="0ms"
-    [selectedIndex]="selectedTab"
-    (selectedIndexChange)="setSelectedTab($event)"
-  >
-    <mat-tab label="VM List">
-      <app-vm-list
-        [vms]="vms$ | async"
-        [readOnly]="readOnly$ | async"
-        (openVmHere)="onOpenVmHere($event)"
-        (errors)="onErrors($event)"
-        [uiSession]="currentSession$ | async"
-        [canManageView]="canManageView$ | async"
-        [canViewView]="canViewView$ | async"
-        (searchValueChanged)="searchValueChanged($event)"
-        (showIPsSelectedChanged)="showIPsSelectedChanged($event)"
-        (showIPv4OnlySelectedChanged)="showIPv4OnlySelectedChanged($event)"
-      ></app-vm-list>
-    </mat-tab>
-    <mat-tab label="User Follow" #userTab>
-      <ng-template matTabContent>
-        <app-user-list
-          [viewId]="getCurrentViewId()"
-          [teams]="teams$ | async"
-          [isActive]="userTab.isActive"
-          (openTab)="onOpenVmHere($event)"
-        ></app-user-list>
-      </ng-template>
-    </mat-tab>
-    <mat-tab
-      *ngIf="showUsageLogging$ | async"
-      label="Usage Logging"
-      #LogTab
-      [disabled]="!usageLoggingEnabled"
-    >
-      <ng-template matTabContent>
-        <app-vm-usage-logging></app-vm-usage-logging>
-      </ng-template>
-    </mat-tab>
-    <mat-tab *ngFor="let vm of openVms">
-      <ng-template mat-tab-label>
-        <button
-          mat-icon-button
-          (click)="remove(vm.name)"
-          style="outline: none"
-          title="Close {{ vm.name }}"
-        >
-          <mat-icon
-            style="transform: scale(0.85)"
-            svgIcon="ic_cancel_circle"
-          ></mat-icon>
-        </button>
-        {{ vm.name }}
-        <button
-          mat-icon-button
-          (click)="openInNewTab(vm)"
-          style="outline: none"
-          title="Open in Browser Tab"
-        >
-          <mat-icon svgIcon="ic_open_tab"></mat-icon>
-        </button>
-      </ng-template>
-      <ng-template matTabContent>
-        <div style="height: calc(100vh - 60px)">
-          <app-focused-app [vmUrl]="vm.url"></app-focused-app>
-        </div>
-      </ng-template>
-    </mat-tab>
-  </mat-tab-group>
-</div>
+@if (currentUser$ | async; as user) {
+  <div class="background">
+    <mat-tab-group
+      #vmTabGroup
+      dynamicHeight
+      mat-stretch-tabs="false"
+      animationDuration="0ms"
+      [selectedIndex]="selectedTab"
+      (selectedIndexChange)="setSelectedTab($event)"
+      >
+      <mat-tab label="VM List">
+        <app-vm-list
+          [vms]="vms$ | async"
+          [readOnly]="readOnly$ | async"
+          (openVmHere)="onOpenVmHere($event)"
+          (errors)="onErrors($event)"
+          [uiSession]="currentSession$ | async"
+          [canManageView]="canManageView$ | async"
+          [canViewView]="canViewView$ | async"
+          (searchValueChanged)="searchValueChanged($event)"
+          (showIPsSelectedChanged)="showIPsSelectedChanged($event)"
+          (showIPv4OnlySelectedChanged)="showIPv4OnlySelectedChanged($event)"
+        ></app-vm-list>
+      </mat-tab>
+      <mat-tab label="User Follow" #userTab>
+        <ng-template matTabContent>
+          <app-user-list
+            [viewId]="getCurrentViewId()"
+            [teams]="teams$ | async"
+            [isActive]="userTab.isActive"
+            (openTab)="onOpenVmHere($event)"
+          ></app-user-list>
+        </ng-template>
+      </mat-tab>
+      @if (showUsageLogging$ | async) {
+        <mat-tab
+          label="Usage Logging"
+          #LogTab
+          [disabled]="!usageLoggingEnabled"
+          >
+          <ng-template matTabContent>
+            <app-vm-usage-logging></app-vm-usage-logging>
+          </ng-template>
+        </mat-tab>
+      }
+      @for (vm of openVms; track vm) {
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <button
+              mat-icon-button
+              (click)="remove(vm.name)"
+              style="outline: none"
+              title="Close {{ vm.name }}"
+              >
+              <mat-icon
+                style="transform: scale(0.85)"
+                svgIcon="ic_cancel_circle"
+              ></mat-icon>
+            </button>
+            {{ vm.name }}
+            <button
+              mat-icon-button
+              (click)="openInNewTab(vm)"
+              style="outline: none"
+              title="Open in Browser Tab"
+              >
+              <mat-icon svgIcon="ic_open_tab"></mat-icon>
+            </button>
+          </ng-template>
+          <ng-template matTabContent>
+            <div style="height: calc(100vh - 60px)">
+              <app-focused-app [vmUrl]="vm.url"></app-focused-app>
+            </div>
+          </ng-template>
+        </mat-tab>
+      }
+    </mat-tab-group>
+  </div>
+}
