@@ -14,10 +14,7 @@ import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { bootstrapApplication } from '@angular/platform-browser';
-import {
-  withInterceptorsFromDi,
-  provideHttpClient,
-} from '@angular/common/http';
+import { withInterceptorsFromDi, provideHttpClient } from '@angular/common/http';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { BASE_PATH as PLAYER_BASE_PATH } from './app/generated/player-api';
 import {
