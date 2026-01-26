@@ -20,9 +20,6 @@ import {
 import { ThemeService } from '../../../services/theme/theme.service';
 import { VmTeam } from '../../../state/vm-teams/vm-team.model';
 import { VmsQuery } from '../../../state/vms/vms.query';
-import { MatIcon } from '@angular/material/icon';
-import { MatTooltip } from '@angular/material/tooltip';
-import { MatIconButton } from '@angular/material/button';
 import {
   MatTable,
   MatColumnDef,
@@ -65,9 +62,6 @@ import { VmUser } from '../../../generated/vm-api';
         MatHeaderCell,
         MatCellDef,
         MatCell,
-        MatIconButton,
-        MatTooltip,
-        MatIcon,
         NgIf,
         MatHeaderRowDef,
         MatHeaderRow,

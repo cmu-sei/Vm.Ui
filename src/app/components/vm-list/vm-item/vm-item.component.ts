@@ -22,7 +22,6 @@ import { Vm, VmsService } from '../../../generated/vm-api';
 import { take } from 'rxjs/operators';
 import { VmService } from '../../../state/vms/vms.service';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgTemplateOutlet, NgClass } from '@angular/common';
 
@@ -39,7 +38,6 @@ export interface Item {
     NgTemplateOutlet,
     NgClass,
     MatIcon,
-    MatIconButton,
     MatMenuTrigger,
     MatMenu,
     MatMenuContent,
