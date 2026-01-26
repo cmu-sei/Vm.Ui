@@ -34,25 +34,24 @@ import { NgIf, NgFor, AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../../services/permissions/user-permissions.service';
 
 @Component({
-  selector: 'app-map-main',
-  templateUrl: './map-main.component.html',
-  styleUrls: ['./map-main.component.scss'],
-  standalone: true,
-  imports: [
-    NgIf,
-    MatFormField,
-    MatLabel,
-    MatSelect,
-    ReactiveFormsModule,
-    FormsModule,
-    MatOption,
-    NgFor,
-    MatButton,
-    MapTeamDisplayComponent,
-    MapComponent,
-    NewMapComponent,
-    AsyncPipe,
-  ],
+    selector: 'app-map-main',
+    templateUrl: './map-main.component.html',
+    styleUrls: ['./map-main.component.scss'],
+    imports: [
+        NgIf,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        ReactiveFormsModule,
+        FormsModule,
+        MatOption,
+        NgFor,
+        MatButton,
+        MapTeamDisplayComponent,
+        MapComponent,
+        NewMapComponent,
+        AsyncPipe,
+    ]
 })
 export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   selected: VmMap;

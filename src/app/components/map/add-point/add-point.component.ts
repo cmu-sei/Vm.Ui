@@ -29,26 +29,25 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatDialogTitle } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-add-point',
-  templateUrl: './add-point.component.html',
-  styleUrls: ['./add-point.component.scss'],
-  standalone: true,
-  imports: [
-    MatDialogTitle,
-    ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatAutocompleteTrigger,
-    MatAutocomplete,
-    MatOptgroup,
-    NgFor,
-    MatOption,
-    MatCheckbox,
-    FormsModule,
-    MatButton,
-    AsyncPipe,
-  ],
+    selector: 'app-add-point',
+    templateUrl: './add-point.component.html',
+    styleUrls: ['./add-point.component.scss'],
+    imports: [
+        MatDialogTitle,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatAutocompleteTrigger,
+        MatAutocomplete,
+        MatOptgroup,
+        NgFor,
+        MatOption,
+        MatCheckbox,
+        FormsModule,
+        MatButton,
+        AsyncPipe,
+    ]
 })
 export class AddPointComponent implements OnInit {
   @Input() xPos: number;

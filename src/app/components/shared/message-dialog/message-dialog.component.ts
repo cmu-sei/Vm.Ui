@@ -13,11 +13,10 @@ import {
 import { MatButton } from '@angular/material/button';
 
 @Component({
-  selector: 'message-dialog',
-  templateUrl: './message-dialog.component.html',
-  styleUrls: ['./message-dialog.component.scss'],
-  standalone: true,
-  imports: [MatDialogTitle, MatDialogActions, MatButton],
+    selector: 'message-dialog',
+    templateUrl: './message-dialog.component.html',
+    styleUrls: ['./message-dialog.component.scss'],
+    imports: [MatDialogTitle, MatDialogActions, MatButton]
 })
 export class MessageDialogComponent implements OnInit {
   public title: string;

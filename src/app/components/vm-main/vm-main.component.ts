@@ -48,25 +48,24 @@ import { NgIf, NgFor, AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 
 @Component({
-  selector: 'app-vm-main',
-  templateUrl: './vm-main.component.html',
-  styleUrls: ['./vm-main.component.scss'],
-  standalone: true,
-  imports: [
-    NgIf,
-    MatTabGroup,
-    MatTab,
-    VmListComponent,
-    MatTabContent,
-    UserListComponent,
-    VmUsageLoggingComponent,
-    NgFor,
-    MatTabLabel,
-    MatIconButton,
-    MatIcon,
-    FocusedAppComponent,
-    AsyncPipe,
-  ],
+    selector: 'app-vm-main',
+    templateUrl: './vm-main.component.html',
+    styleUrls: ['./vm-main.component.scss'],
+    imports: [
+        NgIf,
+        MatTabGroup,
+        MatTab,
+        VmListComponent,
+        MatTabContent,
+        UserListComponent,
+        VmUsageLoggingComponent,
+        NgFor,
+        MatTabLabel,
+        MatIconButton,
+        MatIcon,
+        FocusedAppComponent,
+        AsyncPipe,
+    ]
 })
 export class VmMainComponent implements OnInit, OnDestroy {
   @ViewChild('vmTabGroup', { static: false }) tabGroup: MatTabGroup;

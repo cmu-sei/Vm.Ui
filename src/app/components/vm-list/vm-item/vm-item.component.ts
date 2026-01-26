@@ -32,22 +32,21 @@ export interface Item {
 }
 
 @Component({
-  selector: 'vm-item',
-  templateUrl: './vm-item.component.html',
-  styleUrls: ['./vm-item.component.scss'],
-  standalone: true,
-  imports: [
-    NgTemplateOutlet,
-    NgClass,
-    NgIf,
-    MatIcon,
-    MatIconButton,
-    NgFor,
-    MatMenuTrigger,
-    MatMenu,
-    MatMenuContent,
-    MatCheckbox,
-  ],
+    selector: 'vm-item',
+    templateUrl: './vm-item.component.html',
+    styleUrls: ['./vm-item.component.scss'],
+    imports: [
+        NgTemplateOutlet,
+        NgClass,
+        NgIf,
+        MatIcon,
+        MatIconButton,
+        NgFor,
+        MatMenuTrigger,
+        MatMenu,
+        MatMenuContent,
+        MatCheckbox,
+    ]
 })
 export class VmItemComponent implements OnInit {
   @Input() vm: Vm;

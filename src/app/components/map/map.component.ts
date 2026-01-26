@@ -27,11 +27,10 @@ import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
 import { NgIf, NgFor } from '@angular/common';
 
 @Component({
-  selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss'],
-  standalone: true,
-  imports: [NgIf, NgFor, AddPointComponent],
+    selector: 'app-map',
+    templateUrl: './map.component.html',
+    styleUrls: ['./map.component.scss'],
+    imports: [NgIf, NgFor, AddPointComponent]
 })
 export class MapComponent implements OnInit, OnChanges {
   machines: Clickpoint[];

@@ -22,21 +22,20 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatDialogTitle } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-new-map',
-  templateUrl: './new-map.component.html',
-  styleUrls: ['./new-map.component.scss'],
-  standalone: true,
-  imports: [
-    MatDialogTitle,
-    ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatSelect,
-    NgFor,
-    MatOption,
-    MatButton,
-  ],
+    selector: 'app-new-map',
+    templateUrl: './new-map.component.html',
+    styleUrls: ['./new-map.component.scss'],
+    imports: [
+        MatDialogTitle,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatSelect,
+        NgFor,
+        MatOption,
+        MatButton,
+    ]
 })
 export class NewMapComponent implements OnInit {
   teams: SimpleTeam[];

@@ -12,10 +12,9 @@ import { Component, Inject } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 
 @Component({
-  selector: 'confirm-dialog',
-  templateUrl: './confirm-dialog.component.html',
-  standalone: true,
-  imports: [MatDialogTitle, MatDialogContent, MatDialogActions, MatButton],
+    selector: 'confirm-dialog',
+    templateUrl: './confirm-dialog.component.html',
+    imports: [MatDialogTitle, MatDialogContent, MatDialogActions, MatButton]
 })
 export class ConfirmDialogComponent {
   public title: string;

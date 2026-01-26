@@ -12,11 +12,10 @@ import { MatButton } from '@angular/material/button';
 import { NgIf, NgFor } from '@angular/common';
 
 @Component({
-  selector: 'app-welder',
-  templateUrl: './welder.component.html',
-  styleUrls: ['./welder.component.scss'],
-  standalone: true,
-  imports: [NgIf, MatButton, NgFor],
+    selector: 'app-welder',
+    templateUrl: './welder.component.html',
+    styleUrls: ['./welder.component.scss'],
+    imports: [NgIf, MatButton, NgFor]
 })
 export class WelderComponent implements OnInit, OnDestroy {
   public showDeployButton = false;
