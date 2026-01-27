@@ -13,6 +13,7 @@ import {
   OnInit,
   Output,
   QueryList,
+  SimpleChanges,
   ViewChild,
   ViewChildren,
 } from '@angular/core';
@@ -150,6 +151,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   allVms: Vm[];
   vmFilterBy: any = 'All';
+  private hasLoadedVms = false;
 
   canUploadTeamIsos$ = this.userPermissionsService.can(
     null,
@@ -251,26 +253,54 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       });
       return matchFilter.every(Boolean); // AND
     };
-
-    this.vmService
-      .GetViewVms(true, false)
-      .pipe(take(1))
-      .subscribe(
-        () => {
-          this.vmApiResponded = true;
-        },
-        (error) => {
-          console.log('The VM API is not responding.  ' + error.message);
-          this.vmApiResponded = false;
-        },
-      );
   }
 
-  ngOnChanges() {
-    if (this.canViewView) {
-      this.teamsList$ = this.playerTeamService.getViewTeams(
-        this.vmService.viewId,
-      );
+  ngOnChanges(changes: SimpleChanges) {
+    // Initialize VMs once when canViewView is first set
+    if (changes.canViewView) {
+      if (!this.hasLoadedVms && this.canViewView != null) {
+        this.hasLoadedVms = true;
+
+        if (this.canViewView) {
+          this.vmService
+            .GetViewVms(true, false)
+            .pipe(take(1))
+            .subscribe(
+              () => {
+                this.vmApiResponded = true;
+              },
+              (error) => {
+                console.log('The VM API is not responding.  ' + error.message);
+                this.vmApiResponded = false;
+              },
+            );
+        } else {
+          this.userPermissionsService
+            .getPrimaryTeamId(this.vmService.viewId)
+            .pipe(
+              filter((teamId) => teamId !== undefined),
+              switchMap((primaryTeamId) =>
+                this.vmService.GetTeamVms(true, false, primaryTeamId),
+              ),
+              take(1),
+            )
+            .subscribe(
+              () => {
+                this.vmApiResponded = true;
+              },
+              (error) => {
+                console.log('The VM API is not responding.  ' + error.message);
+                this.vmApiResponded = false;
+              },
+            );
+        }
+      }
+
+      if (this.canViewView) {
+        this.teamsList$ = this.playerTeamService.getViewTeams(
+          this.vmService.viewId,
+        );
+      }
     }
   }
 

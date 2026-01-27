@@ -68,11 +68,26 @@ export class VmService {
   public GetTeamVms(
     includePersonal: boolean,
     onlyMine: boolean,
+    teamId: string,
+  ): Observable<Array<Vm>>;
+
+  public GetTeamVms(
+    includePersonal: boolean,
+    onlyMine: boolean,
+  ): Observable<Array<Vm>>;
+
+  public GetTeamVms(
+    includePersonal: boolean,
+    onlyMine: boolean,
+    teamId?: string,
   ): Observable<Array<Vm>> {
-    let params = new HttpParams();
-    params = params.append('includePersonal', includePersonal.toString());
-    params = params.append('onlyMine', onlyMine.toString());
-    return this.http.get<Array<Vm>>(this.teamUrl, { params: params });
+    return this.vmsService
+      .getTeamVms(teamId ?? this.teamId, null, includePersonal, onlyMine)
+      .pipe(
+        tap((entities) => {
+          this.vmsStore.set(entities);
+        }),
+      );
   }
 
   public GetViewVmsByName(viewId: string, name: string): Observable<Array<Vm>> {
