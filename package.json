@@ -40,7 +40,7 @@
     "@cmusei/crucible-common": "0.4.1",
     "@datorama/akita": "^8.0.1",
     "@datorama/akita-ng-router-store": "^8.0.0",
-    "@microsoft/signalr": "^5.0.17",
+    "@microsoft/signalr": "^10.0.0",
     "@types/uuid": "^9.0.8",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^5.3.3",
