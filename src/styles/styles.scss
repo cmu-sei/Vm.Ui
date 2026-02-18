@@ -77,8 +77,9 @@ mat-paginator {
   --mat-form-field-outlined-focus-outline-color: transparent;
 }
 
-// Ensure mat-select dropdown panels match the mat-select background color
-.mat-mdc-select-panel {
+// Ensure mat-select and mat-menu dropdown panels use a consistent background color
+.mat-mdc-select-panel,
+.mat-mdc-menu-panel {
   background-color: var(--mat-sys-outline-variant) !important;
 }
 
