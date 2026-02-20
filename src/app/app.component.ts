@@ -9,7 +9,6 @@ import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { RouterOutlet } from '@angular/router';
-import { DynamicThemeService } from './services/dynamic-theme.service';
 
 @Component({
     selector: 'app-root',
@@ -27,7 +26,6 @@ export class AppComponent implements OnDestroy {
     private routerQuery: RouterQuery,
     private authService: ComnAuthService,
     private settingsService: ComnSettingsService,
-    private themeService: DynamicThemeService,
   ) {
     iconRegistry.addSvgIcon(
       'monitor',
@@ -93,18 +91,11 @@ export class AppComponent implements OnDestroy {
   }
 
   setTheme(theme: Theme) {
-    const hexColor =
-      this.settingsService.settings.AppPrimaryThemeColor || '#BB0000';
-
-    switch (theme) {
-      case Theme.LIGHT:
-        document.body.classList.toggle('darkMode', false);
-        this.themeService.applyLightTheme(hexColor);
-        break;
-      case Theme.DARK:
-        document.body.classList.toggle('darkMode', true);
-        this.themeService.applyDarkTheme(hexColor);
-        break;
+    document.body.classList.toggle('darkMode', theme === Theme.DARK);
+    const primaryColor = this.settingsService.settings?.AppPrimaryThemeColor || '#C41230';
+    if (primaryColor) {
+      document.documentElement.style.setProperty('--mat-sys-primary', primaryColor);
+      document.body.style.setProperty('--mat-sys-primary', primaryColor);
     }
   }
 

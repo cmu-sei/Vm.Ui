@@ -2,7 +2,6 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import {
-  APP_INITIALIZER,
   enableProdMode,
   ErrorHandler,
   importProvidersFrom,
@@ -39,7 +38,6 @@ import { AutoDeployService } from './app/services/auto-deploy/auto-deploy.servic
 import { VmMapsQuery } from './app/state/vmMaps/vm-maps.query';
 import { VmMapsService } from './app/state/vmMaps/vm-maps.service';
 import { VmService } from './app/state/vms/vms.service';
-import { DynamicThemeService } from './app/services/dynamic-theme.service';
 import { initializeTheme } from './app/services/theme-initializer.factory';
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
@@ -81,7 +79,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection(),importProvidersFrom(
+    provideZoneChangeDetection(), importProvidersFrom(
       ComnSettingsModule.forRoot(),
       ComnAuthModule.forRoot(),
       [
@@ -109,13 +107,6 @@ bootstrapApplication(AppComponent, {
       deps: [ComnSettingsService],
     },
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
-    DynamicThemeService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeTheme,
-      deps: [ComnSettingsService, DynamicThemeService],
-      multi: true,
-    },
     {
       provide: PLAYER_BASE_PATH,
       useFactory: getPlayerBasePath,
