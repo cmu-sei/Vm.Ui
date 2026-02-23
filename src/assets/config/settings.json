@@ -14,6 +14,7 @@
     "automaticSilentRenew": true,
     "silent_redirect_uri": "http://localhost:4303/auth-callback-silent.html"
   },
-  "AppPrimaryThemeColor": "#3B62A5",
+  "AppTopBarHexColor": "#3B62A5",
+  "AppTopBarHexTextColor": "#FFFFFF",
   "UseLocalAuthStorage": false
 }
