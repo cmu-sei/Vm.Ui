@@ -9,14 +9,13 @@ import { Observable } from 'rxjs';
 import { Clickpoint } from '../../../models/clickpoint';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { MapVmSelectComponent } from '../map-vm-select/map-vm-select.component';
-import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-map-team-display',
-  templateUrl: './map-team-display.component.html',
-  styleUrls: ['./map-team-display.component.scss'],
-  standalone: true,
-  imports: [NgIf, NgFor, AsyncPipe],
+    selector: 'app-map-team-display',
+    templateUrl: './map-team-display.component.html',
+    styleUrls: ['./map-team-display.component.scss'],
+    imports: [AsyncPipe]
 })
 export class MapTeamDisplayComponent implements OnInit {
   machines: Observable<Clickpoint[]>;

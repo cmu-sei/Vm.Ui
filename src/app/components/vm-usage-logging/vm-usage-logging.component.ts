@@ -52,7 +52,7 @@ import {
   MatDateRangePicker,
 } from '@angular/material/datepicker';
 import { MatSelect } from '@angular/material/select';
-import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatInput } from '@angular/material/input';
 import {
   MatFormField,
@@ -78,20 +78,17 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: 'app-vm-usage-logging',
-  templateUrl: './vm-usage-logging.component.html',
-  styleUrls: ['./vm-usage-logging.component.scss'],
-  standalone: true,
-  imports: [
+    selector: 'app-vm-usage-logging',
+    templateUrl: './vm-usage-logging.component.html',
+    styleUrls: ['./vm-usage-logging.component.scss'],
+    imports: [
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
     MatInput,
     MatHint,
-    NgIf,
     MatError,
     MatSelect,
-    NgFor,
     MatOption,
     MatDateRangeInput,
     MatStartDate,
@@ -111,9 +108,9 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatRowDef,
     MatRow,
     MatPaginator,
-    DatePipe,
-  ],
-  providers: [provideNativeDateAdapter()],
+    DatePipe
+],
+    providers: [provideNativeDateAdapter()]
 })
 export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;

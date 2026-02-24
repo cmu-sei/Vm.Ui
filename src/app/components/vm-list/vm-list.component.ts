@@ -57,18 +57,16 @@ import {
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { NgIf, NgFor, AsyncPipe, SlicePipe } from '@angular/common';
+import { AsyncPipe, SlicePipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-vm-list',
-  templateUrl: './vm-list.component.html',
-  styleUrls: ['./vm-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    NgIf,
+    selector: 'app-vm-list',
+    templateUrl: './vm-list.component.html',
+    styleUrls: ['./vm-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
     MatButton,
     MatMenuTrigger,
     MatIcon,
@@ -86,7 +84,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     MatSelect,
     MatOption,
     DragToSelectModule,
-    NgFor,
     MatTooltip,
     VmItemComponent,
     MatExpansionPanel,
@@ -94,8 +91,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
     MatExpansionPanelTitle,
     MatPaginator,
     AsyncPipe,
-    SlicePipe,
-  ],
+    SlicePipe
+]
 })
 export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());

@@ -3,37 +3,41 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div *ngIf="mapInitialzed == true">
-  <svg viewBox="0 8 100 100">
-    <image
-      [attr.href]="imageURL"
-      width="100"
-      height="100"
-      (click)="append($event)"
-    />
-    <g *ngFor="let m of machines">
-      <circle
-        class="clickpoint"
-        [attr.cx]="m.xPosition"
-        [attr.cy]="m.yPosition"
-        [attr.r]="m.radius"
-        (click)="edit(m)"
-        fill-opacity="1.0"
-      ></circle>
-      <text
-        class="clickpoint"
-        [attr.x]="m.xPosition"
-        [attr.y]="m.yPosition"
-        [attr.font-size]="calcFontSize(m.radius)"
-        fill="white"
-        text-anchor="middle"
-        (click)="edit(m)"
-      >
-        {{ m.label }}
-      </text>
-    </g>
-  </svg>
-</div>
+@if (mapInitialzed == true) {
+  <div>
+    <svg viewBox="0 8 100 100">
+      <image
+        [attr.href]="imageURL"
+        width="100"
+        height="100"
+        (click)="append($event)"
+        />
+      @for (m of machines; track m) {
+        <g>
+          <circle
+            class="clickpoint"
+            [attr.cx]="m.xPosition"
+            [attr.cy]="m.yPosition"
+            [attr.r]="m.radius"
+            (click)="edit(m)"
+            fill-opacity="1.0"
+          ></circle>
+          <text
+            class="clickpoint"
+            [attr.x]="m.xPosition"
+            [attr.y]="m.yPosition"
+            [attr.font-size]="calcFontSize(m.radius)"
+            fill="white"
+            text-anchor="middle"
+            (click)="edit(m)"
+            >
+            {{ m.label }}
+          </text>
+        </g>
+      }
+    </svg>
+  </div>
+}
 
 <div>
   <ng-template #addPointDialog>
@@ -46,7 +50,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       id="{{ idToSend }}"
       label="{{ selectedLabel }}"
       [editing]="editing"
-    >
+      >
     </app-add-point>
   </ng-template>
 </div>

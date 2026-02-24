@@ -20,9 +20,6 @@ import {
 import { ThemeService } from '../../../services/theme/theme.service';
 import { VmTeam } from '../../../state/vm-teams/vm-team.model';
 import { VmsQuery } from '../../../state/vms/vms.query';
-import { MatIcon } from '@angular/material/icon';
-import { MatTooltip } from '@angular/material/tooltip';
-import { MatIconButton } from '@angular/material/button';
 import {
   MatTable,
   MatColumnDef,
@@ -47,37 +44,33 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { VmUser } from '../../../generated/vm-api';
 
 @Component({
-  selector: 'app-team-users',
-  templateUrl: './team-users.component.html',
-  styleUrls: ['./team-users.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
-    MatExpansionPanelDescription,
-    CdkVirtualScrollViewport,
-    TableVirtualScrollModule,
-    NgStyle,
-    MatTable,
-    MatColumnDef,
-    MatHeaderCellDef,
-    MatHeaderCell,
-    MatCellDef,
-    MatCell,
-    MatIconButton,
-    MatTooltip,
-    MatIcon,
-    NgIf,
-    MatHeaderRowDef,
-    MatHeaderRow,
-    MatRowDef,
-    MatRow,
-    AsyncPipe,
-    DatePipe,
-    MatSortModule,
-  ],
+    selector: 'app-team-users',
+    templateUrl: './team-users.component.html',
+    styleUrls: ['./team-users.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatExpansionPanelTitle,
+        MatExpansionPanelDescription,
+        CdkVirtualScrollViewport,
+        TableVirtualScrollModule,
+        NgStyle,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        NgIf,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        AsyncPipe,
+        DatePipe,
+        MatSortModule,
+    ]
 })
 export class TeamUsersComponent implements AfterViewInit {
   @Input() team: VmTeam = null;

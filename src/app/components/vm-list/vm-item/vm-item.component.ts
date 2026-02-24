@@ -22,9 +22,8 @@ import { Vm, VmsService } from '../../../generated/vm-api';
 import { take } from 'rxjs/operators';
 import { VmService } from '../../../state/vms/vms.service';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { NgTemplateOutlet, NgClass, NgIf, NgFor } from '@angular/common';
+import { NgTemplateOutlet, NgClass } from '@angular/common';
 
 export interface Item {
   id: number;
@@ -32,22 +31,18 @@ export interface Item {
 }
 
 @Component({
-  selector: 'vm-item',
-  templateUrl: './vm-item.component.html',
-  styleUrls: ['./vm-item.component.scss'],
-  standalone: true,
-  imports: [
+    selector: 'vm-item',
+    templateUrl: './vm-item.component.html',
+    styleUrls: ['./vm-item.component.scss'],
+    imports: [
     NgTemplateOutlet,
     NgClass,
-    NgIf,
     MatIcon,
-    MatIconButton,
-    NgFor,
     MatMenuTrigger,
     MatMenu,
     MatMenuContent,
-    MatCheckbox,
-  ],
+    MatCheckbox
+]
 })
 export class VmItemComponent implements OnInit {
   @Input() vm: Vm;

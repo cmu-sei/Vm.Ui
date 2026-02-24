@@ -4,16 +4,20 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <div style="text-align: center">
-  <button
-    *ngIf="showDeployButton"
-    mat-raised-button
-    (click)="autoDeploy()"
-    [disabled]="deployButtonDisabled"
-  >
-    Request Workstations
-  </button>
-  <h1 *ngIf="!showDeployButton">Workstations</h1>
-  <ng-container *ngFor="let vm of readyVMs"
-    ><button (click)="openVMConsoleTab(vm)">{{ vm.name }}</button><br
-  /></ng-container>
+  @if (showDeployButton) {
+    <button
+      mat-raised-button
+      (click)="autoDeploy()"
+      [disabled]="deployButtonDisabled"
+      >
+      Request Workstations
+    </button>
+  }
+  @if (!showDeployButton) {
+    <h1>Workstations</h1>
+  }
+  @for (vm of readyVMs; track vm) {
+    <button (click)="openVMConsoleTab(vm)">{{ vm.name }}</button><br
+    />
+}
 </div>

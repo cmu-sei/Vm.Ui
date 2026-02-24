@@ -17,7 +17,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 .vm-link {
   text-decoration: underline;
   cursor: pointer;
-  color: var(--mat-app-text-color, inherit);
+  color: var(--mat-sys-on-surface, inherit);
   font-weight: bold;
 }
 
@@ -60,7 +60,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
   font-family: open_sansbold;
   font-size: smaller;
   margin-left: 5px;
-  color: var(--mat-app-text-color, inherit);
+  color: var(--mat-sys-on-surface, inherit);
 }
 
 .flex-none {

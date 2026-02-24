@@ -9,14 +9,13 @@ import { takeUntil } from 'rxjs/operators';
 import { AutoDeployService } from '../../services/auto-deploy/auto-deploy.service';
 import { VmService } from '../../state/vms/vms.service';
 import { MatButton } from '@angular/material/button';
-import { NgIf } from '@angular/common';
+
 
 @Component({
-  selector: 'app-auto-deploy',
-  templateUrl: './auto-deploy.component.html',
-  styleUrls: ['./auto-deploy.component.scss'],
-  standalone: true,
-  imports: [NgIf, MatButton],
+    selector: 'app-auto-deploy',
+    templateUrl: './auto-deploy.component.html',
+    styleUrls: ['./auto-deploy.component.scss'],
+    imports: [MatButton]
 })
 export class AutoDeployComponent implements OnInit, OnDestroy {
   public showDeployButton = false;

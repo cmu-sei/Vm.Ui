@@ -21,7 +21,7 @@ import { TeamUsersComponent } from './team-users/team-users.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIconButton, MatButton } from '@angular/material/button';
-import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
@@ -34,31 +34,28 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { VmUser } from '../../generated/vm-api';
 
 @Component({
-  selector: 'app-user-list',
-  templateUrl: './user-list.component.html',
-  styleUrls: ['./user-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
+    selector: 'app-user-list',
+    templateUrl: './user-list.component.html',
+    styleUrls: ['./user-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
     MatFormField,
     MatIcon,
     MatPrefix,
     MatInput,
     ReactiveFormsModule,
     FormsModule,
-    NgIf,
     MatIconButton,
     MatSuffix,
     MatTooltip,
     MatButton,
     MatCheckbox,
     MatAccordion,
-    NgFor,
     TeamUsersComponent,
     AsyncPipe,
     MatOption,
-    MatSelect,
-  ],
+    MatSelect
+]
 })
 export class UserListComponent {
   @Input() viewId: string;

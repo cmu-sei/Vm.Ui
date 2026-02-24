@@ -44,29 +44,26 @@ import { MatIconButton } from '@angular/material/button';
 import { VmUsageLoggingComponent } from '../vm-usage-logging/vm-usage-logging.component';
 import { UserListComponent } from '../user-list/user-list.component';
 import { VmListComponent } from '../vm-list/vm-list.component';
-import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 
 @Component({
-  selector: 'app-vm-main',
-  templateUrl: './vm-main.component.html',
-  styleUrls: ['./vm-main.component.scss'],
-  standalone: true,
-  imports: [
-    NgIf,
+    selector: 'app-vm-main',
+    templateUrl: './vm-main.component.html',
+    styleUrls: ['./vm-main.component.scss'],
+    imports: [
     MatTabGroup,
     MatTab,
     VmListComponent,
     MatTabContent,
     UserListComponent,
     VmUsageLoggingComponent,
-    NgFor,
     MatTabLabel,
     MatIconButton,
     MatIcon,
     FocusedAppComponent,
-    AsyncPipe,
-  ],
+    AsyncPipe
+]
 })
 export class VmMainComponent implements OnInit, OnDestroy {
   @ViewChild('vmTabGroup', { static: false }) tabGroup: MatTabGroup;

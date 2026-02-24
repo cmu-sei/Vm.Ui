@@ -30,29 +30,26 @@ import { MatOption } from '@angular/material/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../../services/permissions/user-permissions.service';
 
 @Component({
-  selector: 'app-map-main',
-  templateUrl: './map-main.component.html',
-  styleUrls: ['./map-main.component.scss'],
-  standalone: true,
-  imports: [
-    NgIf,
+    selector: 'app-map-main',
+    templateUrl: './map-main.component.html',
+    styleUrls: ['./map-main.component.scss'],
+    imports: [
     MatFormField,
     MatLabel,
     MatSelect,
     ReactiveFormsModule,
     FormsModule,
     MatOption,
-    NgFor,
     MatButton,
     MapTeamDisplayComponent,
     MapComponent,
     NewMapComponent,
-    AsyncPipe,
-  ],
+    AsyncPipe
+]
 })
 export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   selected: VmMap;

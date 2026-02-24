@@ -1,6 +1,6 @@
 <!--
-Copyright 2022 Carnegie Mellon University. All Rights Reserved. 
- Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+Copyright 2022 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
 <div>
@@ -13,31 +13,35 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
       <div
         class="m-2 vm-menu-button"
         (click)="canManageTeam && onContextMenu($event)"
-      >
-        <mat-icon
-          *ngIf="
-            vm.powerState !== undefined &&
-            vm.powerState.toString() === 'Unknown'
-          "
-          style="color: red"
-          svgIcon="monitor"
-          title="Power state unknown"
-        ></mat-icon>
-        <mat-icon
-          *ngIf="
-            vm.powerState !== undefined && vm.powerState.toString() === 'On'
-          "
-          class="text"
-          svgIcon="monitor"
-        ></mat-icon>
-        <mat-icon
-          *ngIf="
-            vm.powerState !== undefined && vm.powerState.toString() === 'Off'
-          "
-          style="color: red"
-          svgIcon="power_icon"
-          title="Powered Off"
-        ></mat-icon>
+        >
+        @if (
+          vm.powerState !== undefined &&
+          vm.powerState.toString() === 'Unknown'
+          ) {
+          <mat-icon
+            style="color: red"
+            svgIcon="monitor"
+            title="Power state unknown"
+          ></mat-icon>
+        }
+        @if (
+          vm.powerState !== undefined && vm.powerState.toString() === 'On'
+          ) {
+          <mat-icon
+            style="color: var(--mat-sys-primary)"
+            class="text"
+            svgIcon="monitor"
+          ></mat-icon>
+        }
+        @if (
+          vm.powerState !== undefined && vm.powerState.toString() === 'Off'
+          ) {
+          <mat-icon
+            style="color: red"
+            svgIcon="power_icon"
+            title="Powered Off"
+          ></mat-icon>
+        }
       </div>
       <div class="content">
         <a
@@ -52,33 +56,38 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
             )
           "
           >{{ vm.name }}</a
-        >
+          >
+        </div>
       </div>
+      @if (showIps) {
+        <div class="d-flex flex-column align-items-center content">
+          @for (address of getIpAddresses(vm); track address) {
+            <label class="text">
+              {{ address }}
+            </label>
+          }
+        </div>
+      }
     </div>
-    <div *ngIf="showIps" class="d-flex flex-column align-items-center content">
-      <label class="text" *ngFor="let address of getIpAddresses(vm)">
-        {{ address }}
-      </label>
-    </div>
-  </div>
-  <div
-    style="visibility: hidden; position: fixed"
-    [style.left]="contextMenuPosition.x"
-    [style.top]="contextMenuPosition.y"
-    [matMenuTriggerFor]="contextMenu"
-  ></div>
-</ng-template>
-<mat-menu #contextMenu="matMenu">
-  <div class="menu-top"><span>Available to the following teams:</span></div>
-  <ng-template matMenuContent let-item="item">
-    <mat-checkbox
-      #menuItems
-      *ngFor="let item of teamsList; let i = index"
-      class="menu-item"
-      [checked]="isVmOnTeam(vm.teamIds, item.id)"
-      (click)="$event.stopPropagation()"
-      (change)="onTeamSelect(vm.id, vm.teamIds, item.id)"
-      >{{ item.name }}</mat-checkbox
-    >
+    <div
+      style="visibility: hidden; position: fixed"
+      [style.left]="contextMenuPosition.x"
+      [style.top]="contextMenuPosition.y"
+      [matMenuTriggerFor]="contextMenu"
+    ></div>
   </ng-template>
-</mat-menu>
+  <mat-menu #contextMenu="matMenu">
+    <div class="menu-top"><span>Available to the following teams:</span></div>
+    <ng-template matMenuContent let-item="item">
+      @for (item of teamsList; track item; let i = $index) {
+        <mat-checkbox
+          #menuItems
+          class="menu-item"
+          [checked]="isVmOnTeam(vm.teamIds, item.id)"
+          (click)="$event.stopPropagation()"
+          (change)="onTeamSelect(vm.id, vm.teamIds, item.id)"
+          >{{ item.name }}</mat-checkbox
+          >
+        }
+      </ng-template>
+    </mat-menu>

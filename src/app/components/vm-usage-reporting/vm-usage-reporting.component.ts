@@ -42,7 +42,7 @@ import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
 import { MatButton } from '@angular/material/button';
-import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {
   MatDateRangeInput,
   MatStartDate,
@@ -79,18 +79,16 @@ declare global {
 }
 
 @Component({
-  selector: 'app-vm-usage-reporting',
-  templateUrl: './vm-usage-reporting.component.html',
-  styleUrls: ['./vm-usage-reporting.component.scss'],
-  standalone: true,
-  imports: [
+    selector: 'app-vm-usage-reporting',
+    templateUrl: './vm-usage-reporting.component.html',
+    styleUrls: ['./vm-usage-reporting.component.scss'],
+    imports: [
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
     MatDateRangeInput,
     MatStartDate,
     MatEndDate,
-    NgIf,
     MatError,
     MatDatepickerToggle,
     MatSuffix,
@@ -98,7 +96,6 @@ declare global {
     MatButton,
     MatRadioGroup,
     FormsModule,
-    NgFor,
     MatRadioButton,
     MatTable,
     MatColumnDef,
@@ -111,9 +108,9 @@ declare global {
     MatRowDef,
     MatRow,
     MatPaginator,
-    DatePipe,
-  ],
-  providers: [provideNativeDateAdapter()],
+    DatePipe
+],
+    providers: [provideNativeDateAdapter()]
 })
 export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;

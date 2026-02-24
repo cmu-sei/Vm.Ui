@@ -5,6 +5,7 @@ import {
   enableProdMode,
   ErrorHandler,
   importProvidersFrom,
+  provideZoneChangeDetection
 } from '@angular/core';
 import { environment } from './environments/environment';
 import { enableAkitaProdMode, persistState } from '@datorama/akita';
@@ -14,10 +15,7 @@ import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { bootstrapApplication } from '@angular/platform-browser';
-import {
-  withInterceptorsFromDi,
-  provideHttpClient,
-} from '@angular/common/http';
+import { withInterceptorsFromDi, provideHttpClient } from '@angular/common/http';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { BASE_PATH as PLAYER_BASE_PATH } from './app/generated/player-api';
 import {
@@ -40,6 +38,7 @@ import { AutoDeployService } from './app/services/auto-deploy/auto-deploy.servic
 import { VmMapsQuery } from './app/state/vmMaps/vm-maps.query';
 import { VmMapsService } from './app/state/vmMaps/vm-maps.service';
 import { VmService } from './app/state/vms/vms.service';
+import { initializeTheme } from './app/services/theme-initializer.factory';
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 
@@ -80,7 +79,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(
+    provideZoneChangeDetection(), importProvidersFrom(
       ComnSettingsModule.forRoot(),
       ComnAuthModule.forRoot(),
       [
