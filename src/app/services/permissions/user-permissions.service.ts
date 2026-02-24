@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { combineLatest, Observable, ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import {
   PermissionService,
@@ -19,12 +19,10 @@ import {
   providedIn: 'root',
 })
 export class UserPermissionsService {
-  private permissionsSubject = new BehaviorSubject<string[]>([]);
+  private permissionsSubject = new ReplaySubject<string[]>(1);
   public permissions$ = this.permissionsSubject.asObservable();
 
-  private teamPermissionsSubject = new BehaviorSubject<TeamPermissionsClaim[]>(
-    [],
-  );
+  private teamPermissionsSubject = new ReplaySubject<TeamPermissionsClaim[]>(1);
   public teamPermissions$ = this.teamPermissionsSubject.asObservable();
 
   constructor(
