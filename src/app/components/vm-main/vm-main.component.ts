@@ -42,6 +42,7 @@ import { FocusedAppComponent } from '../focused-app/focused-app.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { VmUsageLoggingComponent } from '../vm-usage-logging/vm-usage-logging.component';
+import { NetworkPermissionsComponent } from '../network-permissions/network-permissions.component';
 import { UserListComponent } from '../user-list/user-list.component';
 import { VmListComponent } from '../vm-list/vm-list.component';
 import { AsyncPipe } from '@angular/common';
@@ -58,6 +59,7 @@ import { UserPermissionsService } from '../../services/permissions/user-permissi
     MatTabContent,
     UserListComponent,
     VmUsageLoggingComponent,
+    NetworkPermissionsComponent,
     MatTabLabel,
     MatIconButton,
     MatIcon,
@@ -138,6 +140,11 @@ export class VmMainComponent implements OnInit, OnDestroy {
     .pipe(map((x) => !x));
 
   public showUsageLogging$ = combineLatest([
+    this.canViewViews$,
+    this.canViewView$,
+  ]).pipe(map(([x, y]) => x || y));
+
+  public showNetworks$ = combineLatest([
     this.canViewViews$,
     this.canViewView$,
   ]).pipe(map(([x, y]) => x || y));
@@ -236,28 +243,26 @@ export class VmMainComponent implements OnInit, OnDestroy {
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }, onLoading: boolean = false) {
-    const adminIndex = this.showUsageLogging$.pipe(
-      take(1),
-      map((x) => x),
-    )
-      ? 1
-      : 0;
+    combineLatest([this.showUsageLogging$, this.showNetworks$])
+      .pipe(take(1))
+      .subscribe(([hasLogging, hasNetworks]) => {
+        // 2 static tabs (VM List + User Follow) + conditional tabs
+        const staticCount =
+          2 + (hasLogging ? 1 : 0) + (hasNetworks ? 1 : 0);
 
-    // Only open if not already
-    const index = this.openVms.findIndex((v) => v.name === vmObj.name);
-    if (index === -1) {
-      // Not opened
-      this.openVms.push(vmObj);
-      this.vmUISessionService.setOpenedVm(vmObj, true);
-      if (!onLoading) {
-        this.setSelectedTab(this.openVms.length + 1 + adminIndex);
-      }
-    } else {
-      // Already opened
-      if (!onLoading) {
-        this.setSelectedTab(index + 2 + adminIndex);
-      }
-    }
+        const index = this.openVms.findIndex((v) => v.name === vmObj.name);
+        if (index === -1) {
+          this.openVms.push(vmObj);
+          this.vmUISessionService.setOpenedVm(vmObj, true);
+          if (!onLoading) {
+            this.setSelectedTab(this.openVms.length - 1 + staticCount);
+          }
+        } else {
+          if (!onLoading) {
+            this.setSelectedTab(index + staticCount);
+          }
+        }
+      });
   }
 
   remove(name: string) {

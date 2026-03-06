@@ -1,8 +1,3 @@
-/*
-Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
- Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-*/
-
 export * from './appSystemPermission';
 export * from './appTeamPermission';
 export * from './appViewPermission';
@@ -27,9 +22,12 @@ export * from './problemDetails';
 export * from './proxmoxConsole';
 export * from './proxmoxVmInfo';
 export * from './proxmoxVmType';
+export * from './revertToVsphereVirtualMachineSnapshot';
 export * from './setVsphereVirtualMachineResolution';
 export * from './simpleTeam';
 export * from './teamIsoResult';
+export * from './teamNetworkPermission';
+export * from './teamNetworkPermissionForm';
 export * from './validateVsphereVirtualMachineCredentials';
 export * from './virtualMachineToolsStatus';
 export * from './vm';
@@ -38,6 +36,7 @@ export * from './vmMap';
 export * from './vmMapCreateForm';
 export * from './vmMapUpdateForm';
 export * from './vmPermissionResult';
+export * from './vmSnapshot';
 export * from './vmType';
 export * from './vmUpdateForm';
 export * from './vmUsageLoggingSession';

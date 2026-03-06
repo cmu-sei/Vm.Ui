@@ -9,18 +9,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { VmType } from './vmType';
 
 
-/**
- * A Logging session for Virtual Machines
- */
-export interface VmUsageLoggingSession { 
+export interface TeamNetworkPermission { 
     id?: string;
-    viewId?: string;
-    teamIds?: Array<string> | null;
-    sessionName?: string | null;
-    createdDt?: string;
-    sessionStart?: string;
-    sessionEnd?: string;
+    teamId?: string;
+    providerType?: VmType;
+    providerInstanceId?: string | null;
+    networkId?: string | null;
 }
+export namespace TeamNetworkPermission {
+}
+
 
