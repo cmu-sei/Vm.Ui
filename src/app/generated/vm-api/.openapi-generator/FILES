@@ -24,6 +24,7 @@ model/changeVsphereVirtualMachineNetwork.ts
 model/consoleConnectionInfo.ts
 model/coordinate.ts
 model/coordinateCreateForm.ts
+model/createViewNetworkForm.ts
 model/createVmUsageLoggingSessionCommand.ts
 model/editVmUsageLoggingSessionCommand.ts
 model/eventType.ts
@@ -44,9 +45,9 @@ model/revertToVsphereVirtualMachineSnapshot.ts
 model/setVsphereVirtualMachineResolution.ts
 model/simpleTeam.ts
 model/teamIsoResult.ts
-model/teamNetworkPermission.ts
-model/teamNetworkPermissionForm.ts
+model/updateViewNetworkTeamsForm.ts
 model/validateVsphereVirtualMachineCredentials.ts
+model/viewNetworkDto.ts
 model/virtualMachineToolsStatus.ts
 model/vm.ts
 model/vmCreateForm.ts

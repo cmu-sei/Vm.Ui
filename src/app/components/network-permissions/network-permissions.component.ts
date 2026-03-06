@@ -2,12 +2,13 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, Input, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { switchMap, take, takeUntil } from 'rxjs/operators';
 import {
   NetworksService,
-  TeamNetworkPermission,
-  TeamNetworkPermissionForm,
+  ViewNetworkDto,
+  CreateViewNetworkForm,
+  UpdateViewNetworkTeamsForm,
   VmType,
 } from '../../generated/vm-api';
 import {
@@ -37,10 +38,6 @@ import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 
-interface PermissionRow extends TeamNetworkPermission {
-  teamName: string;
-}
-
 @Component({
   selector: 'app-network-permissions',
   templateUrl: './network-permissions.component.html',
@@ -68,12 +65,11 @@ interface PermissionRow extends TeamNetworkPermission {
 export class NetworkPermissionsComponent implements OnDestroy {
   @Input() canManage = false;
 
-  dataSource = new MatTableDataSource<PermissionRow>([]);
+  dataSource = new MatTableDataSource<ViewNetworkDto>([]);
   teams: Team[] = [];
   unsubscribe$ = new Subject<null>();
   refresh$ = new BehaviorSubject<boolean>(true);
 
-  teamControl = new UntypedFormControl('', [Validators.required]);
   providerTypeControl = new UntypedFormControl('', [Validators.required]);
   providerInstanceIdControl = new UntypedFormControl('', [
     Validators.required,
@@ -83,10 +79,10 @@ export class NetworkPermissionsComponent implements OnDestroy {
   providerTypes = [VmType.Vsphere, VmType.Proxmox, VmType.Azure];
 
   displayedColumns: string[] = [
-    'teamName',
     'providerType',
     'providerInstanceId',
     'networkId',
+    'teamIds',
     'actions',
   ];
 
@@ -109,66 +105,30 @@ export class NetworkPermissionsComponent implements OnDestroy {
 
     this.refresh$
       .pipe(
-        switchMap(() => this.loadPermissions()),
+        switchMap(() => this.networksService.getViewNetworks(this.viewId)),
         takeUntil(this.unsubscribe$),
       )
-      .subscribe((rows) => {
-        this.dataSource.data = rows;
+      .subscribe((networks) => {
+        this.dataSource.data = networks;
       });
   }
 
-  private loadPermissions() {
-    return this.teamService.getViewTeams(this.viewId).pipe(
-      switchMap((teams) => {
-        this.teams = teams;
-        if (teams.length === 0) {
-          return [[]];
-        }
-        return forkJoin(
-          teams.map((team) =>
-            this.networksService.getTeamNetworkPermissions(team.id).pipe(
-              take(1),
-              switchMap((permissions) => {
-                const rows: PermissionRow[] = permissions.map((p) => ({
-                  ...p,
-                  teamName: team.name,
-                }));
-                return [rows];
-              }),
-            ),
-          ),
-        ).pipe(
-          switchMap((arrays) => {
-            const flat: PermissionRow[] = [];
-            for (const arr of arrays) {
-              flat.push(...arr);
-            }
-            return [flat];
-          }),
-        );
-      }),
-    );
-  }
-
-  createPermission() {
+  createNetwork() {
     if (
-      this.teamControl.valid &&
       this.providerTypeControl.valid &&
       this.providerInstanceIdControl.valid &&
       this.networkIdControl.valid
     ) {
-      const teamId = this.teamControl.value;
-      const form: TeamNetworkPermissionForm = {
+      const form: CreateViewNetworkForm = {
         providerType: this.providerTypeControl.value,
         providerInstanceId: this.providerInstanceIdControl.value,
         networkId: this.networkIdControl.value,
       };
       this.networksService
-        .createTeamNetworkPermission(teamId, form)
+        .createViewNetwork(this.viewId, form)
         .pipe(take(1))
         .subscribe(() => {
           this.refresh();
-          this.teamControl.reset();
           this.providerTypeControl.reset();
           this.providerInstanceIdControl.reset();
           this.networkIdControl.reset();
@@ -176,23 +136,40 @@ export class NetworkPermissionsComponent implements OnDestroy {
     }
   }
 
-  deletePermission(row: PermissionRow) {
+  deleteNetwork(row: ViewNetworkDto) {
     this.dialogService
       .confirm(
-        'Delete Network Permission',
-        `Are you sure you want to delete the network permission for network "${row.networkId}" on team "${row.teamName}"?`,
+        'Delete Network',
+        `Are you sure you want to delete network "${row.networkId}"?`,
         { buttonTrueText: 'Delete' },
       )
       .subscribe((result) => {
         if (result['confirm']) {
           this.networksService
-            .deleteTeamNetworkPermission(row.teamId, row.id)
+            .deleteViewNetwork(this.viewId, row.id)
             .pipe(take(1))
             .subscribe(() => {
               this.refresh();
             });
         }
       });
+  }
+
+  onTeamSelectionChange(row: ViewNetworkDto, selectedTeamIds: string[]) {
+    const form: UpdateViewNetworkTeamsForm = {
+      teamIds: selectedTeamIds,
+    };
+    this.networksService
+      .updateViewNetworkTeams(this.viewId, row.id, form)
+      .pipe(take(1))
+      .subscribe((updated) => {
+        row.teamIds = updated.teamIds;
+      });
+  }
+
+  getTeamName(teamId: string): string {
+    const team = this.teams.find((t) => t.id === teamId);
+    return team ? team.name : teamId;
   }
 
   refresh() {

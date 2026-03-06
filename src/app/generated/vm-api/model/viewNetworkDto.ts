@@ -12,14 +12,15 @@
 import { VmType } from './vmType';
 
 
-export interface TeamNetworkPermission { 
+export interface ViewNetworkDto { 
     id?: string;
-    teamId?: string;
+    viewId?: string;
     providerType?: VmType;
     providerInstanceId?: string | null;
     networkId?: string | null;
+    teamIds?: Array<string> | null;
 }
-export namespace TeamNetworkPermission {
+export namespace ViewNetworkDto {
 }
 
 

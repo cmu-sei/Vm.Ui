@@ -9,15 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { VmType } from './vmType';
 
 
-export interface TeamNetworkPermissionForm { 
-    providerType: VmType;
-    providerInstanceId: string;
-    networkId: string;
+export interface UpdateViewNetworkTeamsForm { 
+    teamIds?: Array<string> | null;
 }
-export namespace TeamNetworkPermissionForm {
-}
-
 

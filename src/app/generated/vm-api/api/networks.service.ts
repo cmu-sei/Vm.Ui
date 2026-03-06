@@ -19,11 +19,13 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { CreateViewNetworkForm } from '../model/createViewNetworkForm';
+// @ts-ignore
 import { ProblemDetails } from '../model/problemDetails';
 // @ts-ignore
-import { TeamNetworkPermission } from '../model/teamNetworkPermission';
+import { UpdateViewNetworkTeamsForm } from '../model/updateViewNetworkTeamsForm';
 // @ts-ignore
-import { TeamNetworkPermissionForm } from '../model/teamNetworkPermissionForm';
+import { ViewNetworkDto } from '../model/viewNetworkDto';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -96,19 +98,19 @@ export class NetworksService {
     }
 
     /**
-     * Add a network permission for a team
-     * Idempotent — if a permission with the same ProviderType, ProviderInstanceId, and NetworkId already exists, it is returned.
-     * @param teamId The Id of the Team
-     * @param teamNetworkPermissionForm The network permission to create
+     * Create a network entry for a view
+     * Idempotent — if a network with the same ProviderType, ProviderInstanceId, and NetworkId already exists for this view, it is returned.
+     * @param viewId 
+     * @param createViewNetworkForm 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createTeamNetworkPermission(teamId: string, teamNetworkPermissionForm?: TeamNetworkPermissionForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<TeamNetworkPermission>;
-    public createTeamNetworkPermission(teamId: string, teamNetworkPermissionForm?: TeamNetworkPermissionForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<TeamNetworkPermission>>;
-    public createTeamNetworkPermission(teamId: string, teamNetworkPermissionForm?: TeamNetworkPermissionForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<TeamNetworkPermission>>;
-    public createTeamNetworkPermission(teamId: string, teamNetworkPermissionForm?: TeamNetworkPermissionForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
-        if (teamId === null || teamId === undefined) {
-            throw new Error('Required parameter teamId was null or undefined when calling createTeamNetworkPermission.');
+    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetworkDto>;
+    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetworkDto>>;
+    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetworkDto>>;
+    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling createViewNetwork.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -162,11 +164,11 @@ export class NetworksService {
             }
         }
 
-        let localVarPath = `/api/teams/${this.configuration.encodeParam({name: "teamId", value: teamId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/network-permissions`;
-        return this.httpClient.request<TeamNetworkPermission>('post', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks`;
+        return this.httpClient.request<ViewNetworkDto>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: teamNetworkPermissionForm,
+                body: createViewNetworkForm,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -177,17 +179,21 @@ export class NetworksService {
     }
 
     /**
-     * Delete all network permissions for a team
-     * @param teamId The Id of the Team
+     * Delete a network entry from a view
+     * @param viewId 
+     * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteAllTeamNetworkPermissions(teamId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
-    public deleteAllTeamNetworkPermissions(teamId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
-    public deleteAllTeamNetworkPermissions(teamId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
-    public deleteAllTeamNetworkPermissions(teamId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        if (teamId === null || teamId === undefined) {
-            throw new Error('Required parameter teamId was null or undefined when calling deleteAllTeamNetworkPermissions.');
+    public deleteViewNetwork(viewId: string, id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
+    public deleteViewNetwork(viewId: string, id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
+    public deleteViewNetwork(viewId: string, id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
+    public deleteViewNetwork(viewId: string, id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling deleteViewNetwork.');
+        }
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling deleteViewNetwork.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -228,7 +234,7 @@ export class NetworksService {
             }
         }
 
-        let localVarPath = `/api/teams/${this.configuration.encodeParam({name: "teamId", value: teamId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/network-permissions`;
+        let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -242,90 +248,17 @@ export class NetworksService {
     }
 
     /**
-     * Delete a single network permission
-     * @param teamId The Id of the Team
-     * @param id The Id of the network permission
+     * Get all networks for a view
+     * @param viewId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteTeamNetworkPermission(teamId: string, id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
-    public deleteTeamNetworkPermission(teamId: string, id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
-    public deleteTeamNetworkPermission(teamId: string, id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
-    public deleteTeamNetworkPermission(teamId: string, id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        if (teamId === null || teamId === undefined) {
-            throw new Error('Required parameter teamId was null or undefined when calling deleteTeamNetworkPermission.');
-        }
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling deleteTeamNetworkPermission.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        let localVarCredential: string | undefined;
-        // authentication (oauth2) required
-        localVarCredential = this.configuration.lookupCredential('oauth2');
-        if (localVarCredential) {
-            localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
-        }
-
-        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (localVarHttpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/teams/${this.configuration.encodeParam({name: "teamId", value: teamId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/network-permissions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
-                headers: localVarHeaders,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * Get a single network permission by Id
-     * @param teamId The Id of the Team
-     * @param id The Id of the network permission
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public getTeamNetworkPermission(teamId: string, id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<TeamNetworkPermission>;
-    public getTeamNetworkPermission(teamId: string, id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<TeamNetworkPermission>>;
-    public getTeamNetworkPermission(teamId: string, id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<TeamNetworkPermission>>;
-    public getTeamNetworkPermission(teamId: string, id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
-        if (teamId === null || teamId === undefined) {
-            throw new Error('Required parameter teamId was null or undefined when calling getTeamNetworkPermission.');
-        }
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling getTeamNetworkPermission.');
+    public getViewNetworks(viewId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<ViewNetworkDto>>;
+    public getViewNetworks(viewId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<ViewNetworkDto>>>;
+    public getViewNetworks(viewId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<ViewNetworkDto>>>;
+    public getViewNetworks(viewId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling getViewNetworks.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -368,8 +301,8 @@ export class NetworksService {
             }
         }
 
-        let localVarPath = `/api/teams/${this.configuration.encodeParam({name: "teamId", value: teamId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/network-permissions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<TeamNetworkPermission>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks`;
+        return this.httpClient.request<Array<ViewNetworkDto>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -382,17 +315,22 @@ export class NetworksService {
     }
 
     /**
-     * Get all network permissions for a team
-     * @param teamId The Id of the Team
+     * Set team assignments for a network entry
+     * @param viewId 
+     * @param id 
+     * @param updateViewNetworkTeamsForm 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getTeamNetworkPermissions(teamId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<TeamNetworkPermission>>;
-    public getTeamNetworkPermissions(teamId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<TeamNetworkPermission>>>;
-    public getTeamNetworkPermissions(teamId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<TeamNetworkPermission>>>;
-    public getTeamNetworkPermissions(teamId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
-        if (teamId === null || teamId === undefined) {
-            throw new Error('Required parameter teamId was null or undefined when calling getTeamNetworkPermissions.');
+    public updateViewNetworkTeams(viewId: string, id: string, updateViewNetworkTeamsForm?: UpdateViewNetworkTeamsForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetworkDto>;
+    public updateViewNetworkTeams(viewId: string, id: string, updateViewNetworkTeamsForm?: UpdateViewNetworkTeamsForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetworkDto>>;
+    public updateViewNetworkTeams(viewId: string, id: string, updateViewNetworkTeamsForm?: UpdateViewNetworkTeamsForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetworkDto>>;
+    public updateViewNetworkTeams(viewId: string, id: string, updateViewNetworkTeamsForm?: UpdateViewNetworkTeamsForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling updateViewNetworkTeams.');
+        }
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling updateViewNetworkTeams.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -424,6 +362,17 @@ export class NetworksService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -435,10 +384,11 @@ export class NetworksService {
             }
         }
 
-        let localVarPath = `/api/teams/${this.configuration.encodeParam({name: "teamId", value: teamId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/network-permissions`;
-        return this.httpClient.request<Array<TeamNetworkPermission>>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/teams`;
+        return this.httpClient.request<ViewNetworkDto>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                body: updateViewNetworkTeamsForm,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
