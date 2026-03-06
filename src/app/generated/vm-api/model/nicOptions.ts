@@ -14,5 +14,6 @@
 export interface NicOptions { 
     availableNetworks?: { [key: string]: string | null; } | null;
     currentNetworks?: { [key: string]: string | null; } | null;
+    readOnlyNetworks?: Array<string> | null;
 }
 

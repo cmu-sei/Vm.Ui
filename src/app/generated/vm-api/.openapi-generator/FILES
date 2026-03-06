@@ -45,7 +45,7 @@ model/revertToVsphereVirtualMachineSnapshot.ts
 model/setVsphereVirtualMachineResolution.ts
 model/simpleTeam.ts
 model/teamIsoResult.ts
-model/updateViewNetworkTeamsForm.ts
+model/updateViewNetworkForm.ts
 model/validateVsphereVirtualMachineCredentials.ts
 model/viewNetworkDto.ts
 model/virtualMachineToolsStatus.ts

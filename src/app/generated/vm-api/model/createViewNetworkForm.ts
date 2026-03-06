@@ -16,6 +16,8 @@ export interface CreateViewNetworkForm {
     providerType: VmType;
     providerInstanceId: string;
     networkId: string;
+    name: string;
+    teamIds?: Array<string> | null;
 }
 export namespace CreateViewNetworkForm {
 }

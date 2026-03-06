@@ -18,6 +18,7 @@ export interface ViewNetworkDto {
     providerType?: VmType;
     providerInstanceId?: string | null;
     networkId?: string | null;
+    name?: string | null;
     teamIds?: Array<string> | null;
 }
 export namespace ViewNetworkDto {

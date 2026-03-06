@@ -27,6 +27,7 @@ export class AppComponent implements OnDestroy {
     private authService: ComnAuthService,
     private settingsService: ComnSettingsService,
   ) {
+    iconRegistry.setDefaultFontSetClass('mdi');
     iconRegistry.addSvgIcon(
       'monitor',
       sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/monitor.svg'),

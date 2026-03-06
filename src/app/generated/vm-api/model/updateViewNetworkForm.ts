@@ -9,9 +9,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { VmType } from './vmType';
 
 
-export interface UpdateViewNetworkTeamsForm { 
+export interface UpdateViewNetworkForm { 
+    providerType: VmType;
+    providerInstanceId: string;
+    networkId: string;
+    name: string;
     teamIds?: Array<string> | null;
 }
+export namespace UpdateViewNetworkForm {
+}
+
 

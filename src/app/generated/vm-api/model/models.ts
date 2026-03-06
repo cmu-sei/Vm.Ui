@@ -27,7 +27,7 @@ export * from './revertToVsphereVirtualMachineSnapshot';
 export * from './setVsphereVirtualMachineResolution';
 export * from './simpleTeam';
 export * from './teamIsoResult';
-export * from './updateViewNetworkTeamsForm';
+export * from './updateViewNetworkForm';
 export * from './validateVsphereVirtualMachineCredentials';
 export * from './viewNetworkDto';
 export * from './virtualMachineToolsStatus';

@@ -23,7 +23,7 @@ import { CreateViewNetworkForm } from '../model/createViewNetworkForm';
 // @ts-ignore
 import { ProblemDetails } from '../model/problemDetails';
 // @ts-ignore
-import { UpdateViewNetworkTeamsForm } from '../model/updateViewNetworkTeamsForm';
+import { UpdateViewNetworkForm } from '../model/updateViewNetworkForm';
 // @ts-ignore
 import { ViewNetworkDto } from '../model/viewNetworkDto';
 
@@ -248,6 +248,77 @@ export class NetworksService {
     }
 
     /**
+     * Get a single network entry for a view
+     * @param viewId 
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getViewNetwork(viewId: string, id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetworkDto>;
+    public getViewNetwork(viewId: string, id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetworkDto>>;
+    public getViewNetwork(viewId: string, id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetworkDto>>;
+    public getViewNetwork(viewId: string, id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+        if (viewId === null || viewId === undefined) {
+            throw new Error('Required parameter viewId was null or undefined when calling getViewNetwork.');
+        }
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling getViewNetwork.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (oauth2) required
+        localVarCredential = this.configuration.lookupCredential('oauth2');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        return this.httpClient.request<ViewNetworkDto>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Get all networks for a view
      * @param viewId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -315,22 +386,22 @@ export class NetworksService {
     }
 
     /**
-     * Set team assignments for a network entry
+     * Update a network entry for a view
      * @param viewId 
      * @param id 
-     * @param updateViewNetworkTeamsForm 
+     * @param updateViewNetworkForm 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateViewNetworkTeams(viewId: string, id: string, updateViewNetworkTeamsForm?: UpdateViewNetworkTeamsForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetworkDto>;
-    public updateViewNetworkTeams(viewId: string, id: string, updateViewNetworkTeamsForm?: UpdateViewNetworkTeamsForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetworkDto>>;
-    public updateViewNetworkTeams(viewId: string, id: string, updateViewNetworkTeamsForm?: UpdateViewNetworkTeamsForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetworkDto>>;
-    public updateViewNetworkTeams(viewId: string, id: string, updateViewNetworkTeamsForm?: UpdateViewNetworkTeamsForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
+    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetworkDto>;
+    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetworkDto>>;
+    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetworkDto>>;
+    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
         if (viewId === null || viewId === undefined) {
-            throw new Error('Required parameter viewId was null or undefined when calling updateViewNetworkTeams.');
+            throw new Error('Required parameter viewId was null or undefined when calling updateViewNetwork.');
         }
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling updateViewNetworkTeams.');
+            throw new Error('Required parameter id was null or undefined when calling updateViewNetwork.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -384,11 +455,11 @@ export class NetworksService {
             }
         }
 
-        let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/teams`;
+        let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
         return this.httpClient.request<ViewNetworkDto>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: updateViewNetworkTeamsForm,
+                body: updateViewNetworkForm,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
