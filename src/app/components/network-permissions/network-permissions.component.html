@@ -160,11 +160,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let row">
           @if (canManage) {
-            @if (isRowDirty(row)) {
-              <button mat-icon-button (click)="saveRow(row)" matTooltip="Save">
-                <mat-icon class="mdi-24px" fontIcon="mdi-content-save"></mat-icon>
-              </button>
-            }
+            <button mat-icon-button (click)="saveRow(row)" matTooltip="Save" [disabled]="!isRowDirty(row)">
+              <mat-icon class="mdi-24px" fontIcon="mdi-content-save"></mat-icon>
+            </button>
             <button mat-icon-button (click)="deleteNetwork(row)" matTooltip="Delete">
               <mat-icon class="mdi-24px" fontIcon="mdi-trash-can-outline"></mat-icon>
             </button>

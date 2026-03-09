@@ -56,6 +56,6 @@ mat-cell mat-form-field {
 }
 
 .mat-column-actions {
-  flex: 0 0 72px;
-  max-width: 72px;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
