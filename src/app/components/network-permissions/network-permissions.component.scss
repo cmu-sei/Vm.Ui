@@ -17,6 +17,18 @@ Copyright 2026 Carnegie Mellon University. All Rights Reserved.
   flex-wrap: wrap;
 }
 
+.toolbar {
+  gap: 8px;
+  margin-bottom: 8px;
+  background: transparent;
+  padding: 0;
+}
+
+.search-field {
+  flex: 1;
+  max-width: 400px;
+}
+
 .table-container {
   width: 100%;
   margin-top: 5px;

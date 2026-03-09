@@ -65,21 +65,26 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
   }
 
-  <div>
-    <button
-      mat-raised-button
-      color="primary"
-      class="button-cmd"
-      (click)="refresh()"
-    >
+  <mat-toolbar class="toolbar">
+    <mat-form-field class="search-field" subscriptSizing="dynamic">
+      <mat-icon svgIcon="ic_magnify_search" matPrefix style="transform: scale(0.85)"></mat-icon>
+      <mat-label>Search</mat-label>
+      <input matInput [(ngModel)]="filterString" (ngModelChange)="applyFilter($event)" placeholder="Filter networks..." />
+      @if (filterString) {
+        <button matSuffix mat-icon-button (click)="filterString = ''; applyFilter('')">
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
+        </button>
+      }
+    </mat-form-field>
+    <button mat-raised-button color="primary" class="button-cmd" (click)="refresh()">
       Refresh
     </button>
-  </div>
+  </mat-toolbar>
 
   <div class="mat-elevation-z8 table-container">
-    <mat-table [dataSource]="dataSource">
+    <mat-table [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="providerType">
-        <mat-header-cell *matHeaderCellDef>Provider Type</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Provider Type</mat-header-cell>
         <mat-cell *matCellDef="let row">
           @if (canManage) {
             <mat-form-field>
@@ -96,7 +101,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </ng-container>
 
       <ng-container matColumnDef="providerInstanceId">
-        <mat-header-cell *matHeaderCellDef>Provider Instance</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Provider Instance</mat-header-cell>
         <mat-cell *matCellDef="let row">
           @if (canManage) {
             <mat-form-field>
@@ -109,7 +114,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </ng-container>
 
       <ng-container matColumnDef="networkId">
-        <mat-header-cell *matHeaderCellDef>Network ID</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Network ID</mat-header-cell>
         <mat-cell *matCellDef="let row">
           @if (canManage) {
             <mat-form-field>
@@ -122,7 +127,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
         <mat-cell *matCellDef="let row">
           @if (canManage) {
             <mat-form-field>
@@ -135,7 +140,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </ng-container>
 
       <ng-container matColumnDef="teamIds">
-        <mat-header-cell *matHeaderCellDef>Assigned Teams</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Assigned Teams</mat-header-cell>
         <mat-cell *matCellDef="let row">
           @if (canManage) {
             <mat-form-field>
@@ -173,5 +178,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
     </mat-table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
   </div>
 </div>

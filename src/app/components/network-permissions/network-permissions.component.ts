@@ -1,7 +1,7 @@
 // Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { switchMap, take, takeUntil } from 'rxjs/operators';
 import {
@@ -25,11 +25,15 @@ import {
   MatRow,
 } from '@angular/material/table';
 import {
+  FormsModule,
   ReactiveFormsModule,
   UntypedFormControl,
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatToolbar } from '@angular/material/toolbar';
 import { MatOption } from '@angular/material/core';
 import { TeamService, Team } from '../../generated/player-api';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
@@ -38,7 +42,7 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
@@ -46,9 +50,12 @@ import { MatTooltip } from '@angular/material/tooltip';
   templateUrl: './network-permissions.component.html',
   styleUrls: ['./network-permissions.component.scss'],
   imports: [
+    FormsModule,
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
+    MatPrefix,
+    MatSuffix,
     MatInput,
     MatSelect,
     MatOption,
@@ -66,12 +73,19 @@ import { MatTooltip } from '@angular/material/tooltip';
     MatRowDef,
     MatRow,
     MatTooltip,
+    MatPaginator,
+    MatSortModule,
+    MatToolbar,
   ],
 })
-export class NetworkPermissionsComponent implements OnDestroy {
+export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
   @Input() canManage = false;
 
   dataSource = new MatTableDataSource<ViewNetworkDto>([]);
+  filterString = '';
   teams: Team[] = [];
   unsubscribe$ = new Subject<null>();
   refresh$ = new BehaviorSubject<boolean>(true);
@@ -123,6 +137,37 @@ export class NetworkPermissionsComponent implements OnDestroy {
         this.dataSource.data = networks;
         this.rowForms.clear();
       });
+
+    this.dataSource.filterPredicate = (data: ViewNetworkDto, filter: string) => {
+      const search = filter.toLowerCase();
+      const teamNames = (data.teamIds || []).map(id => this.getTeamName(id)).join(' ').toLowerCase();
+      return (
+        (data.providerType || '').toLowerCase().includes(search) ||
+        (data.providerInstanceId || '').toLowerCase().includes(search) ||
+        (data.networkId || '').toLowerCase().includes(search) ||
+        (data.name || '').toLowerCase().includes(search) ||
+        teamNames.includes(search)
+      );
+    };
+
+    this.dataSource.sortingDataAccessor = (data: ViewNetworkDto, sortHeaderId: string) => {
+      if (sortHeaderId === 'teamIds') {
+        return (data.teamIds || []).map(id => this.getTeamName(id)).join(', ').toLowerCase();
+      }
+      return (data[sortHeaderId] || '').toString().toLowerCase();
+    };
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   createNetwork() {
