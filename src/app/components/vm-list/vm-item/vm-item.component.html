@@ -10,84 +10,55 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <ng-template #vmTemplate>
   <div [ngClass]="{ pending: vm.hasPendingTasks, error: vm.lastError }">
     <div class="d-flex align-items-center">
-      <div
-        class="m-2 vm-menu-button"
-        (click)="canManageTeam && onContextMenu($event)"
-        >
+      <div class="m-2 vm-menu-button" (click)="canManageTeam && onContextMenu($event)">
         @if (
-          vm.powerState !== undefined &&
-          vm.powerState.toString() === 'Unknown'
-          ) {
-          <mat-icon
-            style="color: red"
-            svgIcon="monitor"
-            title="Power state unknown"
-          ></mat-icon>
+        vm.powerState !== undefined &&
+        vm.powerState.toString() === 'Unknown'
+        ) {
+        <mat-icon style="color: red" svgIcon="monitor" title="Power state unknown"></mat-icon>
         }
         @if (
-          vm.powerState !== undefined && vm.powerState.toString() === 'On'
-          ) {
-          <mat-icon
-            style="color: var(--mat-sys-primary)"
-            class="text"
-            svgIcon="monitor"
-          ></mat-icon>
+        vm.powerState !== undefined && vm.powerState.toString() === 'On'
+        ) {
+        <mat-icon style="color: var(--mat-sys-on-background)" class="text" svgIcon="monitor"></mat-icon>
         }
         @if (
-          vm.powerState !== undefined && vm.powerState.toString() === 'Off'
-          ) {
-          <mat-icon
-            style="color: red"
-            svgIcon="power_icon"
-            title="Powered Off"
-          ></mat-icon>
+        vm.powerState !== undefined && vm.powerState.toString() === 'Off'
+        ) {
+        <mat-icon style="color: red" svgIcon="power_icon" title="Powered Off"></mat-icon>
         }
       </div>
       <div class="content">
-        <a
-          class="vm-link"
-          [attr.href]="this.themeService.addThemeQueryParam(vm.url)"
-          (click)="
+        <a class="vm-link" [attr.href]="this.themeService.addThemeQueryParam(vm.url)" (click)="
             openHere(
               $event,
               vm.name,
               this.themeService.addThemeQueryParam(vm.url),
               vm.embeddable
             )
-          "
-          >{{ vm.name }}</a
-          >
-        </div>
+          ">{{ vm.name }}</a>
       </div>
-      @if (showIps) {
-        <div class="d-flex flex-column align-items-center content">
-          @for (address of getIpAddresses(vm); track address) {
-            <label class="text">
-              {{ address }}
-            </label>
-          }
-        </div>
+    </div>
+    @if (showIps) {
+    <div class="d-flex flex-column align-items-center content">
+      @for (address of getIpAddresses(vm); track address) {
+      <label class="text">
+        {{ address }}
+      </label>
       }
     </div>
-    <div
-      style="visibility: hidden; position: fixed"
-      [style.left]="contextMenuPosition.x"
-      [style.top]="contextMenuPosition.y"
-      [matMenuTriggerFor]="contextMenu"
-    ></div>
+    }
+  </div>
+  <div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
+    [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu"></div>
+</ng-template>
+<mat-menu #contextMenu="matMenu">
+  <div class="menu-top"><span>Available to the following teams:</span></div>
+  <ng-template matMenuContent let-item="item">
+    @for (item of teamsList; track item; let i = $index) {
+    <mat-checkbox #menuItems class="menu-item" [checked]="isVmOnTeam(vm.teamIds, item.id)"
+      (click)="$event.stopPropagation()" (change)="onTeamSelect(vm.id, vm.teamIds, item.id)">{{ item.name
+      }}</mat-checkbox>
+    }
   </ng-template>
-  <mat-menu #contextMenu="matMenu">
-    <div class="menu-top"><span>Available to the following teams:</span></div>
-    <ng-template matMenuContent let-item="item">
-      @for (item of teamsList; track item; let i = $index) {
-        <mat-checkbox
-          #menuItems
-          class="menu-item"
-          [checked]="isVmOnTeam(vm.teamIds, item.id)"
-          (click)="$event.stopPropagation()"
-          (change)="onTeamSelect(vm.id, vm.teamIds, item.id)"
-          >{{ item.name }}</mat-checkbox
-          >
-        }
-      </ng-template>
-    </mat-menu>
+</mat-menu>
