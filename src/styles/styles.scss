@@ -4,6 +4,7 @@
 /* IMPORTS - All @use statements must come first */
 @use '@angular/material' as mat;
 @use './theme-colors' as theme;
+@use './dark-theme-colors' as dark-theme;
 /* END IMPORTS */
 
 /* VENDER INCLUDES */
@@ -16,27 +17,17 @@
 html {
   @include mat.theme((color: theme.$primary-palette,
       typography: '"Open Sans", sans-serif',
-    ),
-    $overrides: ((background: #f1f1f2,
-        surface: var(--mat-sys-background),
-        surface-variant: var(--mat-sys-background),
-        icon: var(--mat-sys-primary),
-      )));
-  @include mat.icon-button-overrides((icon-color: var(--mat-sys-primary)));
+    ));
+  @include mat.icon-button-overrides((icon-color: var(--mat-sys-primary),
+    ));
 }
 
 .darkMode {
-  @include mat.theme((color: (primary: theme.$primary-palette,
+  @include mat.theme((color: (primary: dark-theme.$dark-primary-palette,
         typography: '"Open Sans", sans-serif',
         theme-type: dark,
       ),
-    ),
-    $overrides: ((background: #313131,
-        surface: var(--mat-sys-background),
-        surface-variant: var(--mat-sys-background),
-        icon: var(--mat-sys-primary),
-      )));
-  @include mat.icon-button-overrides((icon-color: var(--mat-sys-primary)));
+    ));
 }
 
 html,
