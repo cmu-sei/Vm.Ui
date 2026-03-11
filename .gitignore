@@ -46,3 +46,7 @@ Thumbs.db
 .vscode/
 
 */assets/config/settings.env.json*
+
+# Claude Code
+CLAUDE.md
+.claude/
