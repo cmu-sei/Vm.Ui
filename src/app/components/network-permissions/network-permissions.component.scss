@@ -4,7 +4,7 @@ Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 */
 
 .container {
-  margin: 8px;
+  margin: 0.5rem;
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -12,30 +12,31 @@ Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 .create-form {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   flex-wrap: wrap;
 }
 
 .toolbar {
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   background: transparent;
   padding: 0;
 }
 
 .search-field {
   flex: 1;
-  max-width: 400px;
+  max-width: 25rem;
 }
 
 .table-container {
   width: 100%;
-  margin-top: 5px;
+  margin-top: 0.3125rem;
   overflow-x: auto;
 }
 
-mat-cell, mat-header-cell {
+mat-cell,
+mat-header-cell {
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-all;
@@ -43,7 +44,6 @@ mat-cell, mat-header-cell {
 
 mat-cell mat-form-field {
   width: 100%;
-  font-size: 12px;
 }
 
 /* Column sizing — mat-table uses flex layout by default */
