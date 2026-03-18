@@ -144,10 +144,26 @@ export class VmMainComponent implements OnInit, OnDestroy {
     this.canViewView$,
   ]).pipe(map(([x, y]) => x || y));
 
-  public showNetworks$ = combineLatest([
-    this.canViewViews$,
-    this.canViewView$,
-  ]).pipe(map(([x, y]) => x || y));
+  public canManageNetworks$ = this.userPermissionsService.can(
+    AppSystemPermission.ManageNetworks,
+    null,
+    true,
+    null,
+    AppViewPermission.ManageNetworks,
+  );
+
+  public canViewNetworks$ = combineLatest([
+    this.userPermissionsService.can(
+      AppSystemPermission.ViewNetworks,
+      null,
+      true,
+      null,
+      AppViewPermission.ViewNetworks,
+    ),
+    this.canManageNetworks$,
+  ]).pipe(map(([view, manage]) => view || manage));
+
+  public showNetworks$ = this.canViewNetworks$;
 
   ngOnInit() {
     forkJoin([
