@@ -12,9 +12,9 @@ import { Component, Inject } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 
 @Component({
-    selector: 'confirm-dialog',
-    templateUrl: './confirm-dialog.component.html',
-    imports: [MatDialogTitle, MatDialogContent, MatDialogActions, MatButton]
+  selector: 'confirm-dialog',
+  templateUrl: './confirm-dialog.component.html',
+  imports: [MatDialogTitle, MatDialogContent, MatDialogActions, MatButton],
 })
 export class ConfirmDialogComponent {
   public title: string;
@@ -28,8 +28,8 @@ export class ConfirmDialogComponent {
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
   ) {
     this.dialogRef.disableClose = true;
-    this.buttonFalseText = this.data['buttonFalseText'];
-    this.buttonTrueText = this.data['buttonTrueText'];
+    this.buttonFalseText = this.data['buttonFalseText'] ?? 'Cancel';
+    this.buttonTrueText = this.data['buttonTrueText'] ?? 'Confirm';
   }
 
   onClick(confirm: boolean): void {
