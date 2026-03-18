@@ -11,13 +11,12 @@
  */
 
 
-export type AppTeamPermission = 'ViewTeam' | 'ManageTeam' | 'EditTeam' | 'UploadTeamIsos' | 'FullNetworkAccess';
+export type AppTeamPermission = 'ViewTeam' | 'ManageTeam' | 'EditTeam' | 'UploadTeamIsos';
 
 export const AppTeamPermission = {
     ViewTeam: 'ViewTeam' as AppTeamPermission,
     ManageTeam: 'ManageTeam' as AppTeamPermission,
     EditTeam: 'EditTeam' as AppTeamPermission,
-    UploadTeamIsos: 'UploadTeamIsos' as AppTeamPermission,
-    FullNetworkAccess: 'FullNetworkAccess' as AppTeamPermission
+    UploadTeamIsos: 'UploadTeamIsos' as AppTeamPermission
 };
 

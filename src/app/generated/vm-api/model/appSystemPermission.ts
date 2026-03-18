@@ -11,11 +11,13 @@
  */
 
 
-export type AppSystemPermission = 'ViewViews' | 'ManageViews' | 'EditViews';
+export type AppSystemPermission = 'ViewViews' | 'ManageViews' | 'EditViews' | 'ViewNetworks' | 'ManageNetworks';
 
 export const AppSystemPermission = {
     ViewViews: 'ViewViews' as AppSystemPermission,
     ManageViews: 'ManageViews' as AppSystemPermission,
-    EditViews: 'EditViews' as AppSystemPermission
+    EditViews: 'EditViews' as AppSystemPermission,
+    ViewNetworks: 'ViewNetworks' as AppSystemPermission,
+    ManageNetworks: 'ManageNetworks' as AppSystemPermission
 };
 

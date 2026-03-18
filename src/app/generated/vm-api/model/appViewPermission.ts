@@ -11,7 +11,7 @@
  */
 
 
-export type AppViewPermission = 'ViewView' | 'ManageView' | 'EditView' | 'UploadViewIsos' | 'DownloadVmFiles' | 'UploadVmFiles' | 'RevertVms' | 'FullNetworkAccess';
+export type AppViewPermission = 'ViewView' | 'ManageView' | 'EditView' | 'UploadViewIsos' | 'DownloadVmFiles' | 'UploadVmFiles' | 'RevertVms' | 'ViewNetworks' | 'ManageNetworks';
 
 export const AppViewPermission = {
     ViewView: 'ViewView' as AppViewPermission,
@@ -21,6 +21,7 @@ export const AppViewPermission = {
     DownloadVmFiles: 'DownloadVmFiles' as AppViewPermission,
     UploadVmFiles: 'UploadVmFiles' as AppViewPermission,
     RevertVms: 'RevertVms' as AppViewPermission,
-    FullNetworkAccess: 'FullNetworkAccess' as AppViewPermission
+    ViewNetworks: 'ViewNetworks' as AppViewPermission,
+    ManageNetworks: 'ManageNetworks' as AppViewPermission
 };
 
