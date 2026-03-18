@@ -17,7 +17,6 @@ export interface VmUpdateForm {
     url?: string | null;
     name: string;
     userId?: string | null;
-    allowedNetworks?: Array<string> | null;
     consoleConnectionInfo?: ConsoleConnectionInfo;
     proxmoxVmInfo?: ProxmoxVmInfo;
     /**

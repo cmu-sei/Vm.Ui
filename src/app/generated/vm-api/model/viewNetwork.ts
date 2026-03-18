@@ -12,7 +12,7 @@
 import { VmType } from './vmType';
 
 
-export interface ViewNetworkDto { 
+export interface ViewNetwork { 
     id?: string;
     viewId?: string;
     providerType?: VmType;
@@ -21,7 +21,7 @@ export interface ViewNetworkDto {
     name?: string | null;
     teamIds?: Array<string> | null;
 }
-export namespace ViewNetworkDto {
+export namespace ViewNetwork {
 }
 
 

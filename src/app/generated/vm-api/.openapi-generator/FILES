@@ -47,7 +47,7 @@ model/simpleTeam.ts
 model/teamIsoResult.ts
 model/updateViewNetworkForm.ts
 model/validateVsphereVirtualMachineCredentials.ts
-model/viewNetworkDto.ts
+model/viewNetwork.ts
 model/virtualMachineToolsStatus.ts
 model/vm.ts
 model/vmCreateForm.ts

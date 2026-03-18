@@ -1,12 +1,18 @@
 // Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { switchMap, take, takeUntil } from 'rxjs/operators';
 import {
   NetworksService,
-  ViewNetworkDto,
+  ViewNetwork,
   CreateViewNetworkForm,
   UpdateViewNetworkForm,
   VmType,
@@ -42,7 +48,12 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
+import {
+  MatFormField,
+  MatLabel,
+  MatPrefix,
+  MatSuffix,
+} from '@angular/material/form-field';
 import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
@@ -84,16 +95,16 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
 
   @Input() canManage = false;
 
-  dataSource = new MatTableDataSource<ViewNetworkDto>([]);
+  dataSource = new MatTableDataSource<ViewNetwork>([]);
   filterString = '';
   teams: Team[] = [];
   unsubscribe$ = new Subject<null>();
   refresh$ = new BehaviorSubject<boolean>(true);
 
-  providerTypeControl = new UntypedFormControl(VmType.Vsphere, [Validators.required]);
-  providerInstanceIdControl = new UntypedFormControl('', [
+  providerTypeControl = new UntypedFormControl(VmType.Vsphere, [
     Validators.required,
   ]);
+  providerInstanceIdControl = new UntypedFormControl('', [Validators.required]);
   networkIdControl = new UntypedFormControl('', [Validators.required]);
   nameControl = new UntypedFormControl('', [Validators.required]);
   teamIdsControl = new UntypedFormControl([]);
@@ -138,9 +149,12 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
         this.rowForms.clear();
       });
 
-    this.dataSource.filterPredicate = (data: ViewNetworkDto, filter: string) => {
+    this.dataSource.filterPredicate = (data: ViewNetwork, filter: string) => {
       const search = filter.toLowerCase();
-      const teamNames = (data.teamIds || []).map(id => this.getTeamName(id)).join(' ').toLowerCase();
+      const teamNames = (data.teamIds || [])
+        .map((id) => this.getTeamName(id))
+        .join(' ')
+        .toLowerCase();
       return (
         (data.providerType || '').toLowerCase().includes(search) ||
         (data.providerInstanceId || '').toLowerCase().includes(search) ||
@@ -150,9 +164,15 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
       );
     };
 
-    this.dataSource.sortingDataAccessor = (data: ViewNetworkDto, sortHeaderId: string) => {
+    this.dataSource.sortingDataAccessor = (
+      data: ViewNetwork,
+      sortHeaderId: string,
+    ) => {
       if (sortHeaderId === 'teamIds') {
-        return (data.teamIds || []).map(id => this.getTeamName(id)).join(', ').toLowerCase();
+        return (data.teamIds || [])
+          .map((id) => this.getTeamName(id))
+          .join(', ')
+          .toLowerCase();
       }
       return (data[sortHeaderId] || '').toString().toLowerCase();
     };
@@ -198,14 +218,20 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  getRowForm(row: ViewNetworkDto): UntypedFormGroup {
+  getRowForm(row: ViewNetwork): UntypedFormGroup {
     if (!this.rowForms.has(row.id)) {
       this.rowForms.set(
         row.id,
         new UntypedFormGroup({
-          providerType: new UntypedFormControl(row.providerType, [Validators.required]),
-          providerInstanceId: new UntypedFormControl(row.providerInstanceId, [Validators.required]),
-          networkId: new UntypedFormControl(row.networkId, [Validators.required]),
+          providerType: new UntypedFormControl(row.providerType, [
+            Validators.required,
+          ]),
+          providerInstanceId: new UntypedFormControl(row.providerInstanceId, [
+            Validators.required,
+          ]),
+          networkId: new UntypedFormControl(row.networkId, [
+            Validators.required,
+          ]),
           name: new UntypedFormControl(row.name, [Validators.required]),
           teamIds: new UntypedFormControl(row.teamIds || []),
         }),
@@ -214,11 +240,11 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
     return this.rowForms.get(row.id);
   }
 
-  isRowDirty(row: ViewNetworkDto): boolean {
+  isRowDirty(row: ViewNetwork): boolean {
     return this.rowForms.has(row.id) && this.rowForms.get(row.id).dirty;
   }
 
-  saveRow(row: ViewNetworkDto) {
+  saveRow(row: ViewNetwork) {
     const form = this.getRowForm(row);
     if (form.valid) {
       const updateForm: UpdateViewNetworkForm = {
@@ -237,7 +263,7 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  deleteNetwork(row: ViewNetworkDto) {
+  deleteNetwork(row: ViewNetwork) {
     this.dialogService
       .confirm(
         'Delete Network',

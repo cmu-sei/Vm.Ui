@@ -29,7 +29,7 @@ export * from './simpleTeam';
 export * from './teamIsoResult';
 export * from './updateViewNetworkForm';
 export * from './validateVsphereVirtualMachineCredentials';
-export * from './viewNetworkDto';
+export * from './viewNetwork';
 export * from './virtualMachineToolsStatus';
 export * from './vm';
 export * from './vmCreateForm';

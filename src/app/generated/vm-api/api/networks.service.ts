@@ -25,7 +25,7 @@ import { ProblemDetails } from '../model/problemDetails';
 // @ts-ignore
 import { UpdateViewNetworkForm } from '../model/updateViewNetworkForm';
 // @ts-ignore
-import { ViewNetworkDto } from '../model/viewNetworkDto';
+import { ViewNetwork } from '../model/viewNetwork';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -105,9 +105,9 @@ export class NetworksService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetworkDto>;
-    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetworkDto>>;
-    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetworkDto>>;
+    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetwork>;
+    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetwork>>;
+    public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetwork>>;
     public createViewNetwork(viewId: string, createViewNetworkForm?: CreateViewNetworkForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
         if (viewId === null || viewId === undefined) {
             throw new Error('Required parameter viewId was null or undefined when calling createViewNetwork.');
@@ -165,7 +165,7 @@ export class NetworksService {
         }
 
         let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks`;
-        return this.httpClient.request<ViewNetworkDto>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<ViewNetwork>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: createViewNetworkForm,
@@ -254,9 +254,9 @@ export class NetworksService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getViewNetwork(viewId: string, id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetworkDto>;
-    public getViewNetwork(viewId: string, id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetworkDto>>;
-    public getViewNetwork(viewId: string, id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetworkDto>>;
+    public getViewNetwork(viewId: string, id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetwork>;
+    public getViewNetwork(viewId: string, id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetwork>>;
+    public getViewNetwork(viewId: string, id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetwork>>;
     public getViewNetwork(viewId: string, id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
         if (viewId === null || viewId === undefined) {
             throw new Error('Required parameter viewId was null or undefined when calling getViewNetwork.');
@@ -306,7 +306,7 @@ export class NetworksService {
         }
 
         let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<ViewNetworkDto>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<ViewNetwork>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -324,9 +324,9 @@ export class NetworksService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getViewNetworks(viewId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<ViewNetworkDto>>;
-    public getViewNetworks(viewId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<ViewNetworkDto>>>;
-    public getViewNetworks(viewId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<ViewNetworkDto>>>;
+    public getViewNetworks(viewId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<Array<ViewNetwork>>;
+    public getViewNetworks(viewId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<Array<ViewNetwork>>>;
+    public getViewNetworks(viewId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<Array<ViewNetwork>>>;
     public getViewNetworks(viewId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
         if (viewId === null || viewId === undefined) {
             throw new Error('Required parameter viewId was null or undefined when calling getViewNetworks.');
@@ -373,7 +373,7 @@ export class NetworksService {
         }
 
         let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks`;
-        return this.httpClient.request<Array<ViewNetworkDto>>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Array<ViewNetwork>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -393,9 +393,9 @@ export class NetworksService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetworkDto>;
-    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetworkDto>>;
-    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetworkDto>>;
+    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<ViewNetwork>;
+    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpResponse<ViewNetwork>>;
+    public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<HttpEvent<ViewNetwork>>;
     public updateViewNetwork(viewId: string, id: string, updateViewNetworkForm?: UpdateViewNetworkForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext}): Observable<any> {
         if (viewId === null || viewId === undefined) {
             throw new Error('Required parameter viewId was null or undefined when calling updateViewNetwork.');
@@ -456,7 +456,7 @@ export class NetworksService {
         }
 
         let localVarPath = `/api/views/${this.configuration.encodeParam({name: "viewId", value: viewId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/networks/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<ViewNetworkDto>('put', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<ViewNetwork>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: updateViewNetworkForm,
