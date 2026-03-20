@@ -14,16 +14,17 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EventType } from './eventType';
+import { VmType } from './vmType';
 
 
-export interface WebhookEvent { 
-    id?: string;
-    type?: EventType;
-    timestamp?: string;
-    payload?: string | null;
+export interface UpdateViewNetworkForm { 
+    providerType: VmType;
+    providerInstanceId: string;
+    networkId: string;
+    name: string;
+    teamIds?: Array<string> | null;
 }
-export namespace WebhookEvent {
+export namespace UpdateViewNetworkForm {
 }
 
 

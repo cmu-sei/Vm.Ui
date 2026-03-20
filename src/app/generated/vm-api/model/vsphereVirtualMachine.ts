@@ -28,8 +28,10 @@ export interface VsphereVirtualMachine {
     state?: string | null;
     networkCards?: NicOptions;
     canAccessNicConfiguration?: boolean;
-    allowedNetworks?: Array<string> | null;
     vmToolsStatus?: VirtualMachineToolsStatus;
     hasSnapshot?: boolean;
 }
+export namespace VsphereVirtualMachine {
+}
+
 
