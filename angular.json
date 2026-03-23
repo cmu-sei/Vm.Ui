@@ -35,9 +35,7 @@
               "src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/styles"
-              ]
+              "includePaths": ["src/styles"]
             },
             "inlineStyleLanguage": "scss",
             "allowedCommonJsDependencies": [],

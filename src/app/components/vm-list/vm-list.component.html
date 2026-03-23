@@ -14,10 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <div class="d-flex flex-column align-items-center">
             <div><b>Virtual Machines</b></div>
             @if (!readOnly) {
-              <button
-                mat-stroked-button
-                [matMenuTriggerFor]="actionsMenu"
-                >
+              <button mat-stroked-button [matMenuTriggerFor]="actionsMenu">
                 {{ selectedVms.length }} selected
                 <mat-icon svgIcon="ic_gear" iconPositionEnd></mat-icon>
               </button>
@@ -30,28 +27,28 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 mat-menu-item
                 (click)="powerOnSelected()"
                 [disabled]="selectedVms.length === 0"
-                >
+              >
                 Power On
               </button>
               <button
                 mat-menu-item
                 (click)="powerOffSelected()"
                 [disabled]="selectedVms.length === 0"
-                >
+              >
                 Power Off
               </button>
               <button
                 mat-menu-item
                 (click)="rebootSelected()"
                 [disabled]="selectedVms.length === 0"
-                >
+              >
                 Reboot
               </button>
               <button
                 mat-menu-item
                 (click)="shutdownSelected()"
                 [disabled]="selectedVms.length === 0"
-                >
+              >
                 Shutdown
               </button>
               @if (canRevertVms$ | async) {
@@ -59,7 +56,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                   mat-menu-item
                   (click)="revertSelected()"
                   [disabled]="selectedVms.length === 0"
-                  >
+                >
                   Revert
                 </button>
               }
@@ -67,14 +64,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 mat-menu-item
                 (click)="openSelectedHere()"
                 [disabled]="selectedVms.length === 0"
-                >
+              >
                 Open in Player tab
               </button>
               <button
                 mat-menu-item
                 (click)="openSelectedBrowser()"
                 [disabled]="selectedVms.length === 0"
-                >
+              >
                 Open in browser tab
               </button>
             </mat-menu>
@@ -87,7 +84,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               type="text"
               [(ngModel)]="filterString"
               (keyup)="applyFilter($event.target.value)"
-              />
+            />
             <mat-icon
               style="transform: scale(0.85)"
               svgIcon="ic_magnify_search"
@@ -99,7 +96,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 mat-icon-button
                 (click)="clearFilter()"
                 title="Clear Search"
-                >
+              >
                 <mat-icon
                   style="transform: scale(0.85)"
                   svgIcon="ic_cancel_circle"
@@ -113,83 +110,115 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               color="primary"
               (change)="showIpClicked($event)"
               >Show IPs</mat-checkbox
+            >
+            @if (showIps) {
+              <mat-checkbox
+                [(ngModel)]="ipv4Only"
+                color="primary"
+                (change)="ipv4Clicked($event)"
+                >IPv4 Only</mat-checkbox
               >
-              @if (showIps) {
-                <mat-checkbox
-                  [(ngModel)]="ipv4Only"
-                  color="primary"
-                  (change)="ipv4Clicked($event)"
-                  >IPv4 Only</mat-checkbox
-                  >
-                }
-              </div>
-              @if (canViewView) {
-                <div>
-                  <mat-checkbox color="primary" (click)="toggleSort()">
-                    Sort by Team
-                  </mat-checkbox>
-                </div>
-              }
-              <mat-form-field subscriptSizing="dynamic">
-                <mat-label>Show</mat-label>
-                <mat-select
-                  [(value)]="vmFilterBy"
-                  (selectionChange)="applyFilterByPower()"
-                  >
-                  <mat-option value="All">All Machines</mat-option>
-                  <mat-option value="On">Powered On</mat-option>
-                  <mat-option value="Off">Powered Off</mat-option>
-                  <mat-option value="Suspended">Suspended</mat-option>
-                  <mat-option
-                    value="Snapshots"
-                    matTooltip="Vms that have at least one snapshot"
-                    >Snapshots</mat-option
-                    >
-                  </mat-select>
-                </mat-form-field>
-                <div>
-                  @if (!uploading && canUploadIsos$ | async) {
-                    <button
-                      mat-stroked-button
-                      class="text"
-                      (click)="fileInput.click()"
-                      >
-                      Upload File
-                    </button>
-                  }
-                  @if (uploading) {
-                    <button mat-button>
-                      Uploading ... {{ uploadProgress }}%
-                    </button>
-                  }
-                  <input
-                    #fileInput
-                    type="file"
-                    multiple
-                    [hidden]="true"
-                    (change)="uploadIso(fileInput)"
-                    />
-                </div>
-              </div>
+            }
+          </div>
+          @if (canViewView) {
+            <div>
+              <mat-checkbox color="primary" (click)="toggleSort()">
+                Sort by Team
+              </mat-checkbox>
             </div>
-            @if (!sortByTeams) {
-              <dts-select-container
-                #selectContainer
-                [(selectedItems)]="selectedVms"
+          }
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Show</mat-label>
+            <mat-select
+              [(value)]="vmFilterBy"
+              (selectionChange)="applyFilterByPower()"
+            >
+              <mat-option value="All">All Machines</mat-option>
+              <mat-option value="On">Powered On</mat-option>
+              <mat-option value="Off">Powered Off</mat-option>
+              <mat-option value="Suspended">Suspended</mat-option>
+              <mat-option
+                value="Snapshots"
+                matTooltip="Vms that have at least one snapshot"
+                >Snapshots</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+          <div>
+            @if (!uploading && canUploadIsos$ | async) {
+              <button
+                mat-stroked-button
+                class="text"
+                (click)="fileInput.click()"
+              >
+                Upload File
+              </button>
+            }
+            @if (uploading) {
+              <button mat-button>Uploading ... {{ uploadProgress }}%</button>
+            }
+            <input
+              #fileInput
+              type="file"
+              multiple
+              [hidden]="true"
+              (change)="uploadIso(fileInput)"
+            />
+          </div>
+        </div>
+      </div>
+      @if (!sortByTeams) {
+        <dts-select-container #selectContainer [(selectedItems)]="selectedVms">
+          @if (teamsList$ | async; as teamsList) {
+            @for (
+              vm of vmModelDataSource.filteredData
+                | slice
+                  : pageEvent.pageIndex * pageEvent.pageSize
+                  : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
+              track trackByVmId($index, vm)
+            ) {
+              <div class="flex-container" [matTooltip]="vm.lastError">
+                <vm-item
+                  class="w-100"
+                  [dtsSelectItem]="vm.id"
+                  [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
+                  [vm]="vm"
+                  [ipv4Only]="ipv4Only"
+                  [showIps]="showIps"
+                  (openVmHere)="openHere($event)"
+                  [teamsList]="teamsList"
+                  [canManageTeam]="canManageView"
                 >
+                </vm-item>
+              </div>
+            }
+          }
+        </dts-select-container>
+      }
+      @if (sortByTeams) {
+        <div>
+          @for (group of groupByTeams; track group; let iter = $index) {
+            <mat-expansion-panel (click)="setCurrentPanel(iter)">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ group.team }}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <dts-select-container
+                #groupSelectContainers
+                [(selectedItems)]="selectedVms"
+                (mousedown)="panelClicked(iter)"
+              >
                 @if (teamsList$ | async; as teamsList) {
                   @for (
-                    vm of vmModelDataSource.filteredData
-                    | slice
-                    : pageEvent.pageIndex * pageEvent.pageSize
-                    : (pageEvent.pageIndex + 1) * pageEvent.pageSize; track trackByVmId($index,
-                    vm)) {
-                    <div
-                      class="flex-container"
-                      [matTooltip]="vm.lastError"
-                      >
+                    vm of group.dataSource.data
+                      | slice
+                        : pageEvent.pageIndex * pageEvent.pageSize
+                        : (pageEvent.pageIndex + 1) * pageEvent.pageSize;
+                    track trackByVmId($index, vm)
+                  ) {
+                    <div class="flex-container" [matTooltip]="vm.lastError">
                       <vm-item
-                        class="w-100"
                         [dtsSelectItem]="vm.id"
                         [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
                         [vm]="vm"
@@ -198,87 +227,49 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                         (openVmHere)="openHere($event)"
                         [teamsList]="teamsList"
                         [canManageTeam]="canManageView"
-                        >
+                      >
                       </vm-item>
                     </div>
                   }
                 }
               </dts-select-container>
-            }
-            @if (sortByTeams) {
-              <div>
-                @for (group of groupByTeams; track group; let iter = $index) {
-                  <mat-expansion-panel
-                    (click)="setCurrentPanel(iter)"
-                    >
-                    <mat-expansion-panel-header>
-                      <mat-panel-title>
-                        {{ group.team }}
-                      </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <dts-select-container
-                      #groupSelectContainers
-                      [(selectedItems)]="selectedVms"
-                      (mousedown)="panelClicked(iter)"
-                      >
-                      @if (teamsList$ | async; as teamsList) {
-                        @for (
-                          vm of group.dataSource.data
-                          | slice
-                          : pageEvent.pageIndex * pageEvent.pageSize
-                          : (pageEvent.pageIndex + 1) * pageEvent.pageSize; track trackByVmId($index,
-                          vm)) {
-                          <div
-                            class="flex-container"
-                            [matTooltip]="vm.lastError"
-                            >
-                            <vm-item
-                              [dtsSelectItem]="vm.id"
-                              [dtsDisabled]="vm.powerState.toString() === 'Unknown'"
-                              [vm]="vm"
-                              [ipv4Only]="ipv4Only"
-                              [showIps]="showIps"
-                              (openVmHere)="openHere($event)"
-                              [teamsList]="teamsList"
-                              [canManageTeam]="canManageView"
-                              >
-                            </vm-item>
-                          </div>
-                        }
-                      }
-                    </dts-select-container>
-                    <mat-paginator
-                      #groupPaginators
-                      [pageSize]="defaultPageSize"
-                      [pageSizeOptions]="[25, 50, 100]"
-                      [showFirstLastButtons]="true"
-                      (page)="onPage($event)"
-                      >
-                    </mat-paginator>
-                    @if (group.dataSource.paginator == undefined) {
-                      <div>
-                        {{ assignPaginator(group, iter) }}
-                      </div>
-                    }
-                  </mat-expansion-panel>
-                }
-              </div>
-            }
-            <div [hidden]="sortByTeams">
               <mat-paginator
-                #paginator
+                #groupPaginators
                 [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[25, 50, 100, vmModelDataSource.filteredData.length]"
+                [pageSizeOptions]="[25, 50, 100]"
                 [showFirstLastButtons]="true"
                 (page)="onPage($event)"
-                >
+              >
               </mat-paginator>
-            </div>
-          </div>
-        }
-        @if (!vmApiResponded) {
-          <div class="vm-list-container mat-elevation-z8">
-            <label>The VM API is not currently reachable.</label>
-          </div>
-        }
+              @if (group.dataSource.paginator == undefined) {
+                <div>
+                  {{ assignPaginator(group, iter) }}
+                </div>
+              }
+            </mat-expansion-panel>
+          }
+        </div>
+      }
+      <div [hidden]="sortByTeams">
+        <mat-paginator
+          #paginator
+          [pageSize]="defaultPageSize"
+          [pageSizeOptions]="[
+            25,
+            50,
+            100,
+            vmModelDataSource.filteredData.length,
+          ]"
+          [showFirstLastButtons]="true"
+          (page)="onPage($event)"
+        >
+        </mat-paginator>
       </div>
+    </div>
+  }
+  @if (!vmApiResponded) {
+    <div class="vm-list-container mat-elevation-z8">
+      <label>The VM API is not currently reachable.</label>
+    </div>
+  }
+</div>

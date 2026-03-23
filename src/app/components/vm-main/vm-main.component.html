@@ -47,6 +47,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </ng-template>
         </mat-tab>
       }
+      @if (showNetworks$ | async) {
+        <mat-tab label="Networks">
+          <ng-template matTabContent>
+            <app-network-permissions
+              [canManage]="canManageNetworks$ | async"
+            ></app-network-permissions>
+          </ng-template>
+        </mat-tab>
+      }
       @for (vm of openVms; track vm) {
         <mat-tab>
           <ng-template mat-tab-label>

@@ -1,0 +1,183 @@
+<!--
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<div class="container">
+  <h2>Network Permissions</h2>
+  <p>Configure access to existing Networks for Teams in this View.</p>
+
+  @if (canManage) {
+    <div class="create-form">
+      <mat-form-field>
+        <mat-label>Provider Type</mat-label>
+        <mat-select [formControl]="providerTypeControl">
+          @for (pt of providerTypes; track pt) {
+            <mat-option [value]="pt">{{ getProviderTypeLabel(pt) }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Provider Instance ID</mat-label>
+        <input
+          matInput
+          [formControl]="providerInstanceIdControl"
+          matTooltip="The address of the vSphere server (e.g. vcenter.example.com)"
+        />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Network ID</mat-label>
+        <input
+          matInput
+          [formControl]="networkIdControl"
+          matTooltip="The Managed Object ID (MOID) of the network"
+        />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Network Name</mat-label>
+        <input
+          matInput
+          [formControl]="nameControl"
+          matTooltip="The name of the network"
+        />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Teams</mat-label>
+        <mat-select [formControl]="teamIdsControl" multiple>
+          @for (team of teams; track team.id) {
+            <mat-option [value]="team.id">{{ team.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="button-cmd"
+        (click)="createNetwork()"
+      >
+        Add
+      </button>
+    </div>
+  }
+
+  <mat-toolbar class="toolbar">
+    <mat-form-field class="search-field" subscriptSizing="dynamic">
+      <mat-icon svgIcon="ic_magnify_search" matPrefix style="transform: scale(0.85)"></mat-icon>
+      <mat-label>Search</mat-label>
+      <input matInput [(ngModel)]="filterString" (ngModelChange)="applyFilter($event)" placeholder="Filter networks..." />
+      @if (filterString) {
+        <button matSuffix mat-icon-button (click)="filterString = ''; applyFilter('')">
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
+        </button>
+      }
+    </mat-form-field>
+    <button mat-raised-button color="primary" class="button-cmd" (click)="refresh()">
+      Refresh
+    </button>
+  </mat-toolbar>
+
+  <div class="mat-elevation-z8 table-container">
+    <mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="providerType">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Provider Type</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          @if (canManage) {
+            <mat-form-field>
+              <mat-select [formControl]="getRowForm(row).controls['providerType']">
+                @for (pt of providerTypes; track pt) {
+                  <mat-option [value]="pt">{{ getProviderTypeLabel(pt) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          } @else {
+            {{ getProviderTypeLabel(row.providerType) }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="providerInstanceId">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Provider Instance</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          @if (canManage) {
+            <mat-form-field>
+              <input matInput [formControl]="getRowForm(row).controls['providerInstanceId']" />
+            </mat-form-field>
+          } @else {
+            {{ row.providerInstanceId }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="networkId">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Network ID</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          @if (canManage) {
+            <mat-form-field>
+              <input matInput [formControl]="getRowForm(row).controls['networkId']" />
+            </mat-form-field>
+          } @else {
+            {{ row.networkId }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          @if (canManage) {
+            <mat-form-field>
+              <input matInput [formControl]="getRowForm(row).controls['name']" />
+            </mat-form-field>
+          } @else {
+            {{ row.name }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="teamIds">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Assigned Teams</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          @if (canManage) {
+            <mat-form-field>
+              <mat-select [formControl]="getRowForm(row).controls['teamIds']" multiple>
+                @for (team of teams; track team.id) {
+                  <mat-option [value]="team.id">{{ team.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          } @else {
+            @for (tid of row.teamIds || []; track tid) {
+              <span>{{ getTeamName(tid) }}</span>
+              @if (!$last) {
+                <span>, </span>
+              }
+            }
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          @if (canManage) {
+            <button mat-icon-button (click)="saveRow(row)" matTooltip="Save" [disabled]="!isRowDirty(row)">
+              <mat-icon class="mdi-24px" fontIcon="mdi-content-save"></mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteNetwork(row)" matTooltip="Delete">
+              <mat-icon class="mdi-24px" fontIcon="mdi-trash-can-outline"></mat-icon>
+            </button>
+          }
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>
