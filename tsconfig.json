@@ -17,11 +17,18 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "paths": {
+      "@cmusei/crucible-common": ["../../libraries/Crucible.Common.Ui/dist/@crucible-common"]
+    }
   },
+   "exclude": [
+    "../../libraries/**/node_modules"
+  ],
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   }
 }
+
