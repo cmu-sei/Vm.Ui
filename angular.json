@@ -72,8 +72,15 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true,
+              "sourceMap": {
+                "scripts": true,
+                "styles": true,
+                "vendor": true
+              },
               "namedChunks": true
+            },
+            "localNPM": {
+              "tsConfig": "tsconfig.local-npm.json"
             }
           },
           "defaultConfiguration": "production"
@@ -89,6 +96,9 @@
             },
             "development": {
               "buildTarget": "player-vm-ui:build:development"
+            },
+            "localNPM": {
+              "buildTarget": "player-vm-ui:build:development,localNPM"
             }
           },
           "defaultConfiguration": "development"
