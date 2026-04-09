@@ -26,6 +26,7 @@ import {
   ComnSettingsService,
   ComnSettingsModule,
   ComnAuthModule,
+  ComnHeaderBarModule
 } from '@cmusei/crucible-common';
 import { BASE_PATH } from './app/generated/vm-api';
 import { ErrorService } from './app/services/error/error.service';
@@ -86,6 +87,7 @@ bootstrapApplication(AppComponent, {
         environment.production ? [] : AkitaNgDevtools.forRoot(),
         AkitaNgRouterStoreModule,
       ],
+      ComnHeaderBarModule,
       DragToSelectModule.forRoot(),
     ),
     VmService,
