@@ -56,9 +56,8 @@ export const routes: Routes = [
   {
     path: '**',
     loadComponent: () =>
-      import('./components/vm-main/vm-main.component').then(
-        (mod) => mod.VmMainComponent,
+      import('./components/page-not-found/page-not-found.component').then(
+        (mod) => mod.PageNotFoundComponent,
       ),
-    canActivate: [ComnAuthGuardService],
   },
 ];
