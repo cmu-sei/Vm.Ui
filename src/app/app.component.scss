@@ -6,7 +6,7 @@
    We can escape the angular pre-processors by adding `^` to the start of the URL
 */
 
-.app-layout {
+:host {
   display: grid;
   grid-template-rows: auto 1fr;
   height: 100vh;
