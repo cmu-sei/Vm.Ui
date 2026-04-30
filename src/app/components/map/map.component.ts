@@ -25,12 +25,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
 
-
 @Component({
-    selector: 'app-map',
-    templateUrl: './map.component.html',
-    styleUrls: ['./map.component.scss'],
-    imports: [AddPointComponent]
+  selector: 'app-map',
+  templateUrl: './map.component.html',
+  styleUrls: ['./map.component.scss'],
+  imports: [AddPointComponent],
 })
 export class MapComponent implements OnInit, OnChanges {
   machines: Clickpoint[];
@@ -138,13 +137,12 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   // Add a new click point
-  append(event): void {
-    // Get the offsets relative to the image. Note that this assumes a 100x100 image
-    let target = event.target;
-    let width = target.getBoundingClientRect().width;
-    this.xActual = (100 * event.pageX) / width;
-    let height = target.getBoundingClientRect().height;
-    this.yActual = (100 * event.pageY) / height + 2;
+  append(event: MouseEvent): void {
+    const svg = (event.target as SVGElement).ownerSVGElement;
+    const point = new DOMPoint(event.clientX, event.clientY);
+    const svgPoint = point.matrixTransform(svg.getScreenCTM().inverse());
+    this.xActual = svgPoint.x;
+    this.yActual = svgPoint.y;
 
     this.idToSend = uuidv4();
     this.selectedRad = 3;
