@@ -60,11 +60,13 @@ import { VmUser } from '../../generated/vm-api';
 export class UserListComponent {
   @Input() viewId: string;
   @Input() set teams(val: Array<VmTeam>) {
-    this._teams = val.sort((a, b) => a.name.localeCompare(b.name));
+    this._teams = val?.sort((a, b) => a.name.localeCompare(b.name)) || [];
     this.userQueryMap.clear();
 
-    val.forEach((t) => {
-      this.userQueryMap.set(t.id, this.vmUsersQuery.selectByTeam(t.id));
+    val?.forEach((t) => {
+      if (t?.id) {
+        this.userQueryMap.set(t.id, this.vmUsersQuery.selectByTeam(t.id));
+      }
     });
   }
 
@@ -124,7 +126,7 @@ export class UserListComponent {
   }
 
   public trackByTeamId(item: VmTeam) {
-    return item.id;
+    return item?.id;
   }
 
   public onOpenTab(val: { [name: string]: string }) {

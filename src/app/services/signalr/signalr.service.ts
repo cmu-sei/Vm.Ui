@@ -53,8 +53,12 @@ export class SignalRService {
     });
 
     this.addHandlers();
-    this.connectionPromise = this.hubConnection.start();
-    this.connectionPromise.then(() => this.joinGroups());
+    this.connectionPromise = this.hubConnection.start()
+      .catch((err) => {
+        console.warn('VM Hub connection failed:', err.message);
+        this.connectionPromise = null;
+      });
+    this.connectionPromise?.then(() => this.joinGroups());
 
     return this.connectionPromise;
   }
@@ -62,8 +66,12 @@ export class SignalRService {
   private reconnect() {
     if (this.hubConnection != null) {
       this.hubConnection.stop().then(() => {
-        this.connectionPromise = this.hubConnection.start();
-        this.connectionPromise.then(() => this.joinGroups());
+        this.connectionPromise = this.hubConnection.start()
+          .catch((err) => {
+            console.warn('VM Hub reconnection failed:', err.message);
+            this.connectionPromise = null;
+          });
+        this.connectionPromise?.then(() => this.joinGroups());
       });
     }
   }
@@ -81,7 +89,7 @@ export class SignalRService {
   public joinView(viewId: string) {
     this.viewId = viewId;
 
-    this.startConnection().then(() =>
+    this.startConnection()?.then(() =>
       this.hubConnection.invoke('JoinView', viewId),
     );
   }
@@ -89,7 +97,7 @@ export class SignalRService {
   public leaveView(viewId: string) {
     this.viewId = null;
 
-    this.startConnection().then(() =>
+    this.startConnection()?.then(() =>
       this.hubConnection.invoke('LeaveView', viewId),
     );
   }
@@ -98,7 +106,7 @@ export class SignalRService {
     this.viewId = viewId;
     this.joinUsers = true;
 
-    this.startConnection().then(() => {
+    this.startConnection()?.then(() => {
       this.hubConnection
         .invoke('JoinViewUsers', viewId)
         .then((vmUserTeams: Array<VmUserTeam>) => {
@@ -117,7 +125,7 @@ export class SignalRService {
   public leaveViewUsers(viewId: string) {
     this.joinUsers = false;
 
-    this.startConnection().then(() =>
+    this.startConnection()?.then(() =>
       this.hubConnection.invoke('LeaveViewUsers', viewId),
     );
   }

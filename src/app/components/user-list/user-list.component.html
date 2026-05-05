@@ -78,17 +78,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
       <mat-accordion multi>
         @for (team of _teams; track trackByTeamId(team)) {
-          <div>
-            <app-team-users
-              [team]="team"
-              [users]="userQueryMap.get(team.id) | async"
-              [searchTerm]="searchTerm$ | async"
-              [hideInactive]="hideInactive"
-              [recentOnly]="recentOnly"
-              [recentMinutes]="recentMinutes"
-              (openTab)="onOpenTab($event)"
-            ></app-team-users>
-          </div>
+          @if (team?.id) {
+            <div>
+              <app-team-users
+                [team]="team"
+                [users]="userQueryMap.get(team.id) | async"
+                [searchTerm]="searchTerm$ | async"
+                [hideInactive]="hideInactive"
+                [recentOnly]="recentOnly"
+                [recentMinutes]="recentMinutes"
+                (openTab)="onOpenTab($event)"
+              ></app-team-users>
+            </div>
+          }
         }
       </mat-accordion>
     </div>
