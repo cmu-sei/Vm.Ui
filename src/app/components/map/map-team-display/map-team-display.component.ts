@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { Clickpoint } from '../../../models/clickpoint';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { MapVmSelectComponent } from '../map-vm-select/map-vm-select.component';
+import { ThemeService } from '../../../services/theme/theme.service';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -34,6 +35,7 @@ export class MapTeamDisplayComponent implements OnInit {
     private router: Router,
     private vmMapsQuery: VmMapsQuery,
     private dialog: MatDialog,
+    private themeService: ThemeService,
   ) {}
 
   ngOnInit() {
@@ -88,7 +90,7 @@ export class MapTeamDisplayComponent implements OnInit {
         // If neither a map or custom url was clicked, it must be a VM. Url is the name of the VM
         this.route.params.subscribe((params) => {
           const viewId = params['viewId'];
-          window.open(`views/${viewId}/vms/${url}/console`);
+          window.open(this.themeService.addThemeQueryParam(`views/${viewId}/vms/${url}/console`));
         });
       }
     } else {

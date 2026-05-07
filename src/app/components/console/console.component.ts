@@ -4,6 +4,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { VmService } from '../../state/vms/vms.service';
+import { ThemeService } from '../../services/theme/theme.service';
 
 @Component({
   selector: 'app-console',
@@ -15,6 +16,7 @@ export class ConsoleComponent implements OnInit {
   constructor(
     private vmService: VmService,
     private route: ActivatedRoute,
+    private themeService: ThemeService,
   ) {}
 
   ngOnInit() {
@@ -27,7 +29,7 @@ export class ConsoleComponent implements OnInit {
           const vm = vms[0];
 
           if (vm) {
-            window.location.href = vm.url;
+            window.location.href = this.themeService.addThemeQueryParam(vm.url);
           }
         }
       },

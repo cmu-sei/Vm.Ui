@@ -47,6 +47,7 @@ import { UserListComponent } from '../user-list/user-list.component';
 import { VmListComponent } from '../vm-list/vm-list.component';
 import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
+import { ThemeService } from '../../services/theme/theme.service';
 
 @Component({
     selector: 'app-vm-main',
@@ -86,6 +87,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private vmUISessionQuery: VmUISessionQuery,
     private teamPermissionsService: TeamPermissionService,
     private userPermissionsService: UserPermissionsService,
+    private themeService: ThemeService,
   ) {
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
@@ -295,7 +297,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     if (index !== -1) {
       this.setSelectedTab(0);
       this.openVms.splice(index, 1);
-      window.open(vmObj.url, '_blank');
+      window.open(this.themeService.addThemeQueryParam(vmObj.url), '_blank');
     }
   }
 

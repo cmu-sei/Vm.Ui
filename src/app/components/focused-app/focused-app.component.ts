@@ -3,6 +3,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ThemeService } from '../../services/theme/theme.service';
 
 @Component({
   selector: 'app-focused-app',
@@ -15,11 +16,14 @@ export class FocusedAppComponent implements OnInit {
 
   public currentUrl: SafeUrl;
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(
+    private sanitizer: DomSanitizer,
+    private themeService: ThemeService,
+  ) {}
 
   ngOnInit() {
-    console.log('Initializing:  ' + this.vmUrl);
-    this.currentUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.vmUrl);
+    const themedUrl = this.themeService.addThemeQueryParam(this.vmUrl);
+    this.currentUrl = this.sanitizer.bypassSecurityTrustResourceUrl(themedUrl);
     // this.currentUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://www.google.com/maps');
   }
 }
