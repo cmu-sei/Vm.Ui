@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WelderService } from '../../services/welder/welder.service';
+import { ThemeService } from '../../services/theme/theme.service';
 import { VmService } from '../../state/vms/vms.service';
 import { MatButton } from '@angular/material/button';
 
@@ -31,6 +32,7 @@ export class WelderComponent implements OnInit, OnDestroy {
     public vmService: VmService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
+    private themeService: ThemeService,
   ) {}
 
   ngOnInit() {
@@ -105,7 +107,7 @@ export class WelderComponent implements OnInit, OnDestroy {
   }
 
   public openVMConsoleTab(vm) {
-    window.open(vm.url, '_blank');
+    window.open(this.themeService.addThemeQueryParam(vm.url), '_blank');
   }
 
   ngOnDestroy() {

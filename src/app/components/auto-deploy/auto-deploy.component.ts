@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AutoDeployService } from '../../services/auto-deploy/auto-deploy.service';
+import { ThemeService } from '../../services/theme/theme.service';
 import { VmService } from '../../state/vms/vms.service';
 import { MatButton } from '@angular/material/button';
 
@@ -29,6 +30,7 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
     public vmService: VmService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
+    private themeService: ThemeService,
   ) {}
 
   ngOnInit() {
@@ -39,7 +41,7 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
         const vm = vms[0];
 
         if (vm) {
-          window.location.href = vm.url;
+          window.location.href = this.themeService.addThemeQueryParam(vm.url);
         } else {
           this.autoDeployService
             .getDeploymentForView(this.viewId)
@@ -94,7 +96,7 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
       const vm = vms[0];
 
       if (vm) {
-        window.location.href = vm.url;
+        window.location.href = this.themeService.addThemeQueryParam(vm.url);
       }
     });
   }

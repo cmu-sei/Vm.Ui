@@ -13,7 +13,7 @@ export class ThemeService {
   constructor(private authQuery: ComnAuthQuery) {}
 
   public addThemeQueryParam(url: string): string {
-    const val = new URL(url);
+    const val = new URL(url, document.baseURI);
     val.searchParams.set('theme', this.authQuery.getValue().ui.theme);
     return val.toString();
   }

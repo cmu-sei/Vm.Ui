@@ -35,6 +35,7 @@ import {
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
+import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
 import { VmService } from '../../state/vms/vms.service';
 import {
@@ -188,6 +189,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     private playerTeamService: TeamService,
     private cd: ChangeDetectorRef,
     private userPermissionsService: UserPermissionsService,
+    private themeService: ThemeService,
   ) {
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
@@ -562,7 +564,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   public openSelectedBrowser() {
     for (const id of this.selectedVms) {
       const vm = this.getVm(id);
-      window.open(vm.url, '_blank');
+      window.open(this.themeService.addThemeQueryParam(vm.url), '_blank');
     }
   }
 
