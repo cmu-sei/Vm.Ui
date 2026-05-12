@@ -15,8 +15,10 @@ export class ErrorService implements ErrorHandler {
     // Suppress SignalR connection errors
     if (err.message?.includes('Connected') ||
         err.message?.includes('connection is not') ||
+        err.message?.includes('negotiation') ||
         err.rejection?.message?.includes('Connected') ||
-        err.rejection?.message?.includes('connection is not')) {
+        err.rejection?.message?.includes('connection is not') ||
+        err.rejection?.message?.includes('negotiation')) {
       console.log('SignalR connection error (suppressed):', err.message || err.rejection?.message);
       return;
     }
@@ -55,7 +57,8 @@ export class ErrorService implements ErrorHandler {
         );
       } else if (err.rejection.message?.endsWith('Failed to fetch') ||
                  err.rejection.message?.includes('Connected') ||
-                 err.rejection.message?.includes('connection is not')) {
+                 err.rejection.message?.includes('connection is not') ||
+                 err.rejection.message?.includes('negotiation')) {
         console.log('SignalR connection error: ' + err.rejection.message);
       } else {
         messageService.displayMessage('Error', err.rejection.message);
