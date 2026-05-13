@@ -44,6 +44,7 @@ import { saveAs } from 'file-saver-es';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { MatButton } from '@angular/material/button';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import {
   MatDateRangeInput,
   MatStartDate,
@@ -108,12 +109,14 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatRowDef,
     MatRow,
     MatPaginator,
+    MatSortModule,
     DatePipe
 ],
     providers: [provideNativeDateAdapter()]
 })
 export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   @ViewChild('formDirective') private formDirective: NgForm;
   dataSource = new MatTableDataSource<VmUsageLoggingSession>(
     new Array<VmUsageLoggingSession>(),
@@ -136,7 +139,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   CSHARP_MIN_DATE = '0001-01-01T00:00:00+00:00';
 
   public displayedColumns: string[] = [
-    'id',
+    'actions',
     'sessionName',
     'teamIds',
     'sessionStart',
@@ -174,6 +177,19 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
         this.dataSource.data = sessions;
       });
 
+    this.dataSource.sortingDataAccessor = (
+      data: VmUsageLoggingSession,
+      sortHeaderId: string,
+    ) => {
+      if (sortHeaderId === 'teamIds') {
+        return (data.teamIds || [])
+          .map((id) => this.getTeamName(id))
+          .join(', ')
+          .toLowerCase();
+      }
+      return (data[sortHeaderId] || '').toString().toLowerCase();
+    };
+
     this.teamService
       .getViewTeams(this.viewId)
       .pipe(take(1))
@@ -184,6 +200,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   endSession(id: string) {
