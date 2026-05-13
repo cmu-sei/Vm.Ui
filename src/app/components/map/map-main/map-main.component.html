@@ -12,6 +12,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-select
         [(value)]="selected"
         [(ngModel)]="selected"
+        [compareWith]="compareMaps"
         (selectionChange)="goToMap()"
         >
         <mat-option>Select Map</mat-option>

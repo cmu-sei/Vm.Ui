@@ -109,7 +109,10 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
         switchMap(() => this.getFilteredMaps(this.viewId!)),
         tap((filteredMaps) => {
           this.maps = filteredMaps;
-          if (filteredMaps.length > 0) {
+          const current = filteredMaps.find(m => m.id === this.selected?.id);
+          if (current) {
+            this.selected = current;
+          } else if (filteredMaps.length > 0) {
             this.selected = filteredMaps[0];
             this.goToMap();
           }
@@ -174,6 +177,11 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   trackByMaps(index: number, item: VmMap): string {
     return item.id;
   }
+
+  compareMaps(a: VmMap, b: VmMap): boolean {
+    return a?.id === b?.id;
+  }
+
 
   delete() {
     this.dialogService
