@@ -120,7 +120,7 @@ export class MapComponent implements OnInit, OnChanges {
               coord.urls,
               coord.id,
               coord.label,
-              '',
+              coord.urls?.length ? coord.urls[0] : '',
               false,
             ),
           );
@@ -146,7 +146,7 @@ export class MapComponent implements OnInit, OnChanges {
 
     this.idToSend = uuidv4();
     this.selectedRad = 3;
-    this.selectedURL = 'https://example.com';
+    this.selectedURL = '';
     this.editing = false;
 
     this.dialogRef = this.dialog.open(
@@ -264,7 +264,7 @@ export class MapComponent implements OnInit, OnChanges {
     this.xActual = c.xPosition;
     this.yActual = c.yPosition;
     this.selectedRad = c.radius;
-    this.selectedURL = '';
+    this.selectedURL = c.query || '';
     this.idToSend = c.id;
     this.selectedLabel = c.label;
     this.editing = true;

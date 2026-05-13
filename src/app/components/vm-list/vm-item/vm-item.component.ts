@@ -65,7 +65,7 @@ export class VmItemComponent implements OnInit {
 
   // Local Component functions
   openInTab(url: string) {
-    window.open(url, '_blank');
+    window.open(this.themeService.addThemeQueryParam(url), '_blank');
   }
 
   openHere(
