@@ -80,10 +80,21 @@ export class AddPointComponent implements OnInit {
     // Default values come from map component
     this.form = new UntypedFormGroup({
       rad: new UntypedFormControl({ value: this.rad, disabled: false }),
-      url: new UntypedFormControl({ value: '', disabled: false }),
+      url: new UntypedFormControl({ value: this.url, disabled: false }),
       label: new UntypedFormControl({ value: this.label, disabled: false }),
-      customUrl: new UntypedFormControl({ value: this.url, disabled: true }),
+      customUrl: new UntypedFormControl({ value: '', disabled: true }),
     });
+
+    if (this.editing && this.url) {
+      const vmMap = this.vmMapsQuery.getEntity(this.url);
+      if (vmMap) {
+        this.form.get('url').setValue(vmMap);
+      } else if (this.url.includes('://')) {
+        this.custom = true;
+        this.form.get('customUrl').setValue(this.url);
+        this.form.get('url').setValue('');
+      }
+    }
 
     // Get VM Maps in view
     this.vmMapsFiltered = this.route.params.pipe(
@@ -103,7 +114,7 @@ export class AddPointComponent implements OnInit {
       .valueChanges.subscribe(
         (value) =>
           (this.vmMapsFiltered = this.vmMapsQuery.getAllWithName(
-            typeof value === 'string' ? value : value.name,
+            typeof value === 'string' ? value : '',
           )),
       );
 
@@ -113,7 +124,7 @@ export class AddPointComponent implements OnInit {
       .valueChanges.subscribe(
         (value) =>
           (this.vmsFiltered = this.vmsQuery.getAllWithName(
-            typeof value === 'string' ? value : value.name,
+            typeof value === 'string' ? value : '',
           )),
       );
   }
@@ -165,8 +176,8 @@ export class AddPointComponent implements OnInit {
     return 'views/' + m.viewId + '/map/' + m.id;
   }
 
-  // Display resource name in dialog instead of url
-  display(item: Vm | VmMap): string {
+  display(item: Vm | VmMap | string): string {
+    if (typeof item === 'string') return item;
     return item && item.name ? item.name : '';
   }
 
