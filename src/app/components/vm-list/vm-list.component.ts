@@ -535,7 +535,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       });
   }
 
-  public trackByVmId(item) {
+  public trackByVmId(index: number, item: Vm) {
     return item.id;
   }
 
