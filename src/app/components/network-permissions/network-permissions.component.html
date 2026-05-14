@@ -71,7 +71,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-label>Search</mat-label>
       <input matInput [(ngModel)]="filterString" (ngModelChange)="applyFilter($event)" placeholder="Filter networks..." />
       @if (filterString) {
-        <button matSuffix mat-icon-button (click)="filterString = ''; applyFilter('')">
+        <button matSuffix mat-icon-button color="primary" (click)="filterString = ''; applyFilter('')" title="Clear Search">
           <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
         </button>
       }
