@@ -164,6 +164,9 @@ export class TeamUsersComponent implements AfterViewInit {
   }
 
   public getFollowUrl(user: VmUser) {
+    if (!this.team?.id || !this.team?.viewId) {
+      return '';
+    }
     return this.themeService.addThemeQueryParam(
       this.settingsService.settings.UserFollowUrl.replace(
         '{userId}',

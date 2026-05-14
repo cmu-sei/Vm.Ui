@@ -6,7 +6,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <div>
   <div class="d-flex align-items-center gap-3 ms-2">
     <mat-form-field subscriptSizing="dynamic" class="searchBox">
-      <mat-icon matPrefix svgIcon="ic_magnify_search"></mat-icon>
       <input
         matInput
         [(ngModel)]="searchTerm"
@@ -17,10 +16,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <button
           matSuffix
           mat-icon-button
+          color="primary"
           (click)="clearFilter()"
           matTooltip="Clear Search"
           >
-          <mat-icon svgIcon="ic_cancel_circle"></mat-icon>
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
         </button>
       }
     </mat-form-field>
@@ -78,17 +78,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
       <mat-accordion multi>
         @for (team of _teams; track trackByTeamId(team)) {
-          <div>
-            <app-team-users
-              [team]="team"
-              [users]="userQueryMap.get(team.id) | async"
-              [searchTerm]="searchTerm$ | async"
-              [hideInactive]="hideInactive"
-              [recentOnly]="recentOnly"
-              [recentMinutes]="recentMinutes"
-              (openTab)="onOpenTab($event)"
-            ></app-team-users>
-          </div>
+          @if (team?.id) {
+            <div>
+              <app-team-users
+                [team]="team"
+                [users]="userQueryMap.get(team.id) | async"
+                [searchTerm]="searchTerm$ | async"
+                [hideInactive]="hideInactive"
+                [recentOnly]="recentOnly"
+                [recentMinutes]="recentMinutes"
+                (openTab)="onOpenTab($event)"
+              ></app-team-users>
+            </div>
+          }
         }
       </mat-accordion>
     </div>

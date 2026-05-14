@@ -420,16 +420,16 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   groupVms(): void {
     const teams = new Set<string>();
     for (const vm of this.vmModelDataSource.filteredData) {
-      vm.teamIds.map((id) => teams.add(id));
+      vm.teamIds?.map((id) => teams.add(id));
     }
 
     this.playerTeamService
       .getViewTeams(this.vmService.viewId)
       .subscribe((results) => {
         for (const team of results) {
-          if (teams.has(team.id)) {
+          if (team?.id && teams.has(team.id)) {
             const vms = this.vmModelDataSource.filteredData.filter((vm) =>
-              vm.teamIds.includes(team.id),
+              vm.teamIds?.includes(team.id),
             );
             const group = new VmGroup(team.name, team.id, vms);
             this.groupByTeams.push(group);
@@ -535,7 +535,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       });
   }
 
-  public trackByVmId(item) {
+  public trackByVmId(index: number, item: Vm) {
     return item.id;
   }
 

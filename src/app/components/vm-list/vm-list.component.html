@@ -85,22 +85,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               [(ngModel)]="filterString"
               (keyup)="applyFilter($event.target.value)"
             />
-            <mat-icon
-              style="transform: scale(0.85)"
-              svgIcon="ic_magnify_search"
-              matPrefix
-            ></mat-icon>
             @if (filterString != '') {
               <button
                 matSuffix
                 mat-icon-button
+                color="primary"
                 (click)="clearFilter()"
                 title="Clear Search"
               >
-                <mat-icon
-                  style="transform: scale(0.85)"
-                  svgIcon="ic_cancel_circle"
-                ></mat-icon>
+                <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
               </button>
             }
           </mat-form-field>
@@ -150,6 +143,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 mat-stroked-button
                 class="text"
                 (click)="fileInput.click()"
+                matTooltip="Upload a file to make it available as an ISO for mounting on VMs"
               >
                 Upload File
               </button>
