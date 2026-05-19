@@ -60,7 +60,7 @@ import { VmUser } from '../../generated/vm-api';
 export class UserListComponent {
   @Input() viewId: string;
   @Input() set teams(val: Array<VmTeam>) {
-    this._teams = val?.sort((a, b) => a.name.localeCompare(b.name)) || [];
+    this._teams = val?.sort((a, b) => a?.name?.localeCompare(b?.name || '') || 0) || [];
     this.userQueryMap.clear();
 
     val?.forEach((t) => {

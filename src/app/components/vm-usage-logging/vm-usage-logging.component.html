@@ -4,11 +4,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <div class="container">
-  <form
-    [formGroup]="range"
-    #formDirective="ngForm"
-    class="mb-3 d-flex align-items-center gap-2"
-    >
+  @if (systemTeams.length > 0) {
+    <form
+      [formGroup]="range"
+      #formDirective="ngForm"
+      class="mb-3 d-flex align-items-center gap-2"
+      >
     <mat-form-field class="session-full-width">
       <mat-label>Log Name</mat-label>
       <input
@@ -49,10 +50,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         multiple
         [(value)]="selectedTeams"
         >
-        @for (team of systemTeams; track team) {
-          <mat-option [value]="team">{{
-            team.name
-          }}</mat-option>
+        @for (team of systemTeams; track team?.id) {
+          @if (team?.id) {
+            <mat-option [value]="team">{{
+              team.name
+            }}</mat-option>
+          }
         }
       </mat-select>
     </mat-form-field>
@@ -96,6 +99,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       Add
     </button>
   </form>
+  }
 
   <div class="">
     <button

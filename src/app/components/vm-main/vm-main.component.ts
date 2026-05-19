@@ -167,6 +167,10 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   public showNetworks$ = this.canViewNetworks$;
 
+  public viewExists$ = this.teams$.pipe(
+    map((teams) => teams && teams.length > 0),
+  );
+
   ngOnInit() {
     forkJoin([
       this.userPermissionsService.load(),
@@ -225,9 +229,10 @@ export class VmMainComponent implements OnInit, OnDestroy {
       this.vmUISessionQuery.selectAll(),
       this.currentUser$,
       this.vmUsageLoggingSessionService.getIsLoggingEnabled(),
+      this.teams$,
     ])
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(([vms, sessions, user, logging]) => {
+      .subscribe(([vms, sessions, user, logging, teams]) => {
         if (vms && sessions && user && logging != null) {
           // Determine if Usage Logging tab is enabled
           this.usageLoggingEnabled = logging;
@@ -246,7 +251,19 @@ export class VmMainComponent implements OnInit, OnDestroy {
                 this.onOpenVmHere(vm, true);
               }
             });
-            this.selectedTab = session.tabOpened;
+            // If view doesn't exist but we have a saved tab, make sure it's valid
+            if (teams && teams.length === 0 && session.tabOpened <= 1) {
+              // VM List and User Follow are disabled, skip to Usage Logging if enabled
+              if (logging) {
+                this.selectedTab = 2;
+              }
+            } else {
+              this.selectedTab = session.tabOpened;
+            }
+          } else if (teams && teams.length === 0 && logging) {
+            // View doesn't exist (no teams loaded), but usage logging is enabled
+            // Auto-select Usage Logging tab (index 2: VM List=0, User Follow=1, Usage Logging=2)
+            this.selectedTab = 2;
           }
         }
       });
