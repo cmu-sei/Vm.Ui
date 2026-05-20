@@ -24,6 +24,7 @@ import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.component';
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
+import { PageNotFoundComponent } from '../../page-not-found/page-not-found.component';
 import { DialogService } from '../../../services/dialog/dialog.service';
 import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
@@ -48,6 +49,7 @@ import { UserPermissionsService } from '../../../services/permissions/user-permi
     MapTeamDisplayComponent,
     MapComponent,
     NewMapComponent,
+    PageNotFoundComponent,
     AsyncPipe
 ]
 })
@@ -72,6 +74,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   private unsubscribe$ = new Subject();
   maps: VmMap[] = [];
   canEdit$: Observable<boolean>;
+  viewExists$: Observable<boolean>;
 
   constructor(
     private permissionsService: UserPermissionsService,
@@ -116,6 +119,12 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             this.selected = filteredMaps[0];
             this.goToMap();
           }
+        }),
+        tap(() => {
+          // Set viewExists$ based on whether primary team exists
+          this.viewExists$ = this.permissionsService.getPrimaryTeamId(this.viewId!).pipe(
+            map((teamId) => !!teamId),
+          );
         }),
         takeUntil(this.unsubscribe$),
       )
