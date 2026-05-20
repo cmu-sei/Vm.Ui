@@ -32,8 +32,12 @@ export class VmUISessionService {
         .pipe(
           take(1),
           catchError((error) => {
-            // Silently handle error - view not found will be shown inline by vm-main component
-            return EMPTY;
+            // Only silently handle 404 (view not found)
+            // Other errors should propagate
+            if (error.status === 404) {
+              return EMPTY;
+            }
+            throw error;
           }),
         )
         .subscribe((tms) => {
