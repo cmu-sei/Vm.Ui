@@ -7,5 +7,5 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 85%;
+  height: calc(100vh - 200px);
 }

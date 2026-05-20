@@ -7,6 +7,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <app-topbar></app-topbar>
 }
 
-<main class="main-content">
+<main class="main-content" [class.embedded]="hideTopbar">
   <router-outlet></router-outlet>
 </main>
