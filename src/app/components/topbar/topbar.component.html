@@ -2,6 +2,14 @@
 Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
+@if (bannerEnabled && (classificationText || messageText)) {
+<div>
+  <div class="message-bar" [ngStyle]="{'background-color': bannerBackgroundColor}">
+    <div [ngStyle]="{'color': classificationTextColor, 'font-size.px': classificationTextFontSize}">{{ classificationText }}</div>
+    <div [ngStyle]="{'color': messageTextColor, 'font-size.px': messageTextFontSize}">{{ messageText }}</div>
+  </div>
+</div>
+}
 <mat-toolbar class="toolbar" [style.backgroundColor]="'var(--mat-sys-primary)'"
   [style.color]="'var(--mat-sys-on-primary)'">
   <mat-toolbar-row>
