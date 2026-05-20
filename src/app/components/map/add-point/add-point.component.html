@@ -27,7 +27,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         aria-label="Resource"
         [matAutocomplete]="auto"
         formControlName="url"
-        [disabled]="custom"
         />
       @if (form.get('url')?.invalid && form.get('url')?.touched && !custom) {
         <mat-error>Resource is required</mat-error>
