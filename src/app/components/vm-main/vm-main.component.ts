@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ComnAuthService, Theme } from '@cmusei/crucible-common';
 import {
   BehaviorSubject,
@@ -77,6 +77,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private vmQuery: VmsQuery,
     private signalRService: SignalRService,
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private authService: ComnAuthService,
     public vmService: VmService,
     private teamsQuery: VmTeamsQuery,
@@ -178,6 +179,15 @@ export class VmMainComponent implements OnInit, OnDestroy {
         this.vmUISessionService.getCurrentViewId(),
       ),
     ]).subscribe();
+
+    // Redirect to page-not-found if view doesn't exist
+    this.viewExists$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((exists) => {
+        if (!exists && !this.usageLoggingEnabled) {
+          this.router.navigate(['/page-not-found']);
+        }
+      });
 
     this.openVms = new Array<{ [name: string]: string }>();
     this.selectedTab = 0;

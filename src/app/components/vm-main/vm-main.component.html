@@ -4,13 +4,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 @if (currentUser$ | async; as user) {
   <div class="background">
-    @if (!(viewExists$ | async) && !usageLoggingEnabled) {
-      <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%; padding: 2rem;">
-        <h2>View Not Found</h2>
-        <p>The view you are trying to access no longer exists or you do not have permission to access it.</p>
-      </div>
-    } @else {
-      <mat-tab-group
+    <mat-tab-group
         #vmTabGroup
         mat-stretch-tabs="false"
         animationDuration="0ms"
@@ -95,6 +89,5 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-tab>
       }
     </mat-tab-group>
-    }
   </div>
 }
