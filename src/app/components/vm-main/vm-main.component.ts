@@ -9,9 +9,10 @@ import {
   combineLatest,
   forkJoin,
   Observable,
+  of,
   Subject,
 } from 'rxjs';
-import { map, switchMap, takeUntil, take, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, takeUntil, take, tap } from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
@@ -171,6 +172,18 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   public viewExists$ = this.teams$.pipe(
     map((teams) => teams && teams.length > 0),
+  );
+
+  public hasUsageData$ = this.userPermissionsService.can(AppSystemPermission.ViewViews, null, false).pipe(
+    switchMap((canViewViews) => {
+      if (!canViewViews || !this.usageLoggingEnabled) {
+        return of(false);
+      }
+      return this.vmUsageLoggingSessionService.getAllSessions(this.vmUISessionService.getCurrentViewId()).pipe(
+        map((sessions) => sessions && sessions.length > 0),
+        catchError(() => of(false)),
+      );
+    }),
   );
 
   ngOnInit() {
