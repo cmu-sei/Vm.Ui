@@ -12,8 +12,18 @@ import { MatButton } from '@angular/material/button';
   imports: [MatButton],
 })
 export class PageNotFoundComponent {
+  isEmbedded = this.inIframe();
+
   returnToPlayer() {
     // Navigate to Player UI root - adjust port/URL based on your setup
     window.location.href = window.location.origin.replace(':4303', ':4301');
+  }
+
+  private inIframe(): boolean {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
   }
 }
