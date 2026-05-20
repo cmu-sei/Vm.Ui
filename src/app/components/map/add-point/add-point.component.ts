@@ -80,6 +80,9 @@ export class AddPointComponent implements OnInit {
     this.custom = false;
     this.control = new UntypedFormControl();
 
+    // URL pattern that matches http/https URLs
+    const urlPattern = /^(https?:\/\/)?([\w.-]+)+(:\d+)?(\/[\w.-]*)*$/;
+
     // Default values come from map component
     this.form = new UntypedFormGroup({
       rad: new UntypedFormControl(
@@ -88,7 +91,7 @@ export class AddPointComponent implements OnInit {
       ),
       url: new UntypedFormControl({ value: this.url, disabled: false }, [Validators.required]),
       label: new UntypedFormControl({ value: this.label, disabled: false }, [Validators.required]),
-      customUrl: new UntypedFormControl({ value: '', disabled: true }),
+      customUrl: new UntypedFormControl({ value: '', disabled: true }, [Validators.pattern(urlPattern)]),
     });
 
     if (this.editing && this.url) {

@@ -64,6 +64,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         #customUrlField
         [disabled]="!custom"
         />
+      @if (form.get('customUrl')?.invalid && form.get('customUrl')?.touched && custom) {
+        <mat-error>Please enter a valid URL</mat-error>
+      }
     </mat-form-field>
     <mat-form-field>
       <mat-label>Label</mat-label>
