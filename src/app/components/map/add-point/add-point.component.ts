@@ -100,9 +100,10 @@ export class AddPointComponent implements OnInit {
         this.form.get('url').setValue(vmMap);
       } else if (this.url.includes('://')) {
         this.custom = true;
+        this.form.get('url').disable();
+        this.form.get('customUrl').enable();
         this.form.get('customUrl').setValue(this.url);
         this.form.get('url').setValue('');
-        this.onCustomToggle(true);
       }
     }
 
