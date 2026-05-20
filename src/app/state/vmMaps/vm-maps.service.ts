@@ -27,7 +27,19 @@ export class VmMapsService {
     this.vmService
       .getViewMaps(viewId)
       .pipe(take(1))
-      .subscribe((maps) => this.vmMapsStore.set(maps));
+      .subscribe({
+        next: (maps) => this.vmMapsStore.set(maps),
+        error: (error) => {
+          this.vmMapsStore.setLoading(false);
+          if (error.status === 404) {
+            // View not found - set empty array, component will handle via viewExists$
+            this.vmMapsStore.set([]);
+          } else {
+            // Re-throw other errors
+            throw error;
+          }
+        }
+      });
   }
 
   getTeamMap(teamId: string) {
