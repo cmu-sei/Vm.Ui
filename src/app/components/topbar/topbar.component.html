@@ -1,0 +1,32 @@
+<!--
+Copyright 2021 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+<mat-toolbar class="toolbar" [style.backgroundColor]="'var(--mat-sys-primary)'"
+  [style.color]="'var(--mat-sys-on-primary)'">
+  <mat-toolbar-row>
+    <span class="margin-auto">
+      <button mat-icon-button style="outline: none; background-color: var(--mat-sys-on-primary);">
+        <mat-icon svgIcon="monitor"></mat-icon>
+      </button>
+    </span>
+    <span class="view-text">VM</span>
+    <span class="spacer"></span>
+    @if (currentUser$ | async; as currentUser) {
+    <div class="user-menu">
+      <button mat-button [matMenuTriggerFor]="menu" matTooltip="Menu" aria-label="Menu">
+        <strong>{{ currentUser.profile.name }}</strong>
+        <mat-icon aria-hidden="false" fontIcon="mdi-chevron-down"></mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" [overlapTrigger]="false" class="user-dropdown-menu">
+        <button mat-menu-item (click)="logout()">Logout</button>
+        <mat-slide-toggle aria-labelledby="theme-toggle" class="mat-menu-item toggle" color="primary"
+          [checked]="(theme$ | async) === 'dark-theme' ? true : false" (click)="$event.stopPropagation()"
+          (change)="themeFn($event)">
+          <mat-label id="theme-toggle">Dark Theme</mat-label>
+        </mat-slide-toggle>
+      </mat-menu>
+    </div>
+    }
+  </mat-toolbar-row>
+</mat-toolbar>

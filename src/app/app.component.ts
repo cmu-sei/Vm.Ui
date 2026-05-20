@@ -4,21 +4,26 @@
 import { Component, OnDestroy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ComnAuthQuery, ComnAuthService, ComnHeaderBarModule, ComnSettingsService, Theme } from '@cmusei/crucible-common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ComnAuthQuery, ComnAuthService, ComnSettingsService, Theme } from '@cmusei/crucible-common';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, skip } from 'rxjs/operators';
 import { RouterOutlet } from '@angular/router';
+import { TopbarComponent } from './components/topbar/topbar.component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    imports: [RouterOutlet, ComnHeaderBarModule]
+    imports: [RouterOutlet, TopbarComponent]
 })
 export class AppComponent implements OnDestroy {
   theme$: Observable<Theme> = this.authQuery.userTheme$;
+  private paramTheme;
   unsubscribe$: Subject<null> = new Subject<null>();
+  hideTopbar = false;
+
   constructor(
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
@@ -26,7 +31,10 @@ export class AppComponent implements OnDestroy {
     private routerQuery: RouterQuery,
     private authService: ComnAuthService,
     private settingsService: ComnSettingsService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
+    this.hideTopbar = this.inIframe();
     iconRegistry.setDefaultFontSetClass('mdi');
     iconRegistry.addSvgIcon(
       'monitor',
@@ -79,15 +87,26 @@ export class AppComponent implements OnDestroy {
       sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/ic_gear.svg'),
     );
 
+    // Apply theme changes and update URL
     this.theme$.pipe(takeUntil(this.unsubscribe$)).subscribe((theme) => {
+      if (this.paramTheme && this.paramTheme !== theme) {
+        this.router.navigate([], {
+          queryParams: { theme: theme },
+          queryParamsHandling: 'merge',
+        });
+      }
       this.setTheme(theme);
     });
 
+    // Watch for theme changes from query params
     this.routerQuery
       .selectQueryParams('theme')
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((theme) => {
-        this.authService.setUserTheme(theme);
+        if (theme != null) {
+          this.paramTheme = theme === Theme.DARK ? Theme.DARK : Theme.LIGHT;
+          this.authService.setUserTheme(this.paramTheme);
+        }
       });
   }
 
@@ -102,6 +121,14 @@ export class AppComponent implements OnDestroy {
     if (topBarTextColor) {
       document.documentElement.style.setProperty('--mat-sys-on-primary', topBarTextColor);
       document.body.style.setProperty('--mat-sys-on-primary', topBarTextColor);
+    }
+  }
+
+  inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
     }
   }
 
