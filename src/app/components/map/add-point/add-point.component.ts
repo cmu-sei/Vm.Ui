@@ -81,7 +81,7 @@ export class AddPointComponent implements OnInit {
     this.control = new UntypedFormControl();
 
     // URL pattern that matches http/https URLs
-    const urlPattern = /^(https?:\/\/)?([\w.-]+)+(:\d+)?(\/[\w.-]*)*$/;
+    const urlPattern = /^(https?:\/\/)?([\w-]+\.)*[\w-]+(:\d+)?(\/[\w.-]*)*$/;
 
     // Default values come from map component
     this.form = new UntypedFormGroup({

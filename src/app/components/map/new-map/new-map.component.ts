@@ -66,7 +66,7 @@ export class NewMapComponent implements OnInit {
     this.getImages();
 
     // URL pattern that matches http/https URLs
-    const urlPattern = /^(https?:\/\/)?([\w.-]+)+(:\d+)?(\/[\w.-]*)*$/;
+    const urlPattern = /^(https?:\/\/)?([\w-]+\.)*[\w-]+(:\d+)?(\/[\w.-]*)*$/;
 
     this.form = this.formBuilder.group({
       name: [this.name, Validators.required],
