@@ -19,7 +19,7 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatDialogTitle } from '@angular/material/dialog';
+import { MatDialogTitle, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-new-map',
@@ -55,6 +55,7 @@ export class NewMapComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private vmMapsService: VmMapsService,
     private fileService: FileService,
+    private dialogRef: MatDialogRef<NewMapComponent>,
   ) {}
 
   ngOnInit(): void {
@@ -170,6 +171,10 @@ export class NewMapComponent implements OnInit {
 
     this.vmMapsService.add(this.viewId, payload);
     this.mapCreated.emit(mapId);
+  }
+
+  cancel(): void {
+    this.dialogRef.close();
   }
 
   // Returns whether this file is an image. This is determined by the file's extension.
