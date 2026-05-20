@@ -158,6 +158,12 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   receiveMachine(point: Clickpoint): void {
+    // If point is null, user cancelled the dialog
+    if (!point) {
+      this.dialogRef.close();
+      return;
+    }
+
     // Find the machine being edited. If not undefined, an existing machine is being edited.
     // Else a new machine is being created
     const machineToEdit = this.machines.find((m) => {
