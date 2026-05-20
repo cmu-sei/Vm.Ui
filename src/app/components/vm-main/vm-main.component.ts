@@ -14,6 +14,7 @@ import {
 } from 'rxjs';
 import { catchError, map, switchMap, takeUntil, take, tap } from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
+import { VmTeamsService } from '../../state/vm-teams/vm-teams.service';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
@@ -29,6 +30,7 @@ import {
   AppViewPermission,
   Vm,
   VmUsageLoggingSessionService,
+  VmsService,
 } from '../../generated/vm-api';
 import { VmUISessionService } from '../../state/vm-ui-session/vm-ui-session.service';
 import { VmUISessionQuery } from '../../state/vm-ui-session/vm-ui-session.query';
@@ -83,6 +85,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private authService: ComnAuthService,
     public vmService: VmService,
     private teamsQuery: VmTeamsQuery,
+    private teamsService: VmTeamsService,
+    private vmsService: VmsService,
     private userService: UserService,
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
     private permissionsService: PermissionService,
@@ -187,11 +191,19 @@ export class VmMainComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit() {
+    const viewId = this.vmUISessionService.getCurrentViewId();
+
+    // Load teams into the store
+    this.vmsService.getTeams(viewId).pipe(
+      take(1),
+      catchError(() => of([])),
+    ).subscribe((teams) => {
+      this.teamsService.set(teams.map(t => ({ id: t.id, name: t.name })));
+    });
+
     forkJoin([
       this.userPermissionsService.load(),
-      this.userPermissionsService.loadTeamPermissions(
-        this.vmUISessionService.getCurrentViewId(),
-      ),
+      this.userPermissionsService.loadTeamPermissions(viewId),
     ]).subscribe();
 
     this.openVms = new Array<{ [name: string]: string }>();
