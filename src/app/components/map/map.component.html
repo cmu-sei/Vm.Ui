@@ -13,6 +13,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         (click)="append($event)"
         />
       @for (m of machines; track m) {
+        @if (m.radius > 0) {
         <g>
           <circle
             class="clickpoint"
@@ -34,6 +35,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             {{ m.label }}
           </text>
         </g>
+        }
       }
     </svg>
   </div>

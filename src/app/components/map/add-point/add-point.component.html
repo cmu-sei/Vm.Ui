@@ -11,7 +11,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div class="mx-2 d-flex flex-column">
     <mat-form-field>
       <mat-label>Radius</mat-label>
-      <input type="number" matNativeControl formControlName="rad" />
+      <input type="number" matNativeControl formControlName="rad" min="0.1" step="0.1" />
+      @if (form.get('rad')?.invalid && form.get('rad')?.touched) {
+        <mat-error>Radius must be at least 0.1</mat-error>
+      } @else {
+        <mat-hint>Size of clickpoint (% of map size, default: 3)</mat-hint>
+      }
     </mat-form-field>
     <mat-form-field>
       <mat-label>Resource</mat-label>
@@ -67,8 +72,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       mat-flat-button
       color="primary"
       class="action-button"
-      type="button"
       type="submit"
+      [disabled]="!form.valid"
       >
       Save
     </button>

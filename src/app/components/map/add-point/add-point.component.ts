@@ -7,6 +7,7 @@ import {
   UntypedFormGroup,
   ReactiveFormsModule,
   FormsModule,
+  Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -25,7 +26,7 @@ import {
   MatAutocomplete,
 } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
 import { MatDialogTitle } from '@angular/material/dialog';
 
 @Component({
@@ -45,7 +46,9 @@ import { MatDialogTitle } from '@angular/material/dialog';
     MatCheckbox,
     FormsModule,
     MatButton,
-    AsyncPipe
+    AsyncPipe,
+    MatError,
+    MatHint
 ]
 })
 export class AddPointComponent implements OnInit {
@@ -79,7 +82,10 @@ export class AddPointComponent implements OnInit {
 
     // Default values come from map component
     this.form = new UntypedFormGroup({
-      rad: new UntypedFormControl({ value: this.rad, disabled: false }),
+      rad: new UntypedFormControl(
+        { value: this.rad, disabled: false },
+        [Validators.required, Validators.min(0.1)]
+      ),
       url: new UntypedFormControl({ value: this.url, disabled: false }),
       label: new UntypedFormControl({ value: this.label, disabled: false }),
       customUrl: new UntypedFormControl({ value: '', disabled: true }),
