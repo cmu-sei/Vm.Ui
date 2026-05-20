@@ -86,8 +86,8 @@ export class AddPointComponent implements OnInit {
         { value: this.rad, disabled: false },
         [Validators.required, Validators.min(0.1)]
       ),
-      url: new UntypedFormControl({ value: this.url, disabled: false }),
-      label: new UntypedFormControl({ value: this.label, disabled: false }),
+      url: new UntypedFormControl({ value: this.url, disabled: false }, [Validators.required]),
+      label: new UntypedFormControl({ value: this.label, disabled: false }, [Validators.required]),
       customUrl: new UntypedFormControl({ value: '', disabled: true }),
     });
 

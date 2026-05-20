@@ -24,6 +24,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../state/vmMaps/vm-maps.service';
 import { VmMapsQuery } from '../../state/vmMaps/vm-maps.query';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-map',
@@ -70,6 +71,7 @@ export class MapComponent implements OnInit, OnChanges {
     private vmMapsService: VmMapsService,
     private vmMapsQuery: VmMapsQuery,
     private vmsService: VmsService,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -220,7 +222,11 @@ export class MapComponent implements OnInit, OnChanges {
           this.machines.push(point);
         });
       } else {
-        window.alert('Invalid query');
+        this.snackBar.open('Invalid query', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'bottom',
+        });
       }
     } else {
       point.urls = [point.query];
@@ -253,7 +259,11 @@ export class MapComponent implements OnInit, OnChanges {
     };
 
     this.vmMapsService.update(this.mapId, payload);
-    window.alert('Map successfully saved!');
+    this.snackBar.open('Map successfully saved!', 'Close', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+    });
   }
 
   back(): void {

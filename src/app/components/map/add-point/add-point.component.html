@@ -29,20 +29,23 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         formControlName="url"
         [attr.disabled]="custom ? true : null"
         />
+      @if (form.get('url')?.invalid && form.get('url')?.touched && !custom) {
+        <mat-error>Resource is required</mat-error>
+      }
       <mat-autocomplete
         #urlSelect
         #auto="matAutocomplete"
         [displayWith]="display"
         >
         <mat-optgroup label="VMs">
-          @for (vm of vmsFiltered | async; track vm) {
+          @for (vm of vmsFiltered | async; track vm.id) {
             <mat-option [value]="vm">{{
               vm.name
             }}</mat-option>
           }
         </mat-optgroup>
         <mat-optgroup label="Maps">
-          @for (m of vmMapsFiltered | async; track m) {
+          @for (m of vmMapsFiltered | async; track m.id) {
             <mat-option [value]="m">{{
               m.name
             }}</mat-option>
@@ -65,6 +68,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field>
       <mat-label>Label</mat-label>
       <input type="text" matNativeControl formControlName="label" />
+      @if (form.get('label')?.invalid && form.get('label')?.touched) {
+        <mat-error>Label is required</mat-error>
+      }
     </mat-form-field>
   </div>
   <div class="d-flex justify-content-center gap-2">

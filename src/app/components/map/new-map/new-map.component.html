@@ -19,7 +19,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field>
       <mat-label>Select Image</mat-label>
       <mat-select matNativeControl formControlName="viewImage">
-        @for (img of images; track img) {
+        @for (img of images; track img.file.id) {
           <mat-option [value]="img.blob">{{
             img.file.name
           }}</mat-option>
@@ -38,7 +38,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field>
       <mat-label>Teams</mat-label>
       <mat-select multiple matNativeControl formControlName="teamIDs">
-        @for (team of teams; track team) {
+        @for (team of teams; track team.id) {
           <mat-option [value]="team.id">{{
             team.name
           }}</mat-option>
