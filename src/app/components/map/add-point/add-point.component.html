@@ -27,7 +27,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         aria-label="Resource"
         [matAutocomplete]="auto"
         formControlName="url"
-        [attr.disabled]="custom ? true : null"
+        [disabled]="custom"
         />
       @if (form.get('url')?.invalid && form.get('url')?.touched && !custom) {
         <mat-error>Resource is required</mat-error>
@@ -53,7 +53,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-optgroup>
       </mat-autocomplete>
     </mat-form-field>
-    <mat-checkbox [(ngModel)]="custom" [ngModelOptions]="{ standalone: true }">
+    <mat-checkbox [(ngModel)]="custom" (ngModelChange)="onCustomToggle($event)" [ngModelOptions]="{ standalone: true }">
       Enter Custom Resource URL
     </mat-checkbox>
     <mat-form-field>
@@ -62,7 +62,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         matNativeControl
         formControlName="customUrl"
         #customUrlField
-        [attr.disabled]="!custom ? true : null"
+        [disabled]="!custom"
         />
     </mat-form-field>
     <mat-form-field>
@@ -83,14 +83,25 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       >
       Save
     </button>
-    <button
-      type="button"
-      mat-flat-button
-      color="primary"
-      class="action-button"
-      (click)="onDelete()"
-      >
-      Delete
-    </button>
+    @if (editing) {
+      <button
+        type="button"
+        mat-flat-button
+        color="primary"
+        class="action-button"
+        (click)="onDelete()"
+        >
+        Delete
+      </button>
+    } @else {
+      <button
+        type="button"
+        mat-stroked-button
+        class="action-button"
+        (click)="onCancel()"
+        >
+        Cancel
+      </button>
+    }
   </div>
 </form>

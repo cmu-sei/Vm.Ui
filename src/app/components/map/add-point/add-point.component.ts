@@ -99,6 +99,7 @@ export class AddPointComponent implements OnInit {
         this.custom = true;
         this.form.get('customUrl').setValue(this.url);
         this.form.get('url').setValue('');
+        this.onCustomToggle(true);
       }
     }
 
@@ -169,6 +170,21 @@ export class AddPointComponent implements OnInit {
     );
 
     this.machineEmitter.emit(point);
+  }
+
+  onCustomToggle(isCustom: boolean): void {
+    if (isCustom) {
+      this.form.get('url').disable();
+      this.form.get('customUrl').enable();
+    } else {
+      this.form.get('url').enable();
+      this.form.get('customUrl').disable();
+    }
+  }
+
+  onCancel(): void {
+    // Close dialog without emitting changes
+    this.machineEmitter.emit(null);
   }
 
   onDelete(): void {
