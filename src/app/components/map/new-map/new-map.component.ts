@@ -6,6 +6,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 import { FileModel, FileService } from '../../../generated/player-api';
@@ -18,7 +19,7 @@ import { MatOption } from '@angular/material/core';
 
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
 import { MatDialogTitle, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -33,7 +34,9 @@ import { MatDialogTitle, MatDialogRef } from '@angular/material/dialog';
     MatInput,
     MatSelect,
     MatOption,
-    MatButton
+    MatButton,
+    MatError,
+    MatHint
 ]
 })
 export class NewMapComponent implements OnInit {
@@ -62,11 +65,14 @@ export class NewMapComponent implements OnInit {
     this.getTeams();
     this.getImages();
 
+    // URL pattern that matches http/https URLs
+    const urlPattern = /^(https?:\/\/)?([\w.-]+)+(:\d+)?(\/[\w.-]*)*$/;
+
     this.form = this.formBuilder.group({
-      name: [this.name],
-      imageURL: [this.url],
+      name: [this.name, Validators.required],
+      imageURL: [this.url, Validators.pattern(urlPattern)],
       viewImage: [''],
-      teamIDs: [this.teamsInput],
+      teamIDs: [this.teamsInput, Validators.required],
     });
   }
 
@@ -175,6 +181,12 @@ export class NewMapComponent implements OnInit {
 
   cancel(): void {
     this.dialogRef.close();
+  }
+
+  hasImageSource(): boolean {
+    const viewImage = this.form.get('viewImage')?.value;
+    const imageURL = this.form.get('imageURL')?.value;
+    return !!(viewImage || imageURL);
   }
 
   // Returns whether this file is an image. This is determined by the file's extension.
