@@ -83,24 +83,23 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       >
       Save
     </button>
+    <button
+      type="button"
+      mat-stroked-button
+      class="action-button"
+      (click)="onCancel()"
+      >
+      Cancel
+    </button>
     @if (editing) {
       <button
         type="button"
         mat-flat-button
-        color="primary"
+        color="warn"
         class="action-button"
         (click)="onDelete()"
         >
         Delete
-      </button>
-    } @else {
-      <button
-        type="button"
-        mat-stroked-button
-        class="action-button"
-        (click)="onCancel()"
-        >
-        Cancel
       </button>
     }
   </div>
