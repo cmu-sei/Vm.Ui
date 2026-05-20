@@ -32,11 +32,7 @@ export class VmUISessionService {
         .pipe(
           take(1),
           catchError((error) => {
-            // Show error message but allow page to load so users can access usage logging
-            this.messageService.displayMessage(
-              'View Not Found',
-              'The view you are trying to access no longer exists or you do not have permission to access it.',
-            );
+            // Silently handle error - view not found will be shown inline by vm-main component
             return EMPTY;
           }),
         )
