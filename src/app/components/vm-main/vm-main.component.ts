@@ -12,7 +12,7 @@ import {
   of,
   Subject,
 } from 'rxjs';
-import { catchError, map, switchMap, takeUntil, take, tap } from 'rxjs/operators';
+import { catchError, map, startWith, switchMap, takeUntil, take, tap } from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmTeamsService } from '../../state/vm-teams/vm-teams.service';
 import { VmsQuery } from '../../state/vms/vms.query';
@@ -176,6 +176,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   public viewExists$ = this.teams$.pipe(
     map((teams) => teams && teams.length > 0),
+    // Start with true to avoid flash of "view not found" while loading
+    startWith(true),
   );
 
   public hasUsageData$ = this.userPermissionsService.can(AppSystemPermission.ViewViews, null, false).pipe(
@@ -198,7 +200,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
       take(1),
       catchError(() => of([])),
     ).subscribe((teams) => {
-      this.teamsService.set(teams.map(t => ({ id: t.id, name: t.name })));
+      this.teamsService.set(teams.map(t => ({ id: t.id, name: t.name, viewId: viewId })));
     });
 
     forkJoin([
