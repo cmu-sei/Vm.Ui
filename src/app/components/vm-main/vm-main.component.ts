@@ -48,12 +48,14 @@ import { VmListComponent } from '../vm-list/vm-list.component';
 import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ThemeService } from '../../services/theme/theme.service';
+import { TopbarComponent } from '../topbar/topbar.component';
 
 @Component({
     selector: 'app-vm-main',
     templateUrl: './vm-main.component.html',
     styleUrls: ['./vm-main.component.scss'],
     imports: [
+    TopbarComponent,
     MatTabGroup,
     MatTab,
     VmListComponent,
@@ -72,6 +74,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   @ViewChild('vmTabGroup', { static: false }) tabGroup: MatTabGroup;
 
   unsubscribe$: Subject<null> = new Subject<null>();
+  hideTopbar = false;
 
   constructor(
     private vmQuery: VmsQuery,
@@ -89,6 +92,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private userPermissionsService: UserPermissionsService,
     private themeService: ThemeService,
   ) {
+    this.hideTopbar = this.inIframe();
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((params) => {
@@ -96,6 +100,14 @@ export class VmMainComponent implements OnInit, OnDestroy {
         const theme = selectedTheme === Theme.DARK ? Theme.DARK : Theme.LIGHT;
         this.authService.setUserTheme(theme);
       });
+  }
+
+  inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
   }
 
   public openVms: Array<{ [name: string]: string }>;

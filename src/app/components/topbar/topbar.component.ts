@@ -40,23 +40,10 @@ export class TopbarComponent implements OnInit, OnDestroy {
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
 
-  // Classification banner properties
-  bannerBackgroundColor: string = '';
-  classificationText: string = '';
-  classificationTextColor: string = '';
-  classificationTextFontSize: string = '';
-  messageText: string = '';
-  messageTextColor: string = '';
-  messageTextFontSize: string = '';
-  bannerEnabled: boolean = false;
-
   constructor(
     private authService: ComnAuthService,
     private authQuery: ComnAuthQuery,
-    private settingsService: ComnSettingsService,
-  ) {
-    this.loadBannerSettings();
-  }
+  ) {}
 
   ngOnInit() {
     this.currentUser$ = this.authService.user$.pipe(
@@ -73,50 +60,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
-  }
-
-  private loadBannerSettings(): void {
-    try {
-      const settings = this.settingsService.settings?.HeaderBarSettings;
-      if (settings) {
-        this.bannerBackgroundColor = settings.banner_background_color?.trim() || '#d40000ff';
-        this.classificationText = settings.classification_text?.trim() || '';
-        this.classificationTextColor = settings.classification_text_color?.trim() || '#ffffff';
-        this.classificationTextFontSize = settings.classification_text_fontsize?.trim() || '22';
-        this.messageText = settings.message_text?.trim() || '';
-        this.messageTextColor = settings.message_text_color?.trim() || '#ffffff';
-        this.messageTextFontSize = settings.message_text_fontsize?.trim() || '18';
-        this.bannerEnabled = settings.enabled || false;
-
-        // Disable banner when embedded in iframe - parent should handle it
-        if (this.isInIframe()) {
-          this.bannerEnabled = false;
-        }
-      } else {
-        this.setDefaultBannerSettings();
-      }
-    } catch (e) {
-      this.setDefaultBannerSettings();
-    }
-  }
-
-  private isInIframe(): boolean {
-    try {
-      return window.self !== window.top;
-    } catch (e) {
-      return true;
-    }
-  }
-
-  private setDefaultBannerSettings(): void {
-    this.bannerBackgroundColor = '#d40000ff';
-    this.classificationText = '';
-    this.classificationTextColor = '#ffffff';
-    this.classificationTextFontSize = '22';
-    this.messageText = '';
-    this.messageTextColor = '#ffffff';
-    this.messageTextFontSize = '18';
-    this.bannerEnabled = false;
   }
 
   ngOnDestroy(): void {

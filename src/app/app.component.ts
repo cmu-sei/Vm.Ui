@@ -5,24 +5,22 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ComnAuthQuery, ComnAuthService, ComnSettingsService, Theme } from '@cmusei/crucible-common';
+import { ComnAuthQuery, ComnAuthService, ComnSettingsService, Theme, ComnHeaderBarModule } from '@cmusei/crucible-common';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, skip } from 'rxjs/operators';
 import { RouterOutlet } from '@angular/router';
-import { TopbarComponent } from './components/topbar/topbar.component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    imports: [RouterOutlet, TopbarComponent]
+    imports: [RouterOutlet, ComnHeaderBarModule]
 })
 export class AppComponent implements OnDestroy {
   theme$: Observable<Theme> = this.authQuery.userTheme$;
   private paramTheme;
   unsubscribe$: Subject<null> = new Subject<null>();
-  hideTopbar = false;
 
   constructor(
     iconRegistry: MatIconRegistry,
@@ -34,7 +32,6 @@ export class AppComponent implements OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
   ) {
-    this.hideTopbar = this.inIframe();
     iconRegistry.setDefaultFontSetClass('mdi');
     iconRegistry.addSvgIcon(
       'monitor',
@@ -121,14 +118,6 @@ export class AppComponent implements OnDestroy {
     if (topBarTextColor) {
       document.documentElement.style.setProperty('--mat-sys-on-primary', topBarTextColor);
       document.body.style.setProperty('--mat-sys-on-primary', topBarTextColor);
-    }
-  }
-
-  inIframe() {
-    try {
-      return window.self !== window.top;
-    } catch (e) {
-      return true;
     }
   }
 
