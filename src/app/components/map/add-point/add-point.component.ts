@@ -8,6 +8,8 @@ import {
   ReactiveFormsModule,
   FormsModule,
   Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -80,9 +82,6 @@ export class AddPointComponent implements OnInit {
     this.custom = false;
     this.control = new UntypedFormControl();
 
-    // URL pattern that matches http/https URLs
-    const urlPattern = /^(https?:\/\/)?([\w-]+\.)*[\w-]+(:\d+)?(\/[\w.-]*)*$/;
-
     // Default values come from map component
     this.form = new UntypedFormGroup({
       rad: new UntypedFormControl(
@@ -91,7 +90,7 @@ export class AddPointComponent implements OnInit {
       ),
       url: new UntypedFormControl({ value: this.url, disabled: false }, [Validators.required]),
       label: new UntypedFormControl({ value: this.label, disabled: false }),
-      customUrl: new UntypedFormControl({ value: '', disabled: true }, [Validators.pattern(urlPattern)]),
+      customUrl: new UntypedFormControl({ value: '', disabled: true }, [this.urlValidator]),
     });
 
     if (this.editing && this.url) {
@@ -213,5 +212,15 @@ export class AddPointComponent implements OnInit {
 
   private isVmModel(object: any): object is Vm {
     return 'powerState' in object;
+  }
+
+  private urlValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    try {
+      new URL(control.value);
+      return null;
+    } catch {
+      return { invalidUrl: true };
+    }
   }
 }

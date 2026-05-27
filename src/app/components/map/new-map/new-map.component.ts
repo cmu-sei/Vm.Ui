@@ -7,6 +7,8 @@ import {
   UntypedFormGroup,
   ReactiveFormsModule,
   Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 import { FileModel, FileService } from '../../../generated/player-api';
@@ -65,15 +67,22 @@ export class NewMapComponent implements OnInit {
     this.getTeams();
     this.getImages();
 
-    // URL pattern that matches http/https URLs
-    const urlPattern = /^(https?:\/\/)?([\w-]+\.)*[\w-]+(:\d+)?(\/[\w.-]*)*$/;
-
     this.form = this.formBuilder.group({
       name: [this.name, Validators.required],
-      imageURL: [this.url, Validators.pattern(urlPattern)],
+      imageURL: [this.url, this.urlValidator],
       viewImage: [''],
       teamIDs: [this.teamsInput, Validators.required],
     });
+  }
+
+  private urlValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    try {
+      new URL(control.value);
+      return null;
+    } catch {
+      return { invalidUrl: true };
+    }
   }
 
   // Get the available teams within this view
