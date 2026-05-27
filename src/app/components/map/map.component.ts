@@ -230,8 +230,8 @@ export class MapComponent implements OnInit, OnChanges {
       } else {
         this.snackBar.open('Invalid query', 'Close', {
           duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'bottom',
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
         });
       }
     } else {
@@ -267,8 +267,8 @@ export class MapComponent implements OnInit, OnChanges {
     this.vmMapsService.update(this.mapId, payload);
     this.snackBar.open('Map successfully saved!', 'Close', {
       duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'bottom',
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
     });
   }
 
