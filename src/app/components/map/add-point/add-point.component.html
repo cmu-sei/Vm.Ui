@@ -11,7 +11,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div class="mx-2 d-flex flex-column">
     <mat-form-field>
       <mat-label>Radius</mat-label>
-      <input type="number" matNativeControl formControlName="rad" />
+      <input type="number" matNativeControl formControlName="rad" min="0.1" step="0.1" />
+      @if (form.get('rad')?.invalid && form.get('rad')?.touched) {
+        <mat-error>Radius must be at least 0.1</mat-error>
+      } @else {
+        <mat-hint>Size of clickpoint (% of map size, default: 3)</mat-hint>
+      }
     </mat-form-field>
     <mat-form-field>
       <mat-label>Resource</mat-label>
@@ -22,22 +27,24 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         aria-label="Resource"
         [matAutocomplete]="auto"
         formControlName="url"
-        [attr.disabled]="custom ? true : null"
         />
+      @if (form.get('url')?.invalid && form.get('url')?.touched && !custom) {
+        <mat-error>Resource is required</mat-error>
+      }
       <mat-autocomplete
         #urlSelect
         #auto="matAutocomplete"
         [displayWith]="display"
         >
         <mat-optgroup label="VMs">
-          @for (vm of vmsFiltered | async; track vm) {
+          @for (vm of vmsFiltered | async; track vm.id) {
             <mat-option [value]="vm">{{
               vm.name
             }}</mat-option>
           }
         </mat-optgroup>
         <mat-optgroup label="Maps">
-          @for (m of vmMapsFiltered | async; track m) {
+          @for (m of vmMapsFiltered | async; track m.id) {
             <mat-option [value]="m">{{
               m.name
             }}</mat-option>
@@ -45,21 +52,26 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-optgroup>
       </mat-autocomplete>
     </mat-form-field>
-    <mat-checkbox [(ngModel)]="custom" [ngModelOptions]="{ standalone: true }">
+    <mat-checkbox [(ngModel)]="custom" (ngModelChange)="onCustomToggle($event)" [ngModelOptions]="{ standalone: true }">
       Enter Custom Resource URL
     </mat-checkbox>
     <mat-form-field>
       <mat-label>Custom Resource URL</mat-label>
       <input
-        matNativeControl
+        matInput
         formControlName="customUrl"
         #customUrlField
-        [attr.disabled]="!custom ? true : null"
         />
+      @if (form.get('customUrl')?.invalid && form.get('customUrl')?.touched && custom) {
+        <mat-error>Please enter a valid URL</mat-error>
+      }
     </mat-form-field>
     <mat-form-field>
       <mat-label>Label</mat-label>
       <input type="text" matNativeControl formControlName="label" />
+      @if (form.get('label')?.invalid && form.get('label')?.touched) {
+        <mat-error>Label is required</mat-error>
+      }
     </mat-form-field>
   </div>
   <div class="d-flex justify-content-center gap-2">
@@ -67,19 +79,29 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       mat-flat-button
       color="primary"
       class="action-button"
-      type="button"
       type="submit"
+      [disabled]="!form.valid"
       >
       Save
     </button>
     <button
       type="button"
-      mat-flat-button
-      color="primary"
+      mat-stroked-button
       class="action-button"
-      (click)="onDelete()"
+      (click)="onCancel()"
       >
-      Delete
+      Cancel
     </button>
+    @if (editing) {
+      <button
+        type="button"
+        mat-flat-button
+        color="warn"
+        class="action-button"
+        (click)="onDelete()"
+        >
+        Delete
+      </button>
+    }
   </div>
 </form>

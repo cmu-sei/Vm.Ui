@@ -33,12 +33,14 @@ import { MatSelect } from '@angular/material/select';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../../services/permissions/user-permissions.service';
+import { TopbarComponent } from '../../topbar/topbar.component';
 
 @Component({
     selector: 'app-map-main',
     templateUrl: './map-main.component.html',
     styleUrls: ['./map-main.component.scss'],
     imports: [
+    TopbarComponent,
     MatFormField,
     MatLabel,
     MatSelect,
@@ -60,6 +62,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   mapInitialized: boolean;
   viewId: string;
   build: boolean;
+  hideTopbar = false;
   mapId: string;
   editProps: boolean;
   creatingMap: boolean;
@@ -85,6 +88,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     private vmMapQuery: VmMapsQuery,
     private dialogService: DialogService,
   ) {
+    this.hideTopbar = this.inIframe();
     this.mapInitialized = false;
     this.route.params
       .pipe(
@@ -269,6 +273,14 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
       this.selected = m;
       this.goToMap();
     });
+  }
+
+  inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
   }
 
   ngOnDestroy() {

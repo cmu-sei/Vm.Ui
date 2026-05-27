@@ -26,7 +26,7 @@ export class VmsQuery extends QueryEntity<VmsState> {
 
   getAllWithName(param: string): Observable<Vm[]> {
     return this.selectAll({
-      filterBy: ({ name }) => name.toLowerCase().includes(param.toLowerCase()),
+      filterBy: ({ name }) => name?.toLowerCase().includes(param.toLowerCase()) ?? false,
     });
   }
 }

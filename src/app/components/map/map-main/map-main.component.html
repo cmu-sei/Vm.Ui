@@ -3,6 +3,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
+@if (!hideTopbar) {
+<app-topbar></app-topbar>
+}
+
 @if (!(viewExists$ | async)) {
   <app-page-not-found></app-page-not-found>
 } @else {

@@ -6,6 +6,9 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
   ReactiveFormsModule,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 import { FileModel, FileService } from '../../../generated/player-api';
@@ -18,8 +21,8 @@ import { MatOption } from '@angular/material/core';
 
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatDialogTitle } from '@angular/material/dialog';
+import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
+import { MatDialogTitle, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-new-map',
@@ -33,7 +36,9 @@ import { MatDialogTitle } from '@angular/material/dialog';
     MatInput,
     MatSelect,
     MatOption,
-    MatButton
+    MatButton,
+    MatError,
+    MatHint
 ]
 })
 export class NewMapComponent implements OnInit {
@@ -55,6 +60,7 @@ export class NewMapComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private vmMapsService: VmMapsService,
     private fileService: FileService,
+    private dialogRef: MatDialogRef<NewMapComponent>,
   ) {}
 
   ngOnInit(): void {
@@ -62,11 +68,21 @@ export class NewMapComponent implements OnInit {
     this.getImages();
 
     this.form = this.formBuilder.group({
-      name: [this.name],
-      imageURL: [this.url],
+      name: [this.name, Validators.required],
+      imageURL: [this.url, this.urlValidator],
       viewImage: [''],
-      teamIDs: [this.teamsInput],
+      teamIDs: [this.teamsInput, Validators.required],
     });
+  }
+
+  private urlValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    try {
+      new URL(control.value);
+      return null;
+    } catch {
+      return { invalidUrl: true };
+    }
   }
 
   // Get the available teams within this view
@@ -170,6 +186,16 @@ export class NewMapComponent implements OnInit {
 
     this.vmMapsService.add(this.viewId, payload);
     this.mapCreated.emit(mapId);
+  }
+
+  cancel(): void {
+    this.dialogRef.close();
+  }
+
+  hasImageSource(): boolean {
+    const viewImage = this.form.get('viewImage')?.value;
+    const imageURL = this.form.get('imageURL')?.value;
+    return !!(viewImage || imageURL);
   }
 
   // Returns whether this file is an image. This is determined by the file's extension.

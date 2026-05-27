@@ -12,11 +12,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field>
       <mat-label>Name</mat-label>
       <input type="string" matInput formControlName="name" />
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <mat-error>Name is required</mat-error>
+      }
     </mat-form-field>
     <mat-form-field>
       <mat-label>Select Image</mat-label>
       <mat-select matNativeControl formControlName="viewImage">
-        @for (img of images; track img) {
+        @for (img of images; track img.file.id) {
           <mat-option [value]="img.blob">{{
             img.file.name
           }}</mat-option>
@@ -26,20 +29,29 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field>
       <mat-label>External Image URL</mat-label>
       <input type="string" matInput formControlName="imageURL" />
+      @if (form.get('imageURL')?.invalid && form.get('imageURL')?.touched && form.get('imageURL')?.value) {
+        <mat-error>Please enter a valid URL</mat-error>
+      } @else if (!hasImageSource()) {
+        <mat-hint>Either select an image or provide an external URL</mat-hint>
+      }
     </mat-form-field>
     <mat-form-field>
       <mat-label>Teams</mat-label>
       <mat-select multiple matNativeControl formControlName="teamIDs">
-        @for (team of teams; track team) {
+        @for (team of teams; track team.id) {
           <mat-option [value]="team.id">{{
             team.name
           }}</mat-option>
         }
       </mat-select>
+      @if (form.get('teamIDs')?.invalid && form.get('teamIDs')?.touched) {
+        <mat-error>At least one team is required</mat-error>
+      }
     </mat-form-field>
 
-    <div>
-      <button mat-flat-button color="primary" type="submit">Submit</button>
+    <div class="button-row">
+      <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid || !hasImageSource()">Submit</button>
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
     </div>
   </form>
 </div>

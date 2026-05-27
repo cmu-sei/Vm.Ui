@@ -1,0 +1,66 @@
+// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
+// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+
+.margin-auto {
+  margin: auto;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.toolbar {
+  max-height: 46px;
+  min-height: 46px;
+}
+
+.view-text {
+  font-size: 110%;
+  margin-left: 50px;
+  margin-right: 40px;
+}
+
+.user-menu {
+  text-align: right;
+}
+
+.mat-mdc-button:not(:disabled),
+.mat-mdc-icon-button:not(:disabled) {
+  color: var(--mat-sys-on-primary);
+}
+
+mat-icon, .mat-icon {
+  --mat-icon-color: var(--mat-sys-on-primary);
+}
+
+.margin-auto button mat-icon {
+  color: var(--mat-sys-primary);
+}
+
+.toggle {
+  padding: 0 16px;
+  height: auto;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.user-dropdown-menu {
+  margin-top: 8px;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+::ng-deep .user-dropdown-menu .mat-mdc-menu-content {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+.message-bar {
+  padding: 4px;
+  box-sizing: border-box;
+  background-color: #d40000ff;
+  color: #ffffff;
+  font-weight: 500;
+  text-align: center;
+}
