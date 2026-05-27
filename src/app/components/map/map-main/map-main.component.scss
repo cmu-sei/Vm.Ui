@@ -1,11 +1,17 @@
 /*
 Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information. 
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
 .center {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 85%;
+  height: calc(100vh - 200px);
 }

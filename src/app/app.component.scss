@@ -17,6 +17,10 @@
   overflow: auto;
 }
 
+.main-content.embedded {
+  height: 100vh;
+}
+
 @font-face {
   font-family: 'open_sansregular';
   src:

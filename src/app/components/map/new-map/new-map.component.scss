@@ -15,3 +15,9 @@ form {
   height: 375px;
   width: 400px;
 }
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}

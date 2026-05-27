@@ -2,13 +2,15 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
 
 .background {
   background-color: var(--mat-sys-background, transparent);
-  height: 100%;
+  flex: 1;
+  overflow: hidden;
 }
 
 mat-tab-group {
