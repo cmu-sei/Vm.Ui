@@ -30,6 +30,7 @@ import { Team, TeamService } from '../../generated/player-api';
 import {
   AppTeamPermission,
   AppViewPermission,
+  IsoUploadResult,
   Vm,
 } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
@@ -402,15 +403,14 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
         if (event.type === HttpEventType.Response) {
           this.uploading = false;
           this.cd.detectChanges();
-          // Surface the API response body so partial-success messages
-          // (e.g. "ISO uploaded, but failed on: ...") are visible to the user.
-          const msg = (event.body as any)?.toString();
-          // A partial-success response still returns HTTP 200, so reflect that
-          // in the title rather than implying a clean success.
-          const partialFailure = !!msg && msg.indexOf('failed on:') !== -1;
+          // Surface the structured upload result. A partial-success response still
+          // returns HTTP 200 with a non-zero failed-host count, so reflect that in
+          // the dialog title rather than implying a clean success.
+          const body = event.body as IsoUploadResult;
+          const partialFailure = (body?.failedHostCount ?? 0) > 0;
           this.dialogService.message(
             partialFailure ? 'Upload Completed with Errors' : 'Upload Completed',
-            msg || 'Upload Completed Successfully',
+            body?.message || 'Upload Completed Successfully',
           );
         }
       },

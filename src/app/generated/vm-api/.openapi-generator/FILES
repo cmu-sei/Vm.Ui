@@ -33,6 +33,7 @@ model/getFileUrlVsphereVirtualMachine.ts
 model/healthStatus.ts
 model/isoFile.ts
 model/isoResult.ts
+model/isoUploadResult.ts
 model/models.ts
 model/mountVsphereIso.ts
 model/nicOptions.ts
