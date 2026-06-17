@@ -117,6 +117,12 @@ export class VmMainComponent implements OnInit, OnDestroy {
     }
   }
 
+  private isValidGuid(value: string): boolean {
+    const guidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    return !!value && guidRegex.test(value);
+  }
+
   public openVms: Array<{ [name: string]: string }>;
   public selectedTab: number;
   public vms$: Observable<Vm[]>;
@@ -207,19 +213,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const viewId = this.vmUISessionService.getCurrentViewId();
 
-    // Load teams into the store
-    this.vmsService.getTeams(viewId).pipe(
-      take(1),
-      catchError(() => of([])),
-    ).subscribe((teams) => {
-      this.teamsService.set(teams.map(t => ({ id: t.id, name: t.name, viewId: viewId })));
-    });
-
-    forkJoin([
-      this.userPermissionsService.load(),
-      this.userPermissionsService.loadTeamPermissions(viewId),
-    ]).subscribe();
-
     this.openVms = new Array<{ [name: string]: string }>();
     this.selectedTab = 0;
 
@@ -235,6 +228,35 @@ export class VmMainComponent implements OnInit, OnDestroy {
       }),
     );
 
+    // Set up the current user regardless of view validity so the
+    // page-not-found display can render (template gates on currentUser$).
+    this.currentUser$ = this.authService.user$.pipe(
+      switchMap((u) => {
+        return this.userService.getUser(u.profile.sub);
+      }),
+    );
+
+    // Don't attempt to load a view with a malformed id; the page-not-found
+    // display will show since no teams will be loaded.
+    if (!this.isValidGuid(viewId)) {
+      return;
+    }
+
+    // Load teams into the store
+    this.vmsService.getTeams(viewId).pipe(
+      take(1),
+      catchError(() => of([])),
+    ).subscribe((teams) => {
+      this.teamsService.set(teams.map(t => ({ id: t.id, name: t.name, viewId: viewId })));
+    });
+
+    forkJoin([
+      this.userPermissionsService.load().pipe(catchError(() => of([]))),
+      this.userPermissionsService
+        .loadTeamPermissions(viewId)
+        .pipe(catchError(() => of([]))),
+    ]).subscribe();
+
     this.signalRService
       .startConnection()
       .then(() => {
@@ -246,30 +268,13 @@ export class VmMainComponent implements OnInit, OnDestroy {
         console.log(err);
       });
 
-    this.currentUser$ = this.authService.user$.pipe(
-      switchMap((u) => {
-        // this.permissionsService
-        //   .getUserViewPermissions(
-        //     this.vmUISessionService.getCurrentViewId(),
-        //     u.profile.sub,
-        //   )
-        //   .pipe(take(1))
-        //   .subscribe((pms) => {
-        //     if (pms.find((pm) => pm.key === 'ViewAdmin')) {
-        //       this.canManageTeam = true;
-        //     } else {
-        //       this.canManageTeam = false;
-        //     }
-        //   });
-        return this.userService.getUser(u.profile.sub);
-      }),
-    );
-
     combineLatest([
       this.vmQuery.selectAll(),
       this.vmUISessionQuery.selectAll(),
       this.currentUser$,
-      this.vmUsageLoggingSessionService.getIsLoggingEnabled(),
+      this.vmUsageLoggingSessionService
+        .getIsLoggingEnabled()
+        .pipe(catchError(() => of(false))),
       this.teams$,
     ])
       .pipe(takeUntil(this.unsubscribe$))

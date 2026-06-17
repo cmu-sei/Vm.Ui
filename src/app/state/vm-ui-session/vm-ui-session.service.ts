@@ -26,18 +26,14 @@ export class VmUISessionService {
   ) {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild?.params['viewId'];
-    if (this.viewId) {
+    if (this.viewId && this.isValidGuid(this.viewId)) {
       this.teamService
         .getMyViewTeams(this.viewId)
         .pipe(
           take(1),
-          catchError((error) => {
-            // Only silently handle 404 (view not found)
-            // Other errors should propagate
-            if (error.status === 404) {
-              return EMPTY;
-            }
-            throw error;
+          catchError(() => {
+            // View not found or inaccessible; handled by page-not-found display
+            return EMPTY;
           }),
         )
         .subscribe((tms) => {
@@ -48,6 +44,12 @@ export class VmUISessionService {
           }
         });
     }
+  }
+
+  private isValidGuid(value: string): boolean {
+    const guidRegex =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    return !!value && guidRegex.test(value);
   }
 
   add(session: VmUISession) {
