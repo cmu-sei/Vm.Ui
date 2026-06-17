@@ -402,7 +402,16 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
         if (event.type === HttpEventType.Response) {
           this.uploading = false;
           this.cd.detectChanges();
-          this.dialogService.message('Upload Completed Successfully', '');
+          // Surface the API response body so partial-success messages
+          // (e.g. "ISO uploaded, but failed on: ...") are visible to the user.
+          const msg = (event.body as any)?.toString();
+          // A partial-success response still returns HTTP 200, so reflect that
+          // in the title rather than implying a clean success.
+          const partialFailure = !!msg && msg.indexOf('failed on:') !== -1;
+          this.dialogService.message(
+            partialFailure ? 'Upload Completed with Errors' : 'Upload Completed',
+            msg || 'Upload Completed Successfully',
+          );
         }
       },
       (err) => {
