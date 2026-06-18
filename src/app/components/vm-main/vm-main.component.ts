@@ -53,6 +53,7 @@ import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { TopbarComponent } from '../topbar/topbar.component';
+import { validate as isUuid } from 'uuid';
 
 @Component({
     selector: 'app-vm-main',
@@ -115,12 +116,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
     } catch (e) {
       return true;
     }
-  }
-
-  private isValidGuid(value: string): boolean {
-    const guidRegex =
-      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-    return !!value && guidRegex.test(value);
   }
 
   public openVms: Array<{ [name: string]: string }>;
@@ -238,7 +233,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
     // Don't attempt to load a view with a malformed id; the page-not-found
     // display will show since no teams will be loaded.
-    if (!this.isValidGuid(viewId)) {
+    if (!isUuid(viewId)) {
       return;
     }
 

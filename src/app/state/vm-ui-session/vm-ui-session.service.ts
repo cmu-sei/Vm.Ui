@@ -11,6 +11,7 @@ import { Team, TeamService } from '../../generated/player-api';
 import { catchError, take } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { SystemMessageService } from '../../services/system-message/system-message.service';
+import { validate as isUuid } from 'uuid';
 
 @Injectable({ providedIn: 'root' })
 export class VmUISessionService {
@@ -26,7 +27,7 @@ export class VmUISessionService {
   ) {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild?.params['viewId'];
-    if (this.viewId && this.isValidGuid(this.viewId)) {
+    if (this.viewId && isUuid(this.viewId)) {
       this.teamService
         .getMyViewTeams(this.viewId)
         .pipe(
@@ -44,12 +45,6 @@ export class VmUISessionService {
           }
         });
     }
-  }
-
-  private isValidGuid(value: string): boolean {
-    const guidRegex =
-      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-    return !!value && guidRegex.test(value);
   }
 
   add(session: VmUISession) {
