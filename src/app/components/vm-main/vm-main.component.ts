@@ -237,15 +237,17 @@ export class VmMainComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Load teams into the store
-    this.vmsService.getTeams(viewId).pipe(
-      take(1),
-      catchError(() => of([])),
-    ).subscribe((teams) => {
-      this.teamsService.set(teams.map(t => ({ id: t.id, name: t.name, viewId: viewId })));
-    });
-
     forkJoin([
+      // Load teams into the store
+      this.vmsService.getTeams(viewId).pipe(
+        take(1),
+        tap((teams) => {
+          this.teamsService.set(
+            teams.map((t) => ({ id: t.id, name: t.name, viewId: viewId })),
+          );
+        }),
+        catchError(() => of([])),
+      ),
       this.userPermissionsService.load().pipe(catchError(() => of([]))),
       this.userPermissionsService
         .loadTeamPermissions(viewId)
