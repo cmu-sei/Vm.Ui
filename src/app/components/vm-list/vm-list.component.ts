@@ -63,11 +63,11 @@ import { UserPermissionsService } from '../../services/permissions/user-permissi
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
-    selector: 'app-vm-list',
-    templateUrl: './vm-list.component.html',
-    styleUrls: ['./vm-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
+  selector: 'app-vm-list',
+  templateUrl: './vm-list.component.html',
+  styleUrls: ['./vm-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
     MatButton,
     MatMenuTrigger,
     MatIcon,
@@ -92,8 +92,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
     MatExpansionPanelTitle,
     MatPaginator,
     AsyncPipe,
-    SlicePipe
-]
+    SlicePipe,
+  ],
 })
 export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());
@@ -378,10 +378,8 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
         )
         .pipe(take(1))
         .subscribe((result) => {
-          if (result['wasCancelled'] === false) {
-            const isForAll = result['confirm'];
-            this.sendIsoFile(isForAll, qf);
-          }
+          const isForAll = result['confirm'] === true;
+          this.sendIsoFile(isForAll, qf);
         });
     } else {
       // The user is not an admin therfore iso's are only uploaded for the team
