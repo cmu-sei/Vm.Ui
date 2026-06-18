@@ -34,6 +34,7 @@ import {
   Vm,
 } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
+import { ErrorMessageService } from '../../services/error-message/error-message.service';
 import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
 import { ThemeService } from '../../services/theme/theme.service';
@@ -418,7 +419,13 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
         console.log(err);
         this.uploading = false;
         this.cd.detectChanges();
-        this.dialogService.message('Upload Failed', 'Error: ' + err);
+        this.dialogService.message(
+          'Upload Failed',
+          ErrorMessageService.getApiErrorMessage(
+            err,
+            'An unexpected error occurred while uploading the ISO.',
+          ),
+        );
       },
     );
   }
