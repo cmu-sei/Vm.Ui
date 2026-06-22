@@ -89,37 +89,47 @@ export class SignalRService {
   public joinView(viewId: string) {
     this.viewId = viewId;
 
-    this.startConnection()?.then(() =>
-      this.hubConnection.invoke('JoinView', viewId),
-    );
+    this.startConnection()
+      ?.then(() => this.hubConnection.invoke('JoinView', viewId))
+      .catch((err) => {
+        // View may not exist; handled by page-not-found display
+        console.log('SignalR JoinView error (suppressed):', err);
+      });
   }
 
   public leaveView(viewId: string) {
     this.viewId = null;
 
-    this.startConnection()?.then(() =>
-      this.hubConnection.invoke('LeaveView', viewId),
-    );
+    this.startConnection()
+      ?.then(() => this.hubConnection.invoke('LeaveView', viewId))
+      .catch((err) => {
+        console.log('SignalR LeaveView error (suppressed):', err);
+      });
   }
 
   public joinViewUsers(viewId: string) {
     this.viewId = viewId;
     this.joinUsers = true;
 
-    this.startConnection()?.then(() => {
-      this.hubConnection
-        .invoke('JoinViewUsers', viewId)
-        .then((vmUserTeams: Array<VmUserTeam>) => {
-          // intentionally normalizing the api data here by splitting the users into their own state
-          // in order to optimize for the constant updates of individual users active consoles
-          // rather than the initial loading of teams and users
-          this.vmTeamsService.set(
-            vmUserTeams.map((x) => createVmTeam(x, viewId)),
-          );
+    this.startConnection()
+      ?.then(() =>
+        this.hubConnection
+          .invoke('JoinViewUsers', viewId)
+          .then((vmUserTeams: Array<VmUserTeam>) => {
+            // intentionally normalizing the api data here by splitting the users into their own state
+            // in order to optimize for the constant updates of individual users active consoles
+            // rather than the initial loading of teams and users
+            this.vmTeamsService.set(
+              vmUserTeams.map((x) => createVmTeam(x, viewId)),
+            );
 
-          this.vmUsersService.set(vmUserTeams.map((x) => x.users).flat());
-        });
-    });
+            this.vmUsersService.set(vmUserTeams.map((x) => x.users).flat());
+          }),
+      )
+      .catch((err) => {
+        // View may not exist; handled by page-not-found display
+        console.log('SignalR JoinViewUsers error (suppressed):', err);
+      });
   }
 
   public leaveViewUsers(viewId: string) {

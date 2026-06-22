@@ -4,8 +4,8 @@
  */
 
 import { Component, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { switchMap, take, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, EMPTY } from 'rxjs';
+import { catchError, switchMap, take, takeUntil } from 'rxjs/operators';
 import {
   VmUsageLoggingSession,
   VmUsageLoggingSessionService,
@@ -192,9 +192,16 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
 
     this.teamService
       .getViewTeams(this.viewId)
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        catchError(() => {
+          // View doesn't exist - error message already shown by vm-ui-session service
+          this.systemTeams = [];
+          return EMPTY;
+        }),
+      )
       .subscribe((tms) => {
-        this.systemTeams = tms;
+        this.systemTeams = (tms || []).filter((t) => t?.id);
       });
   }
 
@@ -240,7 +247,9 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
       startDt.setHours(0, 0, 0, 0);
       const tmIds: string[] = [];
       for (const team of this.selectedTeams) {
-        tmIds.push(team.id);
+        if (team?.id) {
+          tmIds.push(team.id);
+        }
       }
       const session: VmUsageLoggingSession = {
         sessionName: this.newLogName,
@@ -297,8 +306,8 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   }
 
   getTeamName(id: string): string {
-    const team = this.systemTeams.find((t) => t.id === id);
-    return team?.name;
+    const team = this.systemTeams.find((t) => t?.id === id);
+    return team?.name || 'Unknown';
   }
 
   updateLogName(evt: any) {

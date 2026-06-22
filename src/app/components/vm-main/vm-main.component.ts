@@ -9,10 +9,12 @@ import {
   combineLatest,
   forkJoin,
   Observable,
+  of,
   Subject,
 } from 'rxjs';
-import { map, switchMap, takeUntil, take, tap } from 'rxjs/operators';
+import { catchError, map, startWith, switchMap, takeUntil, take, tap } from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
+import { VmTeamsService } from '../../state/vm-teams/vm-teams.service';
 import { VmsQuery } from '../../state/vms/vms.query';
 import { VmService } from '../../state/vms/vms.service';
 import { SignalRService } from '../../services/signalr/signalr.service';
@@ -28,6 +30,7 @@ import {
   AppViewPermission,
   Vm,
   VmUsageLoggingSessionService,
+  VmsService,
 } from '../../generated/vm-api';
 import { VmUISessionService } from '../../state/vm-ui-session/vm-ui-session.service';
 import { VmUISessionQuery } from '../../state/vm-ui-session/vm-ui-session.query';
@@ -45,10 +48,12 @@ import { VmUsageLoggingComponent } from '../vm-usage-logging/vm-usage-logging.co
 import { NetworkPermissionsComponent } from '../network-permissions/network-permissions.component';
 import { UserListComponent } from '../user-list/user-list.component';
 import { VmListComponent } from '../vm-list/vm-list.component';
+import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { TopbarComponent } from '../topbar/topbar.component';
+import { validate as isUuid } from 'uuid';
 
 @Component({
     selector: 'app-vm-main',
@@ -67,6 +72,7 @@ import { TopbarComponent } from '../topbar/topbar.component';
     MatIconButton,
     MatIcon,
     FocusedAppComponent,
+    PageNotFoundComponent,
     AsyncPipe
 ]
 })
@@ -83,6 +89,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     private authService: ComnAuthService,
     public vmService: VmService,
     private teamsQuery: VmTeamsQuery,
+    private teamsService: VmTeamsService,
+    private vmsService: VmsService,
     private userService: UserService,
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
     private permissionsService: PermissionService,
@@ -179,13 +187,26 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   public showNetworks$ = this.canViewNetworks$;
 
+  public viewExists$ = this.teams$.pipe(
+    map((teams) => teams && teams.length > 0),
+    // Start with true to avoid flash of "view not found" while loading
+    startWith(true),
+  );
+
+  public hasUsageData$ = this.userPermissionsService.can(AppSystemPermission.ViewViews, null, false).pipe(
+    switchMap((canViewViews) => {
+      if (!canViewViews || !this.usageLoggingEnabled) {
+        return of(false);
+      }
+      return this.vmUsageLoggingSessionService.getAllSessions(this.vmUISessionService.getCurrentViewId()).pipe(
+        map((sessions) => sessions && sessions.length > 0),
+        catchError(() => of(false)),
+      );
+    }),
+  );
+
   ngOnInit() {
-    forkJoin([
-      this.userPermissionsService.load(),
-      this.userPermissionsService.loadTeamPermissions(
-        this.vmUISessionService.getCurrentViewId(),
-      ),
-    ]).subscribe();
+    const viewId = this.vmUISessionService.getCurrentViewId();
 
     this.openVms = new Array<{ [name: string]: string }>();
     this.selectedTab = 0;
@@ -202,6 +223,37 @@ export class VmMainComponent implements OnInit, OnDestroy {
       }),
     );
 
+    // Set up the current user regardless of view validity so the
+    // page-not-found display can render (template gates on currentUser$).
+    this.currentUser$ = this.authService.user$.pipe(
+      switchMap((u) => {
+        return this.userService.getUser(u.profile.sub);
+      }),
+    );
+
+    // Don't attempt to load a view with a malformed id; the page-not-found
+    // display will show since no teams will be loaded.
+    if (!isUuid(viewId)) {
+      return;
+    }
+
+    forkJoin([
+      // Load teams into the store
+      this.vmsService.getTeams(viewId).pipe(
+        take(1),
+        tap((teams) => {
+          this.teamsService.set(
+            teams.map((t) => ({ id: t.id, name: t.name, viewId: viewId })),
+          );
+        }),
+        catchError(() => of([])),
+      ),
+      this.userPermissionsService.load().pipe(catchError(() => of([]))),
+      this.userPermissionsService
+        .loadTeamPermissions(viewId)
+        .pipe(catchError(() => of([]))),
+    ]).subscribe();
+
     this.signalRService
       .startConnection()
       .then(() => {
@@ -213,33 +265,17 @@ export class VmMainComponent implements OnInit, OnDestroy {
         console.log(err);
       });
 
-    this.currentUser$ = this.authService.user$.pipe(
-      switchMap((u) => {
-        // this.permissionsService
-        //   .getUserViewPermissions(
-        //     this.vmUISessionService.getCurrentViewId(),
-        //     u.profile.sub,
-        //   )
-        //   .pipe(take(1))
-        //   .subscribe((pms) => {
-        //     if (pms.find((pm) => pm.key === 'ViewAdmin')) {
-        //       this.canManageTeam = true;
-        //     } else {
-        //       this.canManageTeam = false;
-        //     }
-        //   });
-        return this.userService.getUser(u.profile.sub);
-      }),
-    );
-
     combineLatest([
       this.vmQuery.selectAll(),
       this.vmUISessionQuery.selectAll(),
       this.currentUser$,
-      this.vmUsageLoggingSessionService.getIsLoggingEnabled(),
+      this.vmUsageLoggingSessionService
+        .getIsLoggingEnabled()
+        .pipe(catchError(() => of(false))),
+      this.teams$,
     ])
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(([vms, sessions, user, logging]) => {
+      .subscribe(([vms, sessions, user, logging, teams]) => {
         if (vms && sessions && user && logging != null) {
           // Determine if Usage Logging tab is enabled
           this.usageLoggingEnabled = logging;
@@ -258,7 +294,19 @@ export class VmMainComponent implements OnInit, OnDestroy {
                 this.onOpenVmHere(vm, true);
               }
             });
-            this.selectedTab = session.tabOpened;
+            // If view doesn't exist but we have a saved tab, make sure it's valid
+            if (teams && teams.length === 0 && session.tabOpened <= 1) {
+              // VM List and User Follow are disabled, skip to Usage Logging if enabled
+              if (logging) {
+                this.selectedTab = 2;
+              }
+            } else {
+              this.selectedTab = session.tabOpened;
+            }
+          } else if (teams && teams.length === 0 && logging) {
+            // View doesn't exist (no teams loaded), but usage logging is enabled
+            // Auto-select Usage Logging tab (index 2: VM List=0, User Follow=1, Usage Logging=2)
+            this.selectedTab = 2;
           }
         }
       });

@@ -7,6 +7,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <app-topbar></app-topbar>
 }
 
+@if (!(viewExists$ | async)) {
+  <app-page-not-found></app-page-not-found>
+} @else {
 <div class="pt-1 d-flex align-items-center justify-content-center gap-2">
   @if (maps.length > 1 || (canEdit$ | async)) {
     <mat-form-field
@@ -116,6 +119,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <h1 class="center">No Map is assigned to this Team</h1>
   </ng-template>
 </span>
+}
 
 <ng-template #newMapDialog>
   <app-new-map
