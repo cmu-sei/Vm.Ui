@@ -11,13 +11,14 @@
  */
 
 
-export type AppViewPermission = 'ViewView' | 'ManageView' | 'EditView' | 'UploadViewIsos' | 'DownloadVmFiles' | 'UploadVmFiles' | 'RevertVms' | 'ViewNetworks' | 'ManageNetworks';
+export type AppViewPermission = 'ViewView' | 'ManageView' | 'EditView' | 'UploadViewIsos' | 'DeleteViewIsos' | 'DownloadVmFiles' | 'UploadVmFiles' | 'RevertVms' | 'ViewNetworks' | 'ManageNetworks';
 
 export const AppViewPermission = {
     ViewView: 'ViewView' as AppViewPermission,
     ManageView: 'ManageView' as AppViewPermission,
     EditView: 'EditView' as AppViewPermission,
     UploadViewIsos: 'UploadViewIsos' as AppViewPermission,
+    DeleteViewIsos: 'DeleteViewIsos' as AppViewPermission,
     DownloadVmFiles: 'DownloadVmFiles' as AppViewPermission,
     UploadVmFiles: 'UploadVmFiles' as AppViewPermission,
     RevertVms: 'RevertVms' as AppViewPermission,

@@ -1,0 +1,54 @@
+<!--
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<div class="iso-list">
+  <div class="iso-list-header">
+    <h2>ISOs</h2>
+    <button
+      mat-icon-button
+      (click)="refresh()"
+      title="Refresh"
+      [disabled]="loading"
+    >
+      <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="iso-list-loading">
+      <mat-spinner [diameter]="32"></mat-spinner>
+    </div>
+  } @else {
+    @for (group of groups; track group.title) {
+      <div class="iso-group">
+        <h3>{{ group.title }}</h3>
+        @if (group.rows.length === 0) {
+          <p class="iso-empty">No ISOs.</p>
+        } @else {
+          @for (row of group.rows; track row.filename) {
+            <div class="iso-row">
+              <mat-icon class="mdi-24px iso-icon" fontIcon="mdi-disc"></mat-icon>
+              <span class="iso-name">{{ row.filename }}</span>
+              @if (row.canDelete) {
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteIso(row)"
+                  matTooltip="Delete ISO"
+                  title="Delete ISO"
+                >
+                  <mat-icon
+                    class="mdi-24px"
+                    fontIcon="mdi-trash-can-outline"
+                  ></mat-icon>
+                </button>
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+  }
+</div>

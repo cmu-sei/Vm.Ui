@@ -58,6 +58,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </ng-template>
         </mat-tab>
       }
+      @if (showIsos$ | async) {
+        <mat-tab label="ISOs">
+          <ng-template matTabContent>
+            <app-iso-list [viewId]="getCurrentViewId()"></app-iso-list>
+          </ng-template>
+        </mat-tab>
+      }
       @for (vm of openVms; track vm) {
         <mat-tab>
           <ng-template mat-tab-label>

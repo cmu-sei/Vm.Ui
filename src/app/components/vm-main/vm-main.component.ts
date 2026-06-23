@@ -45,6 +45,7 @@ import { VmUsageLoggingComponent } from '../vm-usage-logging/vm-usage-logging.co
 import { NetworkPermissionsComponent } from '../network-permissions/network-permissions.component';
 import { UserListComponent } from '../user-list/user-list.component';
 import { VmListComponent } from '../vm-list/vm-list.component';
+import { IsoListComponent } from '../iso-list/iso-list.component';
 import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ThemeService } from '../../services/theme/theme.service';
@@ -63,6 +64,7 @@ import { TopbarComponent } from '../topbar/topbar.component';
     UserListComponent,
     VmUsageLoggingComponent,
     NetworkPermissionsComponent,
+    IsoListComponent,
     MatTabLabel,
     MatIconButton,
     MatIcon,
@@ -179,6 +181,25 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   public showNetworks$ = this.canViewNetworks$;
 
+  // ISOs tab is shown to anyone who can upload ISOs (view-wide or team) - same gate as the
+  // upload button in the VM list. Delete buttons within the tab are gated separately by the
+  // Delete* permissions.
+  public showIsos$ = combineLatest([
+    this.userPermissionsService.can(
+      null,
+      null,
+      true,
+      AppTeamPermission.UploadTeamIsos,
+    ),
+    this.userPermissionsService.can(
+      null,
+      null,
+      true,
+      null,
+      AppViewPermission.UploadViewIsos,
+    ),
+  ]).pipe(map(([team, view]) => team || view));
+
   ngOnInit() {
     forkJoin([
       this.userPermissionsService.load(),
@@ -273,12 +294,12 @@ export class VmMainComponent implements OnInit, OnDestroy {
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }, onLoading: boolean = false) {
-    combineLatest([this.showUsageLogging$, this.showNetworks$])
+    combineLatest([this.showUsageLogging$, this.showNetworks$, this.showIsos$])
       .pipe(take(1))
-      .subscribe(([hasLogging, hasNetworks]) => {
+      .subscribe(([hasLogging, hasNetworks, hasIsos]) => {
         // 2 static tabs (VM List + User Follow) + conditional tabs
         const staticCount =
-          2 + (hasLogging ? 1 : 0) + (hasNetworks ? 1 : 0);
+          2 + (hasLogging ? 1 : 0) + (hasNetworks ? 1 : 0) + (hasIsos ? 1 : 0);
 
         const index = this.openVms.findIndex((v) => v.name === vmObj.name);
         if (index === -1) {
