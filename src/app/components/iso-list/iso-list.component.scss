@@ -4,36 +4,18 @@
 .iso-list {
   padding: 16px;
 
-  .iso-list-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .iso-list-toolbar {
+    margin-bottom: 16px;
 
-    h2 {
-      margin: 0;
-      flex: 1;
+    .searchBox {
+      width: 300px;
     }
   }
 
-  .iso-list-loading {
-    display: flex;
-    justify-content: center;
-    padding: 32px;
-  }
-
-  .iso-group {
-    margin-top: 16px;
-
-    h3 {
-      margin: 0 0 4px;
-      font-weight: 600;
-    }
-
-    .iso-empty {
-      margin: 0 0 8px;
-      opacity: 0.6;
-      font-style: italic;
-    }
+  .iso-empty {
+    margin: 8px 0;
+    opacity: 0.6;
+    font-style: italic;
   }
 
   .iso-row {

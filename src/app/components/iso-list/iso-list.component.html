@@ -4,34 +4,69 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <div class="iso-list">
-  <div class="iso-list-header">
-    <h2>ISOs</h2>
+  <div class="iso-list-toolbar d-flex align-items-center gap-3 ms-2">
+    <mat-form-field subscriptSizing="dynamic" class="searchBox">
+      <input
+        matInput
+        [(ngModel)]="searchTerm"
+        (keyup)="applyFilter($any($event.target).value)"
+        placeholder="Search ISOs"
+      />
+      @if (searchTerm !== '') {
+        <button
+          matSuffix
+          mat-icon-button
+          color="primary"
+          (click)="clearFilter()"
+          matTooltip="Clear Search"
+        >
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="accordion.openAll()">
+      Expand All
+    </button>
+    <button mat-raised-button color="primary" (click)="accordion.closeAll()">
+      Collapse All
+    </button>
+
     <button
       mat-icon-button
       (click)="refresh()"
+      matTooltip="Refresh"
       title="Refresh"
-      [disabled]="loading"
+      [disabled]="loading()"
     >
       <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
     </button>
+
+    @if (loading()) {
+      <mat-spinner [diameter]="20"></mat-spinner>
+    }
   </div>
 
-  @if (loading) {
-    <div class="iso-list-loading">
-      <mat-spinner [diameter]="32"></mat-spinner>
-    </div>
-  } @else {
-    @for (group of groups; track group.title) {
-      <div class="iso-group">
-        <h3>{{ group.title }}</h3>
+  <mat-accordion multi>
+    @for (group of filteredGroups(); track group.title) {
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ group.title }}</mat-panel-title>
+          <mat-panel-description
+            >Count: {{ group.rows.length }}</mat-panel-description
+          >
+        </mat-expansion-panel-header>
+
         @if (group.rows.length === 0) {
           <p class="iso-empty">No ISOs.</p>
         } @else {
-          @for (row of group.rows; track row.filename) {
+          @for (row of group.rows; track rowKey(row)) {
             <div class="iso-row">
               <mat-icon class="mdi-24px iso-icon" fontIcon="mdi-disc"></mat-icon>
               <span class="iso-name">{{ row.filename }}</span>
-              @if (row.canDelete) {
+              @if (isDeleting(row)) {
+                <mat-spinner [diameter]="20"></mat-spinner>
+              } @else if (row.canDelete) {
                 <button
                   mat-icon-button
                   color="warn"
@@ -48,7 +83,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             </div>
           }
         }
-      </div>
+      </mat-expansion-panel>
     }
-  }
+  </mat-accordion>
 </div>
