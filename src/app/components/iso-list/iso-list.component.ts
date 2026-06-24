@@ -341,7 +341,10 @@ export class IsoListComponent implements OnInit, OnDestroy {
 
   private buildGroups(result: IsoResult) {
     // Resolve all per-team delete permissions in one shot, then assemble the view model.
-    const teamResults = result.teamIsoResults ?? [];
+    // Sort teams alphabetically up front so the perms array stays index-aligned with teamResults.
+    const teamResults = (result.teamIsoResults ?? [])
+      .slice()
+      .sort((a, b) => (a.teamName ?? '').localeCompare(b.teamName ?? ''));
 
     const teamPermChecks = teamResults.map((t) =>
       combineLatest([
