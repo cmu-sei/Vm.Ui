@@ -1,0 +1,82 @@
+<!--
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<h2 mat-dialog-title>Upload ISO</h2>
+
+<mat-dialog-content>
+  <p>
+    Choose a file to make available to the virtual machines of the selected
+    team(s). Files that aren't already ISO images will be converted
+    automatically.
+  </p>
+
+  <div class="upload-targets">
+    @if (data.canUploadView) {
+      <mat-checkbox
+        color="primary"
+        [checked]="uploadToView()"
+        [disabled]="uploading()"
+        (change)="toggleView($event.checked)"
+      >
+        View (All Teams)
+      </mat-checkbox>
+    }
+
+    @for (team of data.uploadableTeams; track team.id) {
+      <mat-checkbox
+        color="primary"
+        [checked]="isTeamSelected(team.id)"
+        [disabled]="uploading() || uploadToView()"
+        (change)="toggleTeam(team.id, $event.checked)"
+      >
+        {{ team.name }}
+      </mat-checkbox>
+    }
+  </div>
+
+  <div class="file-picker">
+    <button
+      mat-stroked-button
+      type="button"
+      [disabled]="uploading()"
+      (click)="fileInput.click()"
+    >
+      Choose File
+    </button>
+    <span class="file-name">{{ file()?.name || 'No file chosen' }}</span>
+    <input
+      #fileInput
+      type="file"
+      [hidden]="true"
+      (change)="onFileChosen(fileInput)"
+    />
+  </div>
+
+  @if (uploading()) {
+    <div class="upload-progress">
+      <span>Uploading… {{ progress() }}%</span>
+      <mat-progress-bar mode="determinate" [value]="progress()"></mat-progress-bar>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <p class="upload-error">{{ errorMessage() }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" [disabled]="uploading()" (click)="cancel()">
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    [disabled]="!canSubmit()"
+    (click)="submit()"
+  >
+    Upload
+  </button>
+</mat-dialog-actions>

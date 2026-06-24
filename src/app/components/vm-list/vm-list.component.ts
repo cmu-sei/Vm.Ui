@@ -394,7 +394,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   sendIsoFile(isForAll: boolean, file: File) {
     this.uploading = true;
-    this.fileService.uploadIso(isForAll, file).subscribe(
+    this.fileService.uploadIso(file, isForAll ? 'view' : 'team').subscribe(
       (event) => {
         if (event.type === HttpEventType.UploadProgress) {
           this.uploadProgress = Math.round((100 * event.loaded) / event.total);

@@ -1,0 +1,36 @@
+// Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+
+.upload-targets {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 12px 0;
+}
+
+.file-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+
+  .file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.upload-progress {
+  margin: 12px 0;
+
+  span {
+    display: block;
+    margin-bottom: 4px;
+  }
+}
+
+.upload-error {
+  color: var(--mat-sys-error, #b00020);
+  margin: 8px 0 0;
+}

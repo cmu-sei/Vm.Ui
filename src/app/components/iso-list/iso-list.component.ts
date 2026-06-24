@@ -12,9 +12,10 @@ import {
   signal,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { debounceTime, switchMap, take, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
+import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatDialog } from '@angular/material/dialog';
 import {
   AppTeamPermission,
   AppViewPermission,
@@ -27,6 +28,10 @@ import { DialogService } from '../../services/dialog/dialog.service';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ErrorMessageService } from '../../services/error-message/error-message.service';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
+import {
+  IsoUploadDialogComponent,
+  IsoUploadDialogData,
+} from '../iso-upload-dialog/iso-upload-dialog.component';
 import { MatIconButton, MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -54,6 +59,7 @@ interface IsoRow {
 interface IsoGroup {
   title: string;
   isTeam: boolean;
+  teamId?: string;
   rows: IsoRow[];
 }
 
@@ -122,6 +128,30 @@ export class IsoListComponent implements OnInit, OnDestroy {
   private readonly dialogService = inject(DialogService);
   private readonly userPermissionsService = inject(UserPermissionsService);
   private readonly vmTeamsQuery = inject(VmTeamsQuery);
+  private readonly dialog = inject(MatDialog);
+
+  // UploadViewIsos anywhere in this View => can upload to the whole View and to any team.
+  private readonly canUploadViewIsos$ = this.userPermissionsService.can(
+    null,
+    null,
+    false,
+    null,
+    AppViewPermission.UploadViewIsos,
+  );
+
+  // Upload button is shown if the user can upload view-wide OR to any team they belong to.
+  readonly canUpload = toSignal(
+    combineLatest([
+      this.canUploadViewIsos$,
+      this.userPermissionsService.can(
+        null,
+        null,
+        false,
+        AppTeamPermission.UploadTeamIsos,
+      ),
+    ]).pipe(map(([view, team]) => view || team)),
+    { initialValue: false },
+  );
 
   ngOnInit() {
     this.canDeleteViewIsos$ = this.userPermissionsService.can(
@@ -170,7 +200,7 @@ export class IsoListComponent implements OnInit, OnDestroy {
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name))
       .forEach((team) =>
-        groups.push({ title: team.name, isTeam: true, rows: [] }),
+        groups.push({ title: team.name, isTeam: true, teamId: team.id, rows: [] }),
       );
     return groups;
   }
@@ -213,6 +243,7 @@ export class IsoListComponent implements OnInit, OnDestroy {
           groups.push({
             title: team.teamName ?? 'Team',
             isTeam: true,
+            teamId: team.teamId,
             rows: this.toRows(
               team.isos,
               'team',
@@ -313,6 +344,59 @@ export class IsoListComponent implements OnInit, OnDestroy {
 
   clearFilter() {
     this.applyFilter('');
+  }
+
+  openUploadDialog() {
+    // Candidate teams are the team groups currently shown. Each is offered as an upload target only
+    // if the user can upload to it (UploadViewIsos anywhere, or UploadTeamIsos on that team).
+    const teams = this.groups()
+      .filter((g) => g.isTeam && g.teamId)
+      .map((g) => ({ id: g.teamId, name: g.title }));
+
+    const teamChecks = teams.map((team) =>
+      combineLatest([
+        this.canUploadViewIsos$,
+        this.userPermissionsService.can(
+          null,
+          team.id,
+          false,
+          AppTeamPermission.UploadTeamIsos,
+        ),
+      ]).pipe(map(([view, teamPerm]) => view || teamPerm)),
+    );
+
+    combineLatest([
+      this.canUploadViewIsos$,
+      teamChecks.length ? combineLatest(teamChecks) : of([] as boolean[]),
+    ])
+      .pipe(take(1))
+      .subscribe(([canUploadView, teamAllowed]) => {
+        const uploadableTeams = teams.filter((_, i) => teamAllowed[i]);
+
+        const data: IsoUploadDialogData = {
+          viewId: this.viewId(),
+          canUploadView,
+          uploadableTeams,
+        };
+
+        this.dialog
+          .open(IsoUploadDialogComponent, { data, width: '480px' })
+          .afterClosed()
+          .pipe(take(1))
+          .subscribe((result) => {
+            if (result?.success) {
+              if (result.message) {
+                this.dialogService.message(
+                  result.partialFailure
+                    ? 'Upload Completed with Errors'
+                    : 'Upload Completed',
+                  result.message,
+                );
+              }
+              this.refresh();
+            }
+          });
+      });
   }
 
   refresh() {
