@@ -19,17 +19,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           color="primary"
           (click)="clearFilter()"
           matTooltip="Clear Search"
+          aria-label="Clear Search"
         >
           <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
         </button>
       }
     </mat-form-field>
-
-    @if (canUpload()) {
-      <button mat-raised-button color="primary" (click)="openUploadDialog()">
-        Upload ISO
-      </button>
-    }
 
     <button mat-raised-button color="primary" (click)="accordion.openAll()">
       Expand All
@@ -38,18 +33,29 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       Collapse All
     </button>
 
-    <button
-      mat-icon-button
-      (click)="refresh()"
-      matTooltip="Refresh"
-      title="Refresh"
-      [disabled]="loading()"
-    >
-      <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
-    </button>
-
     @if (loading()) {
       <mat-spinner [diameter]="20"></mat-spinner>
+    } @else {
+      <button
+        mat-icon-button
+        (click)="refresh()"
+        matTooltip="Refresh"
+        aria-label="Refresh"
+      >
+        <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
+      </button>
+    }
+
+    @if (canUpload()) {
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="openUploadDialog()"
+        matTooltip="Upload ISO"
+        aria-label="Upload ISO"
+      >
+        <mat-icon class="mdi-24px" fontIcon="mdi-upload"></mat-icon>
+      </button>
     }
   </div>
 
@@ -78,7 +84,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                   color="warn"
                   (click)="deleteIso(row)"
                   matTooltip="Delete ISO"
-                  title="Delete ISO"
+                  aria-label="Delete ISO"
                 >
                   <mat-icon
                     class="mdi-24px"
