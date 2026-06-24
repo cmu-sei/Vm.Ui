@@ -100,8 +100,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         } @else {
           @for (row of group.rows; track rowKey(row)) {
             <div class="iso-row">
-              <mat-icon class="mdi-24px iso-icon" fontIcon="mdi-disc"></mat-icon>
-              <span class="iso-name">{{ row.filename }}</span>
               @if (isDeleting(row)) {
                 <mat-spinner [diameter]="20"></mat-spinner>
               } @else if (row.canDelete) {
@@ -118,6 +116,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                   ></mat-icon>
                 </button>
               }
+              <span class="iso-name">{{ row.filename }}</span>
             </div>
           }
         }

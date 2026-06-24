@@ -12,6 +12,7 @@ import {
 } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatIcon } from '@angular/material/icon';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { FileService } from '../../services/file/file.service';
 import { ErrorMessageService } from '../../services/error-message/error-message.service';
@@ -41,6 +42,7 @@ export interface IsoUploadDialogData {
     MatDialogActions,
     MatButton,
     MatCheckbox,
+    MatIcon,
     MatProgressBar,
   ],
 })

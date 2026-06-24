@@ -1,7 +1,6 @@
 // Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -24,18 +23,11 @@ import {
   SelectContainerComponent,
   DragToSelectModule,
 } from 'ngx-drag-to-select';
-import { combineLatest, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { filter, map, switchMap, take } from 'rxjs/operators';
 import { Team, TeamService } from '../../generated/player-api';
-import {
-  AppTeamPermission,
-  AppViewPermission,
-  IsoUploadResult,
-  Vm,
-} from '../../generated/vm-api';
+import { AppViewPermission, Vm } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
-import { ErrorMessageService } from '../../services/error-message/error-message.service';
-import { FileService } from '../../services/file/file.service';
 import { TeamsService } from '../../services/teams/teams.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
@@ -62,7 +54,6 @@ import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { AsyncPipe, SlicePipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-vm-list',
@@ -104,8 +95,6 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   // MatPaginator Output
   public defaultPageSize = 50;
   public pageEvent: PageEvent;
-  public uploading = false;
-  public uploadProgress = 0;
   public vmApiResponded = true;
   public filterString = '';
   public showIps: Boolean = false;
@@ -153,21 +142,6 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   vmFilterBy: any = 'All';
   private hasLoadedVms = false;
 
-  canUploadTeamIsos$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
-    AppTeamPermission.UploadTeamIsos,
-  );
-
-  canUploadViewIsos$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
-    null,
-    AppViewPermission.UploadViewIsos,
-  );
-
   canRevertVms$ = this.userPermissionsService.can(
     null,
     null,
@@ -176,16 +150,8 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     AppViewPermission.RevertVms,
   );
 
-  canUploadViewIsos = toSignal(this.canUploadViewIsos$);
-
-  canUploadIsos$ = combineLatest([
-    this.canUploadTeamIsos$,
-    this.canUploadViewIsos$,
-  ]).pipe(map(([x, y]) => x || y));
-
   constructor(
     public vmService: VmService,
-    private fileService: FileService,
     private dialogService: DialogService,
     private teamsService: TeamsService,
     private playerTeamService: TeamService,
@@ -360,74 +326,6 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   openHere($event) {
     this.openVmHere.emit($event);
-  }
-
-  uploadIso(fileSelector) {
-    if (fileSelector.value === '') {
-      console.log('file selector did not have a value');
-      return;
-    }
-
-    const qf = fileSelector.files[0];
-
-    if (this.canUploadViewIsos()) {
-      // First prompt the user to confirm if the iso is available for the team or the entire view
-      this.dialogService
-        .confirm(
-          'Upload iso for?',
-          'Please choose if you want this iso to be public or for your team only',
-          { buttonTrueText: 'Public', buttonFalseText: 'My Team Only' },
-        )
-        .pipe(take(1))
-        .subscribe((result) => {
-          if (result['wasCancelled'] === false) {
-            const isForAll = result['confirm'];
-            this.sendIsoFile(isForAll, qf);
-          }
-        });
-    } else {
-      // The user is not an admin therfore iso's are only uploaded for the team
-      this.sendIsoFile(false, qf);
-    }
-    fileSelector.value = '';
-  }
-
-  sendIsoFile(isForAll: boolean, file: File) {
-    this.uploading = true;
-    this.fileService.uploadIso(file, isForAll ? 'view' : 'team').subscribe(
-      (event) => {
-        if (event.type === HttpEventType.UploadProgress) {
-          this.uploadProgress = Math.round((100 * event.loaded) / event.total);
-          this.cd.detectChanges();
-        }
-
-        if (event.type === HttpEventType.Response) {
-          this.uploading = false;
-          this.cd.detectChanges();
-          // Surface the structured upload result. A partial-success response still
-          // returns HTTP 200 with a non-zero failed-host count, so reflect that in
-          // the dialog title rather than implying a clean success.
-          const body = event.body as IsoUploadResult;
-          const partialFailure = (body?.failedHostCount ?? 0) > 0;
-          this.dialogService.message(
-            partialFailure ? 'Upload Completed with Errors' : 'Upload Completed',
-            body?.message || 'Upload Completed Successfully',
-          );
-        }
-      },
-      (err) => {
-        console.log(err);
-        this.uploading = false;
-        this.cd.detectChanges();
-        this.dialogService.message(
-          'Upload Failed',
-          ErrorMessageService.getApiErrorMessage(
-            err,
-            'An unexpected error occurred while uploading the ISO.',
-          ),
-        );
-      },
-    );
   }
 
   /**
