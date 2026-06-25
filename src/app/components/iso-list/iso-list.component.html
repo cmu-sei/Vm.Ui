@@ -10,8 +10,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         matInput
         [(ngModel)]="searchTerm"
         (keyup)="onSearchInput($event)"
-        placeholder="Search ISOs"
-        aria-label="Search ISOs by filename"
+        placeholder="Search"
+        aria-label="Search by filename"
       />
       @if (searchTerm !== '') {
         <button
@@ -31,7 +31,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       mat-raised-button
       color="primary"
       (click)="expandAll()"
-      aria-label="Expand all ISO groups"
+      aria-label="Expand all groups"
     >
       Expand All
     </button>
@@ -39,7 +39,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       mat-raised-button
       color="primary"
       (click)="collapseAll()"
-      aria-label="Collapse all ISO groups"
+      aria-label="Collapse all groups"
     >
       Collapse All
     </button>
@@ -62,8 +62,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         mat-icon-button
         color="primary"
         (click)="openUploadDialog()"
-        matTooltip="Upload ISO"
-        aria-label="Upload ISO"
+        matTooltip="Upload"
+        aria-label="Upload"
       >
         <mat-icon class="mdi-24px" fontIcon="mdi-upload"></mat-icon>
       </button>
@@ -99,14 +99,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       }
     </mat-accordion>
   } @else {
-  <mat-accordion multi>
-    @for (group of filteredGroups(); track group.title) {
-      <app-iso-group
-        [group]="group"
-        [deleting]="deleting()"
-        (delete)="deleteIso($event)"
-      ></app-iso-group>
-    }
-  </mat-accordion>
+    <mat-accordion multi>
+      @for (group of filteredGroups(); track group.title) {
+        <app-iso-group
+          [group]="group"
+          [deleting]="deleting()"
+          (delete)="deleteIso($event)"
+        ></app-iso-group>
+      }
+    </mat-accordion>
   }
 </div>
