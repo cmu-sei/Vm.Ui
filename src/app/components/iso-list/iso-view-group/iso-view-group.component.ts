@@ -1,24 +1,16 @@
 // Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, ViewChild, input, output } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { MatTooltip } from '@angular/material/tooltip';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import {
-  MatAccordion,
-  MatExpansionPanel,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle,
-  MatExpansionPanelDescription,
-} from '@angular/material/expansion';
-import {
-  IsoGroup,
-  IsoRow,
-  IsoViewGroup,
-  isoRowKey,
-} from '../iso-list.component';
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  input,
+  output,
+} from '@angular/core';
+import { MatAccordion } from '@angular/material/expansion';
+import { IsoGroup, IsoRow, IsoViewGroup } from '../iso-list.component';
+import { IsoGroupComponent } from '../iso-group/iso-group.component';
 
 // Presentational panel for a single View in all-views mode: an inner accordion of the view-wide
 // group plus a panel per team. The parent owns the delete/confirm/spinner flow; this component just
@@ -27,17 +19,8 @@ import {
   selector: 'app-iso-view-group',
   templateUrl: './iso-view-group.component.html',
   styleUrls: ['./iso-view-group.component.scss'],
-  imports: [
-    MatIconButton,
-    MatIcon,
-    MatTooltip,
-    MatProgressSpinner,
-    MatAccordion,
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
-    MatExpansionPanelDescription,
-  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatAccordion, IsoGroupComponent],
 })
 export class IsoViewGroupComponent {
   readonly viewGroup = input.required<IsoViewGroup>();
@@ -62,13 +45,5 @@ export class IsoViewGroupComponent {
 
   closeAll() {
     this.accordion?.closeAll();
-  }
-
-  rowKey(row: IsoRow): string {
-    return isoRowKey(row);
-  }
-
-  isDeleting(row: IsoRow): boolean {
-    return this.deleting().has(isoRowKey(row));
   }
 }

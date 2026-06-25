@@ -1,7 +1,15 @@
 // Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  Inject,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import {
   MAT_DIALOG_DATA,
@@ -36,6 +44,7 @@ export interface IsoUploadDialogData {
   selector: 'app-iso-upload-dialog',
   templateUrl: './iso-upload-dialog.component.html',
   styleUrls: ['./iso-upload-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatDialogTitle,
     MatDialogContent,
@@ -55,6 +64,8 @@ export class IsoUploadDialogComponent {
   readonly uploading = signal(false);
   readonly progress = signal(0);
   readonly errorMessage = signal<string | null>(null);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: IsoUploadDialogData,
@@ -109,6 +120,7 @@ export class IsoUploadDialogComponent {
 
     this.fileService
       .uploadIso(file, scope, teamIds, this.data.viewId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (event) => {
           if (event.type === HttpEventType.UploadProgress && event.total) {

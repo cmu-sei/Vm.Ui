@@ -5,23 +5,3 @@
   display: block;
   margin-left: 12px;
 }
-
-.iso-empty {
-  margin: 8px 0;
-  opacity: 0.6;
-  font-style: italic;
-}
-
-.iso-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-
-  .iso-name {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}

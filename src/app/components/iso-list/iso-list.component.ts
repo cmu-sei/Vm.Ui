@@ -2,8 +2,9 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import {
+  ChangeDetectionStrategy,
   Component,
-  OnDestroy,
+  DestroyRef,
   OnInit,
   QueryList,
   ViewChild,
@@ -14,9 +15,16 @@ import {
   signal,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
-import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import {
+  debounceTime,
+  filter,
+  map,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs/operators';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import {
   AppSystemPermission,
@@ -36,6 +44,7 @@ import {
   IsoUploadDialogData,
 } from '../iso-upload-dialog/iso-upload-dialog.component';
 import { IsoViewGroupComponent } from './iso-view-group/iso-view-group.component';
+import { IsoGroupComponent } from './iso-group/iso-group.component';
 import { MatIconButton, MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -77,7 +86,15 @@ export interface IsoViewGroup {
   viewName: string;
   viewWideGroup: IsoGroup;
   teamGroups: IsoGroup[];
+  // Total ISOs in the View (view-wide + all teams); reflects the active search filter.
+  isoCount: number;
 }
+
+// Discriminated result of a single load: all-views mode carries the raw per-View listing; single-
+// view mode carries the already-assembled (permission-resolved) groups.
+type IsoLoadResult =
+  | { allViews: true; results: IsoResult[] }
+  | { allViews: false; groups: IsoGroup[] };
 
 const VIEW_GROUP_TITLE = 'View (All Teams)';
 
@@ -91,6 +108,7 @@ export function isoRowKey(row: IsoRow): string {
   selector: 'app-iso-list',
   templateUrl: './iso-list.component.html',
   styleUrls: ['./iso-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatIconButton,
     MatButton,
@@ -99,6 +117,7 @@ export function isoRowKey(row: IsoRow): string {
     MatProgressSpinner,
     MatSlideToggle,
     IsoViewGroupComponent,
+    IsoGroupComponent,
     MatAccordion,
     MatExpansionPanel,
     MatExpansionPanelHeader,
@@ -110,7 +129,7 @@ export function isoRowKey(row: IsoRow): string {
     FormsModule,
   ],
 })
-export class IsoListComponent implements OnInit, OnDestroy {
+export class IsoListComponent implements OnInit {
   viewId = input.required<string>();
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
@@ -161,19 +180,21 @@ export class IsoListComponent implements OnInit, OnDestroy {
       ...g,
       rows: g.rows.filter((r) => r.filename.toLowerCase().includes(term)),
     });
-    return viewGroups.map((v) => ({
-      ...v,
-      viewWideGroup: filterGroup(v.viewWideGroup),
-      teamGroups: v.teamGroups.map(filterGroup),
-    }));
+    return viewGroups.map((v) => {
+      const viewWideGroup = filterGroup(v.viewWideGroup);
+      const teamGroups = v.teamGroups.map(filterGroup);
+      return {
+        ...v,
+        viewWideGroup,
+        teamGroups,
+        isoCount: this.totalIsoCount(viewWideGroup, teamGroups),
+      };
+    });
   });
 
   private refresh$ = new BehaviorSubject<boolean>(true);
-  private unsubscribe$ = new Subject<null>();
 
-  // DeleteViewIsos granted anywhere in this View => can delete the view-wide ISOs and any team's ISOs.
-  private canDeleteViewIsos$: Observable<boolean>;
-
+  private readonly destroyRef = inject(DestroyRef);
   private readonly fileService = inject(FileService);
   private readonly dialogService = inject(DialogService);
   private readonly userPermissionsService = inject(UserPermissionsService);
@@ -187,6 +208,15 @@ export class IsoListComponent implements OnInit, OnDestroy {
     false,
     null,
     AppViewPermission.UploadViewIsos,
+  );
+
+  // DeleteViewIsos granted anywhere in this View => can delete the view-wide ISOs and any team's ISOs.
+  private readonly canDeleteViewIsos$ = this.userPermissionsService.can(
+    null,
+    null,
+    false,
+    null,
+    AppViewPermission.DeleteViewIsos,
   );
 
   // Upload button is shown if the user can upload view-wide OR to any team they belong to.
@@ -221,36 +251,41 @@ export class IsoListComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit() {
-    this.canDeleteViewIsos$ = this.userPermissionsService.can(
-      null,
-      null,
-      false,
-      null,
-      AppViewPermission.DeleteViewIsos,
-    );
-
     // Render placeholder panels immediately from whatever teams are in client state (the
     // User-Follow-populated set; possibly empty on a cold load). The always-present
-    // "View (All Teams)" panel shows right away either way. getViewIsos then reconciles.
+    // "View (All Teams)" panel shows right away either way. The listing then reconciles.
     this.groups.set(this.buildPlaceholderGroups());
 
+    // The load reads the required `viewId` input, so it lives here (inputs are set by ngOnInit) and
+    // is torn down via takeUntilDestroyed. Each refresh switches to the active endpoint; the
+    // single-view path resolves per-team delete permissions before assembling its groups.
     this.refresh$
       .pipe(
-        switchMap(() => {
+        switchMap((): Observable<IsoLoadResult> => {
           this.loading.set(true);
-          return this.showAllViews()
-            ? this.fileService.getAllIsos()
-            : this.fileService.getViewIsos(this.viewId());
+          if (this.showAllViews()) {
+            return this.fileService
+              .getAllIsos()
+              .pipe(map((results) => ({ allViews: true as const, results })));
+          }
+          return this.fileService.getViewIsos(this.viewId()).pipe(
+            switchMap((result) =>
+              this.buildSingleViewGroups(result).pipe(
+                map((groups) => ({ allViews: false as const, groups })),
+              ),
+            ),
+          );
         }),
-        takeUntil(this.unsubscribe$),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (result) => {
-          if (this.showAllViews()) {
-            this.buildViewGroups(result as IsoResult[]);
+        next: (res: IsoLoadResult) => {
+          if ('results' in res) {
+            this.buildViewGroups(res.results);
           } else {
-            this.buildGroups(result as IsoResult);
+            this.groups.set(res.groups);
           }
+          this.loading.set(false);
         },
         error: (err: HttpErrorResponse) => {
           this.loading.set(false);
@@ -289,10 +324,8 @@ export class IsoListComponent implements OnInit, OnDestroy {
     const canDelete = this.canDeleteAnyIso();
 
     const viewGroups: IsoViewGroup[] = (results ?? [])
-      .map((result) => ({
-        viewId: result.viewId ?? '',
-        viewName: result.viewName ?? 'View',
-        viewWideGroup: {
+      .map((result) => {
+        const viewWideGroup: IsoGroup = {
           title: VIEW_GROUP_TITLE,
           isTeam: false,
           rows: this.toRows(
@@ -302,8 +335,8 @@ export class IsoListComponent implements OnInit, OnDestroy {
             canDelete,
             result.viewId,
           ),
-        },
-        teamGroups: (result.teamIsoResults ?? [])
+        };
+        const teamGroups: IsoGroup[] = (result.teamIsoResults ?? [])
           .map((team) => ({
             title: team.teamName ?? 'Team',
             isTeam: true,
@@ -316,12 +349,26 @@ export class IsoListComponent implements OnInit, OnDestroy {
               result.viewId,
             ),
           }))
-          .sort((a, b) => a.title.localeCompare(b.title)),
-      }))
+          .sort((a, b) => a.title.localeCompare(b.title));
+        return {
+          viewId: result.viewId ?? '',
+          viewName: result.viewName ?? 'View',
+          viewWideGroup,
+          teamGroups,
+          isoCount: this.totalIsoCount(viewWideGroup, teamGroups),
+        };
+      })
       .sort((a, b) => a.viewName.localeCompare(b.viewName));
 
     this.viewGroups.set(viewGroups);
-    this.loading.set(false);
+  }
+
+  // Total ISOs in a View = the view-wide group plus every team group.
+  private totalIsoCount(viewWideGroup: IsoGroup, teamGroups: IsoGroup[]): number {
+    return (
+      viewWideGroup.rows.length +
+      teamGroups.reduce((sum, g) => sum + g.rows.length, 0)
+    );
   }
 
   // Placeholder groups (no ISO rows yet) so the basic UI appears without waiting on the listing.
@@ -339,60 +386,72 @@ export class IsoListComponent implements OnInit, OnDestroy {
     return groups;
   }
 
-  private buildGroups(result: IsoResult) {
-    // Resolve all per-team delete permissions in one shot, then assemble the view model.
-    // Sort teams alphabetically up front so the perms array stays index-aligned with teamResults.
+  // Resolve each team's delete permission (once), then assemble the single-view group model. Teams
+  // are sorted up front and each carries its own resolved permission, so there is no index-aligned
+  // positional coupling between the teams and their permission results.
+  private buildSingleViewGroups(result: IsoResult): Observable<IsoGroup[]> {
     const teamResults = (result.teamIsoResults ?? [])
       .slice()
       .sort((a, b) => (a.teamName ?? '').localeCompare(b.teamName ?? ''));
 
-    const teamPermChecks = teamResults.map((t) =>
-      combineLatest([
-        this.canDeleteViewIsos$,
-        this.userPermissionsService.can(
-          null,
-          t.teamId,
-          false,
-          AppTeamPermission.DeleteTeamIsos,
-        ),
-      ]),
+    const teamChecks = teamResults.map((team) =>
+      this.canDeleteTeamIsos$(team.teamId).pipe(
+        map((canDelete) => ({ team, canDelete })),
+      ),
     );
 
-    combineLatest([this.canDeleteViewIsos$, ...teamPermChecks])
-      .pipe(take(1))
-      .subscribe((perms) => {
-        const canDeleteView = perms[0] as boolean;
-        const groups: IsoGroup[] = [];
+    return combineLatest([
+      this.canDeleteViewIsos$,
+      teamChecks.length ? combineLatest(teamChecks) : of([]),
+    ]).pipe(
+      take(1),
+      map(([canDeleteView, teamPerms]) => {
+        const groups: IsoGroup[] = [
+          {
+            title: VIEW_GROUP_TITLE,
+            isTeam: false,
+            rows: this.toRows(result.isos, 'view', undefined, canDeleteView),
+          },
+        ];
 
-        // View-wide ISOs.
-        groups.push({
-          title: VIEW_GROUP_TITLE,
-          isTeam: false,
-          rows: this.toRows(result.isos, 'view', undefined, canDeleteView),
-        });
-
-        // One group per team.
-        teamResults.forEach((team, i) => {
-          const [canViewDelete, canTeamDelete] = perms[i + 1] as [
-            boolean,
-            boolean,
-          ];
+        teamPerms.forEach(({ team, canDelete }) => {
           groups.push({
             title: team.teamName ?? 'Team',
             isTeam: true,
             teamId: team.teamId,
-            rows: this.toRows(
-              team.isos,
-              'team',
-              team.teamId,
-              canViewDelete || canTeamDelete,
-            ),
+            rows: this.toRows(team.isos, 'team', team.teamId, canDelete),
           });
         });
 
-        this.groups.set(groups);
-        this.loading.set(false);
-      });
+        return groups;
+      }),
+    );
+  }
+
+  // A team's ISOs are deletable with DeleteViewIsos anywhere in the View or DeleteTeamIsos on it.
+  private canDeleteTeamIsos$(teamId: string): Observable<boolean> {
+    return combineLatest([
+      this.canDeleteViewIsos$,
+      this.userPermissionsService.can(
+        null,
+        teamId,
+        false,
+        AppTeamPermission.DeleteTeamIsos,
+      ),
+    ]).pipe(map(([canView, canTeam]) => canView || canTeam));
+  }
+
+  // A team is an upload target with UploadViewIsos anywhere in the View or UploadTeamIsos on it.
+  private canUploadTeamIsos$(teamId: string): Observable<boolean> {
+    return combineLatest([
+      this.canUploadViewIsos$,
+      this.userPermissionsService.can(
+        null,
+        teamId,
+        false,
+        AppTeamPermission.UploadTeamIsos,
+      ),
+    ]).pipe(map(([canView, canTeam]) => canView || canTeam));
   }
 
   private toRows(
@@ -419,10 +478,6 @@ export class IsoListComponent implements OnInit, OnDestroy {
     return isoRowKey(row);
   }
 
-  isDeleting(row: IsoRow): boolean {
-    return this.deleting().has(this.rowKey(row));
-  }
-
   deleteIso(row: IsoRow) {
     const key = this.rowKey(row);
     if (this.deleting().has(key)) {
@@ -435,10 +490,11 @@ export class IsoListComponent implements OnInit, OnDestroy {
         `Are you sure you want to delete "${row.filename}"? This cannot be undone.`,
         { buttonTrueText: 'Delete', buttonFalseText: 'Cancel' },
       )
-      .pipe(take(1))
-      .subscribe((result) => {
-        if (result['confirm'] === true) {
-          this.setDeleting(key, true);
+      .pipe(
+        take(1),
+        filter((result) => result?.['confirm'] === true),
+        tap(() => this.setDeleting(key, true)),
+        switchMap(() =>
           this.fileService
             .deleteIso(
               row.viewId ?? this.viewId(),
@@ -446,27 +502,28 @@ export class IsoListComponent implements OnInit, OnDestroy {
               row.filename,
               row.teamId,
             )
-            .pipe(take(1))
-            .subscribe({
-              next: (res: IsoUploadResult) => {
-                this.setDeleting(key, false);
-                if (res?.message) {
-                  this.dialogService.message('Delete ISO', res.message);
-                }
-                this.refresh();
-              },
-              error: (err: HttpErrorResponse) => {
-                this.setDeleting(key, false);
-                this.dialogService.message(
-                  'Delete Failed',
-                  ErrorMessageService.getApiErrorMessage(
-                    err,
-                    'An unexpected error occurred while deleting the ISO.',
-                  ),
-                );
-              },
-            });
-        }
+            .pipe(take(1)),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (res: IsoUploadResult) => {
+          this.setDeleting(key, false);
+          if (res?.message) {
+            this.dialogService.message('Delete ISO', res.message);
+          }
+          this.refresh();
+        },
+        error: (err: HttpErrorResponse) => {
+          this.setDeleting(key, false);
+          this.dialogService.message(
+            'Delete Failed',
+            ErrorMessageService.getApiErrorMessage(
+              err,
+              'An unexpected error occurred while deleting the ISO.',
+            ),
+          );
+        },
       });
   }
 
@@ -480,6 +537,10 @@ export class IsoListComponent implements OnInit, OnDestroy {
       }
       return next;
     });
+  }
+
+  onSearchInput(event: Event) {
+    this.applyFilter((event.target as HTMLInputElement).value);
   }
 
   applyFilter(value: string) {
@@ -499,57 +560,51 @@ export class IsoListComponent implements OnInit, OnDestroy {
       .map((g) => ({ id: g.teamId, name: g.title }));
 
     const teamChecks = teams.map((team) =>
-      combineLatest([
-        this.canUploadViewIsos$,
-        this.userPermissionsService.can(
-          null,
-          team.id,
-          false,
-          AppTeamPermission.UploadTeamIsos,
-        ),
-      ]).pipe(map(([view, teamPerm]) => view || teamPerm)),
+      this.canUploadTeamIsos$(team.id).pipe(
+        map((canUpload) => ({ team, canUpload })),
+      ),
     );
 
     combineLatest([
       this.canUploadViewIsos$,
-      teamChecks.length ? combineLatest(teamChecks) : of([] as boolean[]),
+      teamChecks.length ? combineLatest(teamChecks) : of([]),
     ])
-      .pipe(take(1))
-      .subscribe(([canUploadView, teamAllowed]) => {
-        const uploadableTeams = teams.filter((_, i) => teamAllowed[i]);
-
-        const data: IsoUploadDialogData = {
-          viewId: this.viewId(),
+      .pipe(
+        take(1),
+        map(([canUploadView, teamPerms]) => ({
           canUploadView,
-          uploadableTeams,
-        };
-
-        this.dialog
-          .open(IsoUploadDialogComponent, { data, width: '480px' })
-          .afterClosed()
-          .pipe(take(1))
-          .subscribe((result) => {
-            if (result?.success) {
-              if (result.message) {
-                this.dialogService.message(
-                  result.partialFailure
-                    ? 'Upload Completed with Errors'
-                    : 'Upload Completed',
-                  result.message,
-                );
-              }
-              this.refresh();
-            }
-          });
+          uploadableTeams: teamPerms
+            .filter((t) => t.canUpload)
+            .map((t) => t.team),
+        })),
+        switchMap(({ canUploadView, uploadableTeams }) => {
+          const data: IsoUploadDialogData = {
+            viewId: this.viewId(),
+            canUploadView,
+            uploadableTeams,
+          };
+          return this.dialog
+            .open(IsoUploadDialogComponent, { data, width: '480px' })
+            .afterClosed();
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((result) => {
+        if (result?.success) {
+          if (result.message) {
+            this.dialogService.message(
+              result.partialFailure
+                ? 'Upload Completed with Errors'
+                : 'Upload Completed',
+              result.message,
+            );
+          }
+          this.refresh();
+        }
       });
   }
 
   refresh() {
     this.refresh$.next(true);
-  }
-
-  ngOnDestroy() {
-    this.unsubscribe$.next(null);
-    this.unsubscribe$.complete();
   }
 }

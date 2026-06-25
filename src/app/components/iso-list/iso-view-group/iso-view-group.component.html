@@ -5,34 +5,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <mat-accordion multi class="iso-team-accordion">
   @for (group of groups(); track group.title) {
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>{{ group.title }}</mat-panel-title>
-        <mat-panel-description>Count: {{ group.rows.length }}</mat-panel-description>
-      </mat-expansion-panel-header>
-
-      @if (group.rows.length === 0) {
-        <p class="iso-empty">No ISOs.</p>
-      } @else {
-        @for (row of group.rows; track rowKey(row)) {
-          <div class="iso-row">
-            @if (isDeleting(row)) {
-              <mat-spinner [diameter]="20"></mat-spinner>
-            } @else if (row.canDelete) {
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="delete.emit(row)"
-                matTooltip="Delete ISO"
-                aria-label="Delete ISO"
-              >
-                <mat-icon class="mdi-24px" fontIcon="mdi-trash-can-outline"></mat-icon>
-              </button>
-            }
-            <span class="iso-name">{{ row.filename }}</span>
-          </div>
-        }
-      }
-    </mat-expansion-panel>
+    <app-iso-group
+      [group]="group"
+      [deleting]="deleting()"
+      (delete)="delete.emit($event)"
+    ></app-iso-group>
   }
 </mat-accordion>
