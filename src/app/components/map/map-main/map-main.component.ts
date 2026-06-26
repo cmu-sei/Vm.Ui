@@ -106,6 +106,12 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             AppTeamPermission.ManageTeam,
             AppViewPermission.ManageView,
           );
+          // Assign here, not in the maps pipeline below: a view with no maps
+          // never emits there, leaving viewExists$ undefined and falsely
+          // showing "View Not Found". View existence depends only on the team.
+          this.viewExists$ = this.permissionsService
+            .getPrimaryTeamId(this.viewId!)
+            .pipe(map((teamId) => !!teamId));
         }),
         switchMap(() =>
           forkJoin([
@@ -123,12 +129,6 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             this.selected = filteredMaps[0];
             this.goToMap();
           }
-        }),
-        tap(() => {
-          // Set viewExists$ based on whether primary team exists
-          this.viewExists$ = this.permissionsService.getPrimaryTeamId(this.viewId!).pipe(
-            map((teamId) => !!teamId),
-          );
         }),
         takeUntil(this.unsubscribe$),
       )
@@ -153,6 +153,11 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
                 )
                 .pipe(map((allowed) => (allowed ? x : null)));
             });
+
+            // combineLatest([]) never emits; emit [] for a view with no maps.
+            if (checks$.length === 0) {
+              return of([] as VmMap[]);
+            }
 
             return combineLatest(checks$).pipe(
               map((results): VmMap[] =>
