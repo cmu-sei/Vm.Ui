@@ -8,7 +8,13 @@ import {
   input,
   output,
 } from '@angular/core';
-import { MatAccordion } from '@angular/material/expansion';
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+  MatExpansionPanelDescription,
+} from '@angular/material/expansion';
 import { IsoGroup, IsoRow, IsoViewGroup } from '../iso-list.component';
 import { IsoGroupComponent } from '../iso-group/iso-group.component';
 
@@ -20,7 +26,14 @@ import { IsoGroupComponent } from '../iso-group/iso-group.component';
   templateUrl: './iso-view-group.component.html',
   styleUrls: ['./iso-view-group.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatAccordion, IsoGroupComponent],
+  imports: [
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatExpansionPanelDescription,
+    IsoGroupComponent,
+  ],
 })
 export class IsoViewGroupComponent {
   readonly viewGroup = input.required<IsoViewGroup>();

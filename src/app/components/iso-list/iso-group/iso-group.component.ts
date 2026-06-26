@@ -11,12 +11,6 @@ import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import {
-  MatExpansionPanel,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle,
-  MatExpansionPanelDescription,
-} from '@angular/material/expansion';
 import { IsoGroup, IsoRow, isoRowKey } from '../iso-list.component';
 
 // Presentational expansion panel for a single ISO group (the view-wide group or one team). Renders
@@ -28,16 +22,7 @@ import { IsoGroup, IsoRow, isoRowKey } from '../iso-list.component';
   templateUrl: './iso-group.component.html',
   styleUrls: ['./iso-group.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatIconButton,
-    MatIcon,
-    MatTooltip,
-    MatProgressSpinner,
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
-    MatExpansionPanelDescription,
-  ],
+  imports: [MatIconButton, MatIcon, MatTooltip, MatProgressSpinner],
 })
 export class IsoGroupComponent {
   readonly group = input.required<IsoGroup>();

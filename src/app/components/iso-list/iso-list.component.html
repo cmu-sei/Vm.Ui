@@ -101,11 +101,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   } @else {
     <mat-accordion multi>
       @for (group of filteredGroups(); track group.teamId ?? group.title) {
-        <app-iso-group
-          [group]="group"
-          [deleting]="deleting()"
-          (delete)="deleteIso($event)"
-        ></app-iso-group>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ group.title }}</mat-panel-title>
+            <mat-panel-description
+              >Count: {{ group.rows.length }}</mat-panel-description
+            >
+          </mat-expansion-panel-header>
+          <app-iso-group
+            [group]="group"
+            [deleting]="deleting()"
+            (delete)="deleteIso($event)"
+          ></app-iso-group>
+        </mat-expansion-panel>
       }
     </mat-accordion>
   }
