@@ -4,7 +4,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <mat-accordion multi class="iso-team-accordion">
-  @for (group of groups(); track group.title) {
+  @for (group of groups(); track group.teamId ?? group.title) {
     <app-iso-group
       [group]="group"
       [deleting]="deleting()"

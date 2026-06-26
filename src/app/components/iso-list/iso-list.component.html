@@ -4,12 +4,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <div class="iso-list">
-  <div class="iso-list-toolbar d-flex align-items-center gap-3 ms-2">
+  <div class="iso-list-toolbar">
     <mat-form-field subscriptSizing="dynamic" class="searchBox">
       <input
         matInput
-        [(ngModel)]="searchTerm"
-        (keyup)="onSearchInput($event)"
+        [ngModel]="searchTerm"
+        (ngModelChange)="applyFilter($event)"
         placeholder="Search"
         aria-label="Search by filename"
       />
@@ -100,7 +100,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </mat-accordion>
   } @else {
     <mat-accordion multi>
-      @for (group of filteredGroups(); track group.title) {
+      @for (group of filteredGroups(); track group.teamId ?? group.title) {
         <app-iso-group
           [group]="group"
           [deleting]="deleting()"

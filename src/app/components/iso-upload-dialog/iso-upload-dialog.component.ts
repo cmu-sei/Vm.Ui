@@ -5,7 +5,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  Inject,
   inject,
   signal,
 } from '@angular/core';
@@ -66,12 +65,10 @@ export class IsoUploadDialogComponent {
   readonly errorMessage = signal<string | null>(null);
 
   private readonly destroyRef = inject(DestroyRef);
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: IsoUploadDialogData,
-    private dialogRef: MatDialogRef<IsoUploadDialogComponent>,
-    private fileService: FileService,
-  ) {}
+  readonly data = inject<IsoUploadDialogData>(MAT_DIALOG_DATA);
+  private readonly dialogRef =
+    inject<MatDialogRef<IsoUploadDialogComponent>>(MatDialogRef);
+  private readonly fileService = inject(FileService);
 
   onFileChosen(input: HTMLInputElement) {
     this.file.set(input.files?.[0] ?? null);

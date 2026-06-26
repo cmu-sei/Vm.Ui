@@ -5,6 +5,10 @@
   padding: 16px;
 
   .iso-list-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: 8px;
     margin-bottom: 16px;
 
     .searchBox {

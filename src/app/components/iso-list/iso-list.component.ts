@@ -539,10 +539,6 @@ export class IsoListComponent implements OnInit {
     });
   }
 
-  onSearchInput(event: Event) {
-    this.applyFilter((event.target as HTMLInputElement).value);
-  }
-
   applyFilter(value: string) {
     this.searchTerm = value;
     this.searchTerm$.next(value);
