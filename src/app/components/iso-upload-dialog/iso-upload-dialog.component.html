@@ -28,7 +28,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-checkbox
         color="primary"
         [checked]="isTeamSelected(team.id)"
-        [disabled]="uploading() || uploadToView()"
+        [disabled]="uploading() || uploadToView() || singleTeamOnly()"
         (change)="toggleTeam(team.id, $event.checked)"
       >
         {{ team.name }}

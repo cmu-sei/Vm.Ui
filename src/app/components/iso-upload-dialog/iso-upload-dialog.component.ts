@@ -5,6 +5,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -69,6 +70,18 @@ export class IsoUploadDialogComponent {
   private readonly dialogRef =
     inject<MatDialogRef<IsoUploadDialogComponent>>(MatDialogRef);
   private readonly fileService = inject(FileService);
+
+  // True when the dialog offers exactly one target: no view-wide option and a single team.
+  // In that case the team is auto-selected and locked (nothing else to choose).
+  readonly singleTeamOnly = computed(
+    () => !this.data.canUploadView && this.data.uploadableTeams.length === 1,
+  );
+
+  constructor() {
+    if (this.singleTeamOnly()) {
+      this.selectedTeamIds.set(new Set([this.data.uploadableTeams[0].id]));
+    }
+  }
 
   onFileChosen(input: HTMLInputElement) {
     this.file.set(input.files?.[0] ?? null);
