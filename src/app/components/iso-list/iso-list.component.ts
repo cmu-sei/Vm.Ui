@@ -38,7 +38,6 @@ import {
 import { DialogService } from '../../services/dialog/dialog.service';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ErrorMessageService } from '../../services/error-message/error-message.service';
-import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import {
   IsoUploadDialogComponent,
   IsoUploadDialogData,
@@ -198,7 +197,6 @@ export class IsoListComponent implements OnInit {
   private readonly fileService = inject(FileService);
   private readonly dialogService = inject(DialogService);
   private readonly userPermissionsService = inject(UserPermissionsService);
-  private readonly vmTeamsQuery = inject(VmTeamsQuery);
   private readonly dialog = inject(MatDialog);
 
   // UploadViewIsos on the active (primary) team => can upload to the whole View and to any team.
@@ -252,11 +250,6 @@ export class IsoListComponent implements OnInit {
   );
 
   ngOnInit() {
-    // Render placeholder panels immediately from whatever teams are in client state (the
-    // User-Follow-populated set; possibly empty on a cold load). The always-present
-    // "View (All Teams)" panel shows right away either way. The listing then reconciles.
-    this.groups.set(this.buildPlaceholderGroups());
-
     // The load reads the required `viewId` input, so it lives here (inputs are set by ngOnInit) and
     // is torn down via takeUntilDestroyed. Each refresh switches to the active endpoint; the
     // single-view path resolves per-team delete permissions before assembling its groups.
@@ -372,20 +365,6 @@ export class IsoListComponent implements OnInit {
     );
   }
 
-  // Placeholder groups (no ISO rows yet) so the basic UI appears without waiting on the listing.
-  private buildPlaceholderGroups(): IsoGroup[] {
-    const groups: IsoGroup[] = [
-      { title: VIEW_GROUP_TITLE, isTeam: false, rows: [] },
-    ];
-    this.vmTeamsQuery
-      .getAll()
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .forEach((team) =>
-        groups.push({ title: team.name, isTeam: true, teamId: team.id, rows: [] }),
-      );
-    return groups;
-  }
 
   // Resolve each team's delete permission (once), then assemble the single-view group model. Teams
   // are sorted up front and each carries its own resolved permission, so there is no index-aligned

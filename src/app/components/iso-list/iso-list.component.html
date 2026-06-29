@@ -44,18 +44,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       Collapse All
     </button>
 
-    @if (loading()) {
-      <mat-spinner [diameter]="20"></mat-spinner>
-    } @else {
-      <button
-        mat-icon-button
-        (click)="refresh()"
-        matTooltip="Refresh"
-        aria-label="Refresh"
-      >
-        <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
-      </button>
-    }
+    <button
+      mat-icon-button
+      [disabled]="loading()"
+      (click)="refresh()"
+      matTooltip="Refresh"
+      aria-label="Refresh"
+    >
+      <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
+    </button>
 
     @if (canUpload() && !showAllViews()) {
       <button
@@ -80,7 +77,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     }
   </div>
 
-  @if (showAllViews()) {
+  @if (loading()) {
+    <div class="iso-list-loading">
+      <mat-spinner [diameter]="48"></mat-spinner>
+    </div>
+  } @else if (showAllViews()) {
     <mat-accordion multi>
       @for (viewGroup of filteredViewGroups(); track viewGroup.viewId) {
         <mat-expansion-panel>
