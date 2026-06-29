@@ -201,32 +201,33 @@ export class IsoListComponent implements OnInit {
   private readonly vmTeamsQuery = inject(VmTeamsQuery);
   private readonly dialog = inject(MatDialog);
 
-  // UploadViewIsos anywhere in this View => can upload to the whole View and to any team.
+  // UploadViewIsos on the active (primary) team => can upload to the whole View and to any team.
+  // Scoped to the primary team so it follows the active team, matching the ISO listing.
   private readonly canUploadViewIsos$ = this.userPermissionsService.can(
     null,
     null,
-    false,
+    true,
     null,
     AppViewPermission.UploadViewIsos,
   );
 
-  // DeleteViewIsos granted anywhere in this View => can delete the view-wide ISOs and any team's ISOs.
+  // DeleteViewIsos on the active (primary) team => can delete the view-wide ISOs and any team's ISOs.
   private readonly canDeleteViewIsos$ = this.userPermissionsService.can(
     null,
     null,
-    false,
+    true,
     null,
     AppViewPermission.DeleteViewIsos,
   );
 
-  // Upload button is shown if the user can upload view-wide OR to any team they belong to.
+  // Upload button is shown if the active (primary) team can upload view-wide OR to a team.
   readonly canUpload = toSignal(
     combineLatest([
       this.canUploadViewIsos$,
       this.userPermissionsService.can(
         null,
         null,
-        false,
+        true,
         AppTeamPermission.UploadTeamIsos,
       ),
     ]).pipe(map(([view, team]) => view || team)),
