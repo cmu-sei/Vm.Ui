@@ -56,11 +56,11 @@ import { AsyncPipe, SlicePipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 
 @Component({
-    selector: 'app-vm-list',
-    templateUrl: './vm-list.component.html',
-    styleUrls: ['./vm-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
+  selector: 'app-vm-list',
+  templateUrl: './vm-list.component.html',
+  styleUrls: ['./vm-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
     MatButton,
     MatMenuTrigger,
     MatIcon,
@@ -85,8 +85,8 @@ import { UserPermissionsService } from '../../services/permissions/user-permissi
     MatExpansionPanelTitle,
     MatPaginator,
     AsyncPipe,
-    SlicePipe
-]
+    SlicePipe,
+  ],
 })
 export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());

@@ -7,37 +7,42 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <app-topbar></app-topbar>
   }
   <div class="background">
+    @if (!(viewExists$ | async) && !(hasUsageData$ | async)) {
+      <app-page-not-found></app-page-not-found>
+    } @else {
     <mat-tab-group
-      #vmTabGroup
-      mat-stretch-tabs="false"
-      animationDuration="0ms"
-      [selectedIndex]="selectedTab"
-      (selectedIndexChange)="setSelectedTab($event)"
-      >
-      <mat-tab label="VM List">
-        <app-vm-list
-          [vms]="vms$ | async"
-          [readOnly]="readOnly$ | async"
-          (openVmHere)="onOpenVmHere($event)"
-          (errors)="onErrors($event)"
-          [uiSession]="currentSession$ | async"
-          [canManageView]="canManageView$ | async"
-          [canViewView]="canViewView$ | async"
-          (searchValueChanged)="searchValueChanged($event)"
-          (showIPsSelectedChanged)="showIPsSelectedChanged($event)"
-          (showIPv4OnlySelectedChanged)="showIPv4OnlySelectedChanged($event)"
-        ></app-vm-list>
-      </mat-tab>
-      <mat-tab label="User Follow" #userTab>
-        <ng-template matTabContent>
-          <app-user-list
-            [viewId]="getCurrentViewId()"
-            [teams]="teams$ | async"
-            [isActive]="userTab.isActive"
-            (openTab)="onOpenVmHere($event)"
-          ></app-user-list>
-        </ng-template>
-      </mat-tab>
+        #vmTabGroup
+        mat-stretch-tabs="false"
+        animationDuration="0ms"
+        [selectedIndex]="selectedTab"
+        (selectedIndexChange)="setSelectedTab($event)"
+        >
+      @if (viewExists$ | async) {
+        <mat-tab label="VM List">
+          <app-vm-list
+            [vms]="vms$ | async"
+            [readOnly]="readOnly$ | async"
+            (openVmHere)="onOpenVmHere($event)"
+            (errors)="onErrors($event)"
+            [uiSession]="currentSession$ | async"
+            [canManageView]="canManageView$ | async"
+            [canViewView]="canViewView$ | async"
+            (searchValueChanged)="searchValueChanged($event)"
+            (showIPsSelectedChanged)="showIPsSelectedChanged($event)"
+            (showIPv4OnlySelectedChanged)="showIPv4OnlySelectedChanged($event)"
+          ></app-vm-list>
+        </mat-tab>
+        <mat-tab label="User Follow" #userTab>
+          <ng-template matTabContent>
+            <app-user-list
+              [viewId]="getCurrentViewId()"
+              [teams]="teams$ | async"
+              [isActive]="userTab.isActive"
+              (openTab)="onOpenVmHere($event)"
+            ></app-user-list>
+          </ng-template>
+        </mat-tab>
+      }
       @if (showUsageLogging$ | async) {
         <mat-tab
           label="Usage Logging"
@@ -50,7 +55,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-tab>
       }
       @if (showNetworks$ | async) {
-        <mat-tab label="Networks">
+        <mat-tab label="Networks" [disabled]="!(viewExists$ | async)">
           <ng-template matTabContent>
             <app-network-permissions
               [canManage]="canManageNetworks$ | async"
@@ -97,5 +102,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-tab>
       }
     </mat-tab-group>
+    }
   </div>
 }

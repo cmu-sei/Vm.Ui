@@ -24,6 +24,7 @@ import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.component';
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
+import { PageNotFoundComponent } from '../../page-not-found/page-not-found.component';
 import { DialogService } from '../../../services/dialog/dialog.service';
 import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
@@ -50,6 +51,7 @@ import { TopbarComponent } from '../../topbar/topbar.component';
     MapTeamDisplayComponent,
     MapComponent,
     NewMapComponent,
+    PageNotFoundComponent,
     AsyncPipe
 ]
 })
@@ -75,6 +77,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   private unsubscribe$ = new Subject();
   maps: VmMap[] = [];
   canEdit$: Observable<boolean>;
+  viewExists$: Observable<boolean>;
 
   constructor(
     private permissionsService: UserPermissionsService,
@@ -103,6 +106,12 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             AppTeamPermission.ManageTeam,
             AppViewPermission.ManageView,
           );
+          // Assign here, not in the maps pipeline below: a view with no maps
+          // never emits there, leaving viewExists$ undefined and falsely
+          // showing "View Not Found". View existence depends only on the team.
+          this.viewExists$ = this.permissionsService
+            .getPrimaryTeamId(this.viewId!)
+            .pipe(map((teamId) => !!teamId));
         }),
         switchMap(() =>
           forkJoin([
@@ -144,6 +153,11 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
                 )
                 .pipe(map((allowed) => (allowed ? x : null)));
             });
+
+            // combineLatest([]) never emits; emit [] for a view with no maps.
+            if (checks$.length === 0) {
+              return of([] as VmMap[]);
+            }
 
             return combineLatest(checks$).pipe(
               map((results): VmMap[] =>

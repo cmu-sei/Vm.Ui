@@ -8,7 +8,10 @@ import { VmUISession } from './vm-ui-session.model';
 import { initialVmUISession, VmUISessionStore } from './vm-ui-session.store';
 import { VmUISessionQuery } from './vm-ui-session.query';
 import { Team, TeamService } from '../../generated/player-api';
-import { take } from 'rxjs/operators';
+import { catchError, take } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
+import { SystemMessageService } from '../../services/system-message/system-message.service';
+import { validate as isUuid } from 'uuid';
 
 @Injectable({ providedIn: 'root' })
 export class VmUISessionService {
@@ -20,13 +23,20 @@ export class VmUISessionService {
     private vmUISessionQuery: VmUISessionQuery,
     private router: Router,
     private teamService: TeamService,
+    private messageService: SystemMessageService,
   ) {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild?.params['viewId'];
-    if (this.viewId) {
+    if (this.viewId && isUuid(this.viewId)) {
       this.teamService
         .getMyViewTeams(this.viewId)
-        .pipe(take(1))
+        .pipe(
+          take(1),
+          catchError(() => {
+            // View not found or inaccessible; handled by page-not-found display
+            return EMPTY;
+          }),
+        )
         .subscribe((tms) => {
           const teams = tms as Array<Team>;
           const primaryTeam = teams.find((t) => t.isPrimary === true);
