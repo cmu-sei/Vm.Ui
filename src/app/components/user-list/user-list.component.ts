@@ -11,7 +11,13 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { MatAccordion } from '@angular/material/expansion';
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+  MatExpansionPanelDescription,
+} from '@angular/material/expansion';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { VmTeam } from '../../state/vm-teams/vm-team.model';
@@ -51,6 +57,10 @@ import { VmUser } from '../../generated/vm-api';
     MatButton,
     MatCheckbox,
     MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatExpansionPanelDescription,
     TeamUsersComponent,
     AsyncPipe,
     MatOption,

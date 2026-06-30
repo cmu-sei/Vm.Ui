@@ -3,21 +3,11 @@
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<mat-expansion-panel>
-  <mat-expansion-panel-header>
-    <mat-panel-title class="user-spacing">
-      {{ team.name }}
-    </mat-panel-title>
-    <mat-panel-description>
-      Count: {{ userDatasource.filteredData.length }}
-    </mat-panel-description>
-  </mat-expansion-panel-header>
-
-  <cdk-virtual-scroll-viewport
-    tvsItemSize="itemSize"
-    headerHeight="headerSize"
-    [ngStyle]="{ height: tableHeight }"
-  >
+<cdk-virtual-scroll-viewport
+  tvsItemSize="itemSize"
+  headerHeight="headerSize"
+  [style.height]="tableHeight"
+>
     <mat-table [dataSource]="userDatasource" matSort class="mat-elevation-z8">
       <!-- Name Column -->
       <ng-container matColumnDef="username">
@@ -94,4 +84,3 @@
       <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
     </mat-table>
   </cdk-virtual-scroll-viewport>
-</mat-expansion-panel>
