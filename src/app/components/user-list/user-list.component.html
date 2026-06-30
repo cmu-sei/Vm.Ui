@@ -79,8 +79,17 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-accordion multi>
         @for (team of _teams; track trackByTeamId(team)) {
           @if (team?.id) {
-            <div>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title class="user-spacing">
+                  {{ team.name }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  Count: {{ teamUsers.filteredCount() }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
               <app-team-users
+                #teamUsers
                 [team]="team"
                 [users]="userQueryMap.get(team.id) | async"
                 [searchTerm]="searchTerm$ | async"
@@ -89,7 +98,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [recentMinutes]="recentMinutes"
                 (openTab)="onOpenTab($event)"
               ></app-team-users>
-            </div>
+            </mat-expansion-panel>
           }
         }
       </mat-accordion>
