@@ -141,7 +141,12 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   }
 
   private getFilteredMaps(viewId: string): Observable<VmMap[]> {
-    return this.vmMapQuery.selectAll().pipe(
+    // Wait until the maps request settles before reading the store; otherwise
+    // the empty (just-unloaded) store state emits first and briefly flashes
+    // "No Map is assigned to this Team" before the maps arrive.
+    return this.vmMapQuery.selectLoading().pipe(
+      filter((isLoading) => !isLoading),
+      switchMap(() => this.vmMapQuery.selectAll()),
       switchMap((maps) =>
         this.permissionsService.getPrimaryTeamId(viewId).pipe(
           switchMap((primaryTeamId) => {
