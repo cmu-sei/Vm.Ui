@@ -7,6 +7,7 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  signal,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -77,8 +78,8 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   private unsubscribe$ = new Subject();
   maps: VmMap[] = [];
   canEdit$: Observable<boolean>;
-  viewExists = false;
-  loading = true;
+  viewExists = signal(false);
+  loading = signal(true);
 
   constructor(
     private permissionsService: UserPermissionsService,
@@ -94,7 +95,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     this.route.params
       .pipe(
         tap((params) => {
-          this.loading = true;
+          this.loading.set(true);
           this.vmMapsService.unload();
           this.viewId = params['viewId'];
         }),
@@ -119,7 +120,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
         // the template: a view with no maps still has a team, and this avoids
         // the initial null emission that briefly flashed "View Not Found".
         switchMap(() => this.permissionsService.getPrimaryTeamId(this.viewId!)),
-        tap((teamId) => (this.viewExists = !!teamId)),
+        tap((teamId) => this.viewExists.set(!!teamId)),
         switchMap(() => this.getFilteredMaps(this.viewId!)),
         tap((filteredMaps) => {
           this.maps = filteredMaps;
@@ -130,12 +131,12 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             this.selected = filteredMaps[0];
             this.goToMap();
           }
-          this.loading = false;
+          this.loading.set(false);
         }),
         takeUntil(this.unsubscribe$),
       )
       .subscribe({
-        error: () => (this.loading = false),
+        error: () => this.loading.set(false),
       });
   }
 
