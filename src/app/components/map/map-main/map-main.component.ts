@@ -77,7 +77,8 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   private unsubscribe$ = new Subject();
   maps: VmMap[] = [];
   canEdit$: Observable<boolean>;
-  viewExists$: Observable<boolean>;
+  viewExists = false;
+  loading = true;
 
   constructor(
     private permissionsService: UserPermissionsService,
@@ -93,6 +94,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     this.route.params
       .pipe(
         tap((params) => {
+          this.loading = true;
           this.vmMapsService.unload();
           this.viewId = params['viewId'];
         }),
@@ -106,12 +108,6 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             AppTeamPermission.ManageTeam,
             AppViewPermission.ManageView,
           );
-          // Assign here, not in the maps pipeline below: a view with no maps
-          // never emits there, leaving viewExists$ undefined and falsely
-          // showing "View Not Found". View existence depends only on the team.
-          this.viewExists$ = this.permissionsService
-            .getPrimaryTeamId(this.viewId!)
-            .pipe(map((teamId) => !!teamId));
         }),
         switchMap(() =>
           forkJoin([
@@ -119,6 +115,11 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             this.permissionsService.loadTeamPermissions(this.viewId!),
           ]),
         ),
+        // Resolve view existence from the team here, not as an async pipe in
+        // the template: a view with no maps still has a team, and this avoids
+        // the initial null emission that briefly flashed "View Not Found".
+        switchMap(() => this.permissionsService.getPrimaryTeamId(this.viewId!)),
+        tap((teamId) => (this.viewExists = !!teamId)),
         switchMap(() => this.getFilteredMaps(this.viewId!)),
         tap((filteredMaps) => {
           this.maps = filteredMaps;
@@ -129,10 +130,13 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             this.selected = filteredMaps[0];
             this.goToMap();
           }
+          this.loading = false;
         }),
         takeUntil(this.unsubscribe$),
       )
-      .subscribe();
+      .subscribe({
+        error: () => (this.loading = false),
+      });
   }
 
   private getFilteredMaps(viewId: string): Observable<VmMap[]> {

@@ -7,7 +7,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <app-topbar></app-topbar>
 }
 
-@if (!(viewExists$ | async)) {
+@if (loading) {
+  Loading...
+} @else if (!viewExists) {
   <app-page-not-found></app-page-not-found>
 } @else {
 <div class="pt-1 d-flex align-items-center justify-content-center gap-2">
