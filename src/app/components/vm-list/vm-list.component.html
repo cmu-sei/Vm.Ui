@@ -113,7 +113,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               >
             }
           </div>
-          @if (canViewView) {
+          @if (canSortByTeams$ | async) {
             <div>
               <mat-checkbox color="primary" (click)="toggleSort()">
                 Sort by Team
@@ -190,7 +190,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </dts-select-container>
       }
       @if (sortByTeams) {
-        <div>
+        <mat-accordion multi>
           @for (group of groupByTeams; track group; let iter = $index) {
             <mat-expansion-panel (click)="setCurrentPanel(iter)">
               <mat-expansion-panel-header>
@@ -242,7 +242,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               }
             </mat-expansion-panel>
           }
-        </div>
+        </mat-accordion>
       }
       <div [hidden]="sortByTeams">
         <mat-paginator

@@ -26,19 +26,20 @@ import {
 } from 'ngx-drag-to-select';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, switchMap, take } from 'rxjs/operators';
-import { Team, TeamService } from '../../generated/player-api';
 import {
   AppTeamPermission,
   AppViewPermission,
+  SimpleTeam,
   Vm,
+  VmsService,
 } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
-import { TeamsService } from '../../services/teams/teams.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
 import { VmService } from '../../state/vms/vms.service';
 import {
+  MatAccordion,
   MatExpansionPanel,
   MatExpansionPanelHeader,
   MatExpansionPanelTitle,
@@ -87,6 +88,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     DragToSelectModule,
     MatTooltip,
     VmItemComponent,
+    MatAccordion,
     MatExpansionPanel,
     MatExpansionPanelHeader,
     MatExpansionPanelTitle,
@@ -145,7 +147,10 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
   @Output() searchValueChanged = new EventEmitter<string>();
 
-  teamsList$: Observable<Team[]> = of([]);
+  teamsList$: Observable<SimpleTeam[]> = of([]);
+  canSortByTeams$ = this.teamsList$.pipe(
+    map((teams) => (teams?.length || 0) > 1),
+  );
 
   allVms: Vm[];
   vmFilterBy: any = 'All';
@@ -169,7 +174,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   canRevertVms$ = this.userPermissionsService.can(
     null,
     null,
-    true,
+    false,
     null,
     AppViewPermission.RevertVms,
   );
@@ -185,8 +190,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     public vmService: VmService,
     private fileService: FileService,
     private dialogService: DialogService,
-    private teamsService: TeamsService,
-    private playerTeamService: TeamService,
+    private vmApiService: VmsService,
     private cd: ChangeDetectorRef,
     private userPermissionsService: UserPermissionsService,
     private themeService: ThemeService,
@@ -260,46 +264,30 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       if (!this.hasLoadedVms && this.canViewView != null) {
         this.hasLoadedVms = true;
 
-        if (this.canViewView) {
-          this.vmService
-            .GetViewVms(true, false)
-            .pipe(take(1))
-            .subscribe(
-              () => {
-                this.vmApiResponded = true;
-              },
-              (error) => {
-                console.log('The VM API is not responding.  ' + error.message);
-                this.vmApiResponded = false;
-              },
-            );
-        } else {
-          this.userPermissionsService
-            .getPrimaryTeamId(this.vmService.viewId)
-            .pipe(
-              filter((teamId) => teamId !== undefined),
-              switchMap((primaryTeamId) =>
-                this.vmService.GetTeamVms(true, false, primaryTeamId),
-              ),
-              take(1),
-            )
-            .subscribe(
-              () => {
-                this.vmApiResponded = true;
-              },
-              (error) => {
-                console.log('The VM API is not responding.  ' + error.message);
-                this.vmApiResponded = false;
-              },
-            );
-        }
+        this.vmService
+          .GetViewVms(true, false)
+          .pipe(take(1))
+          .subscribe(
+            () => {
+              this.vmApiResponded = true;
+            },
+            (error) => {
+              console.log('The VM API is not responding.  ' + error.message);
+              this.vmApiResponded = false;
+            },
+          );
       }
 
-      if (this.canViewView) {
-        this.teamsList$ = this.playerTeamService.getViewTeams(
-          this.vmService.viewId,
-        );
-      }
+      this.teamsList$ = this.vmApiService.getTeams(this.vmService.viewId);
+      this.canSortByTeams$ = this.teamsList$.pipe(
+        map((teams) => {
+          const canSort = (teams?.length || 0) > 1;
+          if (!canSort) {
+            this.sortByTeams = false;
+          }
+          return canSort;
+        }),
+      );
     }
   }
 
@@ -421,8 +409,8 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       vm.teamIds?.map((id) => teams.add(id));
     }
 
-    this.playerTeamService
-      .getViewTeams(this.vmService.viewId)
+    this.vmApiService
+      .getTeams(this.vmService.viewId)
       .subscribe((results) => {
         for (const team of results) {
           if (team?.id && teams.has(team.id)) {

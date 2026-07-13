@@ -17,8 +17,7 @@ import {
   MatMenu,
   MatMenuContent,
 } from '@angular/material/menu';
-import { Team } from '../../../generated/player-api/model/team';
-import { Vm, VmsService } from '../../../generated/vm-api';
+import { SimpleTeam, Vm, VmsService } from '../../../generated/vm-api';
 import { take } from 'rxjs/operators';
 import { VmService } from '../../../state/vms/vms.service';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -48,7 +47,7 @@ export class VmItemComponent implements OnInit {
   @Input() vm: Vm;
   @Input() ipv4Only: Boolean;
   @Input() showIps: Boolean;
-  @Input() teamsList: Array<Team>;
+  @Input() teamsList: Array<SimpleTeam>;
   @Input() canManageTeam: Boolean;
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
   @ViewChild(MatMenuTrigger)

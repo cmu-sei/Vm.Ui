@@ -155,7 +155,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
     .can(
       null,
       null,
-      true,
+      false,
       AppTeamPermission.EditTeam,
       AppViewPermission.EditView,
     )
@@ -250,7 +250,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
       ),
       this.userPermissionsService.load().pipe(catchError(() => of([]))),
       this.userPermissionsService
-        .loadTeamPermissions(viewId)
+        .loadTeamPermissions(viewId, undefined, true)
         .pipe(catchError(() => of([]))),
     ]).subscribe();
 

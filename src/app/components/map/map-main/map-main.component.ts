@@ -16,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
 import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import {
+  AppSystemPermission,
   AppTeamPermission,
   AppViewPermission,
   VmMap,
@@ -105,7 +106,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
           this.canEdit$ = this.permissionsService.can(
             null,
             null,
-            true,
+            false,
             AppTeamPermission.ManageTeam,
             AppViewPermission.ManageView,
           );
@@ -113,7 +114,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
         switchMap(() =>
           forkJoin([
             this.permissionsService.load(),
-            this.permissionsService.loadTeamPermissions(this.viewId!),
+            this.permissionsService.loadTeamPermissions(this.viewId!, undefined, true),
           ]),
         ),
         // Resolve view existence from the team here, not as an async pipe in
@@ -147,36 +148,35 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     return this.vmMapQuery.selectLoading().pipe(
       filter((isLoading) => !isLoading),
       switchMap(() => this.vmMapQuery.selectAll()),
-      switchMap((maps) =>
-        this.permissionsService.getPrimaryTeamId(viewId).pipe(
-          switchMap((primaryTeamId) => {
-            const checks$ = maps.map((x) => {
-              const hasPrimaryTeam = x.teamIds?.includes(primaryTeamId);
-              if (!hasPrimaryTeam) return of(null);
-              return this.permissionsService
-                .can(
-                  null,
-                  null,
-                  true,
-                  AppTeamPermission.ViewTeam,
-                  AppViewPermission.ViewView,
-                )
-                .pipe(map((allowed) => (allowed ? x : null)));
-            });
+      switchMap((maps) => {
+        const checks$ = maps.map((x) => {
+          const teamIds = x.teamIds || [];
+          if (teamIds.length === 0) return of(null);
 
-            // combineLatest([]) never emits; emit [] for a view with no maps.
-            if (checks$.length === 0) {
-              return of([] as VmMap[]);
-            }
-
-            return combineLatest(checks$).pipe(
-              map((results): VmMap[] =>
-                results.filter((x): x is VmMap => x !== null),
+          return combineLatest(
+            teamIds.map((teamId) =>
+              this.permissionsService.can(
+                AppSystemPermission.ViewViews,
+                teamId,
+                false,
+                AppTeamPermission.ViewTeam,
+                AppViewPermission.ViewView,
               ),
-            );
-          }),
-        ),
-      ),
+            ),
+          ).pipe(map((allowed) => (allowed.some(Boolean) ? x : null)));
+        });
+
+        // combineLatest([]) never emits; emit [] for a view with no maps.
+        if (checks$.length === 0) {
+          return of([] as VmMap[]);
+        }
+
+        return combineLatest(checks$).pipe(
+          map((results): VmMap[] =>
+            results.filter((x): x is VmMap => x !== null),
+          ),
+        );
+      }),
     );
   }
 

@@ -85,14 +85,14 @@ export class UserPermissionsService {
 
           if (teamPermissionClaim) {
             teamPermissions = this.toTeamPermissions(
-              teamPermissionClaim.permissionValues,
+              teamPermissionClaim.permissionValues || [],
             );
             viewPermissions = this.toViewPermissions(
-              teamPermissionClaim.permissionValues,
+              teamPermissionClaim.permissionValues || [],
             );
           } else {
             const permissions = teamPermissionClaims.flatMap(
-              (x) => x.permissionValues,
+              (x) => x.permissionValues || [],
             );
             teamPermissions = this.toTeamPermissions(permissions);
             viewPermissions = this.toViewPermissions(permissions);
