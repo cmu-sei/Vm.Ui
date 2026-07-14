@@ -13,10 +13,9 @@ import {
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
+import { forkJoin, Observable, Subject } from 'rxjs';
 import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import {
-  AppSystemPermission,
   AppTeamPermission,
   AppViewPermission,
   VmMap,
@@ -104,9 +103,6 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
         tap(() => {
           this.vmMapsService.getViewMaps(this.viewId!);
           this.canEdit$ = this.permissionsService.can(
-            null,
-            null,
-            false,
             AppTeamPermission.ManageTeam,
             AppViewPermission.ManageView,
           );
@@ -117,9 +113,6 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             this.permissionsService.loadTeamPermissions(this.viewId!, undefined, true),
           ]),
         ),
-        // Resolve view existence from the team here, not as an async pipe in
-        // the template: a view with no maps still has a team, and this avoids
-        // the initial null emission that briefly flashed "View Not Found".
         switchMap(() => this.permissionsService.getPrimaryTeamId(this.viewId!)),
         tap((teamId) => this.viewExists.set(!!teamId)),
         switchMap(() => this.getFilteredMaps(this.viewId!)),
@@ -148,35 +141,6 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     return this.vmMapQuery.selectLoading().pipe(
       filter((isLoading) => !isLoading),
       switchMap(() => this.vmMapQuery.selectAll()),
-      switchMap((maps) => {
-        const checks$ = maps.map((x) => {
-          const teamIds = x.teamIds || [];
-          if (teamIds.length === 0) return of(null);
-
-          return combineLatest(
-            teamIds.map((teamId) =>
-              this.permissionsService.can(
-                AppSystemPermission.ViewViews,
-                teamId,
-                false,
-                AppTeamPermission.ViewTeam,
-                AppViewPermission.ViewView,
-              ),
-            ),
-          ).pipe(map((allowed) => (allowed.some(Boolean) ? x : null)));
-        });
-
-        // combineLatest([]) never emits; emit [] for a view with no maps.
-        if (checks$.length === 0) {
-          return of([] as VmMap[]);
-        }
-
-        return combineLatest(checks$).pipe(
-          map((results): VmMap[] =>
-            results.filter((x): x is VmMap => x !== null),
-          ),
-        );
-      }),
     );
   }
 

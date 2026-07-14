@@ -123,6 +123,18 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public vms$: Observable<Vm[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
   public teams$ = this.teamsQuery.selectAll();
+  private visibleVmTeamIds$ = this.vmQuery.selectAll().pipe(
+    map((vms) =>
+      Array.from(new Set(vms.flatMap((vm) => vm.teamIds ?? []))),
+    ),
+  );
+  private visibleTeamIds$ = this.teams$.pipe(
+    map((teams) =>
+      teams
+        .map((team) => team.id)
+        .filter((teamId): teamId is string => !!teamId),
+    ),
+  );
   public currentUser$: Observable<User>;
   public canManageTeam = false;
   public currentUserId: Observable<string>;
@@ -131,59 +143,83 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public currentSession$: Observable<VmUISession>;
   public usageLoggingEnabled = false;
 
-  public canViewViews$ = this.userPermissionsService.can(
+  public canViewViews$ = this.userPermissionsService.hasSystemPermission(
     AppSystemPermission.ViewViews,
   );
 
   public canViewView$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
-    null,
+    undefined,
     AppViewPermission.ViewView,
   );
 
   public canManageView$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
-    null,
+    undefined,
     AppViewPermission.ManageView,
   );
 
-  public readOnly$ = this.userPermissionsService
-    .can(
-      null,
-      null,
-      false,
-      AppTeamPermission.EditTeam,
-      AppViewPermission.EditView,
-    )
-    .pipe(map((x) => !x));
+  public readOnly$ = this.visibleVmTeamIds$.pipe(
+    switchMap((teamIds) =>
+      this.userPermissionsService.hasEffectivePermissionsForTeams(
+        this.vmUISessionService.getCurrentViewId(),
+        teamIds,
+        {
+          systemPermissions: [AppSystemPermission.EditViews],
+          teamPermissions: [AppTeamPermission.EditTeam],
+          viewPermissions: [AppViewPermission.EditView],
+        },
+      ),
+    ),
+    map((canEdit) => !canEdit),
+  );
+
+  public canRevertVms$ = this.visibleVmTeamIds$.pipe(
+    switchMap((teamIds) =>
+      this.userPermissionsService.hasEffectivePermissionsForTeams(
+        this.vmUISessionService.getCurrentViewId(),
+        teamIds,
+        {
+          viewPermissions: [AppViewPermission.RevertVms],
+        },
+      ),
+    ),
+  );
+
+  public canManageNetworks$ = this.visibleTeamIds$.pipe(
+    switchMap((teamIds) =>
+      this.userPermissionsService.hasEffectivePermissionsForTeams(
+        this.vmUISessionService.getCurrentViewId(),
+        teamIds,
+        {
+          systemPermissions: [AppSystemPermission.ManageNetworks],
+          viewPermissions: [AppViewPermission.ManageNetworks],
+        },
+      ),
+    ),
+  );
+
+  public canViewNetworks$ = this.visibleTeamIds$.pipe(
+    switchMap((teamIds) =>
+      this.userPermissionsService.hasEffectivePermissionsForTeams(
+        this.vmUISessionService.getCurrentViewId(),
+        teamIds,
+        {
+          systemPermissions: [
+            AppSystemPermission.ViewNetworks,
+            AppSystemPermission.ManageNetworks,
+          ],
+          viewPermissions: [
+            AppViewPermission.ViewNetworks,
+            AppViewPermission.ManageNetworks,
+          ],
+        },
+      ),
+    ),
+  );
 
   public showUsageLogging$ = combineLatest([
     this.canViewViews$,
     this.canViewView$,
   ]).pipe(map(([x, y]) => x || y));
-
-  public canManageNetworks$ = this.userPermissionsService.can(
-    AppSystemPermission.ManageNetworks,
-    null,
-    true,
-    null,
-    AppViewPermission.ManageNetworks,
-  );
-
-  public canViewNetworks$ = combineLatest([
-    this.userPermissionsService.can(
-      AppSystemPermission.ViewNetworks,
-      null,
-      true,
-      null,
-      AppViewPermission.ViewNetworks,
-    ),
-    this.canManageNetworks$,
-  ]).pipe(map(([view, manage]) => view || manage));
 
   public showNetworks$ = this.canViewNetworks$;
 
@@ -193,17 +229,21 @@ export class VmMainComponent implements OnInit, OnDestroy {
     startWith(true),
   );
 
-  public hasUsageData$ = this.userPermissionsService.can(AppSystemPermission.ViewViews, null, false).pipe(
-    switchMap((canViewViews) => {
-      if (!canViewViews || !this.usageLoggingEnabled) {
-        return of(false);
-      }
-      return this.vmUsageLoggingSessionService.getAllSessions(this.vmUISessionService.getCurrentViewId()).pipe(
-        map((sessions) => sessions && sessions.length > 0),
-        catchError(() => of(false)),
-      );
-    }),
-  );
+  public hasUsageData$ = this.userPermissionsService
+    .hasSystemPermission(AppSystemPermission.ViewViews)
+    .pipe(
+      switchMap((canViewViews) => {
+        if (!canViewViews || !this.usageLoggingEnabled) {
+          return of(false);
+        }
+        return this.vmUsageLoggingSessionService
+          .getAllSessions(this.vmUISessionService.getCurrentViewId())
+          .pipe(
+            map((sessions) => sessions && sessions.length > 0),
+            catchError(() => of(false)),
+          );
+      }),
+    );
 
   ngOnInit() {
     const viewId = this.vmUISessionService.getCurrentViewId();

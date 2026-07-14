@@ -51,7 +51,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               >
                 Shutdown
               </button>
-              @if (canRevertVms$ | async) {
+              @if (canRevertVms) {
                 <button
                   mat-menu-item
                   (click)="revertSelected()"

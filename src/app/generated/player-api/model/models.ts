@@ -1,11 +1,7 @@
-/*
-Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
- Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-*/
-
 export * from './application';
 export * from './applicationInstance';
 export * from './applicationTemplate';
+export * from './archiveType';
 export * from './cloneViewCommand';
 export * from './createApplicationCommand';
 export * from './createApplicationInstanceCommand';
@@ -32,6 +28,10 @@ export * from './editViewCommand';
 export * from './eventType';
 export * from './fileModel';
 export * from './healthStatus';
+export * from './importApplicationTemplatesResult';
+export * from './importViewFailure';
+export * from './importViewFailureType';
+export * from './importViewsResult';
 export * from './notification';
 export * from './notificationPriority';
 export * from './notificationType';
@@ -44,6 +44,7 @@ export * from './sendViewNotificationCommand';
 export * from './systemPermission';
 export * from './team';
 export * from './teamMembership';
+export * from './teamPermission';
 export * from './teamPermissionModel';
 export * from './teamPermissionsClaim';
 export * from './teamRole';
@@ -52,6 +53,7 @@ export * from './view';
 export * from './viewCreated';
 export * from './viewDeleted';
 export * from './viewMembership';
+export * from './viewPermission';
 export * from './viewStatus';
 export * from './webhookEvent';
 export * from './webhookSubscription';
