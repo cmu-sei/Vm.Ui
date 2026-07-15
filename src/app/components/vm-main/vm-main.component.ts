@@ -12,7 +12,15 @@ import {
   of,
   Subject,
 } from 'rxjs';
-import { catchError, map, startWith, switchMap, takeUntil, take, tap } from 'rxjs/operators';
+import {
+  catchError,
+  finalize,
+  map,
+  switchMap,
+  takeUntil,
+  take,
+  tap,
+} from 'rxjs/operators';
 import { VmTeamsQuery } from '../../state/vm-teams/vm-teams.query';
 import { VmTeamsService } from '../../state/vm-teams/vm-teams.service';
 import { VmsQuery } from '../../state/vms/vms.query';
@@ -223,10 +231,12 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   public showNetworks$ = this.canViewNetworks$;
 
-  public viewExists$ = this.teams$.pipe(
-    map((teams) => teams && teams.length > 0),
-    // Start with true to avoid flash of "view not found" while loading
-    startWith(true),
+  public viewTeamsLoaded$ = new BehaviorSubject(false);
+  public viewExists$ = combineLatest([
+    this.teams$,
+    this.viewTeamsLoaded$,
+  ]).pipe(
+    map(([teams, loaded]) => loaded && teams.length > 0),
   );
 
   public hasUsageData$ = this.userPermissionsService
@@ -274,6 +284,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
     // Don't attempt to load a view with a malformed id; the page-not-found
     // display will show since no teams will be loaded.
     if (!isUuid(viewId)) {
+      this.teamsService.set([]);
+      this.viewTeamsLoaded$.next(true);
       return;
     }
 
@@ -286,7 +298,11 @@ export class VmMainComponent implements OnInit, OnDestroy {
             teams.map((t) => ({ id: t.id, name: t.name, viewId: viewId })),
           );
         }),
-        catchError(() => of([])),
+        catchError(() => {
+          this.teamsService.set([]);
+          return of([]);
+        }),
+        finalize(() => this.viewTeamsLoaded$.next(true)),
       ),
       this.userPermissionsService.load().pipe(catchError(() => of([]))),
       this.userPermissionsService
@@ -404,6 +420,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.signalRService.leaveView(this.vmUISessionService.getCurrentViewId());
     this.vmErrors$.complete();
+    this.viewTeamsLoaded$.complete();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
