@@ -19,5 +19,6 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 export interface CloneViewCommand { 
     name?: string | null;
     description?: string | null;
+    isTemplate?: boolean | null;
 }
 

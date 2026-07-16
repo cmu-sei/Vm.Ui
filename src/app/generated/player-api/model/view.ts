@@ -22,7 +22,12 @@ export interface View {
     name?: string | null;
     description?: string | null;
     status?: ViewStatus;
-    canManage?: boolean;
     parentViewId?: string | null;
+    isTemplate?: boolean;
+    dateCreated?: string;
+    defaultTeamId?: string | null;
 }
+export namespace View {
+}
+
 

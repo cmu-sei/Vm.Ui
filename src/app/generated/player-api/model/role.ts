@@ -21,6 +21,7 @@ export interface Role {
     id?: string;
     name?: string | null;
     allPermissions?: boolean;
+    immutable?: boolean;
     permissions?: Array<Permission> | null;
 }
 

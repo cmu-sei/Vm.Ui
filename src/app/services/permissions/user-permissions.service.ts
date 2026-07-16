@@ -15,6 +15,12 @@ import {
   AppViewPermission,
 } from '../../generated/vm-api';
 
+interface EffectivePermissionRequirements {
+  systemPermissions?: AppSystemPermission[];
+  teamPermissions?: AppTeamPermission[];
+  viewPermissions?: AppViewPermission[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -46,10 +52,6 @@ export class UserPermissionsService {
       .pipe(tap((x) => this.teamPermissionsSubject.next(x)));
   }
 
-  hasPermission(permission: string) {
-    return this.permissions$.pipe(map((x) => x.includes(permission)));
-  }
-
   getPrimaryTeamId(viewId: string) {
     return this.teamPermissions$.pipe(
       map((x) => {
@@ -61,49 +63,91 @@ export class UserPermissionsService {
     );
   }
 
+  // Use for primary-context UI. Only permissions granted directly by the
+  // selected primary team are considered.
   can(
-    permission: AppSystemPermission,
-    teamId?: string,
-    primaryTeam?: boolean,
     teamPermission?: AppTeamPermission,
     viewPermission?: AppViewPermission,
   ) {
+    return this.teamPermissions$.pipe(
+      map((teamPermissionClaims) => {
+        const primaryClaim = teamPermissionClaims.find(
+          (claim) => claim.isPrimary,
+        );
+        const directPermissions = primaryClaim?.directPermissionValues ?? [];
+        const teamPermissions = this.toTeamPermissions(directPermissions);
+        const viewPermissions = this.toViewPermissions(directPermissions);
+
+        return (
+          (teamPermission != null &&
+            teamPermissions.includes(teamPermission)) ||
+          (viewPermission != null && viewPermissions.includes(viewPermission))
+        );
+      }),
+    );
+  }
+
+  // Use only for features that are explicitly system-scoped.
+  hasSystemPermission(permission: AppSystemPermission) {
+    return this.permissions$.pipe(
+      map((permissions) => permissions.includes(permission)),
+    );
+  }
+
+  // Use for actions on known teams. This mirrors API authorization by
+  // considering system, target effective, and same-view direct permissions.
+  hasEffectivePermissionsForTeams(
+    viewId: string,
+    teamIds: string[],
+    requirements: EffectivePermissionRequirements,
+  ) {
     return combineLatest([this.permissions$, this.teamPermissions$]).pipe(
       map(([permissions, teamPermissionClaims]) => {
-        if (permissions.includes(permission)) {
-          return true;
-        } else {
-          let teamPermissions: AppTeamPermission[];
-          let viewPermissions: AppViewPermission[];
-
-          const teamPermissionClaim =
-            teamId != null
-              ? teamPermissionClaims.find((x) => x.teamId == teamId)
-              : primaryTeam
-                ? teamPermissionClaims.find((x) => x.isPrimary)
-                : null;
-
-          if (teamPermissionClaim) {
-            teamPermissions = this.toTeamPermissions(
-              teamPermissionClaim.permissionValues,
-            );
-            viewPermissions = this.toViewPermissions(
-              teamPermissionClaim.permissionValues,
-            );
-          } else {
-            const permissions = teamPermissionClaims.flatMap(
-              (x) => x.permissionValues,
-            );
-            teamPermissions = this.toTeamPermissions(permissions);
-            viewPermissions = this.toViewPermissions(permissions);
-          }
-
-          return (
-            (teamPermission != null &&
-              teamPermissions.includes(teamPermission)) ||
-            (viewPermission != null && viewPermissions.includes(viewPermission))
-          );
+        const targetTeamIds = new Set(teamIds.filter((id) => !!id));
+        if (targetTeamIds.size === 0) {
+          return false;
         }
+
+        if (
+          requirements.systemPermissions?.some((permission) =>
+            permissions.includes(permission),
+          )
+        ) {
+          return true;
+        }
+
+        const viewClaims = teamPermissionClaims.filter(
+          (claim) => claim.viewId === viewId,
+        );
+        const targetPermissionValues = viewClaims
+          .filter(
+            (claim) =>
+              claim.teamId != null && targetTeamIds.has(claim.teamId),
+          )
+          .flatMap((claim) => claim.permissionValues ?? []);
+        const directPermissionValues = viewClaims.flatMap(
+          (claim) => claim.directPermissionValues ?? [],
+        );
+
+        const targetTeamPermissions = this.toTeamPermissions(
+          targetPermissionValues,
+        );
+        const targetViewPermissions =
+          this.toViewPermissions(targetPermissionValues);
+        const directViewPermissions =
+          this.toViewPermissions(directPermissionValues);
+
+        return (
+          requirements.teamPermissions?.some((permission) =>
+            targetTeamPermissions.includes(permission),
+          ) ||
+          requirements.viewPermissions?.some(
+            (permission) =>
+              targetViewPermissions.includes(permission) ||
+              directViewPermissions.includes(permission),
+          ) ||
+          false
+        );
       }),
     );
   }

@@ -25,20 +25,21 @@ import {
   DragToSelectModule,
 } from 'ngx-drag-to-select';
 import { combineLatest, Observable, of } from 'rxjs';
-import { filter, map, switchMap, take } from 'rxjs/operators';
-import { Team, TeamService } from '../../generated/player-api';
+import { filter, map, shareReplay, switchMap, take } from 'rxjs/operators';
 import {
   AppTeamPermission,
   AppViewPermission,
+  SimpleTeam,
   Vm,
+  VmsService,
 } from '../../generated/vm-api';
 import { DialogService } from '../../services/dialog/dialog.service';
 import { FileService } from '../../services/file/file.service';
-import { TeamsService } from '../../services/teams/teams.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
 import { VmService } from '../../state/vms/vms.service';
 import {
+  MatAccordion,
   MatExpansionPanel,
   MatExpansionPanelHeader,
   MatExpansionPanelTitle,
@@ -87,6 +88,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     DragToSelectModule,
     MatTooltip,
     VmItemComponent,
+    MatAccordion,
     MatExpansionPanel,
     MatExpansionPanelHeader,
     MatExpansionPanelTitle,
@@ -140,38 +142,28 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   @Input() canViewView: Boolean;
   @Input() canManageView: Boolean;
+  @Input() canRevertVms: Boolean;
 
   @Output() showIPsSelectedChanged = new EventEmitter<Boolean>();
   @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
   @Output() searchValueChanged = new EventEmitter<string>();
 
-  teamsList$: Observable<Team[]> = of([]);
+  teamsList$: Observable<SimpleTeam[]> = of([]);
+  canSortByTeams$ = this.teamsList$.pipe(
+    map((teams) => (teams?.length || 0) > 1),
+  );
 
   allVms: Vm[];
   vmFilterBy: any = 'All';
   private hasLoadedVms = false;
 
   canUploadTeamIsos$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
     AppTeamPermission.UploadTeamIsos,
   );
 
   canUploadViewIsos$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
-    null,
+    undefined,
     AppViewPermission.UploadViewIsos,
-  );
-
-  canRevertVms$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
-    null,
-    AppViewPermission.RevertVms,
   );
 
   canUploadViewIsos = toSignal(this.canUploadViewIsos$);
@@ -185,8 +177,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     public vmService: VmService,
     private fileService: FileService,
     private dialogService: DialogService,
-    private teamsService: TeamsService,
-    private playerTeamService: TeamService,
+    private vmApiService: VmsService,
     private cd: ChangeDetectorRef,
     private userPermissionsService: UserPermissionsService,
     private themeService: ThemeService,
@@ -260,51 +251,41 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       if (!this.hasLoadedVms && this.canViewView != null) {
         this.hasLoadedVms = true;
 
-        if (this.canViewView) {
-          this.vmService
-            .GetViewVms(true, false)
-            .pipe(take(1))
-            .subscribe(
-              () => {
-                this.vmApiResponded = true;
-              },
-              (error) => {
-                console.log('The VM API is not responding.  ' + error.message);
-                this.vmApiResponded = false;
-              },
-            );
-        } else {
-          this.userPermissionsService
-            .getPrimaryTeamId(this.vmService.viewId)
-            .pipe(
-              filter((teamId) => teamId !== undefined),
-              switchMap((primaryTeamId) =>
-                this.vmService.GetTeamVms(true, false, primaryTeamId),
-              ),
-              take(1),
-            )
-            .subscribe(
-              () => {
-                this.vmApiResponded = true;
-              },
-              (error) => {
-                console.log('The VM API is not responding.  ' + error.message);
-                this.vmApiResponded = false;
-              },
-            );
-        }
+        this.vmService
+          .GetViewVms(true, false)
+          .pipe(take(1))
+          .subscribe(
+            () => {
+              this.vmApiResponded = true;
+            },
+            (error) => {
+              console.log('The VM API is not responding.  ' + error.message);
+              this.vmApiResponded = false;
+            },
+          );
       }
 
-      if (this.canViewView) {
-        this.teamsList$ = this.playerTeamService.getViewTeams(
-          this.vmService.viewId,
-        );
-      }
+      this.setTeamsList(this.vmService.viewId);
     }
   }
 
   ngAfterViewInit() {
     this.vmModelDataSource.paginator = this.paginator;
+  }
+
+  private setTeamsList(viewId: string) {
+    this.teamsList$ = this.vmApiService.getTeams(viewId).pipe(shareReplay(1));
+    this.canSortByTeams$ = this.teamsList$.pipe(
+      map((teams) => (teams?.length || 0) > 1),
+    );
+
+    this.teamsList$.pipe(take(1)).subscribe((teams) => {
+      if ((teams?.length || 0) <= 1) {
+        this.sortByTeams = false;
+        this.groupByTeams = [];
+        this.cd.markForCheck();
+      }
+    });
   }
 
   onPage(pageEvent) {
@@ -416,13 +397,15 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
    * Split the VMs up into groups by their teams.
    */
   groupVms(): void {
+    this.groupByTeams = [];
+
     const teams = new Set<string>();
     for (const vm of this.vmModelDataSource.filteredData) {
       vm.teamIds?.map((id) => teams.add(id));
     }
 
-    this.playerTeamService
-      .getViewTeams(this.vmService.viewId)
+    this.teamsList$
+      .pipe(take(1))
       .subscribe((results) => {
         for (const team of results) {
           if (team?.id && teams.has(team.id)) {
@@ -431,11 +414,11 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
             );
             const group = new VmGroup(team.name, team.id, vms);
             this.groupByTeams.push(group);
-
-            this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
-            this.cd.markForCheck();
           }
         }
+
+        this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
+        this.cd.markForCheck();
       });
   }
 
@@ -448,18 +431,17 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     this.vmModelDataSource.filteredData.map((vm) => {
-      const teamIds = vm.teamIds;
+      const teamIds = vm.teamIds ?? [];
       for (const team of teamIds) {
         const group = this.groupByTeams.find((g) => g.tid === team);
-        group.dataSource.data.push(vm);
+        group?.dataSource.data.push(vm);
       }
     });
   }
 
   toggleSort() {
     this.sortByTeams = !this.sortByTeams;
-    // If we haven't already, group the VMs by team
-    if (this.groupByTeams.length === 0) {
+    if (this.sortByTeams) {
       this.groupVms();
     }
   }

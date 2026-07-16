@@ -17,7 +17,9 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent, HttpParameterCodec, HttpContext }       from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams,
+         HttpResponse, HttpEvent, HttpParameterCodec, HttpContext 
+        }       from '@angular/common/http';
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
@@ -82,7 +84,7 @@ export class TeamMembershipService {
                 (value as any[]).forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
             } else if (value instanceof Date) {
                 if (key != null) {
-                    httpParams = httpParams.append(key, (value as Date).toISOString().substr(0, 10));
+                    httpParams = httpParams.append(key, (value as Date).toISOString().substring(0, 10));
                 } else {
                    throw Error("key may not be null if value is Date");
                 }
@@ -166,7 +168,7 @@ export class TeamMembershipService {
 
     /**
      * Gets all Team Memberships for a User by View.
-     * Returns a list of all of the Permissions in the system.
+     * Returns a list of all of the Team Memberships for a User in the specified View.
      * @param userId 
      * @param viewId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
