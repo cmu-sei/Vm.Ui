@@ -43,7 +43,7 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatOption } from '@angular/material/core';
 import { TeamService, Team } from '../../generated/player-api';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
-import { DialogService } from '../../services/dialog/dialog.service';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSelect } from '@angular/material/select';
@@ -128,7 +128,7 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
     private networksService: NetworksService,
     private teamService: TeamService,
     private routerQuery: RouterQuery,
-    private dialogService: DialogService,
+    private dialogService: CrucibleDialogService,
   ) {
     this.viewId = this.routerQuery.getParams('viewId');
 
@@ -265,13 +265,15 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
 
   deleteNetwork(row: ViewNetwork) {
     this.dialogService
-      .confirm(
-        'Delete Network',
-        `Are you sure you want to delete network "${row.networkId}"?`,
-        { buttonTrueText: 'Delete' },
-      )
+      .confirm({
+        title: 'Delete Network',
+        message: `Are you sure you want to delete network "${row.networkId}"?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      })
+      .afterClosed()
       .subscribe((result) => {
-        if (result['confirm']) {
+        if (result === true) {
           this.networksService
             .deleteViewNetwork(this.viewId, row.id)
             .pipe(take(1))

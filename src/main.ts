@@ -32,7 +32,6 @@ import { BASE_PATH } from './app/generated/vm-api';
 import { ErrorService } from './app/services/error/error.service';
 import { WelderService } from './app/services/welder/welder.service';
 import { SystemMessageService } from './app/services/system-message/system-message.service';
-import { DialogService } from './app/services/dialog/dialog.service';
 import { TeamsService } from './app/services/teams/teams.service';
 import { FileService } from './app/services/file/file.service';
 import { AutoDeployService } from './app/services/auto-deploy/auto-deploy.service';
@@ -96,7 +95,6 @@ bootstrapApplication(AppComponent, {
     AutoDeployService,
     FileService,
     TeamsService,
-    DialogService,
     SystemMessageService,
     WelderService,
     {

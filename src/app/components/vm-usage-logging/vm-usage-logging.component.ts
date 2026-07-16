@@ -42,7 +42,7 @@ import {
 import { TeamService, Team } from '../../generated/player-api';
 import { saveAs } from 'file-saver-es';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
-import { DialogService } from '../../services/dialog/dialog.service';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { MatButton } from '@angular/material/button';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import {
@@ -161,7 +161,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
     private teamService: TeamService,
     private clipboard: Clipboard,
     private routerQuery: RouterQuery,
-    private dialogService: DialogService,
+    private dialogService: CrucibleDialogService,
   ) {
     this.viewId = this.routerQuery.getParams('viewId');
 
@@ -280,13 +280,16 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
 
   deleteSession(id: string, name: string) {
     this.dialogService
-      .confirm(
-        'Delete Logging Session:  ' + name,
-        'Are you sure that you want to delete all previously logged data?',
-        { buttonTrueText: 'Delete' },
-      )
+      .confirm({
+        title: 'Delete Logging Session: ' + name,
+        message:
+          'Are you sure that you want to delete all previously logged data?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      })
+      .afterClosed()
       .subscribe((result) => {
-        if (result['confirm']) {
+        if (result === true) {
           this.vmUsageLoggingSessionService
             .deleteSession(id)
             .pipe(take(1))

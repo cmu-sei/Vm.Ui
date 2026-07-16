@@ -26,7 +26,7 @@ import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.co
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
 import { PageNotFoundComponent } from '../../page-not-found/page-not-found.component';
-import { DialogService } from '../../../services/dialog/dialog.service';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -88,7 +88,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     private dialog: MatDialog,
     private vmMapsService: VmMapsService,
     private vmMapQuery: VmMapsQuery,
-    private dialogService: DialogService,
+    private dialogService: CrucibleDialogService,
   ) {
     this.hideTopbar = this.inIframe();
     this.mapInitialized = false;
@@ -188,7 +188,10 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
   buildMap() {
     this.creatingMap = true;
-    this.dialogRef = this.dialog.open(this.newMapDialog);
+    this.dialogRef = this.dialog.open(this.newMapDialog, {
+      width: '400px',
+      maxWidth: '90vw',
+    });
   }
 
   goToMap() {
@@ -213,12 +216,16 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
   delete() {
     this.dialogService
-      .confirm('Delete Map?', 'Are you sure you want to delete this Map?', {
-        buttonTrueText: 'Confirm',
+      .confirm({
+        title: 'Delete Map?',
+        message: 'Are you sure you want to delete this map?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
       })
+      .afterClosed()
       .pipe(take(1))
       .subscribe((result) => {
-        if (!result.wasCancelled) {
+        if (result === true) {
           this.vmMapsService.remove(this.selected.id);
           this.selected = undefined;
           this.goToMap();
@@ -257,7 +264,10 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
   editProperties(): void {
     this.creatingMap = false;
-    this.dialogRef = this.dialog.open(this.editPropsDialog);
+    this.dialogRef = this.dialog.open(this.editPropsDialog, {
+      width: '400px',
+      maxWidth: '90vw',
+    });
   }
 
   propertiesChanged(tuple: [string, string, string[]]) {

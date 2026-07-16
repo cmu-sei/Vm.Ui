@@ -3,16 +3,23 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="mx-2 my-2 d-flex flex-column size">
-  <mat-form-field>
-    <mat-label> Select VMs </mat-label>
-    <mat-select multiple [(ngModel)]="selected">
-      @for (vm of data.vms; track $index) {
-        <mat-option [value]="vm">
-          {{ vm }}
-        </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-  <button mat-stroked-button (click)="redirect()">Navigate to VM(s)</button>
-</div>
+<crucible-dialog
+  dialogTitle="Select VMs"
+  [form]="form"
+  submitLabel="Navigate"
+  [submitDisabled]="form.controls.selected.value.length === 0"
+  (submit)="redirect()"
+>
+  <div crucibleDialogContent [formGroup]="form" class="vm-select-form">
+    <mat-form-field>
+      <mat-label>Select VMs</mat-label>
+      <mat-select multiple formControlName="selected">
+        @for (vm of data.vms; track $index) {
+          <mat-option [value]="vm">
+            {{ vm }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+</crucible-dialog>

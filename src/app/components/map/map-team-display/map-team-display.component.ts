@@ -96,6 +96,8 @@ export class MapTeamDisplayComponent implements OnInit {
     } else {
       this.dialog.open(MapVmSelectComponent, {
         data: { vms: urls, viewId: viewId },
+        width: '400px',
+        maxWidth: '90vw',
       });
     }
   }
