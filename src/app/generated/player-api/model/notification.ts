@@ -35,4 +35,7 @@ export interface Notification {
     canPost?: boolean;
     iconUrl?: string | null;
 }
+export namespace Notification {
+}
+
 

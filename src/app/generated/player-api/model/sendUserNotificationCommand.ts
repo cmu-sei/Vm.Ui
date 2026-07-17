@@ -35,4 +35,7 @@ export interface SendUserNotificationCommand {
     canPost?: boolean;
     iconUrl?: string | null;
 }
+export namespace SendUserNotificationCommand {
+}
+
 

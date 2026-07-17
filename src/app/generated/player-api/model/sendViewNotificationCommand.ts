@@ -35,4 +35,7 @@ export interface SendViewNotificationCommand {
     canPost?: boolean;
     iconUrl?: string | null;
 }
+export namespace SendViewNotificationCommand {
+}
+
 

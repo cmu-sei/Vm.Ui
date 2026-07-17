@@ -18,9 +18,13 @@ import { ViewStatus } from './viewStatus';
 
 
 export interface CreateViewCommand { 
+    id?: string | null;
     name?: string | null;
     description?: string | null;
     status?: ViewStatus;
     createAdminTeam?: boolean;
 }
+export namespace CreateViewCommand {
+}
+
 
