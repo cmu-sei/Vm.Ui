@@ -1,7 +1,7 @@
 // Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { HttpEventType } from '@angular/common/http';
+import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -33,7 +33,7 @@ import {
   Vm,
   VmsService,
 } from '../../generated/vm-api';
-import { DialogService } from '../../services/dialog/dialog.service';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { FileService } from '../../services/file/file.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
@@ -176,7 +176,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   constructor(
     public vmService: VmService,
     private fileService: FileService,
-    private dialogService: DialogService,
+    private dialogService: CrucibleDialogService,
     private vmApiService: VmsService,
     private cd: ChangeDetectorRef,
     private userPermissionsService: UserPermissionsService,
@@ -352,15 +352,19 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.canUploadViewIsos()) {
       // First prompt the user to confirm if the iso is available for the team or the entire view
       this.dialogService
-        .confirm(
-          'Upload iso for?',
-          'Please choose if you want this iso to be public or for your team only',
-          { buttonTrueText: 'Public', buttonFalseText: 'My Team Only' },
-        )
+        .confirm({
+          title: 'Upload ISO For?',
+          message:
+            'Please choose if you want this ISO to be public or for your team only.',
+          confirmText: 'Public',
+          cancelText: 'My Team Only',
+        })
+        .afterClosed()
         .pipe(take(1))
         .subscribe((result) => {
-          const isForAll = result['confirm'] === true;
-          this.sendIsoFile(isForAll, qf);
+          if (result !== undefined) {
+            this.sendIsoFile(result, qf);
+          }
         });
     } else {
       // The user is not an admin therfore iso's are only uploaded for the team
@@ -381,14 +385,28 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
         if (event.type === HttpEventType.Response) {
           this.uploading = false;
           this.cd.detectChanges();
-          this.dialogService.message('Upload Completed Successfully', '');
+          this.dialogService.confirm({
+            title: 'Upload Completed Successfully',
+            message: '',
+            confirmText: 'OK',
+            cancelText: '',
+          });
         }
       },
-      (err) => {
+      (err: HttpErrorResponse) => {
         console.log(err);
         this.uploading = false;
         this.cd.detectChanges();
-        this.dialogService.message('Upload Failed', 'Error: ' + err);
+        const errorMessage =
+          typeof err.error === 'string'
+            ? err.error
+            : (err.error?.title ?? err.error?.detail ?? err.message);
+        this.dialogService.confirm({
+          title: 'Upload Failed',
+          message: `Error: ${errorMessage}`,
+          confirmText: 'OK',
+          cancelText: '',
+        });
       },
     );
   }
@@ -485,13 +503,15 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   private performAction(action: VmAction, title: string, actionName: string) {
     this.dialogService
-      .confirm(
-        `${title}`,
-        `Are you sure you want to ${actionName} ${this.selectedVms.length} selected machines?`,
-        { buttonTrueText: 'Confirm' },
-      )
+      .confirm({
+        title,
+        message: `Are you sure you want to ${actionName} ${this.selectedVms.length} selected machines?`,
+        confirmText: 'Confirm',
+        cancelText: 'Cancel',
+      })
+      .afterClosed()
       .pipe(
-        filter((result) => result.wasCancelled === false),
+        filter((result) => result === true),
         switchMap(() => {
           this.errors.emit({});
 
@@ -550,12 +570,14 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   public clearSelections() {
     this.dialogService
-      .confirm(
-        `Clear Selections`,
-        `Are you sure you want to clear your selections?`,
-        { buttonTrueText: 'Confirm' },
-      )
-      .pipe(filter((result) => result.wasCancelled === false))
+      .confirm({
+        title: 'Clear Selections',
+        message: 'Are you sure you want to clear your selections?',
+        confirmText: 'Confirm',
+        cancelText: 'Cancel',
+      })
+      .afterClosed()
+      .pipe(filter((result) => result === true))
       .subscribe(() => {
         this.selectContainer.clearSelection();
         this.selectedVms.length = 0;

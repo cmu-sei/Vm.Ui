@@ -39,7 +39,6 @@ import {
   provideNativeDateAdapter,
 } from '@angular/material/core';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
-import { DialogService } from '../../services/dialog/dialog.service';
 import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
 import { MatButton } from '@angular/material/button';
 import { DatePipe } from '@angular/common';
@@ -139,7 +138,6 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
     private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
     private clipboard: Clipboard,
     private routerQuery: RouterQuery,
-    private dialogService: DialogService,
   ) {}
 
   ngAfterViewInit(): void {}

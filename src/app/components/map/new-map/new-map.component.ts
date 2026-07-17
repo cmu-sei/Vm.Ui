@@ -16,27 +16,24 @@ import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
 
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
-import { MatDialogTitle, MatDialogRef } from '@angular/material/dialog';
+import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
 
 @Component({
     selector: 'app-new-map',
     templateUrl: './new-map.component.html',
-    styleUrls: ['./new-map.component.scss'],
     imports: [
-    MatDialogTitle,
+    ...CRUCIBLE_DIALOG_IMPORTS,
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
     MatInput,
     MatSelect,
     MatOption,
-    MatButton,
     MatError,
     MatHint
 ]
@@ -60,7 +57,6 @@ export class NewMapComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private vmMapsService: VmMapsService,
     private fileService: FileService,
-    private dialogRef: MatDialogRef<NewMapComponent>,
   ) {}
 
   ngOnInit(): void {
@@ -186,10 +182,6 @@ export class NewMapComponent implements OnInit {
 
     this.vmMapsService.add(this.viewId, payload);
     this.mapCreated.emit(mapId);
-  }
-
-  cancel(): void {
-    this.dialogRef.close();
   }
 
   hasImageSource(): boolean {

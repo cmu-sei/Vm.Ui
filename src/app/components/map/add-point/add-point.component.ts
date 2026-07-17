@@ -29,14 +29,13 @@ import {
 } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
 import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
-import { MatDialogTitle } from '@angular/material/dialog';
+import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
 
 @Component({
     selector: 'app-add-point',
     templateUrl: './add-point.component.html',
-    styleUrls: ['./add-point.component.scss'],
     imports: [
-    MatDialogTitle,
+    ...CRUCIBLE_DIALOG_IMPORTS,
     ReactiveFormsModule,
     MatFormField,
     MatLabel,

@@ -3,6 +3,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
-.size {
-  height: 125px;
+.vm-select-form {
+  width: min(320px, 70vw);
+}
+
+mat-form-field {
+  width: 100%;
 }

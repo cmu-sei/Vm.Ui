@@ -10,7 +10,6 @@ import { VmUISessionQuery } from './vm-ui-session.query';
 import { Team, TeamService } from '../../generated/player-api';
 import { catchError, take } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
-import { SystemMessageService } from '../../services/system-message/system-message.service';
 import { validate as isUuid } from 'uuid';
 
 @Injectable({ providedIn: 'root' })
@@ -23,7 +22,6 @@ export class VmUISessionService {
     private vmUISessionQuery: VmUISessionQuery,
     private router: Router,
     private teamService: TeamService,
-    private messageService: SystemMessageService,
   ) {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild?.params['viewId'];
