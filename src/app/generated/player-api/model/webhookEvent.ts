@@ -23,4 +23,7 @@ export interface WebhookEvent {
     readonly timestamp?: string;
     payload?: string | null;
 }
+export namespace WebhookEvent {
+}
+
 

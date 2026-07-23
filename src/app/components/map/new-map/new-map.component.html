@@ -3,12 +3,18 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<h2 matDialogTitle class="text-center">
-  {{ creating ? 'New Map' : 'Edit Properties' }}
-</h2>
-
-<div id="setupForm" class="size mx-2">
-  <form [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-column">
+<crucible-dialog
+  [dialogTitle]="creating ? 'New Map' : 'Edit Properties'"
+  [form]="form"
+  [submitDisabled]="!form.valid || !hasImageSource()"
+  [guardUnsavedWork]="true"
+  (submit)="submit()"
+>
+  <div
+    crucibleDialogContent
+    [formGroup]="form"
+    class="d-flex flex-column"
+  >
     <mat-form-field>
       <mat-label>Name</mat-label>
       <input type="string" matInput formControlName="name" />
@@ -48,10 +54,5 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-error>At least one team is required</mat-error>
       }
     </mat-form-field>
-
-    <div class="button-row">
-      <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid || !hasImageSource()">Submit</button>
-      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
-    </div>
-  </form>
-</div>
+  </div>
+</crucible-dialog>

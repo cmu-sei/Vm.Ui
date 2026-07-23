@@ -7,12 +7,13 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  signal,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
+import { forkJoin, Observable, Subject } from 'rxjs';
 import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import {
   AppTeamPermission,
@@ -25,7 +26,7 @@ import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.co
 import { MapComponent } from '../map.component';
 import { NewMapComponent } from '../new-map/new-map.component';
 import { PageNotFoundComponent } from '../../page-not-found/page-not-found.component';
-import { DialogService } from '../../../services/dialog/dialog.service';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -77,7 +78,8 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   private unsubscribe$ = new Subject();
   maps: VmMap[] = [];
   canEdit$: Observable<boolean>;
-  viewExists$: Observable<boolean>;
+  viewExists = signal(false);
+  loading = signal(true);
 
   constructor(
     private permissionsService: UserPermissionsService,
@@ -86,13 +88,14 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     private dialog: MatDialog,
     private vmMapsService: VmMapsService,
     private vmMapQuery: VmMapsQuery,
-    private dialogService: DialogService,
+    private dialogService: CrucibleDialogService,
   ) {
     this.hideTopbar = this.inIframe();
     this.mapInitialized = false;
     this.route.params
       .pipe(
         tap((params) => {
+          this.loading.set(true);
           this.vmMapsService.unload();
           this.viewId = params['viewId'];
         }),
@@ -100,25 +103,18 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
         tap(() => {
           this.vmMapsService.getViewMaps(this.viewId!);
           this.canEdit$ = this.permissionsService.can(
-            null,
-            null,
-            true,
             AppTeamPermission.ManageTeam,
             AppViewPermission.ManageView,
           );
-          // Assign here, not in the maps pipeline below: a view with no maps
-          // never emits there, leaving viewExists$ undefined and falsely
-          // showing "View Not Found". View existence depends only on the team.
-          this.viewExists$ = this.permissionsService
-            .getPrimaryTeamId(this.viewId!)
-            .pipe(map((teamId) => !!teamId));
         }),
         switchMap(() =>
           forkJoin([
             this.permissionsService.load(),
-            this.permissionsService.loadTeamPermissions(this.viewId!),
+            this.permissionsService.loadTeamPermissions(this.viewId!, undefined, true),
           ]),
         ),
+        switchMap(() => this.permissionsService.getPrimaryTeamId(this.viewId!)),
+        tap((teamId) => this.viewExists.set(!!teamId)),
         switchMap(() => this.getFilteredMaps(this.viewId!)),
         tap((filteredMaps) => {
           this.maps = filteredMaps;
@@ -129,44 +125,22 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             this.selected = filteredMaps[0];
             this.goToMap();
           }
+          this.loading.set(false);
         }),
         takeUntil(this.unsubscribe$),
       )
-      .subscribe();
+      .subscribe({
+        error: () => this.loading.set(false),
+      });
   }
 
   private getFilteredMaps(viewId: string): Observable<VmMap[]> {
-    return this.vmMapQuery.selectAll().pipe(
-      switchMap((maps) =>
-        this.permissionsService.getPrimaryTeamId(viewId).pipe(
-          switchMap((primaryTeamId) => {
-            const checks$ = maps.map((x) => {
-              const hasPrimaryTeam = x.teamIds?.includes(primaryTeamId);
-              if (!hasPrimaryTeam) return of(null);
-              return this.permissionsService
-                .can(
-                  null,
-                  null,
-                  true,
-                  AppTeamPermission.ViewTeam,
-                  AppViewPermission.ViewView,
-                )
-                .pipe(map((allowed) => (allowed ? x : null)));
-            });
-
-            // combineLatest([]) never emits; emit [] for a view with no maps.
-            if (checks$.length === 0) {
-              return of([] as VmMap[]);
-            }
-
-            return combineLatest(checks$).pipe(
-              map((results): VmMap[] =>
-                results.filter((x): x is VmMap => x !== null),
-              ),
-            );
-          }),
-        ),
-      ),
+    // Wait until the maps request settles before reading the store; otherwise
+    // the empty (just-unloaded) store state emits first and briefly flashes
+    // "No Map is assigned to this Team" before the maps arrive.
+    return this.vmMapQuery.selectLoading().pipe(
+      filter((isLoading) => !isLoading),
+      switchMap(() => this.vmMapQuery.selectAll()),
     );
   }
 
@@ -178,7 +152,10 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
   buildMap() {
     this.creatingMap = true;
-    this.dialogRef = this.dialog.open(this.newMapDialog);
+    this.dialogRef = this.dialog.open(this.newMapDialog, {
+      width: '400px',
+      maxWidth: '90vw',
+    });
   }
 
   goToMap() {
@@ -203,12 +180,16 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
   delete() {
     this.dialogService
-      .confirm('Delete Map?', 'Are you sure you want to delete this Map?', {
-        buttonTrueText: 'Confirm',
+      .confirm({
+        title: 'Delete Map?',
+        message: 'Are you sure you want to delete this map?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
       })
+      .afterClosed()
       .pipe(take(1))
       .subscribe((result) => {
-        if (!result.wasCancelled) {
+        if (result === true) {
           this.vmMapsService.remove(this.selected.id);
           this.selected = undefined;
           this.goToMap();
@@ -247,7 +228,10 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
   editProperties(): void {
     this.creatingMap = false;
-    this.dialogRef = this.dialog.open(this.editPropsDialog);
+    this.dialogRef = this.dialog.open(this.editPropsDialog, {
+      width: '400px',
+      maxWidth: '90vw',
+    });
   }
 
   propertiesChanged(tuple: [string, string, string[]]) {

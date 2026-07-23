@@ -7,10 +7,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <app-topbar></app-topbar>
   }
   <div class="background">
-    @if (!(viewExists$ | async) && !(hasUsageData$ | async)) {
-      <app-page-not-found></app-page-not-found>
-    } @else {
-    <mat-tab-group
+    @if (viewTeamsLoaded$ | async) {
+      @if (!(viewExists$ | async) && !(hasUsageData$ | async)) {
+        <app-page-not-found></app-page-not-found>
+      } @else {
+      <mat-tab-group
         #vmTabGroup
         mat-stretch-tabs="false"
         animationDuration="0ms"
@@ -27,6 +28,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [uiSession]="currentSession$ | async"
             [canManageView]="canManageView$ | async"
             [canViewView]="canViewView$ | async"
+            [canRevertVms]="canRevertVms$ | async"
             (searchValueChanged)="searchValueChanged($event)"
             (showIPsSelectedChanged)="showIPsSelectedChanged($event)"
             (showIPv4OnlySelectedChanged)="showIPv4OnlySelectedChanged($event)"
@@ -101,7 +103,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </ng-template>
         </mat-tab>
       }
-    </mat-tab-group>
+      </mat-tab-group>
+      }
     }
   </div>
 }

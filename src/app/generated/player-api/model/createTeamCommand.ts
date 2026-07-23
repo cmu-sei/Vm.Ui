@@ -17,6 +17,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 
 
 export interface CreateTeamCommand { 
+    id?: string | null;
     name?: string | null;
     roleId?: string | null;
 }

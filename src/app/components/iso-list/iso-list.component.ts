@@ -15,6 +15,7 @@ import {
   signal,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {
   debounceTime,
@@ -35,7 +36,6 @@ import {
   IsoResult,
   IsoUploadResult,
 } from '../../generated/vm-api';
-import { DialogService } from '../../services/dialog/dialog.service';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ErrorMessageService } from '../../services/error-message/error-message.service';
 import {
@@ -195,57 +195,49 @@ export class IsoListComponent implements OnInit {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly fileService = inject(FileService);
-  private readonly dialogService = inject(DialogService);
+  private readonly dialogService = inject(CrucibleDialogService);
   private readonly userPermissionsService = inject(UserPermissionsService);
   private readonly dialog = inject(MatDialog);
 
-  // UploadViewIsos on the active (primary) team => can upload to the whole View and to any team.
-  // Scoped to the primary team so it follows the active team, matching the ISO listing.
-  private readonly canUploadViewIsos$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
-    null,
-    AppViewPermission.UploadViewIsos,
-  );
+  private readonly canUploadViewIsos$ =
+    this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
+      undefined,
+      { viewPermissions: [AppViewPermission.UploadViewIsos] },
+    );
 
-  // DeleteViewIsos on the active (primary) team => can delete the view-wide ISOs and any team's ISOs.
-  private readonly canDeleteViewIsos$ = this.userPermissionsService.can(
-    null,
-    null,
-    true,
-    null,
-    AppViewPermission.DeleteViewIsos,
-  );
+  private readonly canDeleteViewIsos$ =
+    this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
+      undefined,
+      { viewPermissions: [AppViewPermission.DeleteViewIsos] },
+    );
 
-  // Upload button is shown if the active (primary) team can upload view-wide OR to a team.
   readonly canUpload = toSignal(
-    combineLatest([
-      this.canUploadViewIsos$,
-      this.userPermissionsService.can(
-        null,
-        null,
-        true,
-        AppTeamPermission.UploadTeamIsos,
-      ),
-    ]).pipe(map(([view, team]) => view || team)),
+    this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
+      undefined,
+      {
+        teamPermissions: [AppTeamPermission.UploadTeamIsos],
+        viewPermissions: [AppViewPermission.UploadViewIsos],
+      },
+    ),
     { initialValue: false },
   );
 
-  // The "all views" toggle is shown only to system operators (ViewViews or ManageViews). These are
-  // system-level claims, so the team/primaryTeam/perm args are unused.
   readonly canViewAllViews = toSignal(
     combineLatest([
-      this.userPermissionsService.can(AppSystemPermission.ViewViews),
-      this.userPermissionsService.can(AppSystemPermission.ManageViews),
+      this.userPermissionsService.hasSystemPermission(
+        AppSystemPermission.ViewViews,
+      ),
+      this.userPermissionsService.hasSystemPermission(
+        AppSystemPermission.ManageViews,
+      ),
     ]).pipe(map(([view, manage]) => view || manage)),
     { initialValue: false },
   );
 
-  // In all-views mode, delete is gated solely by the system DeleteIsos permission - it authorizes
-  // removing an ISO in any View/team, including ones the user is not a member of.
   readonly canDeleteAnyIso = toSignal(
-    this.userPermissionsService.can(AppSystemPermission.DeleteIsos),
+    this.userPermissionsService.hasSystemPermission(
+      AppSystemPermission.DeleteIsos,
+    ),
     { initialValue: false },
   );
 
@@ -283,7 +275,7 @@ export class IsoListComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.loading.set(false);
-          this.dialogService.message(
+          this.showMessage(
             'Failed to Load ISOs',
             ErrorMessageService.getApiErrorMessage(
               err,
@@ -412,11 +404,10 @@ export class IsoListComponent implements OnInit {
   private canDeleteTeamIsos$(teamId: string): Observable<boolean> {
     return combineLatest([
       this.canDeleteViewIsos$,
-      this.userPermissionsService.can(
-        null,
-        teamId,
-        false,
-        AppTeamPermission.DeleteTeamIsos,
+      this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
+        undefined,
+        { teamPermissions: [AppTeamPermission.DeleteTeamIsos] },
+        [teamId],
       ),
     ]).pipe(map(([canView, canTeam]) => canView || canTeam));
   }
@@ -425,11 +416,10 @@ export class IsoListComponent implements OnInit {
   private canUploadTeamIsos$(teamId: string): Observable<boolean> {
     return combineLatest([
       this.canUploadViewIsos$,
-      this.userPermissionsService.can(
-        null,
-        teamId,
-        false,
-        AppTeamPermission.UploadTeamIsos,
+      this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
+        undefined,
+        { teamPermissions: [AppTeamPermission.UploadTeamIsos] },
+        [teamId],
       ),
     ]).pipe(map(([canView, canTeam]) => canView || canTeam));
   }
@@ -465,14 +455,16 @@ export class IsoListComponent implements OnInit {
     }
 
     this.dialogService
-      .confirm(
-        'Delete ISO',
-        `Are you sure you want to delete "${row.filename}"? This cannot be undone.`,
-        { buttonTrueText: 'Delete', buttonFalseText: 'Cancel' },
-      )
+      .confirm({
+        title: 'Delete ISO',
+        message: `Are you sure you want to delete "${row.filename}"? This cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      })
+      .afterClosed()
       .pipe(
         take(1),
-        filter((result) => result?.['confirm'] === true),
+        filter((result) => result === true),
         tap(() => this.setDeleting(key, true)),
         switchMap(() =>
           this.fileService
@@ -490,13 +482,13 @@ export class IsoListComponent implements OnInit {
         next: (res: IsoUploadResult) => {
           this.setDeleting(key, false);
           if (res?.message) {
-            this.dialogService.message('Delete ISO', res.message);
+            this.showMessage('Delete ISO', res.message);
           }
           this.refresh();
         },
         error: (err: HttpErrorResponse) => {
           this.setDeleting(key, false);
-          this.dialogService.message(
+          this.showMessage(
             'Delete Failed',
             ErrorMessageService.getApiErrorMessage(
               err,
@@ -568,7 +560,7 @@ export class IsoListComponent implements OnInit {
       .subscribe((result) => {
         if (result?.success) {
           if (result.message) {
-            this.dialogService.message(
+            this.showMessage(
               result.partialFailure
                 ? 'Upload Completed with Errors'
                 : 'Upload Completed',
@@ -582,5 +574,14 @@ export class IsoListComponent implements OnInit {
 
   refresh() {
     this.refresh$.next(true);
+  }
+
+  private showMessage(title: string, message: string) {
+    this.dialogService.confirm({
+      title,
+      message,
+      confirmText: 'OK',
+      cancelText: '',
+    });
   }
 }

@@ -61,7 +61,8 @@ export class MapComponent implements OnInit, OnChanges {
   private dialogRef: MatDialogRef<AddPointComponent>;
 
   private matDialogConfig: MatDialogConfig = {
-    width: '50vw',
+    width: '400px',
+    maxWidth: '90vw',
   };
 
   constructor(

@@ -11,6 +11,7 @@ import {
   EventEmitter,
   ViewChild,
   AfterViewInit,
+  signal,
 } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import {
@@ -32,14 +33,8 @@ import {
   MatRowDef,
   MatRow,
 } from '@angular/material/table';
-import { NgStyle, NgIf, AsyncPipe, DatePipe } from '@angular/common';
+import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import {
-  MatExpansionPanel,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle,
-  MatExpansionPanelDescription,
-} from '@angular/material/expansion';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { VmUser } from '../../../generated/vm-api';
 
@@ -49,13 +44,8 @@ import { VmUser } from '../../../generated/vm-api';
     styleUrls: ['./team-users.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        MatExpansionPanel,
-        MatExpansionPanelHeader,
-        MatExpansionPanelTitle,
-        MatExpansionPanelDescription,
         CdkVirtualScrollViewport,
         TableVirtualScrollModule,
-        NgStyle,
         MatTable,
         MatColumnDef,
         MatHeaderCellDef,
@@ -120,6 +110,7 @@ export class TeamUsersComponent implements AfterViewInit {
   public headerSize = 56;
   public maxSize = this.itemSize * 7;
   public tableHeight = '0px';
+  public filteredCount = signal(0);
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -214,6 +205,7 @@ export class TeamUsersComponent implements AfterViewInit {
 
   calculateTableHeight() {
     const count = this.userDatasource.filteredData.length;
+    this.filteredCount.set(count);
     let height: number;
     height = this.headerSize * 1.2 + count * this.itemSize;
 

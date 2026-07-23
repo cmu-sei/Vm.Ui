@@ -35,4 +35,7 @@ export interface SendTeamNotificationCommand {
     canPost?: boolean;
     iconUrl?: string | null;
 }
+export namespace SendTeamNotificationCommand {
+}
+
 

@@ -17,7 +17,9 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent, HttpParameterCodec, HttpContext }       from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams,
+         HttpResponse, HttpEvent, HttpParameterCodec, HttpContext 
+        }       from '@angular/common/http';
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
@@ -86,7 +88,7 @@ export class TeamService {
                 (value as any[]).forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
             } else if (value instanceof Date) {
                 if (key != null) {
-                    httpParams = httpParams.append(key, (value as Date).toISOString().substr(0, 10));
+                    httpParams = httpParams.append(key, (value as Date).toISOString().substring(0, 10));
                 } else {
                    throw Error("key may not be null if value is Date");
                 }
@@ -180,8 +182,8 @@ export class TeamService {
     }
 
     /**
-     * Creates a new Team within an View.
-     * Creates a new Team within an View with the attributes specified.
+     * Creates a new Team within a View.
+     * Creates a new Team within a View with the attributes specified.
      * @param id 
      * @param createTeamCommand 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.

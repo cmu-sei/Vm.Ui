@@ -21,6 +21,7 @@ export interface TeamRole {
     id?: string;
     name?: string | null;
     allPermissions?: boolean;
+    immutable?: boolean;
     permissions?: Array<TeamPermissionModel> | null;
 }
 

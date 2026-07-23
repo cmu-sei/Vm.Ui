@@ -3,7 +3,7 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div>
+<div class="user-list-container">
   <div class="d-flex align-items-center gap-3 ms-2">
     <mat-form-field subscriptSizing="dynamic" class="searchBox">
       <input
@@ -11,7 +11,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [(ngModel)]="searchTerm"
         (keyup)="applyFilter($event.target.value)"
         placeholder="Search"
-        />
+      />
       @if (searchTerm != '') {
         <button
           matSuffix
@@ -19,7 +19,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           color="primary"
           (click)="clearFilter()"
           matTooltip="Clear Search"
-          >
+        >
           <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
         </button>
       }
@@ -35,62 +35,71 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       color="primary"
       (change)="setHideInactive($event.checked)"
       >Hide Inactive</mat-checkbox
-      >
-      <mat-checkbox
-        class="search-checkbox text"
-        color="primary"
-        (change)="setRecentOnly($event.checked)"
-        >Recent Only</mat-checkbox
-        >
-        @if (recentOnly) {
-          <mat-form-field matTooltip="Time to filter recent by">
-            <mat-select required [(ngModel)]="recentMinutes">
-              <mat-option [value]="15">15 minutes</mat-option>
-              <mat-option [value]="30">30 minutes</mat-option>
-              <mat-option [value]="45">45 minutes</mat-option>
-              <mat-option [value]="60">1 hour</mat-option>
-              <mat-option [value]="120">2 hours</mat-option>
-              <mat-option [value]="180">3 hours</mat-option>
-              <mat-option [value]="240">4 hours</mat-option>
-              <mat-option [value]="300">5 hours</mat-option>
-              <mat-option [value]="360">6 hours</mat-option>
-              <mat-option [value]="1440">1 day</mat-option>
-              <mat-option [value]="2880">2 days</mat-option>
-              <mat-option [value]="4320">3 days</mat-option>
-              <mat-option [value]="5760">4 days</mat-option>
-              <mat-option [value]="7200">5 days</mat-option>
-              <mat-option [value]="8640">6 days</mat-option>
-              <mat-option [value]="10080">1 week</mat-option>
-              <mat-option [value]="20160">2 weeks</mat-option>
-              <mat-option [value]="30240">3 weeks</mat-option>
-              <mat-option [value]="43800">1 month</mat-option>
-              <mat-option [value]="87600">2 months</mat-option>
-              <mat-option [value]="131400">3 months</mat-option>
-              <mat-option [value]="175200">4 months</mat-option>
-              <mat-option [value]="219000">5 months</mat-option>
-              <mat-option [value]="262800">6 months</mat-option>
-              <mat-option [value]="525960">1 year</mat-option>
-              <mat-option [value]="1.052e6">2 years</mat-option>
-            </mat-select>
-          </mat-form-field>
-        }
-      </div>
+    >
+    <mat-checkbox
+      class="search-checkbox text"
+      color="primary"
+      (change)="setRecentOnly($event.checked)"
+      >Recent Only</mat-checkbox
+    >
+    @if (recentOnly) {
+      <mat-form-field matTooltip="Time to filter recent by">
+        <mat-select required [(ngModel)]="recentMinutes">
+          <mat-option [value]="15">15 minutes</mat-option>
+          <mat-option [value]="30">30 minutes</mat-option>
+          <mat-option [value]="45">45 minutes</mat-option>
+          <mat-option [value]="60">1 hour</mat-option>
+          <mat-option [value]="120">2 hours</mat-option>
+          <mat-option [value]="180">3 hours</mat-option>
+          <mat-option [value]="240">4 hours</mat-option>
+          <mat-option [value]="300">5 hours</mat-option>
+          <mat-option [value]="360">6 hours</mat-option>
+          <mat-option [value]="1440">1 day</mat-option>
+          <mat-option [value]="2880">2 days</mat-option>
+          <mat-option [value]="4320">3 days</mat-option>
+          <mat-option [value]="5760">4 days</mat-option>
+          <mat-option [value]="7200">5 days</mat-option>
+          <mat-option [value]="8640">6 days</mat-option>
+          <mat-option [value]="10080">1 week</mat-option>
+          <mat-option [value]="20160">2 weeks</mat-option>
+          <mat-option [value]="30240">3 weeks</mat-option>
+          <mat-option [value]="43800">1 month</mat-option>
+          <mat-option [value]="87600">2 months</mat-option>
+          <mat-option [value]="131400">3 months</mat-option>
+          <mat-option [value]="175200">4 months</mat-option>
+          <mat-option [value]="219000">5 months</mat-option>
+          <mat-option [value]="262800">6 months</mat-option>
+          <mat-option [value]="525960">1 year</mat-option>
+          <mat-option [value]="1.052e6">2 years</mat-option>
+        </mat-select>
+      </mat-form-field>
+    }
+  </div>
 
-      <mat-accordion multi>
-        @for (team of _teams; track trackByTeamId(team)) {
-          @if (team?.id) {
-            <div>
-              <app-team-users
-                [team]="team"
-                [users]="userQueryMap.get(team.id) | async"
-                [searchTerm]="searchTerm$ | async"
-                [hideInactive]="hideInactive"
-                [recentOnly]="recentOnly"
-                [recentMinutes]="recentMinutes"
-                (openTab)="onOpenTab($event)"
-              ></app-team-users>
-            </div>
-          }
-        }
-      </mat-accordion>
-    </div>
+  <mat-accordion multi>
+    @for (team of _teams; track trackByTeamId(team)) {
+      @if (team?.id) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="user-spacing">
+              {{ team.name }}
+            </mat-panel-title>
+            <mat-panel-description>
+              Count: {{ teamUsers.filteredCount() }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <app-team-users
+            #teamUsers
+            [team]="team"
+            [users]="userQueryMap.get(team.id) | async"
+            [searchTerm]="searchTerm$ | async"
+            [hideInactive]="hideInactive"
+            [recentOnly]="recentOnly"
+            [recentMinutes]="recentMinutes"
+            (openTab)="onOpenTab($event)"
+          ></app-team-users>
+        </mat-expansion-panel>
+      }
+    }
+  </mat-accordion>
+</div>
