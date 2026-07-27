@@ -260,13 +260,15 @@ export class IsoListComponent implements OnInit {
             ? this.fileService
                 .getAllIsos()
                 .pipe(map((results) => ({ allViews: true as const, results })))
-            : this.fileService.getViewIsos(this.viewId()).pipe(
-                switchMap((result) =>
-                  this.buildSingleViewGroups(result).pipe(
-                    map((groups) => ({ allViews: false as const, groups })),
+            : this.fileService
+                .getViewIsos(this.viewId())
+                .pipe(
+                  switchMap((result) =>
+                    this.buildSingleViewGroups(result).pipe(
+                      map((groups) => ({ allViews: false as const, groups })),
+                    ),
                   ),
-                ),
-              );
+                );
 
           // Handle the error INSIDE the switchMap: an error reaching the outer subscription would
           // tear down refresh$ for good, silently killing Refresh and the all-views toggle. Emitting
@@ -366,13 +368,15 @@ export class IsoListComponent implements OnInit {
   }
 
   // Total ISOs in a View = the view-wide group plus every team group.
-  private totalIsoCount(viewWideGroup: IsoGroup, teamGroups: IsoGroup[]): number {
+  private totalIsoCount(
+    viewWideGroup: IsoGroup,
+    teamGroups: IsoGroup[],
+  ): number {
     return (
       viewWideGroup.rows.length +
       teamGroups.reduce((sum, g) => sum + g.rows.length, 0)
     );
   }
-
 
   // Resolve each team's delete permission (once), then assemble the single-view group model. Teams
   // are sorted up front and each carries its own resolved permission, so there is no index-aligned
