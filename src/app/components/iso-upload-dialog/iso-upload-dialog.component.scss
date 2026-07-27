@@ -37,7 +37,4 @@
   color: var(--mat-sys-tertiary, #b26500);
 }
 
-.upload-error {
-  color: var(--mat-sys-error, #b00020);
-  margin: 8px 0 0;
-}
+// No .upload-error rule: crucible-dialog renders errorMessage itself, with role="alert".

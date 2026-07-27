@@ -11,13 +11,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-  MatDialogTitle,
-  MatDialogContent,
-  MatDialogActions,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIcon } from '@angular/material/icon';
@@ -46,9 +41,7 @@ export interface IsoUploadDialogData {
   styleUrls: ['./iso-upload-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
+    ...CRUCIBLE_DIALOG_IMPORTS,
     MatButton,
     MatCheckbox,
     MatIcon,
@@ -107,7 +100,8 @@ export class IsoUploadDialogComponent {
     });
   }
 
-  // Submit is allowed once a file is chosen and at least one target is selected.
+  // Submit is allowed once a file is chosen and at least one target is selected. The shell also
+  // folds in `loading`, so the uploading() guard here is belt-and-braces for the direct callers.
   canSubmit(): boolean {
     if (this.uploading() || !this.file()) {
       return false;
@@ -156,9 +150,5 @@ export class IsoUploadDialogComponent {
           );
         },
       });
-  }
-
-  cancel() {
-    this.dialogRef.close();
   }
 }

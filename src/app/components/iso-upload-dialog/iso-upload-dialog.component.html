@@ -3,90 +3,91 @@ Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<h2 mat-dialog-title>Upload</h2>
+<!--
+  Content mode (no [form]): the dialog's state is signals, not a FormGroup.
+  guardUnsavedWork suppresses backdrop AND Escape dismissal - this dialog holds unsaved input
+  (the chosen file and its targets) and runs a long request that the server may complete even
+  after the component is destroyed. Cancel remains the deliberate way out (modals.md §7).
+-->
+<crucible-dialog
+  dialogTitle="Upload"
+  submitLabel="Upload"
+  loadingLabel="Uploading…"
+  [loading]="uploading()"
+  [errorMessage]="errorMessage()"
+  [submitDisabled]="!canSubmit()"
+  [guardUnsavedWork]="true"
+  (submit)="submit()"
+>
+  <div crucibleDialogContent>
+    <p>
+      Choose a file to make available to the virtual machines of the selected
+      team(s) in this view. Files that aren't already ISO images will be
+      converted automatically.
+    </p>
 
-<mat-dialog-content>
-  <p>
-    Choose a file to make available to the virtual machines of the selected
-    team(s) in this view. Files that aren't already ISO images will be converted
-    automatically.
-  </p>
+    <div class="upload-targets">
+      @if (data.canUploadView) {
+        <mat-checkbox
+          color="primary"
+          [checked]="uploadToView()"
+          [disabled]="uploading()"
+          (change)="toggleView($event.checked)"
+        >
+          View (All Teams)
+        </mat-checkbox>
+      }
 
-  <div class="upload-targets">
-    @if (data.canUploadView) {
-      <mat-checkbox
-        color="primary"
-        [checked]="uploadToView()"
-        [disabled]="uploading()"
-        (change)="toggleView($event.checked)"
-      >
-        View (All Teams)
-      </mat-checkbox>
-    }
-
-    @for (team of data.uploadableTeams; track team.id) {
-      <mat-checkbox
-        color="primary"
-        [checked]="isTeamSelected(team.id)"
-        [disabled]="uploading() || uploadToView() || singleTeamOnly()"
-        (change)="toggleTeam(team.id, $event.checked)"
-      >
-        {{ team.name }}
-      </mat-checkbox>
-    }
-  </div>
-
-  <div class="file-picker">
-    <button
-      mat-stroked-button
-      type="button"
-      [disabled]="uploading()"
-      (click)="fileInput.click()"
-    >
-      Choose File
-    </button>
-    <span class="file-name">{{ file()?.name || 'No file chosen' }}</span>
-    <input
-      #fileInput
-      type="file"
-      [hidden]="true"
-      (change)="onFileChosen(fileInput)"
-    />
-  </div>
-
-  <p class="upload-warning">
-    <mat-icon class="mdi-18px" fontIcon="mdi-alert"></mat-icon>
-    <span>
-      Uploading a file with the same name as an existing one will overwrite it.
-    </span>
-  </p>
-
-  @if (uploading()) {
-    <div class="upload-progress">
-      <span>Uploading… {{ progress() }}%</span>
-      <mat-progress-bar
-        mode="determinate"
-        [value]="progress()"
-      ></mat-progress-bar>
+      @for (team of data.uploadableTeams; track team.id) {
+        <mat-checkbox
+          color="primary"
+          [checked]="isTeamSelected(team.id)"
+          [disabled]="uploading() || uploadToView() || singleTeamOnly()"
+          (change)="toggleTeam(team.id, $event.checked)"
+        >
+          {{ team.name }}
+        </mat-checkbox>
+      }
     </div>
-  }
 
-  @if (errorMessage()) {
-    <p class="upload-error">{{ errorMessage() }}</p>
-  }
-</mat-dialog-content>
+    <div class="file-picker">
+      <!-- cdkFocusInitial: the primary opens disabled (no file chosen yet), so initial focus
+           belongs on the first real control (modals.md §7). -->
+      <button
+        mat-stroked-button
+        type="button"
+        cdkFocusInitial
+        [disabled]="uploading()"
+        (click)="fileInput.click()"
+      >
+        Choose File
+      </button>
+      <span class="file-name">{{ file()?.name || 'No file chosen' }}</span>
+      <input
+        #fileInput
+        type="file"
+        [hidden]="true"
+        (change)="onFileChosen(fileInput)"
+      />
+    </div>
 
-<mat-dialog-actions align="end">
-  <button mat-button type="button" [disabled]="uploading()" (click)="cancel()">
-    Cancel
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    type="button"
-    [disabled]="!canSubmit()"
-    (click)="submit()"
-  >
-    Upload
-  </button>
-</mat-dialog-actions>
+    <p class="upload-warning">
+      <mat-icon class="mdi-18px" fontIcon="mdi-alert"></mat-icon>
+      <span>
+        Uploading a file with the same name as an existing one will overwrite it.
+      </span>
+    </p>
+
+    <!-- Determinate bar kept alongside the shell's in-button spinner: real byte progress is
+         worth more than an indeterminate indicator on an upload this large. -->
+    @if (uploading()) {
+      <div class="upload-progress">
+        <span>Uploading… {{ progress() }}%</span>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="progress()"
+        ></mat-progress-bar>
+      </div>
+    }
+  </div>
+</crucible-dialog>
