@@ -199,28 +199,26 @@ export class IsoListComponent implements OnInit {
   private readonly userPermissionsService = inject(UserPermissionsService);
   private readonly dialog = inject(MatDialog);
 
-  private readonly canUploadViewIsos$ =
-    this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
-      undefined,
+  // Getters, not field initializers: every primary-context check must be scoped to this component's
+  // `viewId` input, and inputs are not set until ngOnInit. Read lazily so this.viewId() is available.
+  // Passing undefined would resolve the primary claim across every View's claims, not this one's.
+  private get canUploadViewIsos$(): Observable<boolean> {
+    return this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
+      this.viewId(),
       { viewPermissions: [AppViewPermission.UploadViewIsos] },
     );
+  }
 
-  private readonly canDeleteViewIsos$ =
-    this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
-      undefined,
+  private get canDeleteViewIsos$(): Observable<boolean> {
+    return this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
+      this.viewId(),
       { viewPermissions: [AppViewPermission.DeleteViewIsos] },
     );
+  }
 
-  readonly canUpload = toSignal(
-    this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
-      undefined,
-      {
-        teamPermissions: [AppTeamPermission.UploadTeamIsos],
-        viewPermissions: [AppViewPermission.UploadViewIsos],
-      },
-    ),
-    { initialValue: false },
-  );
+  // Assigned in ngOnInit rather than via toSignal at field-init time, which would subscribe (and so
+  // read viewId) before the input exists.
+  readonly canUpload = signal(false);
 
   readonly canViewAllViews = toSignal(
     combineLatest([
@@ -242,6 +240,14 @@ export class IsoListComponent implements OnInit {
   );
 
   ngOnInit() {
+    this.userPermissionsService
+      .hasEffectivePermissionsForPrimaryContext(this.viewId(), {
+        teamPermissions: [AppTeamPermission.UploadTeamIsos],
+        viewPermissions: [AppViewPermission.UploadViewIsos],
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((canUpload) => this.canUpload.set(canUpload));
+
     // The load reads the required `viewId` input, so it lives here (inputs are set by ngOnInit) and
     // is torn down via takeUntilDestroyed. Each refresh switches to the active endpoint; the
     // single-view path resolves per-team delete permissions before assembling its groups.
@@ -405,7 +411,7 @@ export class IsoListComponent implements OnInit {
     return combineLatest([
       this.canDeleteViewIsos$,
       this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
-        undefined,
+        this.viewId(),
         { teamPermissions: [AppTeamPermission.DeleteTeamIsos] },
         [teamId],
       ),
@@ -417,7 +423,7 @@ export class IsoListComponent implements OnInit {
     return combineLatest([
       this.canUploadViewIsos$,
       this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
-        undefined,
+        this.viewId(),
         { teamPermissions: [AppTeamPermission.UploadTeamIsos] },
         [teamId],
       ),

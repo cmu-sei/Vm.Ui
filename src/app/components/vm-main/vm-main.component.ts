@@ -133,11 +133,11 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public vms$: Observable<Vm[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
   public teams$ = this.teamsQuery.selectAll();
-  private visibleVmTeamIds$ = this.vmQuery.selectAll().pipe(
-    map((vms) =>
-      Array.from(new Set(vms.flatMap((vm) => vm.teamIds ?? []))),
-    ),
-  );
+  private visibleVmTeamIds$ = this.vmQuery
+    .selectAll()
+    .pipe(
+      map((vms) => Array.from(new Set(vms.flatMap((vm) => vm.teamIds ?? [])))),
+    );
   private visibleTeamIds$ = this.teams$.pipe(
     map((teams) =>
       teams
@@ -234,10 +234,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public showNetworks$ = this.canViewNetworks$;
 
   public viewTeamsLoaded$ = new BehaviorSubject(false);
-  public viewExists$ = combineLatest([
-    this.teams$,
-    this.viewTeamsLoaded$,
-  ]).pipe(
+  public viewExists$ = combineLatest([this.teams$, this.viewTeamsLoaded$]).pipe(
     map(([teams, loaded]) => loaded && teams.length > 0),
   );
 
@@ -256,12 +253,21 @@ export class VmMainComponent implements OnInit, OnDestroy {
           );
       }),
     );
+  // Upload OR delete permission opens the tab - gating on upload alone would make the DeleteIsos
+  // permissions unreachable, and DeleteIsos alone is enough for the all-views management mode.
   public showIsos$ =
     this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
       this.vmUISessionService.getCurrentViewId(),
       {
-        teamPermissions: [AppTeamPermission.UploadTeamIsos],
-        viewPermissions: [AppViewPermission.UploadViewIsos],
+        systemPermissions: [AppSystemPermission.DeleteIsos],
+        teamPermissions: [
+          AppTeamPermission.UploadTeamIsos,
+          AppTeamPermission.DeleteTeamIsos,
+        ],
+        viewPermissions: [
+          AppViewPermission.UploadViewIsos,
+          AppViewPermission.DeleteViewIsos,
+        ],
       },
     );
 
