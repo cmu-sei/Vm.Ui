@@ -18,6 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {
+  catchError,
   debounceTime,
   filter,
   map,
@@ -253,42 +254,51 @@ export class IsoListComponent implements OnInit {
     // single-view path resolves per-team delete permissions before assembling its groups.
     this.refresh$
       .pipe(
-        switchMap((): Observable<IsoLoadResult> => {
+        switchMap((): Observable<IsoLoadResult | null> => {
           this.loading.set(true);
-          if (this.showAllViews()) {
-            return this.fileService
-              .getAllIsos()
-              .pipe(map((results) => ({ allViews: true as const, results })));
-          }
-          return this.fileService.getViewIsos(this.viewId()).pipe(
-            switchMap((result) =>
-              this.buildSingleViewGroups(result).pipe(
-                map((groups) => ({ allViews: false as const, groups })),
-              ),
-            ),
+          const load: Observable<IsoLoadResult> = this.showAllViews()
+            ? this.fileService
+                .getAllIsos()
+                .pipe(map((results) => ({ allViews: true as const, results })))
+            : this.fileService.getViewIsos(this.viewId()).pipe(
+                switchMap((result) =>
+                  this.buildSingleViewGroups(result).pipe(
+                    map((groups) => ({ allViews: false as const, groups })),
+                  ),
+                ),
+              );
+
+          // Handle the error INSIDE the switchMap: an error reaching the outer subscription would
+          // tear down refresh$ for good, silently killing Refresh and the all-views toggle. Emitting
+          // null instead keeps the pipeline subscribed so the next refresh can succeed.
+          return load.pipe(
+            catchError((err: HttpErrorResponse) => {
+              this.showMessage(
+                'Failed to Load ISOs',
+                ErrorMessageService.getApiErrorMessage(
+                  err,
+                  'An unexpected error occurred while loading ISOs.',
+                ),
+              );
+              return of(null);
+            }),
           );
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe({
-        next: (res: IsoLoadResult) => {
-          if ('results' in res) {
-            this.buildViewGroups(res.results);
-          } else {
-            this.groups.set(res.groups);
-          }
-          this.loading.set(false);
-        },
-        error: (err: HttpErrorResponse) => {
-          this.loading.set(false);
-          this.showMessage(
-            'Failed to Load ISOs',
-            ErrorMessageService.getApiErrorMessage(
-              err,
-              'An unexpected error occurred while loading ISOs.',
-            ),
-          );
-        },
+      .subscribe((res: IsoLoadResult | null) => {
+        this.loading.set(false);
+        // A failed load leaves the last successfully-loaded groups on screen rather than blanking
+        // the list - the error is already surfaced in a dialog, and stale-but-real data is more
+        // useful than an empty accordion that reads as "this View has no ISOs".
+        if (res == null) {
+          return;
+        }
+        if ('results' in res) {
+          this.buildViewGroups(res.results);
+        } else {
+          this.groups.set(res.groups);
+        }
       });
   }
 
