@@ -1,0 +1,28 @@
+// Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+
+.iso-list {
+  padding: 16px;
+
+  .iso-list-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: 8px;
+    margin-bottom: 16px;
+
+    .searchBox {
+      width: 300px;
+    }
+
+    .all-views-toggle {
+      margin-left: auto;
+    }
+  }
+
+  .iso-list-loading {
+    display: flex;
+    justify-content: center;
+    padding: 48px 0;
+  }
+}

@@ -1,0 +1,27 @@
+<!--
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+@if (group().rows.length === 0) {
+  <p class="iso-empty">No Files</p>
+} @else {
+  @for (row of group().rows; track rowKey(row)) {
+    <div class="iso-row">
+      @if (isDeleting(row)) {
+        <mat-spinner [diameter]="20"></mat-spinner>
+      } @else if (row.canDelete) {
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="delete.emit(row)"
+          matTooltip="Delete"
+          aria-label="Delete"
+        >
+          <mat-icon class="mdi-24px" fontIcon="mdi-trash-can-outline"></mat-icon>
+        </button>
+      }
+      <span class="iso-name">{{ row.filename }}</span>
+    </div>
+  }
+}

@@ -1,7 +1,6 @@
 // Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -24,17 +23,14 @@ import {
   SelectContainerComponent,
   DragToSelectModule,
 } from 'ngx-drag-to-select';
-import { combineLatest, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { filter, map, shareReplay, switchMap, take } from 'rxjs/operators';
 import {
-  AppTeamPermission,
-  AppViewPermission,
   SimpleTeam,
   Vm,
   VmsService,
 } from '../../generated/vm-api';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
-import { FileService } from '../../services/file/file.service';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
 import { VmService } from '../../state/vms/vms.service';
@@ -61,7 +57,6 @@ import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { AsyncPipe, SlicePipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-vm-list',
@@ -104,8 +99,6 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   // MatPaginator Output
   public defaultPageSize = 50;
   public pageEvent: PageEvent;
-  public uploading = false;
-  public uploadProgress = 0;
   public vmApiResponded = true;
   public filterString = '';
   public showIps: Boolean = false;
@@ -157,25 +150,8 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   vmFilterBy: any = 'All';
   private hasLoadedVms = false;
 
-  canUploadTeamIsos$ = this.userPermissionsService.can(
-    AppTeamPermission.UploadTeamIsos,
-  );
-
-  canUploadViewIsos$ = this.userPermissionsService.can(
-    undefined,
-    AppViewPermission.UploadViewIsos,
-  );
-
-  canUploadViewIsos = toSignal(this.canUploadViewIsos$);
-
-  canUploadIsos$ = combineLatest([
-    this.canUploadTeamIsos$,
-    this.canUploadViewIsos$,
-  ]).pipe(map(([x, y]) => x || y));
-
   constructor(
     public vmService: VmService,
-    private fileService: FileService,
     private dialogService: CrucibleDialogService,
     private vmApiService: VmsService,
     private cd: ChangeDetectorRef,
@@ -339,76 +315,6 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   openHere($event) {
     this.openVmHere.emit($event);
-  }
-
-  uploadIso(fileSelector) {
-    if (fileSelector.value === '') {
-      console.log('file selector did not have a value');
-      return;
-    }
-
-    const qf = fileSelector.files[0];
-
-    if (this.canUploadViewIsos()) {
-      // First prompt the user to confirm if the iso is available for the team or the entire view
-      this.dialogService
-        .confirm({
-          title: 'Upload ISO For?',
-          message:
-            'Please choose if you want this ISO to be public or for your team only.',
-          confirmText: 'Public',
-          cancelText: 'My Team Only',
-        })
-        .afterClosed()
-        .pipe(take(1))
-        .subscribe((result) => {
-          if (result !== undefined) {
-            this.sendIsoFile(result, qf);
-          }
-        });
-    } else {
-      // The user is not an admin therfore iso's are only uploaded for the team
-      this.sendIsoFile(false, qf);
-    }
-    fileSelector.value = '';
-  }
-
-  sendIsoFile(isForAll: boolean, file: File) {
-    this.uploading = true;
-    this.fileService.uploadIso(isForAll, file).subscribe(
-      (event) => {
-        if (event.type === HttpEventType.UploadProgress) {
-          this.uploadProgress = Math.round((100 * event.loaded) / event.total);
-          this.cd.detectChanges();
-        }
-
-        if (event.type === HttpEventType.Response) {
-          this.uploading = false;
-          this.cd.detectChanges();
-          this.dialogService.confirm({
-            title: 'Upload Completed Successfully',
-            message: '',
-            confirmText: 'OK',
-            cancelText: '',
-          });
-        }
-      },
-      (err: HttpErrorResponse) => {
-        console.log(err);
-        this.uploading = false;
-        this.cd.detectChanges();
-        const errorMessage =
-          typeof err.error === 'string'
-            ? err.error
-            : (err.error?.title ?? err.error?.detail ?? err.message);
-        this.dialogService.confirm({
-          title: 'Upload Failed',
-          message: `Error: ${errorMessage}`,
-          confirmText: 'OK',
-          cancelText: '',
-        });
-      },
-    );
   }
 
   /**

@@ -1,0 +1,22 @@
+<!--
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<mat-accordion multi class="iso-team-accordion">
+  @for (group of groups(); track group.teamId ?? group.title) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ group.title }}</mat-panel-title>
+        <mat-panel-description
+          >Count: {{ group.rows.length }}</mat-panel-description
+        >
+      </mat-expansion-panel-header>
+      <app-iso-group
+        [group]="group"
+        [deleting]="deleting()"
+        (delete)="delete.emit($event)"
+      ></app-iso-group>
+    </mat-expansion-panel>
+  }
+</mat-accordion>

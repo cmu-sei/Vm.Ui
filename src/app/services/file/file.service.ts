@@ -19,16 +19,27 @@ export class FileService {
       this.router.routerState.snapshot.root.firstChild.params['viewId'];
   }
 
-  public uploadIso(isForAll: boolean, file: File) {
-    const scope = isForAll ? 'view' : 'team';
+  // Upload a file (converted to an ISO server-side if needed) to one or more targets.
+  //  - scope 'view': made available to the whole View (requires UploadViewIsos).
+  //  - scope 'team': written to each id in teamIds, or the caller's primary team when teamIds is empty.
+  // viewId defaults to the route-derived View when not supplied.
+  public uploadIso(
+    file: File,
+    scope: 'view' | 'team',
+    teamIds?: string[],
+    viewId?: string,
+  ) {
     const payload: FormData = new FormData();
     payload.append('size', file.size.toString());
     payload.append('scope', scope);
+    if (scope === 'team') {
+      (teamIds ?? []).forEach((id) => payload.append('teamIds', id));
+    }
     payload.append(file.name, file);
     return this.http.request(
       new HttpRequest(
         'POST',
-        `${this.settings.settings.ApiUrl}/views/${this.viewId}/isos`,
+        `${this.settings.settings.ApiUrl}/views/${viewId ?? this.viewId}/isos`,
         payload,
         { reportProgress: true },
       ),

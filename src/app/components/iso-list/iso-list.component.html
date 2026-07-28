@@ -1,0 +1,125 @@
+<!--
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<div class="iso-list">
+  <div class="iso-list-toolbar">
+    <mat-form-field subscriptSizing="dynamic" class="searchBox">
+      <input
+        matInput
+        [ngModel]="searchTerm"
+        (ngModelChange)="applyFilter($event)"
+        placeholder="Search"
+        aria-label="Search by filename"
+      />
+      @if (searchTerm !== '') {
+        <button
+          matSuffix
+          mat-icon-button
+          color="primary"
+          (click)="clearFilter()"
+          matTooltip="Clear Search"
+          aria-label="Clear Search"
+        >
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="expandAll()"
+      aria-label="Expand all groups"
+    >
+      Expand All
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="collapseAll()"
+      aria-label="Collapse all groups"
+    >
+      Collapse All
+    </button>
+
+    <button
+      mat-icon-button
+      [disabled]="loading()"
+      (click)="refresh()"
+      matTooltip="Refresh"
+      aria-label="Refresh"
+    >
+      @if (loading() && hasLoaded()) {
+        <mat-spinner [diameter]="24"></mat-spinner>
+      } @else {
+        <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
+      }
+    </button>
+
+    @if (canUpload() && !showAllViews()) {
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="openUploadDialog()"
+        matTooltip="Upload"
+        aria-label="Upload"
+      >
+        <mat-icon class="mdi-24px" fontIcon="mdi-upload"></mat-icon>
+      </button>
+    }
+
+    @if (canViewAllViews()) {
+      <mat-slide-toggle
+        class="all-views-toggle"
+        [checked]="showAllViews()"
+        (change)="onToggleAllViews($event.checked)"
+      >
+        Show ISOs from all views
+      </mat-slide-toggle>
+    }
+  </div>
+
+  @if (!hasLoaded()) {
+    <div class="iso-list-loading">
+      <mat-spinner [diameter]="48"></mat-spinner>
+    </div>
+  } @else if (showAllViews()) {
+    <mat-accordion multi>
+      @for (viewGroup of filteredViewGroups(); track viewGroup.viewId) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ viewGroup.viewName }}</mat-panel-title>
+            <mat-panel-description
+              >Count: {{ viewGroup.isoCount }}</mat-panel-description
+            >
+          </mat-expansion-panel-header>
+          <app-iso-view-group
+            [viewGroup]="viewGroup"
+            [deleting]="deleting()"
+            (delete)="deleteIso($event)"
+          ></app-iso-view-group>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  } @else {
+    <mat-accordion multi>
+      @for (group of filteredGroups(); track group.teamId ?? group.title) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ group.title }}</mat-panel-title>
+            <mat-panel-description
+              >Count: {{ group.rows.length }}</mat-panel-description
+            >
+          </mat-expansion-panel-header>
+          <app-iso-group
+            [group]="group"
+            [deleting]="deleting()"
+            (delete)="deleteIso($event)"
+          ></app-iso-group>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  }
+</div>

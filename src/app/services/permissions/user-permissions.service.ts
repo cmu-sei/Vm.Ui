@@ -94,6 +94,66 @@ export class UserPermissionsService {
     );
   }
 
+  // Use for UI rooted in the active team. The context contains the primary team and each target
+  // team reached by a scope from that primary team; permissions are the effective values on those
+  // claims, including scoped grants.
+  hasEffectivePermissionsForPrimaryContext(
+    viewId: string | undefined,
+    requirements: EffectivePermissionRequirements,
+    teamIds?: string[],
+  ) {
+    return combineLatest([this.permissions$, this.teamPermissions$]).pipe(
+      map(([permissions, teamPermissionClaims]) => {
+        if (
+          requirements.systemPermissions?.some((permission) =>
+            permissions.includes(permission),
+          )
+        ) {
+          return true;
+        }
+
+        const viewClaims = viewId
+          ? teamPermissionClaims.filter((claim) => claim.viewId === viewId)
+          : teamPermissionClaims;
+        const primaryClaim = viewClaims.find((claim) => claim.isPrimary);
+        if (!primaryClaim?.teamId) {
+          return false;
+        }
+
+        const contextClaims = viewClaims.filter(
+          (claim) =>
+            claim.teamId === primaryClaim.teamId ||
+            claim.sourceTeamIds?.includes(primaryClaim.teamId),
+        );
+        const targetTeamIds = new Set((teamIds ?? []).filter((id) => !!id));
+        const targetClaims =
+          targetTeamIds.size > 0
+            ? contextClaims.filter(
+                (claim) =>
+                  claim.teamId != null && targetTeamIds.has(claim.teamId),
+              )
+            : contextClaims;
+
+        const teamPermissions = this.toTeamPermissions(
+          targetClaims.flatMap((claim) => claim.permissionValues ?? []),
+        );
+        const viewPermissions = this.toViewPermissions(
+          contextClaims.flatMap((claim) => claim.permissionValues ?? []),
+        );
+
+        return (
+          requirements.teamPermissions?.some((permission) =>
+            teamPermissions.includes(permission),
+          ) ||
+          requirements.viewPermissions?.some((permission) =>
+            viewPermissions.includes(permission),
+          ) ||
+          false
+        );
+      }),
+    );
+  }
+
   // Use for actions on known teams. This mirrors API authorization by
   // considering system, target effective, and same-view direct permissions.
   hasEffectivePermissionsForTeams(

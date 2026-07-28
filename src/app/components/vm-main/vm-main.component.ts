@@ -56,6 +56,7 @@ import { VmUsageLoggingComponent } from '../vm-usage-logging/vm-usage-logging.co
 import { NetworkPermissionsComponent } from '../network-permissions/network-permissions.component';
 import { UserListComponent } from '../user-list/user-list.component';
 import { VmListComponent } from '../vm-list/vm-list.component';
+import { IsoListComponent } from '../iso-list/iso-list.component';
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 import { AsyncPipe } from '@angular/common';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
@@ -64,10 +65,10 @@ import { TopbarComponent } from '../topbar/topbar.component';
 import { validate as isUuid } from 'uuid';
 
 @Component({
-    selector: 'app-vm-main',
-    templateUrl: './vm-main.component.html',
-    styleUrls: ['./vm-main.component.scss'],
-    imports: [
+  selector: 'app-vm-main',
+  templateUrl: './vm-main.component.html',
+  styleUrls: ['./vm-main.component.scss'],
+  imports: [
     TopbarComponent,
     MatTabGroup,
     MatTab,
@@ -76,13 +77,14 @@ import { validate as isUuid } from 'uuid';
     UserListComponent,
     VmUsageLoggingComponent,
     NetworkPermissionsComponent,
+    IsoListComponent,
     MatTabLabel,
     MatIconButton,
     MatIcon,
     FocusedAppComponent,
     PageNotFoundComponent,
-    AsyncPipe
-]
+    AsyncPipe,
+  ],
 })
 export class VmMainComponent implements OnInit, OnDestroy {
   @ViewChild('vmTabGroup', { static: false }) tabGroup: MatTabGroup;
@@ -131,11 +133,11 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public vms$: Observable<Vm[]>;
   public vmErrors$ = new BehaviorSubject<Record<string, string>>({});
   public teams$ = this.teamsQuery.selectAll();
-  private visibleVmTeamIds$ = this.vmQuery.selectAll().pipe(
-    map((vms) =>
-      Array.from(new Set(vms.flatMap((vm) => vm.teamIds ?? []))),
-    ),
-  );
+  private visibleVmTeamIds$ = this.vmQuery
+    .selectAll()
+    .pipe(
+      map((vms) => Array.from(new Set(vms.flatMap((vm) => vm.teamIds ?? [])))),
+    );
   private visibleTeamIds$ = this.teams$.pipe(
     map((teams) =>
       teams
@@ -232,10 +234,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   public showNetworks$ = this.canViewNetworks$;
 
   public viewTeamsLoaded$ = new BehaviorSubject(false);
-  public viewExists$ = combineLatest([
-    this.teams$,
-    this.viewTeamsLoaded$,
-  ]).pipe(
+  public viewExists$ = combineLatest([this.teams$, this.viewTeamsLoaded$]).pipe(
     map(([teams, loaded]) => loaded && teams.length > 0),
   );
 
@@ -253,6 +252,23 @@ export class VmMainComponent implements OnInit, OnDestroy {
             catchError(() => of(false)),
           );
       }),
+    );
+  // Upload OR delete permission opens the tab - gating on upload alone would make the DeleteIsos
+  // permissions unreachable, and DeleteIsos alone is enough for the all-views management mode.
+  public showIsos$ =
+    this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
+      this.vmUISessionService.getCurrentViewId(),
+      {
+        systemPermissions: [AppSystemPermission.DeleteIsos],
+        teamPermissions: [
+          AppTeamPermission.UploadTeamIsos,
+          AppTeamPermission.DeleteTeamIsos,
+        ],
+        viewPermissions: [
+          AppViewPermission.UploadViewIsos,
+          AppViewPermission.DeleteViewIsos,
+        ],
+      },
     );
 
   ngOnInit() {
@@ -377,12 +393,12 @@ export class VmMainComponent implements OnInit, OnDestroy {
   }
 
   onOpenVmHere(vmObj: { [name: string]: string }, onLoading: boolean = false) {
-    combineLatest([this.showUsageLogging$, this.showNetworks$])
+    combineLatest([this.showUsageLogging$, this.showNetworks$, this.showIsos$])
       .pipe(take(1))
-      .subscribe(([hasLogging, hasNetworks]) => {
+      .subscribe(([hasLogging, hasNetworks, hasIsos]) => {
         // 2 static tabs (VM List + User Follow) + conditional tabs
         const staticCount =
-          2 + (hasLogging ? 1 : 0) + (hasNetworks ? 1 : 0);
+          2 + (hasLogging ? 1 : 0) + (hasNetworks ? 1 : 0) + (hasIsos ? 1 : 0);
 
         const index = this.openVms.findIndex((v) => v.name === vmObj.name);
         if (index === -1) {
