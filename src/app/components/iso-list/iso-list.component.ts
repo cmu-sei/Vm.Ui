@@ -139,8 +139,10 @@ export class IsoListComponent implements OnInit {
 
   // Authoritative groups, rebuilt from the getViewIsos response.
   readonly groups = signal<IsoGroup[]>([]);
-  // Non-blocking: the accordion renders regardless; this only drives a small toolbar spinner.
+  // Initial loads replace the empty list with a centered spinner. Once data has loaded, refreshes
+  // leave the accordion mounted and use a small toolbar spinner so panel expansion is preserved.
   readonly loading = signal(false);
+  readonly hasLoaded = signal(false);
   // Per-row delete in-flight tracking, keyed by rowKey(...).
   readonly deleting = signal<ReadonlySet<string>>(new Set());
 
@@ -193,6 +195,7 @@ export class IsoListComponent implements OnInit {
   });
 
   private refresh$ = new BehaviorSubject<boolean>(true);
+  private readonly afterSuccessfulRefresh: Array<() => void> = [];
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly fileService = inject(FileService);
@@ -301,6 +304,8 @@ export class IsoListComponent implements OnInit {
         } else {
           this.groups.set(res.groups);
         }
+        this.hasLoaded.set(true);
+        this.afterSuccessfulRefresh.splice(0).forEach((callback) => callback());
       });
   }
 
@@ -468,6 +473,45 @@ export class IsoListComponent implements OnInit {
     return isoRowKey(row);
   }
 
+  private removeRow(row: IsoRow) {
+    const removeFromGroup = (group: IsoGroup): IsoGroup => {
+      const isTargetGroup =
+        row.scope === 'view'
+          ? !group.isTeam
+          : group.isTeam && group.teamId === row.teamId;
+
+      return isTargetGroup
+        ? {
+            ...group,
+            rows: group.rows.filter(
+              (candidate) => this.rowKey(candidate) !== this.rowKey(row),
+            ),
+          }
+        : group;
+    };
+
+    if (this.showAllViews()) {
+      this.viewGroups.update((viewGroups) =>
+        viewGroups.map((viewGroup) => {
+          if (viewGroup.viewId !== (row.viewId ?? '')) {
+            return viewGroup;
+          }
+
+          const viewWideGroup = removeFromGroup(viewGroup.viewWideGroup);
+          const teamGroups = viewGroup.teamGroups.map(removeFromGroup);
+          return {
+            ...viewGroup,
+            viewWideGroup,
+            teamGroups,
+            isoCount: this.totalIsoCount(viewWideGroup, teamGroups),
+          };
+        }),
+      );
+    } else {
+      this.groups.update((groups) => groups.map(removeFromGroup));
+    }
+  }
+
   deleteIso(row: IsoRow) {
     const key = this.rowKey(row);
     if (this.deleting().has(key)) {
@@ -500,11 +544,15 @@ export class IsoListComponent implements OnInit {
       )
       .subscribe({
         next: (res: IsoUploadResult) => {
-          this.setDeleting(key, false);
-          if (res?.message) {
-            this.showMessage('Delete ISO', res.message);
+          if ((res?.failedHostCount ?? 0) === 0) {
+            this.removeRow(row);
           }
-          this.refresh();
+          this.setDeleting(key, false);
+          this.refresh(
+            res?.message
+              ? () => this.showMessage('Delete ISO', res.message)
+              : undefined,
+          );
         },
         error: (err: HttpErrorResponse) => {
           this.setDeleting(key, false);
@@ -579,20 +627,25 @@ export class IsoListComponent implements OnInit {
       )
       .subscribe((result) => {
         if (result?.success) {
-          if (result.message) {
-            this.showMessage(
-              result.partialFailure
-                ? 'Upload Completed with Errors'
-                : 'Upload Completed',
-              result.message,
-            );
-          }
-          this.refresh();
+          this.refresh(
+            result.message
+              ? () =>
+                  this.showMessage(
+                    result.partialFailure
+                      ? 'Upload Completed with Errors'
+                      : 'Upload Completed',
+                    result.message,
+                  )
+              : undefined,
+          );
         }
       });
   }
 
-  refresh() {
+  refresh(afterSuccessfulRefresh?: () => void) {
+    if (afterSuccessfulRefresh) {
+      this.afterSuccessfulRefresh.push(afterSuccessfulRefresh);
+    }
     this.refresh$.next(true);
   }
 

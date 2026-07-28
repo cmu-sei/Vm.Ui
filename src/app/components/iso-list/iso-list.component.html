@@ -51,7 +51,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       matTooltip="Refresh"
       aria-label="Refresh"
     >
-      <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
+      @if (loading() && hasLoaded()) {
+        <mat-spinner [diameter]="24"></mat-spinner>
+      } @else {
+        <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
+      }
     </button>
 
     @if (canUpload() && !showAllViews()) {
@@ -77,7 +81,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     }
   </div>
 
-  @if (loading()) {
+  @if (!hasLoaded()) {
     <div class="iso-list-loading">
       <mat-spinner [diameter]="48"></mat-spinner>
     </div>
