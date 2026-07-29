@@ -65,10 +65,7 @@ export class UserPermissionsService {
 
   // Use for primary-context UI. Only permissions granted directly by the
   // selected primary team are considered.
-  can(
-    teamPermission?: AppTeamPermission,
-    viewPermission?: AppViewPermission,
-  ) {
+  can(teamPermission?: AppTeamPermission, viewPermission?: AppViewPermission) {
     return this.teamPermissions$.pipe(
       map((teamPermissionClaims) => {
         const primaryClaim = teamPermissionClaims.find(
@@ -181,21 +178,33 @@ export class UserPermissionsService {
         );
         const targetPermissionValues = viewClaims
           .filter(
-            (claim) =>
-              claim.teamId != null && targetTeamIds.has(claim.teamId),
+            (claim) => claim.teamId != null && targetTeamIds.has(claim.teamId),
           )
           .flatMap((claim) => claim.permissionValues ?? []);
-        const directPermissionValues = viewClaims.flatMap(
+        // The direct fallback is intentionally scoped to the primary context (the
+        // primary team plus any team scoped in from it) rather than to every claim
+        // in the View.
+        const primaryClaim = viewClaims.find((claim) => claim.isPrimary);
+        const contextClaims = primaryClaim?.teamId
+          ? viewClaims.filter(
+              (claim) =>
+                claim.teamId === primaryClaim.teamId ||
+                claim.sourceTeamIds?.includes(primaryClaim.teamId),
+            )
+          : [];
+        const directPermissionValues = contextClaims.flatMap(
           (claim) => claim.directPermissionValues ?? [],
         );
 
         const targetTeamPermissions = this.toTeamPermissions(
           targetPermissionValues,
         );
-        const targetViewPermissions =
-          this.toViewPermissions(targetPermissionValues);
-        const directViewPermissions =
-          this.toViewPermissions(directPermissionValues);
+        const targetViewPermissions = this.toViewPermissions(
+          targetPermissionValues,
+        );
+        const directViewPermissions = this.toViewPermissions(
+          directPermissionValues,
+        );
 
         return (
           requirements.teamPermissions?.some((permission) =>
