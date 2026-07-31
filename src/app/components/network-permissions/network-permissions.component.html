@@ -23,7 +23,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <input
           matInput
           [formControl]="providerInstanceIdControl"
-          matTooltip="The address of the vSphere server (e.g. vcenter.example.com)"
+          [matTooltip]="getProviderInstanceTooltip(providerTypeControl.value)"
         />
       </mat-form-field>
 
@@ -32,7 +32,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <input
           matInput
           [formControl]="networkIdControl"
-          matTooltip="The Managed Object ID (MOID) of the network"
+          [matTooltip]="getNetworkIdTooltip(providerTypeControl.value)"
         />
       </mat-form-field>
 

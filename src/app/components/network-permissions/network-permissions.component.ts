@@ -109,8 +109,11 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
   nameControl = new UntypedFormControl('', [Validators.required]);
   teamIdsControl = new UntypedFormControl([]);
 
-  providerTypes = [VmType.Vsphere];
-  providerTypeLabels: Record<string, string> = { Vsphere: 'vSphere' };
+  providerTypes = [VmType.Vsphere, VmType.Proxmox];
+  providerTypeLabels: Record<string, string> = {
+    Vsphere: 'vSphere',
+    Proxmox: 'Proxmox',
+  };
 
   displayedColumns: string[] = [
     'providerType',
@@ -286,6 +289,18 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
 
   getProviderTypeLabel(value: string): string {
     return this.providerTypeLabels[value] || value;
+  }
+
+  getProviderInstanceTooltip(providerType: string): string {
+    return providerType === VmType.Proxmox
+      ? 'The Proxmox host configured for Player VM (e.g. proxmox.example.com)'
+      : 'The address of the vSphere server (e.g. vcenter.example.com)';
+  }
+
+  getNetworkIdTooltip(providerType: string): string {
+    return providerType === VmType.Proxmox
+      ? 'The Proxmox bridge name (e.g. vmbr100)'
+      : 'The Managed Object ID (MOID) of the network';
   }
 
   getTeamName(teamId: string): string {
