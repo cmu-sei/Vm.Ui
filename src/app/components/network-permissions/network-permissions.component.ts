@@ -7,9 +7,11 @@ import {
   Input,
   OnDestroy,
   ViewChild,
+  computed,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { switchMap, take, takeUntil } from 'rxjs/operators';
+import { startWith, switchMap, take, takeUntil } from 'rxjs/operators';
 import {
   NetworksService,
   ViewNetwork,
@@ -108,6 +110,22 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
   networkIdControl = new UntypedFormControl('', [Validators.required]);
   nameControl = new UntypedFormControl('', [Validators.required]);
   teamIdsControl = new UntypedFormControl([]);
+  private readonly providerType = toSignal(
+    this.providerTypeControl.valueChanges.pipe(
+      startWith(this.providerTypeControl.value),
+    ),
+    { initialValue: this.providerTypeControl.value },
+  );
+  readonly providerInstanceTooltip = computed(() =>
+    this.providerType() === VmType.Proxmox
+      ? 'The address of the Proxmox server (e.g. proxmox.example.com)'
+      : 'The address of the vSphere server (e.g. vcenter.example.com)',
+  );
+  readonly networkIdTooltip = computed(() =>
+    this.providerType() === VmType.Proxmox
+      ? 'The Proxmox bridge name (e.g. vmbr100)'
+      : 'The Managed Object ID (MOID) of the network',
+  );
 
   providerTypes = [VmType.Vsphere, VmType.Proxmox];
   providerTypeLabels: Record<string, string> = {
@@ -289,18 +307,6 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
 
   getProviderTypeLabel(value: string): string {
     return this.providerTypeLabels[value] || value;
-  }
-
-  getProviderInstanceTooltip(providerType: string): string {
-    return providerType === VmType.Proxmox
-      ? 'The Proxmox host configured for Player VM (e.g. proxmox.example.com)'
-      : 'The address of the vSphere server (e.g. vcenter.example.com)';
-  }
-
-  getNetworkIdTooltip(providerType: string): string {
-    return providerType === VmType.Proxmox
-      ? 'The Proxmox bridge name (e.g. vmbr100)'
-      : 'The Managed Object ID (MOID) of the network';
   }
 
   getTeamName(teamId: string): string {
