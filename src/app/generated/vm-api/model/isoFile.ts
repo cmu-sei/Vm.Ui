@@ -14,10 +14,18 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { VmType } from './vmType';
 
 
 export interface IsoFile { 
     path?: string | null;
     filename?: string | null;
+    mountValue?: string | null;
+    providerType?: VmType;
+    providerInstanceId?: string | null;
+    missingProviders?: Array<VmType> | null;
 }
+export namespace IsoFile {
+}
+
 

@@ -36,6 +36,7 @@ import {
   IsoFile,
   IsoResult,
   IsoUploadResult,
+  VmType,
 } from '../../generated/vm-api';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ErrorMessageService } from '../../services/error-message/error-message.service';
@@ -70,6 +71,10 @@ export interface IsoRow {
   scope: 'view' | 'team';
   teamId?: string;
   viewId?: string;
+  // Hypervisors that store ISOs for this install but do not have this file. An upload fans out to
+  // every one of them and tolerates a partial failure, so a non-empty list means the file only
+  // partly landed; re-uploading the same name heals it. Left undefined when the file is everywhere.
+  missingProviders?: VmType[];
 }
 
 // One group of ISOs in the list: the view-wide group or a single team's group.
@@ -464,6 +469,11 @@ export class IsoListComponent implements OnInit {
         scope,
         teamId,
         viewId,
+        // Normalized to undefined when empty so the template can test it with a single truthiness
+        // check, and so a row from an older API (no such field) behaves the same as a complete one.
+        missingProviders: iso.missingProviders?.length
+          ? iso.missingProviders
+          : undefined,
       }));
   }
 

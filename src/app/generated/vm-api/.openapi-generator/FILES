@@ -20,6 +20,7 @@ model/appTeamPermission.ts
 model/appViewPermission.ts
 model/bulkPowerOperation.ts
 model/bulkPowerOperationResponse.ts
+model/changeProxmoxVirtualMachineNetwork.ts
 model/changeVsphereVirtualMachineNetwork.ts
 model/consoleConnectionInfo.ts
 model/coordinate.ts
@@ -38,12 +39,14 @@ model/isoFile.ts
 model/isoResult.ts
 model/isoUploadResult.ts
 model/models.ts
+model/mountProxmoxVirtualMachineIso.ts
 model/mountVsphereIso.ts
 model/nicOptions.ts
 model/powerState.ts
 model/problemDetails.ts
 model/proxmoxConsole.ts
 model/proxmoxSnapshot.ts
+model/proxmoxVirtualMachine.ts
 model/proxmoxVmInfo.ts
 model/proxmoxVmType.ts
 model/readGuestFileFromProxmoxVirtualMachine.ts
