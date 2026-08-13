@@ -554,7 +554,9 @@ export class IsoListComponent implements OnInit {
       )
       .subscribe({
         next: (res: IsoUploadResult) => {
-          if ((res?.failedHostCount ?? 0) === 0) {
+          // Keep the row when the delete only partly landed: the file is still on some hypervisor,
+          // and the row is what the user needs in order to retry.
+          if (!res?.partialFailure) {
             this.removeRow(row);
           }
           this.setDeleting(key, false);

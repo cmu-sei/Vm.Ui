@@ -14,15 +14,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { VmType } from './vmType';
 
 
 export interface IsoUploadResult { 
     message?: string | null;
     failedHostCount?: number;
     totalHostCount?: number;
-    failedProviderCount?: number;
-    totalProviderCount?: number;
-    failedProviders?: Array<VmType> | null;
+    partialFailure?: boolean;
 }
 

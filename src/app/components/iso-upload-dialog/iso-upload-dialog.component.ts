@@ -130,12 +130,13 @@ export class IsoUploadDialogComponent {
           if (event.type === HttpEventType.UploadProgress && event.total) {
             this.progress.set(Math.round((100 * event.loaded) / event.total));
           } else if (event.type === HttpEventType.Response) {
-            // A partial-host failure still returns 200 with a non-zero failed count; surface that
-            // rather than reporting a clean success.
+            // An upload that only partly landed still returns 200; surface that rather than
+            // reporting a clean success. The API reports it as a flag because a failure does not
+            // always come with host numbers - a storage-backed write has no per-host tally.
             const body = event.body as IsoUploadResult;
             this.dialogRef.close({
               success: true,
-              partialFailure: (body?.failedHostCount ?? 0) > 0,
+              partialFailure: body?.partialFailure === true,
               message: body?.message,
             });
           }
