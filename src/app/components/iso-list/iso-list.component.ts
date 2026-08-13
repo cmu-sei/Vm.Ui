@@ -33,9 +33,9 @@ import {
   AppTeamPermission,
   AppViewPermission,
   FileService,
-  IsoFile,
-  IsoResult,
   IsoUploadResult,
+  ManagedIsoFile,
+  ManagedIsoResult,
   VmType,
 } from '../../generated/vm-api';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
@@ -98,7 +98,7 @@ export interface IsoViewGroup {
 // Discriminated result of a single load: all-views mode carries the raw per-View listing; single-
 // view mode carries the already-assembled (permission-resolved) groups.
 type IsoLoadResult =
-  | { allViews: true; results: IsoResult[] }
+  | { allViews: true; results: ManagedIsoResult[] }
   | { allViews: false; groups: IsoGroup[] };
 
 const VIEW_GROUP_TITLE = 'View (All Teams)';
@@ -334,7 +334,7 @@ export class IsoListComponent implements OnInit {
 
   // All-views mode: build the nested View -> teams -> ISOs structure from the system-wide listing.
   // Delete is offered iff the user has the system DeleteIsos permission (see canDeleteAnyIso).
-  private buildViewGroups(results: IsoResult[]) {
+  private buildViewGroups(results: ManagedIsoResult[]) {
     const canDelete = this.canDeleteAnyIso();
 
     const viewGroups: IsoViewGroup[] = (results ?? [])
@@ -391,7 +391,7 @@ export class IsoListComponent implements OnInit {
   // Resolve each team's delete permission (once), then assemble the single-view group model. Teams
   // are sorted up front and each carries its own resolved permission, so there is no index-aligned
   // positional coupling between the teams and their permission results.
-  private buildSingleViewGroups(result: IsoResult): Observable<IsoGroup[]> {
+  private buildSingleViewGroups(result: ManagedIsoResult): Observable<IsoGroup[]> {
     const teamResults = (result.teamIsoResults ?? [])
       .slice()
       .sort((a, b) => (a.teamName ?? '').localeCompare(b.teamName ?? ''));
@@ -455,7 +455,7 @@ export class IsoListComponent implements OnInit {
   }
 
   private toRows(
-    isos: IsoFile[] | null | undefined,
+    isos: ManagedIsoFile[] | null | undefined,
     scope: 'view' | 'team',
     teamId: string | undefined,
     canDelete: boolean,
