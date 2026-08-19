@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
@@ -14,14 +14,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { IsoFile } from './isoFile';
-import { TeamIsoResult } from './teamIsoResult';
+import { ManagedIsoFile } from './managedIsoFile';
 
 
-export interface IsoResult { 
-    viewId?: string;
-    viewName?: string | null;
-    isos?: Array<IsoFile> | null;
-    teamIsoResults?: Array<TeamIsoResult> | null;
+export interface ManagedTeamIsoResult { 
+    teamId?: string;
+    teamName?: string | null;
+    isos?: Array<ManagedIsoFile> | null;
 }
 

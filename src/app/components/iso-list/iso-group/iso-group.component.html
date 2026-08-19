@@ -18,8 +18,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           matTooltip="Delete"
           aria-label="Delete"
         >
-          <mat-icon class="mdi-24px" fontIcon="mdi-trash-can-outline"></mat-icon>
+          <mat-icon
+            class="mdi-24px"
+            fontIcon="mdi-trash-can-outline"
+          ></mat-icon>
         </button>
+      }
+      @if (row.missingProviders?.length) {
+        <mat-icon
+          class="mdi-24px iso-missing"
+          fontIcon="mdi-alert"
+          [matTooltip]="missingTooltip(row)"
+          [attr.aria-label]="missingTooltip(row)"
+        ></mat-icon>
       }
       <span class="iso-name">{{ row.filename }}</span>
     </div>

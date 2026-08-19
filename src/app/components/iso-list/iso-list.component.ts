@@ -33,9 +33,10 @@ import {
   AppTeamPermission,
   AppViewPermission,
   FileService,
-  IsoFile,
-  IsoResult,
   IsoUploadResult,
+  ManagedIsoFile,
+  ManagedIsoResult,
+  VmType,
 } from '../../generated/vm-api';
 import { UserPermissionsService } from '../../services/permissions/user-permissions.service';
 import { ErrorMessageService } from '../../services/error-message/error-message.service';
@@ -70,6 +71,10 @@ export interface IsoRow {
   scope: 'view' | 'team';
   teamId?: string;
   viewId?: string;
+  // Hypervisors that store ISOs for this install but do not have this file. An upload fans out to
+  // every one of them and tolerates a partial failure, so a non-empty list means the file only
+  // partly landed; re-uploading the same name heals it. Left undefined when the file is everywhere.
+  missingProviders?: VmType[];
 }
 
 // One group of ISOs in the list: the view-wide group or a single team's group.
@@ -93,7 +98,7 @@ export interface IsoViewGroup {
 // Discriminated result of a single load: all-views mode carries the raw per-View listing; single-
 // view mode carries the already-assembled (permission-resolved) groups.
 type IsoLoadResult =
-  | { allViews: true; results: IsoResult[] }
+  | { allViews: true; results: ManagedIsoResult[] }
   | { allViews: false; groups: IsoGroup[] };
 
 const VIEW_GROUP_TITLE = 'View (All Teams)';
@@ -329,7 +334,7 @@ export class IsoListComponent implements OnInit {
 
   // All-views mode: build the nested View -> teams -> ISOs structure from the system-wide listing.
   // Delete is offered iff the user has the system DeleteIsos permission (see canDeleteAnyIso).
-  private buildViewGroups(results: IsoResult[]) {
+  private buildViewGroups(results: ManagedIsoResult[]) {
     const canDelete = this.canDeleteAnyIso();
 
     const viewGroups: IsoViewGroup[] = (results ?? [])
@@ -386,7 +391,7 @@ export class IsoListComponent implements OnInit {
   // Resolve each team's delete permission (once), then assemble the single-view group model. Teams
   // are sorted up front and each carries its own resolved permission, so there is no index-aligned
   // positional coupling between the teams and their permission results.
-  private buildSingleViewGroups(result: IsoResult): Observable<IsoGroup[]> {
+  private buildSingleViewGroups(result: ManagedIsoResult): Observable<IsoGroup[]> {
     const teamResults = (result.teamIsoResults ?? [])
       .slice()
       .sort((a, b) => (a.teamName ?? '').localeCompare(b.teamName ?? ''));
@@ -450,7 +455,7 @@ export class IsoListComponent implements OnInit {
   }
 
   private toRows(
-    isos: IsoFile[] | null | undefined,
+    isos: ManagedIsoFile[] | null | undefined,
     scope: 'view' | 'team',
     teamId: string | undefined,
     canDelete: boolean,
@@ -464,6 +469,11 @@ export class IsoListComponent implements OnInit {
         scope,
         teamId,
         viewId,
+        // Normalized to undefined when empty so the template can test it with a single truthiness
+        // check, and so a row from an older API (no such field) behaves the same as a complete one.
+        missingProviders: iso.missingProviders?.length
+          ? iso.missingProviders
+          : undefined,
       }));
   }
 
@@ -544,7 +554,9 @@ export class IsoListComponent implements OnInit {
       )
       .subscribe({
         next: (res: IsoUploadResult) => {
-          if ((res?.failedHostCount ?? 0) === 0) {
+          // Keep the row when the delete only partly landed: the file is still on some hypervisor,
+          // and the row is what the user needs in order to retry.
+          if (!res?.partialFailure) {
             this.removeRow(row);
           }
           this.setDeleting(key, false);

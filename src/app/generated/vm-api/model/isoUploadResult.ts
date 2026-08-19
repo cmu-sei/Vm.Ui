@@ -20,5 +20,6 @@ export interface IsoUploadResult {
     message?: string | null;
     failedHostCount?: number;
     totalHostCount?: number;
+    partialFailure?: boolean;
 }
 

@@ -38,4 +38,12 @@ export class IsoGroupComponent {
   isDeleting(row: IsoRow): boolean {
     return this.deleting().has(isoRowKey(row));
   }
+
+  // Names the hypervisors the file is absent from, and says what to do about it - the fix is a
+  // re-upload of the same name, which overwrites where the file exists and creates it where it
+  // does not.
+  missingTooltip(row: IsoRow): string {
+    const missing = row.missingProviders ?? [];
+    return `Missing on ${missing.join(', ')} - re-upload this file to fix`;
+  }
 }

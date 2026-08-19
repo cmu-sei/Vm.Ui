@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+Copyright 2026 Carnegie Mellon University. All Rights Reserved. 
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
@@ -16,8 +16,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export interface IsoFile { 
-    path?: string | null;
-    filename?: string | null;
+export interface MountProxmoxVirtualMachineIso { 
+    /**
+     * The Proxmox volume id of the ISO to mount, as returned in the MountValue of GET vms/proxmox/{id}/isos. Only volumes on the configured ISO storage whose name encodes a View and team of this Vm are accepted.
+     */
+    iso?: string | null;
 }
 
