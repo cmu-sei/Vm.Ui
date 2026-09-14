@@ -425,10 +425,8 @@ export class VmMainComponent implements OnInit, OnDestroy {
   }
 
   openInNewTab(vmObj: { [name: string]: string }) {
-    const index = this.openVms.findIndex((vm) => vm.name === vmObj.name);
-    if (index !== -1) {
-      this.setSelectedTab(0);
-      this.openVms.splice(index, 1);
+    if (this.openVms.some((vm) => vm.name === vmObj.name)) {
+      this.remove(vmObj.name);
       window.open(this.themeService.addThemeQueryParam(vmObj.url), '_blank');
     }
   }

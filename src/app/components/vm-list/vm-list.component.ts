@@ -264,13 +264,17 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  private clearCurrentSelection() {
+    if (!this.sortByTeams) {
+      this.selectContainer?.clearSelection();
+    } else {
+      this.groupSelects?.get(this.currentPanelIndex)?.clearSelection();
+    }
+  }
+
   onPage(pageEvent) {
     this.pageEvent = pageEvent;
-    if (!this.sortByTeams) {
-      this.selectContainer.clearSelection();
-    } else {
-      this.groupSelects.get(this.currentPanelIndex).clearSelection();
-    }
+    this.clearCurrentSelection();
   }
 
   /**
@@ -281,12 +285,10 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     this.pageEvent.pageIndex = 0;
     this.filterString = filterValue;
     this.vmModelDataSource.filter = filterValue.toLowerCase();
-    if (!this.sortByTeams) {
-      this.selectContainer?.clearSelection();
-    } else {
+    if (this.sortByTeams) {
       this.filterGroups();
-      this.groupSelects.get(this.currentPanelIndex).clearSelection();
     }
+    this.clearCurrentSelection();
     this.searchValueChanged.emit(filterValue);
   }
 
@@ -377,7 +379,9 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   panelClicked(index: number) {
     // The index has changed, so the user clicked a new panel. Clear the old drag to select selection
     if (index !== this.currentPanelIndex) {
-      this.groupSelects.toArray()[this.currentPanelIndex].clearSelection();
+      // No old panel on the first click of a grouped list - currentPanelIndex is
+      // still undefined then, and there is nothing to clear.
+      this.groupSelects.toArray()[this.currentPanelIndex]?.clearSelection();
       this.currentPanelIndex = index;
     }
   }
@@ -485,7 +489,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       .afterClosed()
       .pipe(filter((result) => result === true))
       .subscribe(() => {
-        this.selectContainer.clearSelection();
+        this.clearCurrentSelection();
         this.selectedVms.length = 0;
         this.cd.markForCheck();
       });
