@@ -264,16 +264,6 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-  /**
-   * Clear the selection in whichever select container is currently rendered.
-   *
-   * Both of them can legitimately be absent. The flat container and the per-team
-   * ones are in mutually exclusive template branches, so one ViewChild is always
-   * undefined, and `currentPanelIndex` is only set once a team panel has been
-   * clicked - so a grouped list nobody has expanded yet has no current panel.
-   * That is a normal state and not an error: turning on Sort by Team and typing
-   * in the search box reaches it on the first keystroke.
-   */
   private clearCurrentSelection() {
     if (!this.sortByTeams) {
       this.selectContainer?.clearSelection();

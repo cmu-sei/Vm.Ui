@@ -426,10 +426,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
 
   openInNewTab(vmObj: { [name: string]: string }) {
     if (this.openVms.some((vm) => vm.name === vmObj.name)) {
-      // Moving the vm out of the tab strip, not copying it - so close the tab the
-      // same way the tab's own close button does. Dropping it from openVms alone
-      // is not enough: it stays in the saved session, and the session replay in
-      // ngOnInit adds the tab straight back, then a reload re-opens it in place.
       this.remove(vmObj.name);
       window.open(this.themeService.addThemeQueryParam(vmObj.url), '_blank');
     }
