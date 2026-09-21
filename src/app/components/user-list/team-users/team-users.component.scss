@@ -8,3 +8,7 @@
   cursor: pointer;
   color: var(--mat-sys-on-surface, inherit);
 }
+
+.user-table-viewport {
+  overflow-y: auto;
+}

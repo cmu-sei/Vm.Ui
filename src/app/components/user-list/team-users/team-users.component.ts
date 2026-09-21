@@ -14,15 +14,12 @@ import {
   signal,
 } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
-import {
-  TableVirtualScrollDataSource,
-  TableVirtualScrollModule,
-} from 'ng-table-virtual-scroll';
 import { ThemeService } from '../../../services/theme/theme.service';
 import { VmTeam } from '../../../state/vm-teams/vm-team.model';
 import { VmsQuery } from '../../../state/vms/vms.query';
 import {
   MatTable,
+  MatTableDataSource,
   MatColumnDef,
   MatHeaderCellDef,
   MatHeaderCell,
@@ -34,33 +31,32 @@ import {
   MatRow,
 } from '@angular/material/table';
 import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTooltip } from '@angular/material/tooltip';
 import { VmUser } from '../../../generated/vm-api';
 
 @Component({
-    selector: 'app-team-users',
-    templateUrl: './team-users.component.html',
-    styleUrls: ['./team-users.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CdkVirtualScrollViewport,
-        TableVirtualScrollModule,
-        MatTable,
-        MatColumnDef,
-        MatHeaderCellDef,
-        MatHeaderCell,
-        MatCellDef,
-        MatCell,
-        NgIf,
-        MatHeaderRowDef,
-        MatHeaderRow,
-        MatRowDef,
-        MatRow,
-        AsyncPipe,
-        DatePipe,
-        MatSortModule,
-    ]
+  selector: 'app-team-users',
+  templateUrl: './team-users.component.html',
+  styleUrls: ['./team-users.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    NgIf,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    AsyncPipe,
+    DatePipe,
+    MatSortModule,
+    MatTooltip,
+  ],
 })
 export class TeamUsersComponent implements AfterViewInit {
   @Input() team: VmTeam = null;
@@ -97,9 +93,7 @@ export class TeamUsersComponent implements AfterViewInit {
   private recentOnlyInternal = false;
   private recentMinutesInternal = 0;
 
-  public userDatasource = new TableVirtualScrollDataSource<VmUser>(
-    new Array<VmUser>(),
-  );
+  public userDatasource = new MatTableDataSource<VmUser>([]);
   public displayedColumns: string[] = [
     'username',
     'activeVmId',
