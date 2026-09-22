@@ -3,84 +3,78 @@
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<cdk-virtual-scroll-viewport
-  tvsItemSize="itemSize"
-  headerHeight="headerSize"
-  [style.height]="tableHeight"
->
-    <mat-table [dataSource]="userDatasource" matSort class="mat-elevation-z8">
-      <!-- Name Column -->
-      <ng-container matColumnDef="username">
-        <mat-header-cell *matHeaderCellDef mat-sort-header
-          >Name</mat-header-cell
+<div class="user-table-viewport" [style.height]="tableHeight">
+  <mat-table [dataSource]="userDatasource" matSort class="mat-elevation-z8">
+    <!-- Name Column -->
+    <ng-container matColumnDef="username">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <a
+          class="link"
+          (click)="openUserHere($event, element)"
+          matTooltip="Follow {{ element.username }}"
+          [attr.href]="getFollowUrl(element)"
         >
-        <mat-cell *matCellDef="let element">
-          <a
-            class="link"
-            (click)="openUserHere($event, element)"
-            matTooltip="Follow {{ element.username }}"
-            [attr.href]="getFollowUrl(element)"
-          >
-            {{ element.username }}
-          </a>
-        </mat-cell>
-      </ng-container>
+          {{ element.username }}
+        </a>
+      </mat-cell>
+    </ng-container>
 
-      <!-- Vm Column -->
-      <ng-container matColumnDef="activeVmId">
-        <mat-header-cell *matHeaderCellDef mat-sort-header
-          >Virtual Machine</mat-header-cell
+    <!-- Vm Column -->
+    <ng-container matColumnDef="activeVmId">
+      <mat-header-cell *matHeaderCellDef mat-sort-header
+        >Virtual Machine</mat-header-cell
+      >
+      <mat-cell *matCellDef="let element">
+        <div
+          *ngIf="
+            this.vmsQuery.selectEntity(element.activeVmId) | async as vm;
+            else noVm
+          "
         >
-        <mat-cell *matCellDef="let element">
-          <div
-            *ngIf="
-              this.vmsQuery.selectEntity(element.activeVmId) | async as vm;
-              else noVm
-            "
-          >
-            {{ vm.name }}
-          </div>
-          <ng-template #noVm>
-            <div>None</div>
-          </ng-template>
-        </mat-cell>
-      </ng-container>
+          {{ vm.name }}
+        </div>
+        <ng-template #noVm>
+          <div>None</div>
+        </ng-template>
+      </mat-cell>
+    </ng-container>
 
-      <!-- LastVm Column -->
-      <ng-container matColumnDef="lastVmId">
-        <mat-header-cell *matHeaderCellDef mat-sort-header
-          >Last Virtual Machine</mat-header-cell
+    <!-- LastVm Column -->
+    <ng-container matColumnDef="lastVmId">
+      <mat-header-cell *matHeaderCellDef mat-sort-header
+        >Last Virtual Machine</mat-header-cell
+      >
+      <mat-cell *matCellDef="let element">
+        <a
+          *ngIf="
+            this.vmsQuery.selectEntity(element.lastVmId) | async as vm;
+            else noVm
+          "
+          class="link"
+          (click)="openVmHere($event, vm.url, vm.name)"
+          matTooltip="Open {{ vm.name }}"
+          [attr.href]="getVmUrl(vm.url)"
         >
-        <mat-cell *matCellDef="let element">
-          <a
-            *ngIf="
-              this.vmsQuery.selectEntity(element.lastVmId) | async as vm;
-              else noVm
-            "
-            class="link"
-            (click)="openVmHere($event, vm.url, vm.name)"
-            matTooltip="Open {{ vm.name }}"
-            [attr.href]="getVmUrl(vm.url)"
-          >
-            {{ vm.name }}
-          </a>
-          <ng-template #noVm>
-            <div>None</div>
-          </ng-template>
-        </mat-cell>
-      </ng-container>
+          {{ vm.name }}
+        </a>
+        <ng-template #noVm>
+          <div>None</div>
+        </ng-template>
+      </mat-cell>
+    </ng-container>
 
-      <!-- LastSeen Column -->
-      <ng-container matColumnDef="lastSeen">
-        <mat-header-cell *matHeaderCellDef mat-sort-header
-          >Last Seen</mat-header-cell
-        >
-        <mat-cell *matCellDef="let element">
-          <div>{{ element.lastSeen | date: 'short' }}</div>
-        </mat-cell>
-      </ng-container>
+    <!-- LastSeen Column -->
+    <ng-container matColumnDef="lastSeen">
+      <mat-header-cell *matHeaderCellDef mat-sort-header
+        >Last Seen</mat-header-cell
+      >
+      <mat-cell *matCellDef="let element">
+        <div>{{ element.lastSeen | date: 'short' }}</div>
+      </mat-cell>
+    </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-    </mat-table>
-  </cdk-virtual-scroll-viewport>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
+</div>
