@@ -173,7 +173,6 @@ export class VmMainComponent implements OnInit, OnDestroy {
         this.vmUISessionService.getCurrentViewId(),
         teamIds,
         {
-          systemPermissions: [AppSystemPermission.ControlVms],
           teamPermissions: [AppTeamPermission.ControlTeamVms],
           viewPermissions: [AppViewPermission.ControlViewVms],
         },
