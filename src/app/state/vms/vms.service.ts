@@ -47,6 +47,10 @@ export class VmService {
     this.vmsStore.update(id, vm);
   }
 
+  upsert(vm: Vm, changes: Partial<Vm>) {
+    this.vmsStore.upsert(vm.id, changes, () => vm);
+  }
+
   remove(id: ID) {
     this.vmsStore.remove(id);
   }
