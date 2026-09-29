@@ -14,14 +14,16 @@ import { SimpleTeam, VmMap, VmsService } from '../../../generated/vm-api';
 import { FileModel, FileService } from '../../../generated/player-api';
 import { v4 as uuidv4 } from 'uuid';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
 import { MatOption } from '@angular/material/core';
 
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
 import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
+import { UserPermissionsService } from '../../../services/permissions/user-permissions.service';
+import { MANAGE_MAPS } from '../map-permissions';
 
 @Component({
     selector: 'app-new-map',
@@ -57,6 +59,7 @@ export class NewMapComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private vmMapsService: VmMapsService,
     private fileService: FileService,
+    private permissionsService: UserPermissionsService,
   ) {}
 
   ngOnInit(): void {
@@ -81,11 +84,32 @@ export class NewMapComponent implements OnInit {
     }
   }
 
-  // Get the available teams within this view
+  // Get the teams within this view that the caller can assign a Map to - vm.api takes Map
+  // management on every team a Map is saved with
   getTeams(): void {
-    this.vmService.getTeams(this.viewId).subscribe((data) => {
-      this.teams = data;
-    });
+    this.vmService
+      .getTeams(this.viewId)
+      .pipe(
+        switchMap((teams) =>
+          teams.length === 0
+            ? of([])
+            : combineLatest(
+                teams.map((team) =>
+                  this.permissionsService
+                    .hasEffectivePermissionsForTeams(
+                      this.viewId,
+                      [team.id],
+                      MANAGE_MAPS,
+                    )
+                    .pipe(map((canManage) => (canManage ? [team] : []))),
+                ),
+              ).pipe(map((manageable) => manageable.flat())),
+        ),
+        take(1),
+      )
+      .subscribe((data) => {
+        this.teams = data;
+      });
   }
 
   // Get the available image files within this view
