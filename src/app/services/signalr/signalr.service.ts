@@ -158,7 +158,7 @@ export class SignalRService {
           });
         }
 
-        this.vmService.update(vm.id, model);
+        this.vmService.upsert(vm, model);
       },
     );
 
