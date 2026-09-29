@@ -16,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 import { forkJoin, Observable, Subject } from 'rxjs';
 import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import {
+  AppSystemPermission,
   AppTeamPermission,
   AppViewPermission,
   VmMap,
@@ -106,6 +107,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
             this.permissionsService.hasEffectivePermissionsForPrimaryContext(
               this.viewId,
               {
+                systemPermissions: [AppSystemPermission.ManageMaps],
                 teamPermissions: [AppTeamPermission.ManageTeamMaps],
                 viewPermissions: [AppViewPermission.ManageViewMaps],
               },
