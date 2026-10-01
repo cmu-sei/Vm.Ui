@@ -16,11 +16,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export type TeamPermission = 'ViewTeam' | 'EditTeam' | 'ManageTeam';
+export type TeamPermission = 'ViewTeam' | 'ManageTeam';
 
 export const TeamPermission = {
     ViewTeam: 'ViewTeam' as TeamPermission,
-    EditTeam: 'EditTeam' as TeamPermission,
     ManageTeam: 'ManageTeam' as TeamPermission
 };
 

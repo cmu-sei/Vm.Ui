@@ -13,17 +13,14 @@ import {
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { forkJoin, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of, Subject } from 'rxjs';
 import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
-import {
-  AppTeamPermission,
-  AppViewPermission,
-  VmMap,
-} from '../../../generated/vm-api';
+import { VmMap } from '../../../generated/vm-api';
 import { VmMapsQuery } from '../../../state/vmMaps/vm-maps.query';
 import { VmMapsService } from '../../../state/vmMaps/vm-maps.service';
 import { MapTeamDisplayComponent } from '../map-team-display/map-team-display.component';
 import { MapComponent } from '../map.component';
+import { MANAGE_MAPS } from '../map-permissions';
 import { NewMapComponent } from '../new-map/new-map.component';
 import { PageNotFoundComponent } from '../../page-not-found/page-not-found.component';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
@@ -57,7 +54,14 @@ import { TopbarComponent } from '../../topbar/topbar.component';
 ]
 })
 export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
-  selected: VmMap;
+  private selected$ = new BehaviorSubject<VmMap>(undefined);
+  get selected(): VmMap {
+    return this.selected$.value;
+  }
+  set selected(vmMap: VmMap) {
+    this.selected$.next(vmMap);
+  }
+
   editMode: boolean;
   readMap: boolean;
   mapInitialized: boolean;
@@ -77,7 +81,9 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   private dialogRef: MatDialogRef<NewMapComponent>;
   private unsubscribe$ = new Subject();
   maps: VmMap[] = [];
-  canEdit$: Observable<boolean>;
+  canCreateMaps$: Observable<boolean>;
+  // Editing or deleting takes Map management on every team the selected Map is on.
+  canManageSelectedMap$: Observable<boolean>;
   viewExists = signal(false);
   loading = signal(true);
 
@@ -92,6 +98,17 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   ) {
     this.hideTopbar = this.inIframe();
     this.mapInitialized = false;
+    this.canManageSelectedMap$ = this.selected$.pipe(
+      switchMap((vmMap) =>
+        vmMap
+          ? this.permissionsService.hasEffectivePermissionsForEveryTeam(
+              this.viewId,
+              vmMap.teamIds,
+              MANAGE_MAPS,
+            )
+          : of(false),
+      ),
+    );
     this.route.params
       .pipe(
         tap((params) => {
@@ -102,10 +119,11 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
         filter(() => !!this.viewId),
         tap(() => {
           this.vmMapsService.getViewMaps(this.viewId!);
-          this.canEdit$ = this.permissionsService.can(
-            AppTeamPermission.ManageTeam,
-            AppViewPermission.ManageView,
-          );
+          this.canCreateMaps$ =
+            this.permissionsService.hasEffectivePermissionsForPrimaryContext(
+              this.viewId,
+              MANAGE_MAPS,
+            );
         }),
         switchMap(() =>
           forkJoin([
@@ -166,6 +184,15 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
       this.readMap = true;
     }
     this.build = false;
+
+    // The editor stays open across a switch only onto a Map the caller can also manage.
+    this.canManageSelectedMap$
+      .pipe(take(1))
+      .subscribe((canManage) => {
+        if (!canManage) {
+          this.editMode = false;
+        }
+      });
   }
 
   // Track changes in the map select by map IDs

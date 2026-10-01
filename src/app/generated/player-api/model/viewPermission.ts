@@ -16,11 +16,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  */
 
 
-export type ViewPermission = 'ViewView' | 'EditView' | 'ManageView';
+export type ViewPermission = 'ViewView' | 'ManageView';
 
 export const ViewPermission = {
     ViewView: 'ViewView' as ViewPermission,
-    EditView: 'EditView' as ViewPermission,
     ManageView: 'ManageView' as ViewPermission
 };
 

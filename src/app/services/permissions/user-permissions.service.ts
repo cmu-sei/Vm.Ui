@@ -15,7 +15,7 @@ import {
   AppViewPermission,
 } from '../../generated/vm-api';
 
-interface EffectivePermissionRequirements {
+export interface EffectivePermissionRequirements {
   systemPermissions?: AppSystemPermission[];
   teamPermissions?: AppTeamPermission[];
   viewPermissions?: AppViewPermission[];
@@ -149,6 +149,29 @@ export class UserPermissionsService {
         );
       }),
     );
+  }
+
+  // Use for actions the API authorizes on every team of a resource, such as managing a Map. A
+  // resource on no teams belongs to the View as a whole, so only a system or View-level permission
+  // passes for it.
+  hasEffectivePermissionsForEveryTeam(
+    viewId: string,
+    teamIds: string[],
+    requirements: EffectivePermissionRequirements,
+  ): Observable<boolean> {
+    const targetTeamIds = [...new Set((teamIds ?? []).filter((id) => !!id))];
+    if (targetTeamIds.length === 0) {
+      return this.hasEffectivePermissionsForPrimaryContext(viewId, {
+        systemPermissions: requirements.systemPermissions,
+        viewPermissions: requirements.viewPermissions,
+      });
+    }
+
+    return combineLatest(
+      targetTeamIds.map((teamId) =>
+        this.hasEffectivePermissionsForTeams(viewId, [teamId], requirements),
+      ),
+    ).pipe(map((results) => results.every(Boolean)));
   }
 
   // Use for actions on known teams. This mirrors API authorization by
