@@ -26,7 +26,8 @@ import {
   ComnSettingsService,
   ComnSettingsModule,
   ComnAuthModule,
-  ComnHeaderBarModule
+  ComnHeaderBarModule,
+  provideCrucibleTheme,
 } from '@cmusei/crucible-common';
 import { BASE_PATH } from './app/generated/vm-api';
 import { ErrorService } from './app/services/error/error.service';
@@ -38,7 +39,6 @@ import { AutoDeployService } from './app/services/auto-deploy/auto-deploy.servic
 import { VmMapsQuery } from './app/state/vmMaps/vm-maps.query';
 import { VmMapsService } from './app/state/vmMaps/vm-maps.service';
 import { VmService } from './app/state/vms/vms.service';
-import { initializeTheme } from './app/services/theme-initializer.factory';
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 
@@ -119,5 +119,6 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimations(),
     provideRouter(routes),
+    provideCrucibleTheme({ brand: { color: '#3B62A5', text: '#FFFFFF' } }),
   ],
 }).catch((err) => console.log(err));
