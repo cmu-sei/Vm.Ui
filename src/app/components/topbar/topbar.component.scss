@@ -26,15 +26,26 @@
 
 .mat-mdc-button:not(:disabled),
 .mat-mdc-icon-button:not(:disabled) {
-  color: var(--mat-sys-on-primary);
+  color: var(--crucible-topbar-text);
 }
 
 mat-icon, .mat-icon {
-  --mat-icon-color: var(--mat-sys-on-primary);
+  --mat-icon-color: var(--crucible-topbar-text);
 }
 
-.margin-auto button mat-icon {
-  color: var(--mat-sys-primary);
+// The logo is drawn in currentColor on a disc of the top-bar text color, so it
+// reads as a cut-out of the top bar in both themes.
+.home-logo {
+  outline: none;
+  background-color: var(--crucible-topbar-text);
+
+  mat-icon {
+    color: var(--crucible-topbar-background);
+  }
+}
+
+.menu-trigger {
+  color: var(--crucible-topbar-text);
 }
 
 .toggle {

@@ -5,7 +5,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ComnAuthQuery, ComnAuthService, ComnSettingsService, Theme, ComnHeaderBarModule } from '@cmusei/crucible-common';
+import { ComnAuthQuery, ComnAuthService, CrucibleThemeService, Theme, ComnHeaderBarModule } from '@cmusei/crucible-common';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, skip } from 'rxjs/operators';
@@ -28,7 +28,7 @@ export class AppComponent implements OnDestroy {
     private authQuery: ComnAuthQuery,
     private routerQuery: RouterQuery,
     private authService: ComnAuthService,
-    private settingsService: ComnSettingsService,
+    private themeService: CrucibleThemeService,
     private router: Router,
     private route: ActivatedRoute,
   ) {
@@ -108,17 +108,7 @@ export class AppComponent implements OnDestroy {
   }
 
   setTheme(theme: Theme) {
-    document.body.classList.toggle('darkMode', theme === Theme.DARK);
-    const topBarColor = this.settingsService.settings?.AppTopBarHexColor || '#C41230';
-    const topBarTextColor = this.settingsService.settings?.AppTopBarHexTextColor || '#FFFFFF';
-    if (topBarColor) {
-      document.documentElement.style.setProperty('--mat-sys-primary', topBarColor);
-      document.body.style.setProperty('--mat-sys-primary', topBarColor);
-    }
-    if (topBarTextColor) {
-      document.documentElement.style.setProperty('--mat-sys-on-primary', topBarTextColor);
-      document.body.style.setProperty('--mat-sys-on-primary', topBarTextColor);
-    }
+    this.themeService.applyTheme(theme);
   }
 
   ngOnDestroy() {

@@ -21,7 +21,6 @@ import { AnyProvider, mergeProviders, unstubbed } from './unstubbed';
 //    undefined. They are placeholders here; their own specs use the real
 //    service under RouterTestingHarness, and component specs pass a typed stub.
 import { AutoDeployService } from '../services/auto-deploy/auto-deploy.service';
-import { DynamicThemeService } from '../services/dynamic-theme.service';
 import { ErrorService } from '../services/error/error.service';
 import { FileService as AppFileService } from '../services/file/file.service';
 import { UserPermissionsService } from '../services/permissions/user-permissions.service';
@@ -73,7 +72,6 @@ export function getDefaultProviders(
   const defaults: AnyProvider[] = [
     // App services
     unstubbed(AutoDeployService),
-    unstubbed(DynamicThemeService),
     { provide: ErrorService, useValue: { handleError: () => {} } },
     unstubbed(AppFileService, 'FileService (app, services/file)'),
     unstubbed(UserPermissionsService),
@@ -137,6 +135,10 @@ export function getDefaultProviders(
           AppTopBarText: '',
           AppTopBarHexColor: '#000000',
           AppTopBarHexTextColor: '#FFFFFF',
+          AppLightModePrimaryHexColor: '#000000',
+          AppLightModePrimaryHexTextColor: '#FFFFFF',
+          AppDarkModePrimaryHexColor: '#000000',
+          AppDarkModePrimaryHexTextColor: '#FFFFFF',
         },
       },
     },
