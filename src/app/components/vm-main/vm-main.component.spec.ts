@@ -529,6 +529,24 @@ describe('VmMainComponent', () => {
 
       expect(networkPermissions()?.canManage).toBe(false);
     });
+
+    /**
+     * Verifies: the ViewNetworks system permission alone, with no team permission, offers the Networks tab and opens it read-only.
+     * Interacts with: real UserPermissionsService.hasEffectivePermissionsForTeams (system path of canViewNetworks$); mat-tab-group rendering; Networks tab (user-event); NetworkPermissions stub.
+     * Data: system [ViewNetworks]; primary team-1 with no permission.
+     */
+    it('shows the Networks tab read-only with the ViewNetworks system permission', async () => {
+      const user = userEvent.setup();
+      const { networkPermissions } = await renderVmMain({
+        system: [AppSystemPermission.ViewNetworks],
+      });
+
+      expect(tabNames()).toEqual(['VM List', 'User Follow', 'Networks']);
+
+      await user.click(screen.getByRole('tab', { name: 'Networks' }));
+
+      expect(networkPermissions()?.canManage).toBe(false);
+    });
   });
 
   describe('tabs', () => {
