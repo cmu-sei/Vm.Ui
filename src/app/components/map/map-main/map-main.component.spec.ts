@@ -272,6 +272,22 @@ describe('MapMainComponent', () => {
   });
 
   /**
+   * Verifies: ManageViewMaps on the primary team lets the caller create maps and manage a map that is on no teams.
+   * Interacts with: real hasEffectivePermissionsForPrimaryContext (canCreateMaps$) and hasEffectivePermissionsForEveryTeam (no-teams fallback).
+   * Data: primary team-1 with ManageViewMaps; map m1 with teamIds null.
+   */
+  it('lets ManageViewMaps manage a map that is on no teams', async () => {
+    await renderMapMain({
+      claims: [primary('team-1', { permissionValues: ['ManageViewMaps'] })],
+      maps: [makeMap('m1', null)],
+    });
+
+    expect(button('New Map')).toBeInTheDocument();
+    expect(button('Edit')).toBeInTheDocument();
+    expect(button('Delete Map')).toBeInTheDocument();
+  });
+
+  /**
    * Verifies: switching from a map being edited to one the caller cannot manage drops edit mode.
    * Interacts with: Edit button (user-event), MatSelectHarness, Map and MapTeamDisplay stubs.
    * Data: primary team-1 with ManageTeamMaps; m1 on [team-1], m2 on [team-2].

@@ -463,6 +463,20 @@ describe('VmMainComponent', () => {
         });
       },
     );
+
+    /**
+     * Verifies: the system ManageViews permission does not reach the VM list as canManageView (current behavior).
+     * Interacts with: real UserPermissionsService.can (canManageView$); VmList stub.
+     * Data: system [ManageViews]; primary team-1 with no direct permission.
+     */
+    it('passes canManageView false to the VM list for a system ManageViews holder', async () => {
+      const { vmList } = await renderVmMain({
+        system: [AppSystemPermission.ManageViews],
+      });
+
+      // Current behavior; see agent-docs/ui-test-bugs/vm.ui.md.
+      expect(vmList()?.canManageView).toBe(false);
+    });
   });
 
   describe('Networks gate', () => {
@@ -604,6 +618,51 @@ describe('VmMainComponent', () => {
         expect(tabNames()).toEqual(['VM List', 'User Follow']);
       },
     );
+
+    /**
+     * Verifies: each permission that showIsos$ accepts opens the ISOs tab on its own.
+     * Interacts with: mat-tab-group rendering; real UserPermissionsService.hasEffectivePermissionsForPrimaryContext (showIsos$).
+     * Data: one row per permission: system DeleteIsos, or one team or View ISO permission on primary team-1.
+     */
+    it.each([
+      {
+        grant: 'system DeleteIsos',
+        system: [AppSystemPermission.DeleteIsos],
+        values: [],
+      },
+      { grant: 'UploadTeamIsos', system: [], values: ['UploadTeamIsos'] },
+      { grant: 'DeleteTeamIsos', system: [], values: ['DeleteTeamIsos'] },
+      { grant: 'UploadViewIsos', system: [], values: ['UploadViewIsos'] },
+      { grant: 'DeleteViewIsos', system: [], values: ['DeleteViewIsos'] },
+    ])('shows the ISOs tab with $grant', async ({ system, values }) => {
+      await renderVmMain({
+        system,
+        claims: [
+          claim('team-1', { isPrimary: true, permissionValues: values }),
+        ],
+      });
+
+      expect(tabNames()).toEqual(['VM List', 'User Follow', 'ISOs']);
+    });
+
+    /**
+     * Verifies: ViewView held directly by the primary team opens the Usage Logging tab without system ViewViews.
+     * Interacts with: mat-tab-group rendering; real UserPermissionsService.can (showUsageLogging$).
+     * Data: primary team-1 with direct ViewView; no system permission.
+     */
+    it('shows the Usage Logging tab with ViewView held directly by the primary team', async () => {
+      await renderVmMain({
+        claims: [
+          claim('team-1', {
+            isPrimary: true,
+            permissionValues: ['ViewView'],
+            directPermissionValues: ['ViewView'],
+          }),
+        ],
+      });
+
+      expect(tabNames()).toEqual(['VM List', 'User Follow', 'Usage Logging']);
+    });
 
     /**
      * Verifies: the Networks, ISOs and Usage Logging tabs follow their permissions, in that order after the static tabs.

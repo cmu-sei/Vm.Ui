@@ -123,10 +123,10 @@
             ],
             "coverageReporters": ["text", "json", "html"],
             "coverageThresholds": {
-              "statements": 39,
-              "branches": 41,
-              "functions": 40,
-              "lines": 37
+              "statements": 70,
+              "branches": 64,
+              "functions": 72,
+              "lines": 70
             }
           },
           "configurations": {
