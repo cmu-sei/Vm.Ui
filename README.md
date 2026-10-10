@@ -1,10 +1,14 @@
 # Player.Vm.Ui Readme
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.5.
+This project uses [Angular](https://angular.dev) 21 (`@angular/core` ^21.2.1, Angular CLI 21.2.1).
+
+## Requirements
+
+Node.js `^20.19.0 || ^22.12.0 || >=24.0.0` (the Angular CLI 21 engine range). The Angular CLI is a local devDependency, so after `npm ci` use `npm start`, `npm run build`, `npm test`, etc. (or `npx ng ...`); no global `ng` is needed.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4303/`. The app will automatically reload if you change any of the source files.
+Run `npm start` (`ng serve`) for a dev server. Navigate to `http://localhost:4303/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -14,7 +18,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+Run `npm run build` (`ng build`) to build the project. The build artifacts will be stored in the `dist/browser` directory. The `production` configuration is the default (`--configuration production` to be explicit).
 
 ## Running unit tests
 
@@ -37,7 +41,7 @@ player-api endpoints. `vitest.config.ts` applies the Akita patches in `patches/`
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Run `npm run e2e` (`ng e2e`) to execute the end-to-end tests via [Protractor](http://www.protractortest.org/). Note: this is legacy and is not part of the Vitest setup; the `e2e` target uses `@angular-devkit/build-angular:protractor`, which is not a dependency of this project, so it is not expected to run.
 
 ## Further help
 
@@ -45,10 +49,11 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 #### Settings
 
-All configurable values (URLs, etc.) should be made to use the `SettingsService`. The `SettingsService` loads its values from configuration files located in `/assets/config/`. There are two files used for this. They are as follows:
+All configurable values (URLs, etc.) should be made to use the `ComnSettingsService` (from `@cmusei/crucible-common`). It loads its values from configuration files located in `/assets/config/`. There are three files used for this; they are merged in the order `settings.json`, `settings.shared.json`, `settings.env.json`, and later files win. They are as follows:
 
 - **settings.json:** This file is committed to source control and holds default values for all settings. Changes should only be made to this file to add new settings, or change the default value of a setting that will affect everyone who pulls down the project.
-- **settings.env.json:** This file is **_not_** committed to source control and will differ for each environment. Settings can be placed into this file and they will override settings found in `settings.json`. Any settings not found in this file will default to the values in `settings.json`.
+- **settings.shared.json:** This file is **_not_** committed to source control and holds settings shared across Crucible apps. Settings placed in it override `settings.json`.
+- **settings.env.json:** This file is **_not_** committed to source control and will differ for each environment. Settings can be placed into this file and they will override settings found in `settings.json` and `settings.shared.json`. Any settings not found in this file will default to the values in `settings.json`.
 
 In a production environment, `settings.env.json` should contain only the settings that need to be changed for that environment, and `settings.json` serves as a reference for the default values as well as any unchanged settings. `settings.json` should not be altered in a production environment for any reason.
 
