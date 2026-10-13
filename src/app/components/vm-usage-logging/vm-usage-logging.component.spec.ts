@@ -3,7 +3,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { of } from 'rxjs';
-import { screen, within } from '@testing-library/angular';
+import { within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
