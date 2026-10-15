@@ -1,10 +1,10 @@
 # Player.Vm.Ui Readme
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.5.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) and now uses Angular CLI version 21 (Angular 21.2). Node `^20.19.0 || ^22.12.0 || >=24.0.0` is required.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4303/`. The app will automatically reload if you change any of the source files.
+Run `npm start` (`ng serve`) for a dev server. Navigate to `http://localhost:4303/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -14,7 +14,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+Run `npm run build` (`ng build`) to build the project. The build artifacts will be stored in the `dist/browser` directory. The default configuration is `production`; use `--configuration development` for a development build.
 
 ## Running unit tests
 
@@ -37,18 +37,19 @@ player-api endpoints. `vitest.config.ts` applies the Akita patches in `patches/`
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+End-to-end tests for this app are in the Playwright suite in [cmu-sei/crucible-tests](https://github.com/cmu-sei/crucible-tests).
 
 ## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/main/README.md).
 
 #### Settings
 
-All configurable values (URLs, etc.) should be made to use the `SettingsService`. The `SettingsService` loads its values from configuration files located in `/assets/config/`. There are two files used for this. They are as follows:
+All configurable values (URLs, etc.) should be made to use the `ComnSettingsService` from `@cmusei/crucible-common`. The `ComnSettingsService` loads its values from configuration files located in `src/assets/config/` and merges them in the order listed below, so later files override earlier ones. They are as follows:
 
 - **settings.json:** This file is committed to source control and holds default values for all settings. Changes should only be made to this file to add new settings, or change the default value of a setting that will affect everyone who pulls down the project.
-- **settings.env.json:** This file is **_not_** committed to source control and will differ for each environment. Settings can be placed into this file and they will override settings found in `settings.json`. Any settings not found in this file will default to the values in `settings.json`.
+- **settings.shared.json:** This optional file is **_not_** committed to source control. Settings placed into this file override settings found in `settings.json`.
+- **settings.env.json:** This file is **_not_** committed to source control and will differ for each environment. Settings can be placed into this file and they will override settings found in `settings.json` and `settings.shared.json`. Any settings not found in this file will default to the values in the earlier files.
 
 In a production environment, `settings.env.json` should contain only the settings that need to be changed for that environment, and `settings.json` serves as a reference for the default values as well as any unchanged settings. `settings.json` should not be altered in a production environment for any reason.
 

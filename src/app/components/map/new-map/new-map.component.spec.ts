@@ -25,6 +25,16 @@ import { renderComponent } from '../../../test-utils/render-component';
 import { NewMapComponent } from './new-map.component';
 
 const VIEW = 'view-1';
+
+// Pastes into a labelled field; typing a URL key by key is slow under coverage.
+async function fill(
+  user: ReturnType<typeof userEvent.setup>,
+  label: string,
+  text: string,
+) {
+  screen.getByLabelText(label).focus();
+  await user.paste(text);
+}
 const TEAMS: SimpleTeam[] = [
   { id: 'team-1', name: 'Blue' },
   { id: 'team-2', name: 'Red' },
@@ -182,7 +192,7 @@ describe('NewMapComponent', () => {
   describe('submit', () => {
     /**
      * Verifies: Save stays disabled until a name, a team and an image source are given.
-     * Interacts with: the real crucible-dialog Save button; form validators; user-event typing.
+     * Interacts with: the real crucible-dialog Save button; form validators; user-event paste; MatSelectHarness.
      * Data: ManageMaps; name 'Ops Floor', URL http://img.test/floor.png, team Blue.
      */
     it('enables Save only once name, team and image are set', async () => {
@@ -193,11 +203,8 @@ describe('NewMapComponent', () => {
       const save = screen.getByRole('button', { name: 'Save' });
       expect(save).toBeDisabled();
 
-      await user.type(screen.getByLabelText('Name'), 'Ops Floor');
-      await user.type(
-        screen.getByLabelText('External Image URL'),
-        'http://img.test/floor.png',
-      );
+      await fill(user, 'Name', 'Ops Floor');
+      await fill(user, 'External Image URL', 'http://img.test/floor.png');
       expect(save).toBeDisabled();
 
       await (await teamSelect()).clickOptions({ text: 'Blue' });
@@ -215,11 +222,8 @@ describe('NewMapComponent', () => {
       const { teamSelect, vmsApi, mapCreated } = await renderNewMap({
         system: [AppSystemPermission.ManageMaps],
       });
-      await user.type(screen.getByLabelText('Name'), 'Ops Floor');
-      await user.type(
-        screen.getByLabelText('External Image URL'),
-        'http://img.test/floor.png',
-      );
+      await fill(user, 'Name', 'Ops Floor');
+      await fill(user, 'External Image URL', 'http://img.test/floor.png');
       await (await teamSelect()).clickOptions({ text: 'Blue' });
 
       await user.click(screen.getByRole('button', { name: 'Save' }));

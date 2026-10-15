@@ -87,15 +87,30 @@ describe('AppComponent', () => {
   });
 
   /**
-   * Verifies: the root component renders its shell with the header bar and router outlet.
-   * Interacts with: real CrucibleThemeService; stubbed comn-header-bar.
-   * Data: default light theme, no color settings.
+   * Verifies: the component mounts with the default test providers.
+   * Interacts with: getDefaultProviders; real CrucibleThemeService; ComnHeaderBarModule swapped for a stub.
+   * Data: light user theme, no ?theme parameter.
    */
-  it('renders the header bar and router outlet', async () => {
-    const { container } = await setup().render();
+  it('renders with the default test providers', async () => {
+    const { fixture } = await setup().render();
+
+    expect(fixture.componentInstance).toBeInstanceOf(AppComponent);
+    expect(fixture.nativeElement).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies: the root component renders its shell with the header bar and router outlet, and without a ?theme parameter leaves the user's theme alone.
+   * Interacts with: real CrucibleThemeService; stubbed comn-header-bar; ComnAuthService.setUserTheme stub.
+   * Data: default light theme, no color settings, no ?theme parameter.
+   */
+  it('renders the header bar and router outlet without changing the theme', async () => {
+    const { render, setUserTheme } = setup();
+    const { container } = await render();
 
     expect(container.querySelector('comn-header-bar')).toBeInTheDocument();
     expect(container.querySelector('main router-outlet')).toBeInTheDocument();
+    expect(setUserTheme).not.toHaveBeenCalled();
+    expect(document.body).not.toHaveClass('darkMode');
   });
 
   /**
