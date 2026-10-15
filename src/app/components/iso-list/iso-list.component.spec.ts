@@ -341,20 +341,19 @@ describe('IsoListComponent', () => {
     });
 
     /**
-     * Verifies: in the single-view list the system DeleteIsos permission makes no row deletable (current behavior).
+     * Verifies: in the single-view list the system DeleteIsos permission makes every row deletable.
      * Interacts with: real UserPermissionsService (canDeleteViewIsos$, canDeleteTeamIsos$); IsoGroup stub inputs.
      * Data: system [DeleteIsos]; primary team-1 with no ISO permission.
      */
-    it('offers no Delete in the single-view list for a system DeleteIsos holder', async () => {
+    it('lets a system DeleteIsos holder delete every row in the single-view list', async () => {
       const { groups } = await renderIsoList({
         system: [AppSystemPermission.DeleteIsos],
       });
 
-      // Current behavior; see agent-docs/ui-test-bugs/vm.ui.md.
       expect(groups()).toEqual([
-        ['View (All Teams)', [['shared.iso', false]]],
-        ['Blue', [['blue.iso', false]]],
-        ['Red', [['red.iso', false]]],
+        ['View (All Teams)', [['shared.iso', true]]],
+        ['Blue', [['blue.iso', true]]],
+        ['Red', [['red.iso', true]]],
       ]);
     });
 
