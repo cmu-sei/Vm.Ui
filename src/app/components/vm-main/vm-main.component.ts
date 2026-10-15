@@ -188,6 +188,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
         this.vmUISessionService.getCurrentViewId(),
         teamIds,
         {
+          systemPermissions: [AppSystemPermission.RevertVms],
           viewPermissions: [AppViewPermission.RevertVms],
         },
       ),
@@ -259,7 +260,10 @@ export class VmMainComponent implements OnInit, OnDestroy {
     this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
       this.vmUISessionService.getCurrentViewId(),
       {
-        systemPermissions: [AppSystemPermission.DeleteIsos],
+        systemPermissions: [
+          AppSystemPermission.UploadIsos,
+          AppSystemPermission.DeleteIsos,
+        ],
         teamPermissions: [
           AppTeamPermission.UploadTeamIsos,
           AppTeamPermission.DeleteTeamIsos,

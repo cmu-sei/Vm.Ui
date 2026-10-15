@@ -15,10 +15,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  * Do not edit the class manually.
  */
 import { AppViewPermission } from './appViewPermission';
+import { AppSystemPermission } from './appSystemPermission';
 import { AppTeamPermission } from './appTeamPermission';
 
 
 export interface VmPermissionResult { 
+    systemPermissions?: Array<AppSystemPermission> | null;
     viewPermissions?: Array<AppViewPermission> | null;
     teamPermissions?: Array<AppTeamPermission> | null;
 }

@@ -211,17 +211,24 @@ export class IsoListComponent implements OnInit {
   // Getters, not field initializers: every primary-context check must be scoped to this component's
   // `viewId` input, and inputs are not set until ngOnInit. Read lazily so this.viewId() is available.
   // Passing undefined would resolve the primary claim across every View's claims, not this one's.
+  // The system UploadIsos/DeleteIsos permissions stand in for the View ones in every View.
   private get canUploadViewIsos$(): Observable<boolean> {
     return this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
       this.viewId(),
-      { viewPermissions: [AppViewPermission.UploadViewIsos] },
+      {
+        systemPermissions: [AppSystemPermission.UploadIsos],
+        viewPermissions: [AppViewPermission.UploadViewIsos],
+      },
     );
   }
 
   private get canDeleteViewIsos$(): Observable<boolean> {
     return this.userPermissionsService.hasEffectivePermissionsForPrimaryContext(
       this.viewId(),
-      { viewPermissions: [AppViewPermission.DeleteViewIsos] },
+      {
+        systemPermissions: [AppSystemPermission.DeleteIsos],
+        viewPermissions: [AppViewPermission.DeleteViewIsos],
+      },
     );
   }
 
@@ -251,6 +258,7 @@ export class IsoListComponent implements OnInit {
   ngOnInit() {
     this.userPermissionsService
       .hasEffectivePermissionsForPrimaryContext(this.viewId(), {
+        systemPermissions: [AppSystemPermission.UploadIsos],
         teamPermissions: [AppTeamPermission.UploadTeamIsos],
         viewPermissions: [AppViewPermission.UploadViewIsos],
       })
@@ -430,7 +438,8 @@ export class IsoListComponent implements OnInit {
     );
   }
 
-  // A team's ISOs are deletable with DeleteViewIsos anywhere in the View or DeleteTeamIsos on it.
+  // A team's ISOs are deletable with DeleteIsos or DeleteViewIsos anywhere in the View, or
+  // DeleteTeamIsos on it.
   private canDeleteTeamIsos$(teamId: string): Observable<boolean> {
     return combineLatest([
       this.canDeleteViewIsos$,
@@ -442,7 +451,8 @@ export class IsoListComponent implements OnInit {
     ]).pipe(map(([canView, canTeam]) => canView || canTeam));
   }
 
-  // A team is an upload target with UploadViewIsos anywhere in the View or UploadTeamIsos on it.
+  // A team is an upload target with UploadIsos or UploadViewIsos anywhere in the View, or
+  // UploadTeamIsos on it.
   private canUploadTeamIsos$(teamId: string): Observable<boolean> {
     return combineLatest([
       this.canUploadViewIsos$,
@@ -602,7 +612,8 @@ export class IsoListComponent implements OnInit {
 
   openUploadDialog() {
     // Candidate teams are the team groups currently shown. Each is offered as an upload target only
-    // if the user can upload to it (UploadViewIsos anywhere, or UploadTeamIsos on that team).
+    // if the user can upload to it (UploadIsos or UploadViewIsos anywhere, or UploadTeamIsos on that
+    // team).
     const teams = this.groups()
       .filter((g) => g.isTeam && g.teamId)
       .map((g) => ({ id: g.teamId, name: g.title }));
