@@ -80,6 +80,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               (click)="remove(vm.name)"
               style="outline: none"
               title="Close {{ vm.name }}"
+              [attr.aria-label]="'Close ' + vm.name"
               >
               <mat-icon
                 style="transform: scale(0.85)"
@@ -92,6 +93,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               (click)="openInNewTab(vm)"
               style="outline: none"
               title="Open in Browser Tab"
+              aria-label="Open in Browser Tab"
               >
               <mat-icon svgIcon="ic_open_tab"></mat-icon>
             </button>

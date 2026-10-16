@@ -16,6 +16,10 @@
   },
   "AppTopBarHexColor": "#3B62A5",
   "AppTopBarHexTextColor": "#FFFFFF",
+  "AppLightModePrimaryHexColor": "#3B62A5",
+  "AppLightModePrimaryHexTextColor": "#FFFFFF",
+  "AppDarkModePrimaryHexColor": "#6A8DCA",
+  "AppDarkModePrimaryHexTextColor": "#000000",
   "UseLocalAuthStorage": false,
   "HeaderBarSettings": {
     "banner_background_color": "#007a33ff",

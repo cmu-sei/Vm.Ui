@@ -81,6 +81,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           color="primary"
           (click)="filterString = ''; applyFilter('')"
           title="Clear Search"
+          aria-label="Clear Search"
         >
           <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
         </button>
@@ -210,6 +211,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               mat-icon-button
               (click)="saveRow(row)"
               matTooltip="Save"
+              aria-label="Save"
               [disabled]="!isRowDirty(row)"
             >
               <mat-icon class="mdi-24px" fontIcon="mdi-content-save"></mat-icon>
@@ -218,6 +220,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               mat-icon-button
               (click)="deleteNetwork(row)"
               matTooltip="Delete"
+              aria-label="Delete"
             >
               <mat-icon
                 class="mdi-24px"
