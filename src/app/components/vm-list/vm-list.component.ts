@@ -380,14 +380,14 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     if (index !== this.currentPanelIndex) {
       // No old panel on the first click of a grouped list - currentPanelIndex is
       // still undefined then, and there is nothing to clear.
-      this.groupSelects[this.currentPanelIndex]?.clearSelection();
+      this.groupSelects()[this.currentPanelIndex]?.clearSelection();
       this.currentPanelIndex = index;
     }
   }
 
   // Assign each VM group a paginator
   assignPaginator(group: VmGroup, index: number) {
-    group.dataSource.paginator = this.groupPaginators[index];
+    group.dataSource.paginator = this.groupPaginators()[index];
   }
 
   public powerOffSelected() {
