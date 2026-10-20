@@ -3,11 +3,11 @@
 
 import {
   Component,
-  Input,
   OnInit,
   Output,
   EventEmitter,
   inject,
+  input,
 } from '@angular/core';
 import {
   UntypedFormControl,
@@ -70,13 +70,13 @@ export class AddPointComponent implements OnInit {
   private VmAkitaService = inject(VmService);
   private vmsQuery = inject(VmsQuery);
 
-  @Input() xPos: number;
-  @Input() yPos: number;
-  @Input() rad: number;
-  @Input() url: string;
-  @Input() id: string;
-  @Input() label: string;
-  @Input() editing: boolean;
+  readonly xPos = input<number>(undefined);
+  readonly yPos = input<number>(undefined);
+  readonly rad = input<number>(undefined);
+  readonly url = input<string>(undefined);
+  readonly id = input<string>(undefined);
+  readonly label = input<string>(undefined);
+  readonly editing = input<boolean>(undefined);
 
   @Output() machineEmitter = new EventEmitter<Clickpoint>();
 
@@ -93,28 +93,29 @@ export class AddPointComponent implements OnInit {
 
     // Default values come from map component
     this.form = new UntypedFormGroup({
-      rad: new UntypedFormControl({ value: this.rad, disabled: false }, [
+      rad: new UntypedFormControl({ value: this.rad(), disabled: false }, [
         Validators.required,
         Validators.min(0.1),
       ]),
-      url: new UntypedFormControl({ value: this.url, disabled: false }, [
+      url: new UntypedFormControl({ value: this.url(), disabled: false }, [
         Validators.required,
       ]),
-      label: new UntypedFormControl({ value: this.label, disabled: false }),
+      label: new UntypedFormControl({ value: this.label(), disabled: false }),
       customUrl: new UntypedFormControl({ value: '', disabled: true }, [
         this.urlValidator,
       ]),
     });
 
-    if (this.editing && this.url) {
-      const vmMap = this.vmMapsQuery.getEntity(this.url);
+    const url = this.url();
+    if (this.editing() && url) {
+      const vmMap = this.vmMapsQuery.getEntity(url);
       if (vmMap) {
         this.form.get('url').setValue(vmMap);
-      } else if (this.url.includes('://')) {
+      } else if (url.includes('://')) {
         this.custom = true;
         this.form.get('url').disable();
         this.form.get('customUrl').enable();
-        this.form.get('customUrl').setValue(this.url);
+        this.form.get('customUrl').setValue(url);
         this.form.get('url').setValue('');
       }
     }
@@ -175,11 +176,11 @@ export class AddPointComponent implements OnInit {
     }
 
     const point = new Clickpoint(
-      +this.xPos,
-      +this.yPos,
+      +this.xPos(),
+      +this.yPos(),
       +this.form.get('rad').value,
       [],
-      this.id,
+      this.id(),
       this.form.get('label').value,
       query,
       multiple,
@@ -206,7 +207,7 @@ export class AddPointComponent implements OnInit {
   onDelete(): void {
     // Send a clickpoint with fields set to -1 to signal that it should be deleted
     this.machineEmitter.emit(
-      new Clickpoint(-1, -1, -1, [], this.id, '', '', false),
+      new Clickpoint(-1, -1, -1, [], this.id(), '', '', false),
     );
   }
 

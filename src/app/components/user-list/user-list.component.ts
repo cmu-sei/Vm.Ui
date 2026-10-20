@@ -11,6 +11,7 @@ import {
   Output,
   EventEmitter,
   inject,
+  input,
 } from '@angular/core';
 import {
   MatAccordion,
@@ -72,7 +73,7 @@ export class UserListComponent {
   private signalRService = inject(SignalRService);
   private vmUsersQuery = inject(VmUsersQuery);
 
-  @Input() viewId: string;
+  readonly viewId = input<string>(undefined);
   @Input() set teams(val: Array<VmTeam>) {
     this._teams =
       val?.sort((a, b) => a?.name?.localeCompare(b?.name || '') || 0) || [];
@@ -111,11 +112,11 @@ export class UserListComponent {
   public userQueryMap = new Map<string, Observable<Array<VmUser>>>();
 
   private setActive(): void {
-    this.signalRService.joinViewUsers(this.viewId);
+    this.signalRService.joinViewUsers(this.viewId());
   }
 
   private setInactive(): void {
-    this.signalRService.leaveViewUsers(this.viewId);
+    this.signalRService.leaveViewUsers(this.viewId());
   }
 
   public applyFilter(filterValue: string) {

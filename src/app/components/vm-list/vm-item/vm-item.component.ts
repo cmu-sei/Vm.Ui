@@ -6,11 +6,11 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 import {
   Component,
   EventEmitter,
-  Input,
   OnInit,
   Output,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { ThemeService } from '../../../services/theme/theme.service';
 import {
@@ -48,11 +48,11 @@ export class VmItemComponent implements OnInit {
   vmsService = inject(VmsService);
   vmService = inject(VmService);
 
-  @Input() vm: Vm;
-  @Input() ipv4Only: Boolean;
-  @Input() showIps: Boolean;
-  @Input() teamsList: Array<SimpleTeam>;
-  @Input() canManageTeam: Boolean;
+  readonly vm = input<Vm>(undefined);
+  readonly ipv4Only = input<Boolean>(undefined);
+  readonly showIps = input<Boolean>(undefined);
+  readonly teamsList = input<Array<SimpleTeam>>(undefined);
+  readonly canManageTeam = input<Boolean>(undefined);
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
   @ViewChild(MatMenuTrigger)
   contextMenu: MatMenuTrigger;
@@ -116,7 +116,7 @@ export class VmItemComponent implements OnInit {
       return [];
     }
 
-    if (this.ipv4Only) {
+    if (this.ipv4Only()) {
       return vm.ipAddresses.filter((x) => !x.includes(':'));
     } else {
       return vm.ipAddresses;

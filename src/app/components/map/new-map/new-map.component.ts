@@ -3,11 +3,11 @@
 
 import {
   Component,
-  Input,
   OnInit,
   Output,
   EventEmitter,
   inject,
+  input,
 } from '@angular/core';
 import {
   UntypedFormBuilder,
@@ -63,11 +63,11 @@ export class NewMapComponent implements OnInit {
   form: UntypedFormGroup;
   images: Image[];
 
-  @Input() viewId: string;
-  @Input() creating: boolean;
-  @Input() name: string;
-  @Input() url: string;
-  @Input() teamsInput: string[];
+  readonly viewId = input<string>(undefined);
+  readonly creating = input<boolean>(undefined);
+  readonly name = input<string>(undefined);
+  readonly url = input<string>(undefined);
+  readonly teamsInput = input<string[]>(undefined);
 
   @Output() mapCreated = new EventEmitter<string>();
   @Output() propertiesChanged = new EventEmitter<[string, string, string[]]>();
@@ -77,10 +77,10 @@ export class NewMapComponent implements OnInit {
     this.getImages();
 
     this.form = this.formBuilder.group({
-      name: [this.name, Validators.required],
-      imageURL: [this.url, this.urlValidator],
+      name: [this.name(), Validators.required],
+      imageURL: [this.url(), this.urlValidator],
       viewImage: [''],
-      teamIDs: [this.teamsInput, Validators.required],
+      teamIDs: [this.teamsInput(), Validators.required],
     });
   }
 
@@ -98,7 +98,7 @@ export class NewMapComponent implements OnInit {
   // management on every team a Map is saved with
   getTeams(): void {
     this.vmService
-      .getTeams(this.viewId)
+      .getTeams(this.viewId())
       .pipe(
         switchMap((teams) =>
           teams.length === 0
@@ -107,7 +107,7 @@ export class NewMapComponent implements OnInit {
                 teams.map((team) =>
                   this.permissionsService
                     .hasEffectivePermissionsForTeams(
-                      this.viewId,
+                      this.viewId(),
                       [team.id],
                       MANAGE_MAPS,
                     )
@@ -126,7 +126,7 @@ export class NewMapComponent implements OnInit {
   getImages(): void {
     this.images = new Array<Image>();
 
-    this.fileService.getViewFiles(this.viewId).subscribe((data) => {
+    this.fileService.getViewFiles(this.viewId()).subscribe((data) => {
       for (let fp of data.filter((f) => this.isImage(f.name))) {
         this.getImageBlob(fp.id).subscribe((blob) => {
           this.images.push(new Image(fp, blob));
@@ -156,7 +156,7 @@ export class NewMapComponent implements OnInit {
     reader.onload = function () {
       const asB64 = reader.result.toString();
 
-      if (self.creating) {
+      if (self.creating()) {
         const urlToSave = selectUsed
           ? asB64
           : (self.form.get('imageURL').value as string);
@@ -174,7 +174,7 @@ export class NewMapComponent implements OnInit {
 
     if (selectUsed) {
       reader.readAsDataURL(selectBlob);
-    } else if (this.creating) {
+    } else if (this.creating()) {
       this.saveMap(
         name,
         this.form.get('imageURL').value as string,
@@ -214,7 +214,7 @@ export class NewMapComponent implements OnInit {
       id: mapId,
     };
 
-    this.vmMapsService.add(this.viewId, payload);
+    this.vmMapsService.add(this.viewId(), payload);
     this.mapCreated.emit(mapId);
   }
 

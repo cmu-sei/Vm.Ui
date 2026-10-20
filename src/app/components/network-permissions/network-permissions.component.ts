@@ -4,11 +4,11 @@
 import {
   AfterViewInit,
   Component,
-  Input,
   OnDestroy,
   ViewChild,
   computed,
   inject,
+  input,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -101,7 +101,7 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  @Input() canManage = false;
+  readonly canManage = input(false);
 
   dataSource = new MatTableDataSource<ViewNetwork>([]);
   filterString = '';

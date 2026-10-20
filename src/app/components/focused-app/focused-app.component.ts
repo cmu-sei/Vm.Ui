@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ThemeService } from '../../services/theme/theme.service';
 
@@ -15,12 +15,12 @@ export class FocusedAppComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
   private themeService = inject(ThemeService);
 
-  @Input() vmUrl: string;
+  readonly vmUrl = input<string>(undefined);
 
   public currentUrl: SafeUrl;
 
   ngOnInit() {
-    const themedUrl = this.themeService.addThemeQueryParam(this.vmUrl);
+    const themedUrl = this.themeService.addThemeQueryParam(this.vmUrl());
     this.currentUrl = this.sanitizer.bypassSecurityTrustResourceUrl(themedUrl);
     // this.currentUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://www.google.com/maps');
   }

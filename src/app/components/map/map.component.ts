@@ -4,7 +4,6 @@
 import {
   Component,
   EventEmitter,
-  Input,
   OnChanges,
   OnInit,
   Output,
@@ -12,6 +11,7 @@ import {
   TemplateRef,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { Clickpoint } from '../../models/clickpoint';
 import {
@@ -61,7 +61,7 @@ export class MapComponent implements OnInit, OnChanges {
 
   viewId: string;
 
-  @Input() mapIdInput: string;
+  readonly mapIdInput = input<string>(undefined);
 
   @Output() mapSaved = new EventEmitter<void>();
   @Output() initEmitter = new EventEmitter<boolean>();
@@ -94,7 +94,7 @@ export class MapComponent implements OnInit, OnChanges {
 
   initMap(): void {
     // Get map data, put coordinates into machines array
-    this.vmMapsQuery.getById(this.mapIdInput).subscribe((data) => {
+    this.vmMapsQuery.getById(this.mapIdInput()).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
       this.teamIDs = data.teamIds;

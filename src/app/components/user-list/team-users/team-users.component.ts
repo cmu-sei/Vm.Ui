@@ -13,6 +13,7 @@ import {
   AfterViewInit,
   signal,
   inject,
+  input,
 } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ThemeService } from '../../../services/theme/theme.service';
@@ -63,7 +64,7 @@ export class TeamUsersComponent implements AfterViewInit {
   private settingsService = inject(ComnSettingsService);
   private themeService = inject(ThemeService);
 
-  @Input() team: VmTeam = null;
+  readonly team = input<VmTeam>(null);
 
   @Input() set hideInactive(val: boolean) {
     this.hideInactiveInternal = val;
@@ -149,7 +150,8 @@ export class TeamUsersComponent implements AfterViewInit {
   }
 
   public getFollowUrl(user: VmUser) {
-    if (!this.team?.id || !this.team?.viewId) {
+    const team = this.team();
+    if (!team?.id || !team?.viewId) {
       return '';
     }
     return this.themeService.addThemeQueryParam(
@@ -157,8 +159,8 @@ export class TeamUsersComponent implements AfterViewInit {
         '{userId}',
         user.userId,
       )
-        .replace('{viewId}', this.team.viewId)
-        .concat(`?teamId=${this.team.id}`),
+        .replace('{viewId}', team.viewId)
+        .concat(`?teamId=${team.id}`),
     );
   }
 

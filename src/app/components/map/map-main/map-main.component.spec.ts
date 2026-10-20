@@ -5,9 +5,9 @@ import { describe, it, expect, vi } from 'vitest';
 import {
   Component,
   EventEmitter,
-  Input,
   Output,
   TemplateRef,
+  input,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -45,31 +45,31 @@ class TopbarStubComponent {}
 
 @Component({ selector: 'app-page-not-found', template: '' })
 class PageNotFoundStubComponent {
-  @Input() heading: string;
-  @Input() message: string;
+  readonly heading = input<string>(undefined);
+  readonly message = input<string>(undefined);
 }
 
 @Component({ selector: 'app-map-team-display', template: '' })
 class MapTeamDisplayStubComponent {
-  @Input() imageUrlInput: string;
-  @Input() mapIdInput: string;
+  readonly imageUrlInput = input<string>(undefined);
+  readonly mapIdInput = input<string>(undefined);
   @Output() mapSwitched = new EventEmitter<string>();
 }
 
 @Component({ selector: 'app-map', template: '' })
 class MapStubComponent {
-  @Input() mapIdInput: string;
+  readonly mapIdInput = input<string>(undefined);
   @Output() mapSaved = new EventEmitter<void>();
   @Output() initEmitter = new EventEmitter<boolean>();
 }
 
 @Component({ selector: 'app-new-map', template: '' })
 class NewMapStubComponent {
-  @Input() viewId: string;
-  @Input() creating: boolean;
-  @Input() name: string;
-  @Input() url: string;
-  @Input() teamsInput: string[];
+  readonly viewId = input<string>(undefined);
+  readonly creating = input<boolean>(undefined);
+  readonly name = input<string>(undefined);
+  readonly url = input<string>(undefined);
+  readonly teamsInput = input<string[]>(undefined);
   @Output() mapCreated = new EventEmitter<string>();
   @Output() propertiesChanged = new EventEmitter<[string, string, string[]]>();
 }
@@ -218,7 +218,7 @@ describe('MapMainComponent', () => {
     const display = fixture.debugElement.query(
       By.directive(MapTeamDisplayStubComponent),
     ).componentInstance as MapTeamDisplayStubComponent;
-    expect(display.mapIdInput).toBe('m1');
+    expect(display.mapIdInput()).toBe('m1');
   });
 
   /**

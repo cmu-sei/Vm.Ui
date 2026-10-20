@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output, input } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import {
   DragToSelectModule,
@@ -28,11 +28,11 @@ import { VmListComponent } from './vm-list.component';
 
 @Component({ selector: 'vm-item', template: '' })
 class VmItemStubComponent {
-  @Input() vm: Vm;
-  @Input() ipv4Only: boolean;
-  @Input() showIps: boolean;
-  @Input() teamsList: SimpleTeam[];
-  @Input() canManageTeam: boolean;
+  readonly vm = input<Vm>(undefined);
+  readonly ipv4Only = input<boolean>(undefined);
+  readonly showIps = input<boolean>(undefined);
+  readonly teamsList = input<SimpleTeam[]>(undefined);
+  readonly canManageTeam = input<boolean>(undefined);
   @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
 }
 
@@ -152,7 +152,7 @@ describe('VmListComponent', () => {
 
     expect(vmService.GetViewVms).toHaveBeenCalledExactlyOnceWith(true, false);
     expect(vmsApi.getTeams).toHaveBeenCalledWith('view-1');
-    expect(items().map((i) => i.vm.name)).toEqual(['kali', 'win10']);
+    expect(items().map((i) => i.vm().name)).toEqual(['kali', 'win10']);
   });
 
   describe('read-only gate', () => {
@@ -295,7 +295,7 @@ describe('VmListComponent', () => {
       async (canManageView) => {
         const { items } = await renderVmList({ canManageView });
 
-        expect(items().map((i) => i.canManageTeam)).toEqual([
+        expect(items().map((i) => i.canManageTeam())).toEqual([
           canManageView,
           canManageView,
         ]);

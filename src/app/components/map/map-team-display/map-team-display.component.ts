@@ -4,10 +4,10 @@
 import {
   Component,
   EventEmitter,
-  Input,
   OnInit,
   Output,
   inject,
+  input,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SafeUrl } from '@angular/platform-browser';
@@ -38,13 +38,13 @@ export class MapTeamDisplayComponent implements OnInit {
   imageUrl: SafeUrl;
   mapInitialized: boolean;
 
-  @Input() imageUrlInput: string;
-  @Input() mapIdInput: string;
+  readonly imageUrlInput = input<string>(undefined);
+  readonly mapIdInput = input<string>(undefined);
 
   @Output() mapSwitched = new EventEmitter<string>();
 
   ngOnInit() {
-    this.mapId = this.mapIdInput;
+    this.mapId = this.mapIdInput();
     this.machines = this.vmMapsQuery.getMapCoordinates(this.mapId);
 
     this.vmMapsQuery.getById(this.mapId).subscribe((m) => {

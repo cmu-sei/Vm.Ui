@@ -16,6 +16,7 @@ import {
   ViewChild,
   ViewChildren,
   inject,
+  input,
 } from '@angular/core';
 import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -127,7 +128,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     this.allVms = val;
   }
 
-  @Input() readOnly: Boolean;
+  readonly readOnly = input<Boolean>(undefined);
 
   @Input() set uiSession(val: VmUISession) {
     if (val) {
@@ -138,8 +139,8 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   @Input() canViewView: Boolean;
-  @Input() canManageView: Boolean;
-  @Input() canRevertVms: Boolean;
+  readonly canManageView = input<Boolean>(undefined);
+  readonly canRevertVms = input<Boolean>(undefined);
 
   @Output() showIPsSelectedChanged = new EventEmitter<Boolean>();
   @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
