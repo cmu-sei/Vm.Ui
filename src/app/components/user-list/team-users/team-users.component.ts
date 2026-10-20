@@ -31,7 +31,7 @@ import {
   MatRowDef,
   MatRow,
 } from '@angular/material/table';
-import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTooltip } from '@angular/material/tooltip';
 import { VmUser } from '../../../generated/vm-api';
@@ -48,7 +48,6 @@ import { VmUser } from '../../../generated/vm-api';
     MatHeaderCell,
     MatCellDef,
     MatCell,
-    NgIf,
     MatHeaderRowDef,
     MatHeaderRow,
     MatRowDef,
