@@ -13,7 +13,6 @@ import { AppComponent } from './app/app.component';
 import { DragToSelectModule } from 'ngx-drag-to-select';
 import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { withInterceptorsFromDi, provideHttpClient } from '@angular/common/http';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -40,6 +39,7 @@ import { VmMapsService } from './app/state/vmMaps/vm-maps.service';
 import { VmService } from './app/state/vms/vms.service';
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 /** Custom options the configure the tooltip's default show/hide delays. */
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
@@ -115,7 +115,7 @@ bootstrapApplication(AppComponent, {
       useValue: { appearance: 'outline' },
     },
     provideHttpClient(withInterceptorsFromDi()),
-    provideAnimations(),
+    provideAnimationsAsync(),
     provideRouter(routes),
     provideCrucibleTheme({ brand: { color: '#3B62A5', text: '#FFFFFF' } }),
   ],
