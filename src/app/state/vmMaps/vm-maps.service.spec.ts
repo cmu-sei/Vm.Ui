@@ -298,7 +298,7 @@ describe('VmMapsService', () => {
 
         expect(query.getAll()).toEqual([before]);
         // add(), update() and remove() subscribe with no error callback, so the error
-        // escapes to ErrorService (the global ErrorHandler in main.ts), which shows it; no
+        // escapes to ErrorService (the global ErrorHandler in app.config.ts), which shows it; no
         // loading flag is involved.
         expect(unhandled).toEqual([{ status: 403 }]);
       },
