@@ -15,6 +15,7 @@ import {
   SimpleChanges,
   ViewChild,
   ViewChildren,
+  inject,
 } from '@angular/core';
 import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -25,11 +26,7 @@ import {
 } from 'ngx-drag-to-select';
 import { Observable, of } from 'rxjs';
 import { filter, map, shareReplay, switchMap, take } from 'rxjs/operators';
-import {
-  SimpleTeam,
-  Vm,
-  VmsService,
-} from '../../generated/vm-api';
+import { SimpleTeam, Vm, VmsService } from '../../generated/vm-api';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
@@ -93,6 +90,13 @@ import { UserPermissionsService } from '../../services/permissions/user-permissi
   ],
 })
 export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
+  vmService = inject(VmService);
+  private dialogService = inject(CrucibleDialogService);
+  private vmApiService = inject(VmsService);
+  private cd = inject(ChangeDetectorRef);
+  private userPermissionsService = inject(UserPermissionsService);
+  private themeService = inject(ThemeService);
+
   public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());
   public displayedColumns: string[] = ['name'];
 
@@ -150,14 +154,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   vmFilterBy: any = 'All';
   private hasLoadedVms = false;
 
-  constructor(
-    public vmService: VmService,
-    private dialogService: CrucibleDialogService,
-    private vmApiService: VmsService,
-    private cd: ChangeDetectorRef,
-    private userPermissionsService: UserPermissionsService,
-    private themeService: ThemeService,
-  ) {
+  constructor() {
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.defaultPageSize;
@@ -330,22 +327,20 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       vm.teamIds?.map((id) => teams.add(id));
     }
 
-    this.teamsList$
-      .pipe(take(1))
-      .subscribe((results) => {
-        for (const team of results) {
-          if (team?.id && teams.has(team.id)) {
-            const vms = this.vmModelDataSource.filteredData.filter((vm) =>
-              vm.teamIds?.includes(team.id),
-            );
-            const group = new VmGroup(team.name, team.id, vms);
-            this.groupByTeams.push(group);
-          }
+    this.teamsList$.pipe(take(1)).subscribe((results) => {
+      for (const team of results) {
+        if (team?.id && teams.has(team.id)) {
+          const vms = this.vmModelDataSource.filteredData.filter((vm) =>
+            vm.teamIds?.includes(team.id),
+          );
+          const group = new VmGroup(team.name, team.id, vms);
+          this.groupByTeams.push(group);
         }
+      }
 
-        this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
-        this.cd.markForCheck();
-      });
+      this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
+      this.cd.markForCheck();
+    });
   }
 
   /**

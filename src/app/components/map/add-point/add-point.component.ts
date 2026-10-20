@@ -1,7 +1,14 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  EventEmitter,
+  inject,
+} from '@angular/core';
 import {
   UntypedFormControl,
   UntypedFormGroup,
@@ -28,13 +35,18 @@ import {
   MatAutocomplete,
 } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
+import {
+  MatFormField,
+  MatLabel,
+  MatError,
+  MatHint,
+} from '@angular/material/form-field';
 import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
 
 @Component({
-    selector: 'app-add-point',
-    templateUrl: './add-point.component.html',
-    imports: [
+  selector: 'app-add-point',
+  templateUrl: './add-point.component.html',
+  imports: [
     ...CRUCIBLE_DIALOG_IMPORTS,
     ReactiveFormsModule,
     MatFormField,
@@ -49,10 +61,15 @@ import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
     MatButton,
     AsyncPipe,
     MatError,
-    MatHint
-]
+    MatHint,
+  ],
 })
 export class AddPointComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private vmMapsQuery = inject(VmMapsQuery);
+  private VmAkitaService = inject(VmService);
+  private vmsQuery = inject(VmsQuery);
+
   @Input() xPos: number;
   @Input() yPos: number;
   @Input() rad: number;
@@ -70,26 +87,23 @@ export class AddPointComponent implements OnInit {
   viewId: string;
   custom: boolean;
 
-  constructor(
-    private route: ActivatedRoute,
-    private vmMapsQuery: VmMapsQuery,
-    private VmAkitaService: VmService,
-    private vmsQuery: VmsQuery,
-  ) {}
-
   ngOnInit() {
     this.custom = false;
     this.control = new UntypedFormControl();
 
     // Default values come from map component
     this.form = new UntypedFormGroup({
-      rad: new UntypedFormControl(
-        { value: this.rad, disabled: false },
-        [Validators.required, Validators.min(0.1)]
-      ),
-      url: new UntypedFormControl({ value: this.url, disabled: false }, [Validators.required]),
+      rad: new UntypedFormControl({ value: this.rad, disabled: false }, [
+        Validators.required,
+        Validators.min(0.1),
+      ]),
+      url: new UntypedFormControl({ value: this.url, disabled: false }, [
+        Validators.required,
+      ]),
       label: new UntypedFormControl({ value: this.label, disabled: false }),
-      customUrl: new UntypedFormControl({ value: '', disabled: true }, [this.urlValidator]),
+      customUrl: new UntypedFormControl({ value: '', disabled: true }, [
+        this.urlValidator,
+      ]),
     });
 
     if (this.editing && this.url) {

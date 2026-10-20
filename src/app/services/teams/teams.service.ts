@@ -2,19 +2,20 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BASE_PATH } from '../../generated/player-api';
 import { TeamData } from '../../models/team-data';
 
 @Injectable()
 export class TeamsService {
+  private http = inject(HttpClient);
+
   playerApiUrl: string;
 
-  constructor(
-    private http: HttpClient,
-    @Inject(BASE_PATH) basePath: string,
-  ) {
+  constructor() {
+    const basePath = inject(BASE_PATH);
+
     this.playerApiUrl = basePath;
   }
 

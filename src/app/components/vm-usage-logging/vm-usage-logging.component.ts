@@ -3,7 +3,13 @@
  * Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
  */
 
-import { Component, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  ViewChild,
+  OnDestroy,
+  inject,
+} from '@angular/core';
 import { BehaviorSubject, Observable, Subject, EMPTY } from 'rxjs';
 import { catchError, switchMap, take, takeUntil } from 'rxjs/operators';
 import {
@@ -79,10 +85,10 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-    selector: 'app-vm-usage-logging',
-    templateUrl: './vm-usage-logging.component.html',
-    styleUrls: ['./vm-usage-logging.component.scss'],
-    imports: [
+  selector: 'app-vm-usage-logging',
+  templateUrl: './vm-usage-logging.component.html',
+  styleUrls: ['./vm-usage-logging.component.scss'],
+  imports: [
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
@@ -110,11 +116,17 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatRow,
     MatPaginator,
     MatSortModule,
-    DatePipe
-],
-    providers: [provideNativeDateAdapter()]
+    DatePipe,
+  ],
+  providers: [provideNativeDateAdapter()],
 })
 export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
+  private vmUsageLoggingSessionService = inject(VmUsageLoggingSessionService);
+  private teamService = inject(TeamService);
+  private clipboard = inject(Clipboard);
+  private routerQuery = inject(RouterQuery);
+  private dialogService = inject(CrucibleDialogService);
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('formDirective') private formDirective: NgForm;
@@ -156,13 +168,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
     end: new UntypedFormControl(),
   });
 
-  constructor(
-    private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
-    private teamService: TeamService,
-    private clipboard: Clipboard,
-    private routerQuery: RouterQuery,
-    private dialogService: CrucibleDialogService,
-  ) {
+  constructor() {
     this.viewId = this.routerQuery.getParams('viewId');
 
     this.vmLoggingSessions$ = this.refreshSessions$.pipe(

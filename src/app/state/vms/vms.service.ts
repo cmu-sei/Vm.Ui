@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ID } from '@datorama/akita';
@@ -18,18 +18,20 @@ import { VmsStore } from './vms.store';
 
 @Injectable({ providedIn: 'root' })
 export class VmService {
+  private vmsStore = inject(VmsStore);
+  private http = inject(HttpClient);
+  private settings = inject(ComnSettingsService);
+  private router = inject(Router);
+  private vmsService = inject(VmsService);
+
   private vmUrl: string;
   private teamUrl: string;
   public viewId: string;
   public teamId: string;
 
-  constructor(
-    private vmsStore: VmsStore,
-    private http: HttpClient,
-    private settings: ComnSettingsService,
-    private router: Router,
-    private vmsService: VmsService,
-  ) {
+  constructor() {
+    const settings = this.settings;
+
     this.viewId =
       this.router.routerState.snapshot.root.firstChild.params['viewId'];
     this.teamId =

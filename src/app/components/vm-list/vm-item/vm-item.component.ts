@@ -10,6 +10,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { ThemeService } from '../../../services/theme/theme.service';
 import {
@@ -43,6 +44,10 @@ export interface Item {
   ],
 })
 export class VmItemComponent implements OnInit {
+  themeService = inject(ThemeService);
+  vmsService = inject(VmsService);
+  vmService = inject(VmService);
+
   @Input() vm: Vm;
   @Input() ipv4Only: Boolean;
   @Input() showIps: Boolean;
@@ -52,12 +57,6 @@ export class VmItemComponent implements OnInit {
   @ViewChild(MatMenuTrigger)
   contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-
-  constructor(
-    public themeService: ThemeService,
-    public vmsService: VmsService,
-    public vmService: VmService,
-  ) {}
 
   ngOnInit(): void {}
 

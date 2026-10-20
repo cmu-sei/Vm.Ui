@@ -10,6 +10,7 @@ import {
   ViewChild,
   Output,
   EventEmitter,
+  inject,
 } from '@angular/core';
 import {
   MatAccordion,
@@ -40,11 +41,11 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { VmUser } from '../../generated/vm-api';
 
 @Component({
-    selector: 'app-user-list',
-    templateUrl: './user-list.component.html',
-    styleUrls: ['./user-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
+  selector: 'app-user-list',
+  templateUrl: './user-list.component.html',
+  styleUrls: ['./user-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
     MatFormField,
     MatIcon,
     MatPrefix,
@@ -64,13 +65,17 @@ import { VmUser } from '../../generated/vm-api';
     TeamUsersComponent,
     AsyncPipe,
     MatOption,
-    MatSelect
-]
+    MatSelect,
+  ],
 })
 export class UserListComponent {
+  private signalRService = inject(SignalRService);
+  private vmUsersQuery = inject(VmUsersQuery);
+
   @Input() viewId: string;
   @Input() set teams(val: Array<VmTeam>) {
-    this._teams = val?.sort((a, b) => a?.name?.localeCompare(b?.name || '') || 0) || [];
+    this._teams =
+      val?.sort((a, b) => a?.name?.localeCompare(b?.name || '') || 0) || [];
     this.userQueryMap.clear();
 
     val?.forEach((t) => {
@@ -104,11 +109,6 @@ export class UserListComponent {
     .pipe(debounceTime(100));
 
   public userQueryMap = new Map<string, Observable<Array<VmUser>>>();
-
-  constructor(
-    private signalRService: SignalRService,
-    private vmUsersQuery: VmUsersQuery,
-  ) {}
 
   private setActive(): void {
     this.signalRService.joinViewUsers(this.viewId);

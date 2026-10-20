@@ -8,6 +8,7 @@ import {
   OnDestroy,
   ViewChild,
   computed,
+  inject,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -92,6 +93,11 @@ import { MatTooltip } from '@angular/material/tooltip';
   ],
 })
 export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
+  private networksService = inject(NetworksService);
+  private teamService = inject(TeamService);
+  private routerQuery = inject(RouterQuery);
+  private dialogService = inject(CrucibleDialogService);
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -145,12 +151,7 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
   viewId: string;
   rowForms = new Map<string, UntypedFormGroup>();
 
-  constructor(
-    private networksService: NetworksService,
-    private teamService: TeamService,
-    private routerQuery: RouterQuery,
-    private dialogService: CrucibleDialogService,
-  ) {
+  constructor() {
     this.viewId = this.routerQuery.getParams('viewId');
 
     this.teamService

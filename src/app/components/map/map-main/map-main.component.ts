@@ -10,6 +10,7 @@ import {
   signal,
   TemplateRef,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -34,10 +35,10 @@ import { UserPermissionsService } from '../../../services/permissions/user-permi
 import { TopbarComponent } from '../../topbar/topbar.component';
 
 @Component({
-    selector: 'app-map-main',
-    templateUrl: './map-main.component.html',
-    styleUrls: ['./map-main.component.scss'],
-    imports: [
+  selector: 'app-map-main',
+  templateUrl: './map-main.component.html',
+  styleUrls: ['./map-main.component.scss'],
+  imports: [
     TopbarComponent,
     MatFormField,
     MatLabel,
@@ -50,10 +51,18 @@ import { TopbarComponent } from '../../topbar/topbar.component';
     MapComponent,
     NewMapComponent,
     PageNotFoundComponent,
-    AsyncPipe
-]
+    AsyncPipe,
+  ],
 })
 export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
+  private permissionsService = inject(UserPermissionsService);
+  private route = inject(ActivatedRoute);
+  private changeDetector = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
+  private vmMapsService = inject(VmMapsService);
+  private vmMapQuery = inject(VmMapsQuery);
+  private dialogService = inject(CrucibleDialogService);
+
   private selected$ = new BehaviorSubject<VmMap>(undefined);
   get selected(): VmMap {
     return this.selected$.value;
@@ -87,15 +96,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   viewExists = signal(false);
   loading = signal(true);
 
-  constructor(
-    private permissionsService: UserPermissionsService,
-    private route: ActivatedRoute,
-    private changeDetector: ChangeDetectorRef,
-    private dialog: MatDialog,
-    private vmMapsService: VmMapsService,
-    private vmMapQuery: VmMapsQuery,
-    private dialogService: CrucibleDialogService,
-  ) {
+  constructor() {
     this.hideTopbar = this.inIframe();
     this.mapInitialized = false;
     this.canManageSelectedMap$ = this.selected$.pipe(
@@ -128,7 +129,11 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
         switchMap(() =>
           forkJoin([
             this.permissionsService.load(),
-            this.permissionsService.loadTeamPermissions(this.viewId!, undefined, true),
+            this.permissionsService.loadTeamPermissions(
+              this.viewId!,
+              undefined,
+              true,
+            ),
           ]),
         ),
         switchMap(() => this.permissionsService.getPrimaryTeamId(this.viewId!)),
@@ -136,7 +141,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
         switchMap(() => this.getFilteredMaps(this.viewId!)),
         tap((filteredMaps) => {
           this.maps = filteredMaps;
-          const current = filteredMaps.find(m => m.id === this.selected?.id);
+          const current = filteredMaps.find((m) => m.id === this.selected?.id);
           if (current) {
             this.selected = current;
           } else if (filteredMaps.length > 0) {
@@ -186,13 +191,11 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
     this.build = false;
 
     // The editor stays open across a switch only onto a Map the caller can also manage.
-    this.canManageSelectedMap$
-      .pipe(take(1))
-      .subscribe((canManage) => {
-        if (!canManage) {
-          this.editMode = false;
-        }
-      });
+    this.canManageSelectedMap$.pipe(take(1)).subscribe((canManage) => {
+      if (!canManage) {
+        this.editMode = false;
+      }
+    });
   }
 
   // Track changes in the map select by map IDs
@@ -203,7 +206,6 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   compareMaps(a: VmMap, b: VmMap): boolean {
     return a?.id === b?.id;
   }
-
 
   delete() {
     this.dialogService

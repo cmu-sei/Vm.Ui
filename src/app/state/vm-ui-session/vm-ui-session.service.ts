@@ -1,7 +1,7 @@
 // Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ID } from '@datorama/akita';
 import { VmUISession } from './vm-ui-session.model';
@@ -14,15 +14,15 @@ import { validate as isUuid } from 'uuid';
 
 @Injectable({ providedIn: 'root' })
 export class VmUISessionService {
+  private vmUISessionStore = inject(VmUISessionStore);
+  private vmUISessionQuery = inject(VmUISessionQuery);
+  private router = inject(Router);
+  private teamService = inject(TeamService);
+
   public viewId: string;
   public teamId: string;
 
-  constructor(
-    private vmUISessionStore: VmUISessionStore,
-    private vmUISessionQuery: VmUISessionQuery,
-    private router: Router,
-    private teamService: TeamService,
-  ) {
+  constructor() {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild?.params['viewId'];
     if (this.viewId && isUuid(this.viewId)) {

@@ -6,6 +6,7 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  inject,
 } from '@angular/core';
 import {
   ComnAuthQuery,
@@ -41,14 +42,12 @@ import { AsyncPipe } from '@angular/common';
   ],
 })
 export class TopbarComponent implements OnInit, OnDestroy {
+  private authService = inject(ComnAuthService);
+  private authQuery = inject(ComnAuthQuery);
+
   currentUser$: Observable<AuthUser>;
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
-
-  constructor(
-    private authService: ComnAuthService,
-    private authQuery: ComnAuthQuery,
-  ) {}
 
   ngOnInit() {
     this.currentUser$ = this.authService.user$.pipe(

@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Vm, VmsService } from '../../generated/vm-api';
 import { unstubbed } from '../../test-utils/unstubbed';
@@ -18,7 +19,13 @@ function makeVm(id: string, name: string | null, extra: Partial<Vm> = {}): Vm {
 function createQuery() {
   const store = new VmsStore();
   const vmsApi = unstubbed(VmsService) as { useValue: VmsService };
-  const query = new VmsQuery(store, vmsApi.useValue);
+  const injector = Injector.create({
+    providers: [
+      { provide: VmsStore, useValue: store },
+      { provide: VmsService, useValue: vmsApi.useValue },
+    ],
+  });
+  const query = runInInjectionContext(injector, () => new VmsQuery());
   return { store, query };
 }
 

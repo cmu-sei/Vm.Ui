@@ -3,7 +3,7 @@
  * Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { QueryConfig, QueryEntity } from '@datorama/akita';
 import { Observable } from 'rxjs';
 import { VmUsersStore, VmUsersState } from './vm-users.store';
@@ -14,8 +14,14 @@ import { VmUser } from '../../generated/vm-api';
 })
 @Injectable({ providedIn: 'root' })
 export class VmUsersQuery extends QueryEntity<VmUsersState> {
-  constructor(protected store: VmUsersStore) {
+  protected store: VmUsersStore;
+
+  constructor() {
+    const store = inject(VmUsersStore);
+
     super(store);
+
+    this.store = store;
   }
 
   public selectByTeam(teamId: string): Observable<Array<VmUser>> {

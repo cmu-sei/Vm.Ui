@@ -3,14 +3,14 @@
  * Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ComnAuthQuery } from '@cmusei/crucible-common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  constructor(private authQuery: ComnAuthQuery) {}
+  private authQuery = inject(ComnAuthQuery);
 
   public addThemeQueryParam(url: string): string {
     const val = new URL(url, document.baseURI);

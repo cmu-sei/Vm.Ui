@@ -2,17 +2,19 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 
 @Injectable()
 export class WelderService {
+  private http = inject(HttpClient);
+  private settings = inject(ComnSettingsService);
+
   private readonly deployUrl: string;
 
-  constructor(
-    private http: HttpClient,
-    private settings: ComnSettingsService,
-  ) {
+  constructor() {
+    const settings = this.settings;
+
     this.deployUrl = `${settings.settings.WelderUrl}`;
   }
 

@@ -12,6 +12,7 @@ import {
   ViewChild,
   AfterViewInit,
   signal,
+  inject,
 } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ThemeService } from '../../../services/theme/theme.service';
@@ -59,6 +60,10 @@ import { VmUser } from '../../../generated/vm-api';
   ],
 })
 export class TeamUsersComponent implements AfterViewInit {
+  vmsQuery = inject(VmsQuery);
+  private settingsService = inject(ComnSettingsService);
+  private themeService = inject(ThemeService);
+
   @Input() team: VmTeam = null;
 
   @Input() set hideInactive(val: boolean) {
@@ -108,11 +113,7 @@ export class TeamUsersComponent implements AfterViewInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(
-    public vmsQuery: VmsQuery,
-    private settingsService: ComnSettingsService,
-    private themeService: ThemeService,
-  ) {
+  constructor() {
     this.userDatasource.filterPredicate = (data: VmUser, filter: string) => {
       return data.username.toLowerCase().indexOf(filter.toLowerCase()) !== -1;
     };

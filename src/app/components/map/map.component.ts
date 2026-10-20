@@ -11,6 +11,7 @@ import {
   SimpleChanges,
   TemplateRef,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { Clickpoint } from '../../models/clickpoint';
 import {
@@ -33,6 +34,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   imports: [AddPointComponent],
 })
 export class MapComponent implements OnInit, OnChanges {
+  private dialog = inject(MatDialog);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private vmMapsService = inject(VmMapsService);
+  private vmMapsQuery = inject(VmMapsQuery);
+  private vmsService = inject(VmsService);
+  private snackBar = inject(MatSnackBar);
+
   machines: Clickpoint[];
   mapInitialzed: boolean;
   teamIDs: string[];
@@ -64,16 +73,6 @@ export class MapComponent implements OnInit, OnChanges {
     width: '400px',
     maxWidth: '90vw',
   };
-
-  constructor(
-    private dialog: MatDialog,
-    private route: ActivatedRoute,
-    private router: Router,
-    private vmMapsService: VmMapsService,
-    private vmMapsQuery: VmMapsQuery,
-    private vmsService: VmsService,
-    private snackBar: MatSnackBar,
-  ) {}
 
   ngOnInit(): void {
     this.timesSaved = 0;

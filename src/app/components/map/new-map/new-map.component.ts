@@ -1,7 +1,14 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  EventEmitter,
+  inject,
+} from '@angular/core';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -20,15 +27,20 @@ import { MatOption } from '@angular/material/core';
 
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
+import {
+  MatFormField,
+  MatLabel,
+  MatError,
+  MatHint,
+} from '@angular/material/form-field';
 import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
 import { UserPermissionsService } from '../../../services/permissions/user-permissions.service';
 import { MANAGE_MAPS } from '../map-permissions';
 
 @Component({
-    selector: 'app-new-map',
-    templateUrl: './new-map.component.html',
-    imports: [
+  selector: 'app-new-map',
+  templateUrl: './new-map.component.html',
+  imports: [
     ...CRUCIBLE_DIALOG_IMPORTS,
     ReactiveFormsModule,
     MatFormField,
@@ -37,10 +49,16 @@ import { MANAGE_MAPS } from '../map-permissions';
     MatSelect,
     MatOption,
     MatError,
-    MatHint
-]
+    MatHint,
+  ],
 })
 export class NewMapComponent implements OnInit {
+  private vmService = inject(VmsService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private vmMapsService = inject(VmMapsService);
+  private fileService = inject(FileService);
+  private permissionsService = inject(UserPermissionsService);
+
   teams: SimpleTeam[];
   form: UntypedFormGroup;
   images: Image[];
@@ -53,14 +71,6 @@ export class NewMapComponent implements OnInit {
 
   @Output() mapCreated = new EventEmitter<string>();
   @Output() propertiesChanged = new EventEmitter<[string, string, string[]]>();
-
-  constructor(
-    private vmService: VmsService,
-    private formBuilder: UntypedFormBuilder,
-    private vmMapsService: VmMapsService,
-    private fileService: FileService,
-    private permissionsService: UserPermissionsService,
-  ) {}
 
   ngOnInit(): void {
     this.getTeams();

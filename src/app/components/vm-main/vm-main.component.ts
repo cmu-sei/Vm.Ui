@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComnAuthService, Theme } from '@cmusei/crucible-common';
 import {
@@ -87,29 +87,29 @@ import { validate as isUuid } from 'uuid';
   ],
 })
 export class VmMainComponent implements OnInit, OnDestroy {
+  private vmQuery = inject(VmsQuery);
+  private signalRService = inject(SignalRService);
+  private activatedRoute = inject(ActivatedRoute);
+  private authService = inject(ComnAuthService);
+  vmService = inject(VmService);
+  private teamsQuery = inject(VmTeamsQuery);
+  private teamsService = inject(VmTeamsService);
+  private vmsService = inject(VmsService);
+  private userService = inject(UserService);
+  private vmUsageLoggingSessionService = inject(VmUsageLoggingSessionService);
+  private permissionsService = inject(PermissionService);
+  private vmUISessionService = inject(VmUISessionService);
+  private vmUISessionQuery = inject(VmUISessionQuery);
+  private teamPermissionsService = inject(TeamPermissionService);
+  private userPermissionsService = inject(UserPermissionsService);
+  private themeService = inject(ThemeService);
+
   @ViewChild('vmTabGroup', { static: false }) tabGroup: MatTabGroup;
 
   unsubscribe$: Subject<null> = new Subject<null>();
   hideTopbar = false;
 
-  constructor(
-    private vmQuery: VmsQuery,
-    private signalRService: SignalRService,
-    private activatedRoute: ActivatedRoute,
-    private authService: ComnAuthService,
-    public vmService: VmService,
-    private teamsQuery: VmTeamsQuery,
-    private teamsService: VmTeamsService,
-    private vmsService: VmsService,
-    private userService: UserService,
-    private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
-    private permissionsService: PermissionService,
-    private vmUISessionService: VmUISessionService,
-    private vmUISessionQuery: VmUISessionQuery,
-    private teamPermissionsService: TeamPermissionService,
-    private userPermissionsService: UserPermissionsService,
-    private themeService: ThemeService,
-  ) {
+  constructor() {
     this.hideTopbar = this.inIframe();
     this.activatedRoute.queryParamMap
       .pipe(takeUntil(this.unsubscribe$))
