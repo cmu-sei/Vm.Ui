@@ -11,30 +11,30 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         width="100"
         height="100"
         (click)="append($event)"
-        />
+      />
       @for (m of machines; track m.id) {
         @if (m.radius > 0) {
-        <g>
-          <circle
-            class="clickpoint"
-            [attr.cx]="m.xPosition"
-            [attr.cy]="m.yPosition"
-            [attr.r]="m.radius"
-            (click)="edit(m)"
-            fill-opacity="1.0"
-          ></circle>
-          <text
-            class="clickpoint"
-            [attr.x]="m.xPosition"
-            [attr.y]="m.yPosition"
-            [attr.font-size]="calcFontSize(m.radius)"
-            fill="white"
-            text-anchor="middle"
-            (click)="edit(m)"
+          <g>
+            <circle
+              class="clickpoint"
+              [attr.cx]="m.xPosition"
+              [attr.cy]="m.yPosition"
+              [attr.r]="m.radius"
+              (click)="edit(m)"
+              fill-opacity="1.0"
+            ></circle>
+            <text
+              class="clickpoint"
+              [attr.x]="m.xPosition"
+              [attr.y]="m.yPosition"
+              [attr.font-size]="calcFontSize(m.radius)"
+              fill="white"
+              text-anchor="middle"
+              (click)="edit(m)"
             >
-            {{ m.label }}
-          </text>
-        </g>
+              {{ m.label }}
+            </text>
+          </g>
         }
       }
     </svg>
@@ -52,7 +52,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       id="{{ idToSend }}"
       label="{{ selectedLabel }}"
       [editing]="editing"
-      >
-    </app-add-point>
+    />
   </ng-template>
 </div>

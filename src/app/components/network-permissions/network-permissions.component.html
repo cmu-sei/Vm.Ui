@@ -75,7 +75,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           title="Clear Search"
           aria-label="Clear Search"
         >
-          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle" />
         </button>
       }
     </mat-form-field>
@@ -206,7 +206,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               aria-label="Save"
               [disabled]="!isRowDirty(row)"
             >
-              <mat-icon class="mdi-24px" fontIcon="mdi-content-save"></mat-icon>
+              <mat-icon class="mdi-24px" fontIcon="mdi-content-save" />
             </button>
             <button
               mat-icon-button
@@ -214,21 +214,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               matTooltip="Delete"
               aria-label="Delete"
             >
-              <mat-icon
-                class="mdi-24px"
-                fontIcon="mdi-trash-can-outline"
-              ></mat-icon>
+              <mat-icon class="mdi-24px" fontIcon="mdi-trash-can-outline" />
             </button>
           }
         </mat-cell>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      <mat-header-row *matHeaderRowDef="displayedColumns" />
+      <mat-row *matRowDef="let row; columns: displayedColumns" />
     </mat-table>
-    <mat-paginator
-      [pageSizeOptions]="[5, 10, 20]"
-      showFirstLastButtons
-    ></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons />
   </div>
 </div>

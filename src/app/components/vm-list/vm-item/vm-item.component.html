@@ -4,7 +4,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <div>
-  <ng-container *ngTemplateOutlet="vmTemplate"></ng-container>
+  <ng-container *ngTemplateOutlet="vmTemplate" />
 </div>
 
 <ng-template #vmTemplate>
@@ -22,7 +22,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="color: red"
             svgIcon="monitor"
             title="Power state unknown"
-          ></mat-icon>
+          />
         }
         @if (
           vm().powerState !== undefined && vm().powerState.toString() === 'On'
@@ -31,7 +31,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="color: var(--mat-sys-on-background)"
             class="text"
             svgIcon="monitor"
-          ></mat-icon>
+          />
         }
         @if (
           vm().powerState !== undefined && vm().powerState.toString() === 'Off'
@@ -40,7 +40,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="color: red"
             svgIcon="power_icon"
             title="Powered Off"
-          ></mat-icon>
+          />
         }
       </div>
       <div class="content">

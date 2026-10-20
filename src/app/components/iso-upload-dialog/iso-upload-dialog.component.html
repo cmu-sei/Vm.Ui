@@ -72,9 +72,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
 
     <p class="upload-warning">
-      <mat-icon class="mdi-18px" fontIcon="mdi-alert"></mat-icon>
+      <mat-icon class="mdi-18px" fontIcon="mdi-alert" />
       <span>
-        Uploading a file with the same name as an existing one will overwrite it.
+        Uploading a file with the same name as an existing one will overwrite
+        it.
       </span>
     </p>
 
@@ -83,10 +84,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     @if (uploading()) {
       <div class="upload-progress">
         <span>Uploading… {{ progress() }}%</span>
-        <mat-progress-bar
-          mode="determinate"
-          [value]="progress()"
-        ></mat-progress-bar>
+        <mat-progress-bar mode="determinate" [value]="progress()" />
       </div>
     }
   </div>

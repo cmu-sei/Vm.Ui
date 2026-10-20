@@ -9,14 +9,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <div>
         <div class="d-flex align-items-center gap-3">
           <div class="ms-2">
-            <mat-icon svgIcon="monitor" class="vm-list-icon"></mat-icon>
+            <mat-icon svgIcon="monitor" class="vm-list-icon" />
           </div>
           <div class="d-flex flex-column align-items-center">
             <div><b>Virtual Machines</b></div>
             @if (!readOnly()) {
               <button mat-stroked-button [matMenuTriggerFor]="actionsMenu">
                 {{ selectedVms.length }} selected
-                <mat-icon svgIcon="ic_gear" iconPositionEnd></mat-icon>
+                <mat-icon svgIcon="ic_gear" iconPositionEnd />
               </button>
             }
             <mat-menu #actionsMenu="matMenu">
@@ -94,10 +94,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 title="Clear Search"
                 aria-label="Clear Search"
               >
-                <mat-icon
-                  class="mdi-24px"
-                  fontIcon="mdi-close-circle"
-                ></mat-icon>
+                <mat-icon class="mdi-24px" fontIcon="mdi-close-circle" />
               </button>
             }
           </mat-form-field>
@@ -164,8 +161,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                   (openVmHere)="openHere($event)"
                   [teamsList]="teamsList"
                   [canManageTeam]="canManageView()"
-                >
-                </vm-item>
+                />
               </div>
             }
           }
@@ -203,8 +199,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                         (openVmHere)="openHere($event)"
                         [teamsList]="teamsList"
                         [canManageTeam]="canManageView()"
-                      >
-                      </vm-item>
+                      />
                     </div>
                   }
                 }
@@ -215,8 +210,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [pageSizeOptions]="[25, 50, 100]"
                 [showFirstLastButtons]="true"
                 (page)="onPage($event)"
-              >
-              </mat-paginator>
+              />
               @if (group.dataSource.paginator == undefined) {
                 <div>
                   {{ assignPaginator(group, iter) }}
@@ -238,8 +232,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           ]"
           [showFirstLastButtons]="true"
           (page)="onPage($event)"
-        >
-        </mat-paginator>
+        />
       </div>
     </div>
   }

@@ -22,7 +22,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           matTooltip="Clear Search"
           aria-label="Clear Search"
         >
-          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle" />
         </button>
       }
     </mat-form-field>
@@ -52,9 +52,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       aria-label="Refresh"
     >
       @if (loading() && hasLoaded()) {
-        <mat-spinner [diameter]="24"></mat-spinner>
+        <mat-spinner [diameter]="24" />
       } @else {
-        <mat-icon class="mdi-24px" fontIcon="mdi-refresh"></mat-icon>
+        <mat-icon class="mdi-24px" fontIcon="mdi-refresh" />
       }
     </button>
 
@@ -66,7 +66,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         matTooltip="Upload"
         aria-label="Upload"
       >
-        <mat-icon class="mdi-24px" fontIcon="mdi-upload"></mat-icon>
+        <mat-icon class="mdi-24px" fontIcon="mdi-upload" />
       </button>
     }
 
@@ -83,7 +83,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
   @if (!hasLoaded()) {
     <div class="iso-list-loading">
-      <mat-spinner [diameter]="48"></mat-spinner>
+      <mat-spinner [diameter]="48" />
     </div>
   } @else if (showAllViews()) {
     <mat-accordion multi>
@@ -99,7 +99,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [viewGroup]="viewGroup"
             [deleting]="deleting()"
             (delete)="deleteIso($event)"
-          ></app-iso-view-group>
+          />
         </mat-expansion-panel>
       }
     </mat-accordion>
@@ -117,7 +117,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [group]="group"
             [deleting]="deleting()"
             (delete)="deleteIso($event)"
-          ></app-iso-group>
+          />
         </mat-expansion-panel>
       }
     </mat-accordion>
