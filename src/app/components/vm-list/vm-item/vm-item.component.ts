@@ -6,10 +6,10 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 import {
   Component,
   OnInit,
-  ViewChild,
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { ThemeService } from '../../../services/theme/theme.service';
 import {
@@ -55,8 +55,7 @@ export class VmItemComponent implements OnInit {
   readonly openVmHere = output<{
     [name: string]: string;
   }>();
-  @ViewChild(MatMenuTrigger)
-  contextMenu: MatMenuTrigger;
+  readonly contextMenu = viewChild(MatMenuTrigger);
   contextMenuPosition = { x: '0px', y: '0px' };
 
   ngOnInit(): void {}
@@ -83,8 +82,8 @@ export class VmItemComponent implements OnInit {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menu.focusFirstItem('mouse');
-    this.contextMenu.openMenu();
+    this.contextMenu().menu.focusFirstItem('mouse');
+    this.contextMenu().openMenu();
   }
 
   onTeamSelect(vmId: string, teams: Array<string>, team: string) {

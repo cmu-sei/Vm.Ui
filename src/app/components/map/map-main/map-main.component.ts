@@ -9,8 +9,8 @@ import {
   OnInit,
   signal,
   TemplateRef,
-  ViewChild,
   inject,
+  viewChild,
 } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -81,12 +81,14 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   editProps: boolean;
   creatingMap: boolean;
 
-  @ViewChild(MapTeamDisplayComponent) displayChild: MapTeamDisplayComponent;
-  @ViewChild(MapComponent) buildChild: MapComponent;
-  @ViewChild(NewMapComponent) propertiesDialog: NewMapComponent;
+  readonly displayChild = viewChild(MapTeamDisplayComponent);
+  readonly buildChild = viewChild(MapComponent);
+  readonly propertiesDialog = viewChild(NewMapComponent);
 
-  @ViewChild('newMapDialog') newMapDialog: TemplateRef<NewMapComponent>;
-  @ViewChild('editPropsDialog') editPropsDialog: TemplateRef<NewMapComponent>;
+  readonly newMapDialog =
+    viewChild<TemplateRef<NewMapComponent>>('newMapDialog');
+  readonly editPropsDialog =
+    viewChild<TemplateRef<NewMapComponent>>('editPropsDialog');
   private dialogRef: MatDialogRef<NewMapComponent>;
   private unsubscribe$ = new Subject();
   maps: VmMap[] = [];
@@ -175,7 +177,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
   buildMap() {
     this.creatingMap = true;
-    this.dialogRef = this.dialog.open(this.newMapDialog, {
+    this.dialogRef = this.dialog.open(this.newMapDialog(), {
       width: '400px',
       maxWidth: '90vw',
     });
@@ -227,7 +229,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   }
 
   save() {
-    this.buildChild.save();
+    this.buildChild().save();
     this.editMode = false;
   }
 
@@ -257,7 +259,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
   editProperties(): void {
     this.creatingMap = false;
-    this.dialogRef = this.dialog.open(this.editPropsDialog, {
+    this.dialogRef = this.dialog.open(this.editPropsDialog(), {
       width: '400px',
       maxWidth: '90vw',
     });
@@ -280,7 +282,7 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
 
     this.vmMapQuery.getById(id).subscribe((m) => {
       this.selected = m;
-      this.buildChild?.ngOnInit();
+      this.buildChild()?.ngOnInit();
       this.dialogRef.close();
     });
   }

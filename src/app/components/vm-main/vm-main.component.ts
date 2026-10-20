@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComnAuthService, Theme } from '@cmusei/crucible-common';
 import {
@@ -104,7 +104,7 @@ export class VmMainComponent implements OnInit, OnDestroy {
   private userPermissionsService = inject(UserPermissionsService);
   private themeService = inject(ThemeService);
 
-  @ViewChild('vmTabGroup', { static: false }) tabGroup: MatTabGroup;
+  readonly tabGroup = viewChild<MatTabGroup>('vmTabGroup');
 
   unsubscribe$: Subject<null> = new Subject<null>();
   hideTopbar = false;

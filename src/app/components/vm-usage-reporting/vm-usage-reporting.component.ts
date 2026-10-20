@@ -6,9 +6,9 @@
 import {
   Component,
   AfterViewInit,
-  ViewChild,
   OnDestroy,
   inject,
+  viewChild,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -122,8 +122,8 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
   private clipboard = inject(Clipboard);
   private routerQuery = inject(RouterQuery);
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild('formDirective') private formDirective: NgForm;
+  readonly paginator = viewChild(MatPaginator);
+  private readonly formDirective = viewChild<NgForm>('formDirective');
   unsubscribe$: Subject<null> = new Subject<null>();
   dataSource = new MatTableDataSource<VmUsageReport>(
     new Array<VmUsageReport>(),
@@ -191,7 +191,7 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
     this.dataSource = new MatTableDataSource<VmUsageReport>(
       this.sortedVmUsageList,
     );
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.paginator = this.paginator();
   }
 
   blankRepeatValues() {

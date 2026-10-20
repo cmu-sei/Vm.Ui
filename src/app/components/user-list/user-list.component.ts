@@ -7,10 +7,10 @@ import {
   Component,
   ChangeDetectionStrategy,
   Input,
-  ViewChild,
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import {
   MatAccordion,
@@ -102,7 +102,7 @@ export class UserListComponent {
   public recentOnly = false;
   public recentMinutes = 15;
 
-  @ViewChild(MatAccordion) accordion: MatAccordion;
+  readonly accordion = viewChild(MatAccordion);
 
   public searchTerm = '';
   public searchTermSubject = new BehaviorSubject('');

@@ -7,10 +7,10 @@ import {
   OnInit,
   SimpleChanges,
   TemplateRef,
-  ViewChild,
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { Clickpoint } from '../../models/clickpoint';
 import {
@@ -65,7 +65,8 @@ export class MapComponent implements OnInit, OnChanges {
   readonly mapSaved = output<void>();
   readonly initEmitter = output<boolean>();
 
-  @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
+  readonly addPointDialog =
+    viewChild<TemplateRef<AddPointComponent>>('addPointDialog');
   private dialogRef: MatDialogRef<AddPointComponent>;
 
   private matDialogConfig: MatDialogConfig = {
@@ -151,7 +152,7 @@ export class MapComponent implements OnInit, OnChanges {
     this.editing = false;
 
     this.dialogRef = this.dialog.open(
-      this.addPointDialog,
+      this.addPointDialog(),
       this.matDialogConfig,
     );
   }
@@ -285,7 +286,7 @@ export class MapComponent implements OnInit, OnChanges {
     this.editing = true;
 
     this.dialogRef = this.dialog.open(
-      this.addPointDialog,
+      this.addPointDialog(),
       this.matDialogConfig,
     );
   }

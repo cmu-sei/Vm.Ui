@@ -9,13 +9,12 @@ import {
   Input,
   OnChanges,
   OnInit,
-  QueryList,
   SimpleChanges,
-  ViewChild,
-  ViewChildren,
   inject,
   input,
   output,
+  viewChildren,
+  viewChild,
 } from '@angular/core';
 import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -112,12 +111,13 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   public groupByTeams = new Array<VmGroup>();
   public currentPanelIndex: number;
 
-  @ViewChildren('groupPaginators') groupPaginators =
-    new QueryList<MatPaginator>();
-  @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChildren('groupSelectContainers') groupSelects =
-    new QueryList<SelectContainerComponent>();
-  @ViewChild('selectContainer') selectContainer: SelectContainerComponent;
+  readonly groupPaginators = viewChildren<MatPaginator>('groupPaginators');
+  readonly paginator = viewChild<MatPaginator>('paginator');
+  readonly groupSelects = viewChildren<SelectContainerComponent>(
+    'groupSelectContainers',
+  );
+  readonly selectContainer =
+    viewChild<SelectContainerComponent>('selectContainer');
 
   readonly openVmHere = output<{
     [name: string]: string;
@@ -247,7 +247,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.vmModelDataSource.paginator = this.paginator;
+    this.vmModelDataSource.paginator = this.paginator();
   }
 
   private setTeamsList(viewId: string) {
@@ -267,9 +267,9 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   private clearCurrentSelection() {
     if (!this.sortByTeams) {
-      this.selectContainer?.clearSelection();
+      this.selectContainer()?.clearSelection();
     } else {
-      this.groupSelects?.get(this.currentPanelIndex)?.clearSelection();
+      this.groupSelects()?.at(this.currentPanelIndex)?.clearSelection();
     }
   }
 
@@ -380,14 +380,14 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     if (index !== this.currentPanelIndex) {
       // No old panel on the first click of a grouped list - currentPanelIndex is
       // still undefined then, and there is nothing to clear.
-      this.groupSelects.toArray()[this.currentPanelIndex]?.clearSelection();
+      this.groupSelects[this.currentPanelIndex]?.clearSelection();
       this.currentPanelIndex = index;
     }
   }
 
   // Assign each VM group a paginator
   assignPaginator(group: VmGroup, index: number) {
-    group.dataSource.paginator = this.groupPaginators.toArray()[index];
+    group.dataSource.paginator = this.groupPaginators[index];
   }
 
   public powerOffSelected() {

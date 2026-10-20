@@ -7,12 +7,12 @@ import {
   Component,
   ChangeDetectionStrategy,
   Input,
-  ViewChild,
   AfterViewInit,
   signal,
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ThemeService } from '../../../services/theme/theme.service';
@@ -112,7 +112,7 @@ export class TeamUsersComponent implements AfterViewInit {
   public tableHeight = '0px';
   public filteredCount = signal(0);
 
-  @ViewChild(MatSort) sort: MatSort;
+  readonly sort = viewChild(MatSort);
 
   constructor() {
     this.userDatasource.filterPredicate = (data: VmUser, filter: string) => {
@@ -121,7 +121,7 @@ export class TeamUsersComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.userDatasource.sort = this.sort;
+    this.userDatasource.sort = this.sort();
   }
 
   public openUserInTab(user: VmUser) {

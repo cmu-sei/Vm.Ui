@@ -5,10 +5,10 @@ import {
   AfterViewInit,
   Component,
   OnDestroy,
-  ViewChild,
   computed,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -98,8 +98,8 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
   private routerQuery = inject(RouterQuery);
   private dialogService = inject(CrucibleDialogService);
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  readonly paginator = viewChild(MatPaginator);
+  readonly sort = viewChild(MatSort);
 
   readonly canManage = input(false);
 
@@ -201,8 +201,8 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator();
+    this.dataSource.sort = this.sort();
   }
 
   applyFilter(filterValue: string) {

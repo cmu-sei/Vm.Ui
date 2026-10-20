@@ -6,9 +6,9 @@
 import {
   Component,
   AfterViewInit,
-  ViewChild,
   OnDestroy,
   inject,
+  viewChild,
 } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, EMPTY } from 'rxjs';
 import { catchError, switchMap, take, takeUntil } from 'rxjs/operators';
@@ -127,9 +127,9 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   private routerQuery = inject(RouterQuery);
   private dialogService = inject(CrucibleDialogService);
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild('formDirective') private formDirective: NgForm;
+  readonly paginator = viewChild(MatPaginator);
+  readonly sort = viewChild(MatSort);
+  private readonly formDirective = viewChild<NgForm>('formDirective');
   dataSource = new MatTableDataSource<VmUsageLoggingSession>(
     new Array<VmUsageLoggingSession>(),
   );
@@ -212,8 +212,8 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator();
+    this.dataSource.sort = this.sort();
   }
 
   endSession(id: string) {
@@ -271,7 +271,7 @@ export class VmUsageLoggingComponent implements AfterViewInit, OnDestroy {
           this.refresh();
           this.sessionTeamsFormControl.reset();
           this.newLogName = '';
-          this.formDirective.resetForm();
+          this.formDirective().resetForm();
         });
     }
   }
