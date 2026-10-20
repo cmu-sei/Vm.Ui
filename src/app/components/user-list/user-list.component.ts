@@ -8,10 +8,9 @@ import {
   ChangeDetectionStrategy,
   Input,
   ViewChild,
-  Output,
-  EventEmitter,
   inject,
   input,
+  output,
 } from '@angular/core';
 import {
   MatAccordion,
@@ -94,7 +93,9 @@ export class UserListComponent {
     }
   }
 
-  @Output() openTab = new EventEmitter<{ [name: string]: string }>();
+  readonly openTab = output<{
+    [name: string]: string;
+  }>();
 
   public _teams: Array<VmTeam>;
   public hideInactive = false;

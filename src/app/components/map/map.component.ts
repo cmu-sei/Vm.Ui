@@ -3,15 +3,14 @@
 
 import {
   Component,
-  EventEmitter,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
   TemplateRef,
   ViewChild,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { Clickpoint } from '../../models/clickpoint';
 import {
@@ -63,8 +62,8 @@ export class MapComponent implements OnInit, OnChanges {
 
   readonly mapIdInput = input<string>(undefined);
 
-  @Output() mapSaved = new EventEmitter<void>();
-  @Output() initEmitter = new EventEmitter<boolean>();
+  readonly mapSaved = output<void>();
+  readonly initEmitter = output<boolean>();
 
   @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
   private dialogRef: MatDialogRef<AddPointComponent>;

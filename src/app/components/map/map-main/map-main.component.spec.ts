@@ -2,13 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import {
-  Component,
-  EventEmitter,
-  Output,
-  TemplateRef,
-  input,
-} from '@angular/core';
+import { Component, TemplateRef, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -53,14 +47,14 @@ class PageNotFoundStubComponent {
 class MapTeamDisplayStubComponent {
   readonly imageUrlInput = input<string>(undefined);
   readonly mapIdInput = input<string>(undefined);
-  @Output() mapSwitched = new EventEmitter<string>();
+  readonly mapSwitched = output<string>();
 }
 
 @Component({ selector: 'app-map', template: '' })
 class MapStubComponent {
   readonly mapIdInput = input<string>(undefined);
-  @Output() mapSaved = new EventEmitter<void>();
-  @Output() initEmitter = new EventEmitter<boolean>();
+  readonly mapSaved = output<void>();
+  readonly initEmitter = output<boolean>();
 }
 
 @Component({ selector: 'app-new-map', template: '' })
@@ -70,8 +64,8 @@ class NewMapStubComponent {
   readonly name = input<string>(undefined);
   readonly url = input<string>(undefined);
   readonly teamsInput = input<string[]>(undefined);
-  @Output() mapCreated = new EventEmitter<string>();
-  @Output() propertiesChanged = new EventEmitter<[string, string, string[]]>();
+  readonly mapCreated = output<string>();
+  readonly propertiesChanged = output<[string, string, string[]]>();
 }
 
 function makeMap(id: string, teamIds: string[] | null): VmMap {

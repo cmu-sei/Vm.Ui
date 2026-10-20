@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Output, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import {
   DragToSelectModule,
@@ -33,7 +33,9 @@ class VmItemStubComponent {
   readonly showIps = input<boolean>(undefined);
   readonly teamsList = input<SimpleTeam[]>(undefined);
   readonly canManageTeam = input<boolean>(undefined);
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
+  readonly openVmHere = output<{
+    [name: string]: string;
+  }>();
 }
 
 const BLUE: SimpleTeam = { id: 'team-1', name: 'Blue' };

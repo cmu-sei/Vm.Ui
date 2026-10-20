@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Output, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { VmUser } from '../../generated/vm-api';
@@ -21,7 +21,9 @@ class TeamUsersStubComponent {
   readonly hideInactive = input<boolean>(undefined);
   readonly recentOnly = input<boolean>(undefined);
   readonly recentMinutes = input<number>(undefined);
-  @Output() openTab = new EventEmitter<{ [name: string]: string }>();
+  readonly openTab = output<{
+    [name: string]: string;
+  }>();
   filteredCount() {
     return this.users()?.length ?? 0;
   }

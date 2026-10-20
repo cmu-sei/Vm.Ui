@@ -7,13 +7,12 @@ import {
   Component,
   ChangeDetectionStrategy,
   Input,
-  Output,
-  EventEmitter,
   ViewChild,
   AfterViewInit,
   signal,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ThemeService } from '../../../services/theme/theme.service';
@@ -91,7 +90,9 @@ export class TeamUsersComponent implements AfterViewInit {
     this.calculateTableHeight();
   }
 
-  @Output() openTab = new EventEmitter<{ [name: string]: string }>();
+  readonly openTab = output<{
+    [name: string]: string;
+  }>();
 
   private userList: Array<VmUser>;
   private hideInactiveInternal = false;

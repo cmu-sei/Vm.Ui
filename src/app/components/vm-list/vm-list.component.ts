@@ -6,17 +6,16 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   QueryList,
   SimpleChanges,
   ViewChild,
   ViewChildren,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -120,8 +119,12 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     new QueryList<SelectContainerComponent>();
   @ViewChild('selectContainer') selectContainer: SelectContainerComponent;
 
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
-  @Output() errors = new EventEmitter<{ [key: string]: string }>();
+  readonly openVmHere = output<{
+    [name: string]: string;
+  }>();
+  readonly errors = output<{
+    [key: string]: string;
+  }>();
 
   @Input() set vms(val: Vm[]) {
     this.vmModelDataSource.data = val;
@@ -142,9 +145,9 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   readonly canManageView = input<Boolean>(undefined);
   readonly canRevertVms = input<Boolean>(undefined);
 
-  @Output() showIPsSelectedChanged = new EventEmitter<Boolean>();
-  @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
-  @Output() searchValueChanged = new EventEmitter<string>();
+  readonly showIPsSelectedChanged = output<Boolean>();
+  readonly showIPv4OnlySelectedChanged = output<Boolean>();
+  readonly searchValueChanged = output<string>();
 
   teamsList$: Observable<SimpleTeam[]> = of([]);
   canSortByTeams$ = this.teamsList$.pipe(

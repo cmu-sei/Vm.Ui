@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Output, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
@@ -41,14 +41,14 @@ const VIEW = 'view-1';
 class IsoGroupStubComponent {
   readonly group = input<IsoGroup>(undefined);
   readonly deleting = input<ReadonlySet<string>>(undefined);
-  @Output() delete = new EventEmitter<IsoRow>();
+  readonly delete = output<IsoRow>();
 }
 
 @Component({ selector: 'app-iso-view-group', template: '' })
 class IsoViewGroupStubComponent {
   readonly viewGroup = input<IsoViewGroup>(undefined);
   readonly deleting = input<ReadonlySet<string>>(undefined);
-  @Output() delete = new EventEmitter<IsoRow>();
+  readonly delete = output<IsoRow>();
   openAll() {}
   closeAll() {}
 }

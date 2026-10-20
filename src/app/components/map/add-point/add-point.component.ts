@@ -1,14 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import {
-  Component,
-  OnInit,
-  Output,
-  EventEmitter,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, OnInit, inject, input, output } from '@angular/core';
 import {
   UntypedFormControl,
   UntypedFormGroup,
@@ -78,7 +71,7 @@ export class AddPointComponent implements OnInit {
   readonly label = input<string>(undefined);
   readonly editing = input<boolean>(undefined);
 
-  @Output() machineEmitter = new EventEmitter<Clickpoint>();
+  readonly machineEmitter = output<Clickpoint>();
 
   form: UntypedFormGroup;
   vmsFiltered: Observable<Vm[]>;

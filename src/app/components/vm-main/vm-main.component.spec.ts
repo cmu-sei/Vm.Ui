@@ -2,13 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  Component,
-  EventEmitter,
-  Output,
-  Provider,
-  input,
-} from '@angular/core';
+import { Component, Provider, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { screen } from '@testing-library/angular';
@@ -67,11 +61,15 @@ class VmListStubComponent {
   readonly canManageView = input<boolean>(undefined);
   readonly canViewView = input<boolean>(undefined);
   readonly canRevertVms = input<boolean>(undefined);
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
-  @Output() errors = new EventEmitter<{ [key: string]: string }>();
-  @Output() searchValueChanged = new EventEmitter<string>();
-  @Output() showIPsSelectedChanged = new EventEmitter<boolean>();
-  @Output() showIPv4OnlySelectedChanged = new EventEmitter<boolean>();
+  readonly openVmHere = output<{
+    [name: string]: string;
+  }>();
+  readonly errors = output<{
+    [key: string]: string;
+  }>();
+  readonly searchValueChanged = output<string>();
+  readonly showIPsSelectedChanged = output<boolean>();
+  readonly showIPv4OnlySelectedChanged = output<boolean>();
 }
 
 @Component({ selector: 'app-user-list', template: '' })
@@ -79,7 +77,9 @@ class UserListStubComponent {
   readonly viewId = input<string>(undefined);
   readonly teams = input<VmTeam[]>(undefined);
   readonly isActive = input<boolean>(undefined);
-  @Output() openTab = new EventEmitter<{ [name: string]: string }>();
+  readonly openTab = output<{
+    [name: string]: string;
+  }>();
 }
 
 @Component({ selector: 'app-vm-usage-logging', template: '' })
