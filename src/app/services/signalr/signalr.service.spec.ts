@@ -502,8 +502,8 @@ describe('SignalRService', () => {
 
     /**
      * Verifies: a hub promise chain with no .catch lets its rejection escape unhandled, unlike the group calls that log and suppress.
-     * Interacts with: rejectInvokes (plain rejecting hub.invoke for LeaveViewUsers only) or a rejecting FakeHubConnection.stop; stubbed ComnAuthService.user$; captureUnhandledRejections (zone.js logs unhandled rejections to console.error).
-     * Data: connected service; one row per method; the hub call rejects with 'connection lost'.
+     * Interacts with: rejectInvokes (plain rejecting hub.invoke for LeaveViewUsers only); captureUnhandledRejections.
+     * Data: connected service; LeaveViewUsers rejects with 'connection lost'.
      */
     it.each<
       [string, (hub: Ctx['hub'], error: Error) => void, (ctx: Ctx) => void]
@@ -512,12 +512,6 @@ describe('SignalRService', () => {
         'leaveViewUsers()',
         (hub, error) => rejectInvokes(hub, error, ['LeaveViewUsers']),
         ({ service }) => service.leaveViewUsers('view-1'),
-      ],
-      [
-        'the token-refresh reconnect',
-        (hub, error) =>
-          hub.stop.mockImplementation(() => Promise.reject(error)),
-        ({ user$ }) => user$.next({ profile: { sub: 'u1' } } as User),
       ],
     ])(
       'lets a failure in %s escape unhandled',
@@ -555,6 +549,42 @@ describe('SignalRService', () => {
       expect(hub.invoke).toHaveBeenCalledWith('JoinView', 'view-1');
       expect(builder.connections).toHaveLength(1);
     });
+
+    /**
+     * Verifies: a failed token-refresh restart is logged and does not escape as an unhandled rejection.
+     * Interacts with: ComnAuthService.user$; FakeHubConnection.start and stop; console.warn; captureUnhandledRejections.
+     * Data: connected service without a joined view; restart rejects with an Error or a handshake-send string.
+     */
+    it.each([
+      {
+        kind: 'Error',
+        failure: new Error('restart failed'),
+        message: 'restart failed',
+      },
+      {
+        kind: 'string',
+        failure: 'WebSocket is not in the OPEN state',
+        message: undefined,
+      },
+    ])(
+      'suppresses a token-refresh restart failure with a $kind reason',
+      async ({ failure, message }) => {
+        const { hub, user$ } = await connected();
+        const rejections = captureUnhandledRejections();
+        hub.start.mockImplementationOnce(() => Promise.reject(failure));
+
+        user$.next({ profile: { sub: 'u1' } } as User);
+        await flush();
+
+        expect(hub.stop).toHaveBeenCalledExactlyOnceWith();
+        expect(hub.start).toHaveBeenCalledTimes(2);
+        expect(warn).toHaveBeenCalledExactlyOnceWith(
+          'VM Hub reconnection failed:',
+          message,
+        );
+        expect(rejections).toEqual([]);
+      },
+    );
 
     /**
      * Verifies: a user emission before any connection exists does not build one.
