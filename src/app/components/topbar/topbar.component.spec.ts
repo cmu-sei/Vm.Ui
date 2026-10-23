@@ -4,17 +4,21 @@
 import { describe, it, expect, vi } from 'vitest';
 import { of } from 'rxjs';
 import { User as OidcUser } from 'oidc-client-ts';
-import { screen } from '@testing-library/angular';
+import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { ComnAuthQuery, ComnAuthService, Theme } from '@cmusei/crucible-common';
 import { renderComponent } from '../../test-utils/render-component';
+import {
+  captureUnhandledRxErrors,
+  flush,
+} from '../../test-utils/unhandled-rx-errors';
 import { TopbarComponent } from './topbar.component';
 
-async function renderTopbar() {
+async function renderTopbar(logout: ComnAuthService['logout'] = vi.fn()) {
   const auth = {
     user$: of({ profile: { sub: 'u-1', name: 'Pat Analyst' } } as OidcUser),
     setUserTheme: vi.fn(),
-    logout: vi.fn(),
+    logout,
   } satisfies Pick<ComnAuthService, 'user$' | 'setUserTheme' | 'logout'>;
   const authQuery: Pick<ComnAuthQuery, 'userTheme$'> = {
     userTheme$: of(Theme.LIGHT),
@@ -67,5 +71,29 @@ describe('TopbarComponent', () => {
     await user.click(screen.getByRole('menuitem', { name: 'Logout' }));
 
     expect(auth.logout).toHaveBeenCalledOnce();
+  });
+
+  /**
+   * Verifies: a rejected logout escapes after the user clicks Logout (current behavior).
+   * Interacts with: the rendered user menu; ComnAuthService.logout; captureUnhandledRxErrors.
+   * Data: signed-in Pat Analyst; logout rejects with 'No end session endpoint'.
+   */
+  it('lets a rejected logout escape from the user menu', async () => {
+    const user = userEvent.setup();
+    const failure = new Error('No end session endpoint');
+    const calls = vi.fn();
+    const errors = captureUnhandledRxErrors();
+    const { container } = await renderTopbar(() => {
+      calls();
+      return Promise.reject(failure);
+    });
+
+    await user.click(within(container).getByRole('button', { name: 'Menu' }));
+    const menu = await screen.findByRole('menu');
+    await user.click(within(menu).getByRole('menuitem', { name: 'Logout' }));
+    await flush();
+
+    expect(calls).toHaveBeenCalledExactlyOnceWith();
+    expect(errors).toEqual([failure]);
   });
 });
