@@ -4,10 +4,11 @@
 import {
   AfterViewInit,
   Component,
-  Input,
   OnDestroy,
-  ViewChild,
   computed,
+  inject,
+  input,
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -92,10 +93,15 @@ import { MatTooltip } from '@angular/material/tooltip';
   ],
 })
 export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  private networksService = inject(NetworksService);
+  private teamService = inject(TeamService);
+  private routerQuery = inject(RouterQuery);
+  private dialogService = inject(CrucibleDialogService);
 
-  @Input() canManage = false;
+  readonly paginator = viewChild(MatPaginator);
+  readonly sort = viewChild(MatSort);
+
+  readonly canManage = input(false);
 
   dataSource = new MatTableDataSource<ViewNetwork>([]);
   filterString = '';
@@ -145,12 +151,7 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
   viewId: string;
   rowForms = new Map<string, UntypedFormGroup>();
 
-  constructor(
-    private networksService: NetworksService,
-    private teamService: TeamService,
-    private routerQuery: RouterQuery,
-    private dialogService: CrucibleDialogService,
-  ) {
+  constructor() {
     this.viewId = this.routerQuery.getParams('viewId');
 
     this.teamService
@@ -200,8 +201,8 @@ export class NetworkPermissionsComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator();
+    this.dataSource.sort = this.sort();
   }
 
   applyFilter(filterValue: string) {

@@ -7,7 +7,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <h2>Network Permissions</h2>
   <p>Configure access to existing Networks for Teams in this View.</p>
 
-  @if (canManage) {
+  @if (canManage()) {
     <form class="create-form" (ngSubmit)="createNetwork()">
       <mat-form-field>
         <mat-label>Provider Type</mat-label>
@@ -18,22 +18,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field
-        [matTooltip]="providerInstanceTooltip()"
-      >
+      <mat-form-field [matTooltip]="providerInstanceTooltip()">
         <mat-label>Provider Instance ID</mat-label>
-        <input
-          matInput
-          [formControl]="providerInstanceIdControl"
-        />
+        <input matInput [formControl]="providerInstanceIdControl" />
       </mat-form-field>
 
       <mat-form-field [matTooltip]="networkIdTooltip()">
         <mat-label>Network ID</mat-label>
-        <input
-          matInput
-          [formControl]="networkIdControl"
-        />
+        <input matInput [formControl]="networkIdControl" />
       </mat-form-field>
 
       <mat-form-field>
@@ -83,7 +75,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           title="Clear Search"
           aria-label="Clear Search"
         >
-          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle" />
         </button>
       }
     </mat-form-field>
@@ -104,7 +96,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >Provider Type</mat-header-cell
         >
         <mat-cell *matCellDef="let row">
-          @if (canManage) {
+          @if (canManage()) {
             <mat-form-field>
               <mat-select
                 [formControl]="getRowForm(row).controls['providerType']"
@@ -127,7 +119,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >Provider Instance</mat-header-cell
         >
         <mat-cell *matCellDef="let row">
-          @if (canManage) {
+          @if (canManage()) {
             <mat-form-field>
               <input
                 matInput
@@ -145,7 +137,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >Network ID</mat-header-cell
         >
         <mat-cell *matCellDef="let row">
-          @if (canManage) {
+          @if (canManage()) {
             <mat-form-field>
               <input
                 matInput
@@ -163,7 +155,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >Name</mat-header-cell
         >
         <mat-cell *matCellDef="let row">
-          @if (canManage) {
+          @if (canManage()) {
             <mat-form-field>
               <input
                 matInput
@@ -181,7 +173,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           >Assigned Teams</mat-header-cell
         >
         <mat-cell *matCellDef="let row">
-          @if (canManage) {
+          @if (canManage()) {
             <mat-form-field>
               <mat-select
                 [formControl]="getRowForm(row).controls['teamIds']"
@@ -206,7 +198,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let row">
-          @if (canManage) {
+          @if (canManage()) {
             <button
               mat-icon-button
               (click)="saveRow(row)"
@@ -214,7 +206,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               aria-label="Save"
               [disabled]="!isRowDirty(row)"
             >
-              <mat-icon class="mdi-24px" fontIcon="mdi-content-save"></mat-icon>
+              <mat-icon class="mdi-24px" fontIcon="mdi-content-save" />
             </button>
             <button
               mat-icon-button
@@ -222,21 +214,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               matTooltip="Delete"
               aria-label="Delete"
             >
-              <mat-icon
-                class="mdi-24px"
-                fontIcon="mdi-trash-can-outline"
-              ></mat-icon>
+              <mat-icon class="mdi-24px" fontIcon="mdi-trash-can-outline" />
             </button>
           }
         </mat-cell>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      <mat-header-row *matHeaderRowDef="displayedColumns" />
+      <mat-row *matRowDef="let row; columns: displayedColumns" />
     </mat-table>
-    <mat-paginator
-      [pageSizeOptions]="[5, 10, 20]"
-      showFirstLastButtons
-    ></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons />
   </div>
 </div>

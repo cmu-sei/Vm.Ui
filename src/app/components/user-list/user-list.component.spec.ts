@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { VmUser } from '../../generated/vm-api';
@@ -15,15 +15,17 @@ import { UserListComponent } from './user-list.component';
 
 @Component({ selector: 'app-team-users', template: '' })
 class TeamUsersStubComponent {
-  @Input() team: VmTeam;
-  @Input() users: VmUser[];
-  @Input() searchTerm: string;
-  @Input() hideInactive: boolean;
-  @Input() recentOnly: boolean;
-  @Input() recentMinutes: number;
-  @Output() openTab = new EventEmitter<{ [name: string]: string }>();
+  readonly team = input<VmTeam>(undefined);
+  readonly users = input<VmUser[]>(undefined);
+  readonly searchTerm = input<string>(undefined);
+  readonly hideInactive = input<boolean>(undefined);
+  readonly recentOnly = input<boolean>(undefined);
+  readonly recentMinutes = input<number>(undefined);
+  readonly openTab = output<{
+    [name: string]: string;
+  }>();
   filteredCount() {
-    return this.users?.length ?? 0;
+    return this.users()?.length ?? 0;
   }
 }
 
@@ -70,7 +72,7 @@ describe('UserListComponent', () => {
   it('lists the teams by name and leaves the user hub while inactive', async () => {
     const { signalR, teamUsers } = await renderUserList(false);
 
-    expect(teamUsers().map((t) => t.team.name)).toEqual(['Blue', 'Red']);
+    expect(teamUsers().map((t) => t.team().name)).toEqual(['Blue', 'Red']);
     expect(signalR.leaveViewUsers).toHaveBeenCalledWith('view-1');
     expect(signalR.joinViewUsers).not.toHaveBeenCalled();
   });
@@ -91,7 +93,7 @@ describe('UserListComponent', () => {
 
     expect(signalR.joinViewUsers).toHaveBeenCalledWith('view-1');
     expect(
-      teamUsers().map((t) => [t.team.name, t.users.map((u) => u.username)]),
+      teamUsers().map((t) => [t.team().name, t.users().map((u) => u.username)]),
     ).toEqual([
       ['Blue', ['alice']],
       ['Red', ['bob']],

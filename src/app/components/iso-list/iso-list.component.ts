@@ -6,13 +6,12 @@ import {
   Component,
   DestroyRef,
   OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren,
   computed,
   inject,
   input,
   signal,
+  viewChild,
+  viewChildren,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
@@ -137,10 +136,9 @@ export function isoRowKey(row: IsoRow): string {
 export class IsoListComponent implements OnInit {
   viewId = input.required<string>();
 
-  @ViewChild(MatAccordion) accordion: MatAccordion;
+  readonly accordion = viewChild(MatAccordion);
   // All nested View accordions (all-views mode only) so Expand/Collapse-All reaches the whole tree.
-  @ViewChildren(IsoViewGroupComponent)
-  viewGroupComponents: QueryList<IsoViewGroupComponent>;
+  readonly viewGroupComponents = viewChildren(IsoViewGroupComponent);
 
   // Authoritative groups, rebuilt from the getViewIsos response.
   readonly groups = signal<IsoGroup[]>([]);
@@ -317,13 +315,13 @@ export class IsoListComponent implements OnInit {
   // Expand every panel. In all-views mode this means the outer View panels plus each View's nested
   // team accordion; in single-view mode it's just the one accordion.
   expandAll() {
-    this.accordion?.openAll();
-    this.viewGroupComponents?.forEach((c) => c.openAll());
+    this.accordion()?.openAll();
+    this.viewGroupComponents()?.forEach((c) => c.openAll());
   }
 
   collapseAll() {
-    this.accordion?.closeAll();
-    this.viewGroupComponents?.forEach((c) => c.closeAll());
+    this.accordion()?.closeAll();
+    this.viewGroupComponents()?.forEach((c) => c.closeAll());
   }
 
   // Toggle between single-view and all-views mode, then reload from the appropriate endpoint.
@@ -391,7 +389,9 @@ export class IsoListComponent implements OnInit {
   // Resolve each team's delete permission (once), then assemble the single-view group model. Teams
   // are sorted up front and each carries its own resolved permission, so there is no index-aligned
   // positional coupling between the teams and their permission results.
-  private buildSingleViewGroups(result: ManagedIsoResult): Observable<IsoGroup[]> {
+  private buildSingleViewGroups(
+    result: ManagedIsoResult,
+  ): Observable<IsoGroup[]> {
     const teamResults = (result.teamIsoResults ?? [])
       .slice()
       .sort((a, b) => (a.teamName ?? '').localeCompare(b.teamName ?? ''));

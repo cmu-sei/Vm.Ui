@@ -6,15 +6,15 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
-  QueryList,
   SimpleChanges,
-  ViewChild,
-  ViewChildren,
+  inject,
+  input,
+  output,
+  viewChildren,
+  viewChild,
 } from '@angular/core';
 import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -25,11 +25,7 @@ import {
 } from 'ngx-drag-to-select';
 import { Observable, of } from 'rxjs';
 import { filter, map, shareReplay, switchMap, take } from 'rxjs/operators';
-import {
-  SimpleTeam,
-  Vm,
-  VmsService,
-} from '../../generated/vm-api';
+import { SimpleTeam, Vm, VmsService } from '../../generated/vm-api';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { ThemeService } from '../../services/theme/theme.service';
 import { VmUISession } from '../../state/vm-ui-session/vm-ui-session.model';
@@ -93,6 +89,13 @@ import { UserPermissionsService } from '../../services/permissions/user-permissi
   ],
 })
 export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
+  vmService = inject(VmService);
+  private dialogService = inject(CrucibleDialogService);
+  private vmApiService = inject(VmsService);
+  private cd = inject(ChangeDetectorRef);
+  private userPermissionsService = inject(UserPermissionsService);
+  private themeService = inject(ThemeService);
+
   public vmModelDataSource = new MatTableDataSource<Vm>(new Array<Vm>());
   public displayedColumns: string[] = ['name'];
 
@@ -108,22 +111,27 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   public groupByTeams = new Array<VmGroup>();
   public currentPanelIndex: number;
 
-  @ViewChildren('groupPaginators') groupPaginators =
-    new QueryList<MatPaginator>();
-  @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChildren('groupSelectContainers') groupSelects =
-    new QueryList<SelectContainerComponent>();
-  @ViewChild('selectContainer') selectContainer: SelectContainerComponent;
+  readonly groupPaginators = viewChildren<MatPaginator>('groupPaginators');
+  readonly paginator = viewChild<MatPaginator>('paginator');
+  readonly groupSelects = viewChildren<SelectContainerComponent>(
+    'groupSelectContainers',
+  );
+  readonly selectContainer =
+    viewChild<SelectContainerComponent>('selectContainer');
 
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
-  @Output() errors = new EventEmitter<{ [key: string]: string }>();
+  readonly openVmHere = output<{
+    [name: string]: string;
+  }>();
+  readonly errors = output<{
+    [key: string]: string;
+  }>();
 
   @Input() set vms(val: Vm[]) {
     this.vmModelDataSource.data = val;
     this.allVms = val;
   }
 
-  @Input() readOnly: Boolean;
+  readonly readOnly = input<Boolean>(undefined);
 
   @Input() set uiSession(val: VmUISession) {
     if (val) {
@@ -134,12 +142,12 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   @Input() canViewView: Boolean;
-  @Input() canManageView: Boolean;
-  @Input() canRevertVms: Boolean;
+  readonly canManageView = input<Boolean>(undefined);
+  readonly canRevertVms = input<Boolean>(undefined);
 
-  @Output() showIPsSelectedChanged = new EventEmitter<Boolean>();
-  @Output() showIPv4OnlySelectedChanged = new EventEmitter<Boolean>();
-  @Output() searchValueChanged = new EventEmitter<string>();
+  readonly showIPsSelectedChanged = output<Boolean>();
+  readonly showIPv4OnlySelectedChanged = output<Boolean>();
+  readonly searchValueChanged = output<string>();
 
   teamsList$: Observable<SimpleTeam[]> = of([]);
   canSortByTeams$ = this.teamsList$.pipe(
@@ -150,14 +158,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   vmFilterBy: any = 'All';
   private hasLoadedVms = false;
 
-  constructor(
-    public vmService: VmService,
-    private dialogService: CrucibleDialogService,
-    private vmApiService: VmsService,
-    private cd: ChangeDetectorRef,
-    private userPermissionsService: UserPermissionsService,
-    private themeService: ThemeService,
-  ) {
+  constructor() {
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.defaultPageSize;
@@ -246,7 +247,7 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.vmModelDataSource.paginator = this.paginator;
+    this.vmModelDataSource.paginator = this.paginator();
   }
 
   private setTeamsList(viewId: string) {
@@ -266,9 +267,9 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
 
   private clearCurrentSelection() {
     if (!this.sortByTeams) {
-      this.selectContainer?.clearSelection();
+      this.selectContainer()?.clearSelection();
     } else {
-      this.groupSelects?.get(this.currentPanelIndex)?.clearSelection();
+      this.groupSelects()?.at(this.currentPanelIndex)?.clearSelection();
     }
   }
 
@@ -330,22 +331,20 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
       vm.teamIds?.map((id) => teams.add(id));
     }
 
-    this.teamsList$
-      .pipe(take(1))
-      .subscribe((results) => {
-        for (const team of results) {
-          if (team?.id && teams.has(team.id)) {
-            const vms = this.vmModelDataSource.filteredData.filter((vm) =>
-              vm.teamIds?.includes(team.id),
-            );
-            const group = new VmGroup(team.name, team.id, vms);
-            this.groupByTeams.push(group);
-          }
+    this.teamsList$.pipe(take(1)).subscribe((results) => {
+      for (const team of results) {
+        if (team?.id && teams.has(team.id)) {
+          const vms = this.vmModelDataSource.filteredData.filter((vm) =>
+            vm.teamIds?.includes(team.id),
+          );
+          const group = new VmGroup(team.name, team.id, vms);
+          this.groupByTeams.push(group);
         }
+      }
 
-        this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
-        this.cd.markForCheck();
-      });
+      this.groupByTeams.sort((a, b) => a.team.localeCompare(b.team));
+      this.cd.markForCheck();
+    });
   }
 
   /**
@@ -381,14 +380,14 @@ export class VmListComponent implements OnInit, OnChanges, AfterViewInit {
     if (index !== this.currentPanelIndex) {
       // No old panel on the first click of a grouped list - currentPanelIndex is
       // still undefined then, and there is nothing to clear.
-      this.groupSelects.toArray()[this.currentPanelIndex]?.clearSelection();
+      this.groupSelects()[this.currentPanelIndex]?.clearSelection();
       this.currentPanelIndex = index;
     }
   }
 
   // Assign each VM group a paginator
   assignPaginator(group: VmGroup, index: number) {
-    group.dataSource.paginator = this.groupPaginators.toArray()[index];
+    group.dataSource.paginator = this.groupPaginators()[index];
   }
 
   public powerOffSelected() {

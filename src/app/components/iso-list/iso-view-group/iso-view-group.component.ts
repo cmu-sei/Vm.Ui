@@ -4,9 +4,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ViewChild,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import {
   MatAccordion,
@@ -44,7 +44,7 @@ export class IsoViewGroupComponent {
 
   // The inner team/view-wide accordion, so the parent's Expand/Collapse-All can reach this View's
   // nested panels (the outer accordion only controls the View-level panels).
-  @ViewChild(MatAccordion) accordion: MatAccordion;
+  readonly accordion = viewChild(MatAccordion);
 
   // The view-wide group followed by the team groups, in display order.
   groups(): IsoGroup[] {
@@ -53,10 +53,10 @@ export class IsoViewGroupComponent {
   }
 
   openAll() {
-    this.accordion?.openAll();
+    this.accordion()?.openAll();
   }
 
   closeAll() {
-    this.accordion?.closeAll();
+    this.accordion()?.closeAll();
   }
 }

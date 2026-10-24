@@ -3,7 +3,13 @@
  * Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
  */
 
-import { Component, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  OnDestroy,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import {
@@ -78,10 +84,10 @@ declare global {
 }
 
 @Component({
-    selector: 'app-vm-usage-reporting',
-    templateUrl: './vm-usage-reporting.component.html',
-    styleUrls: ['./vm-usage-reporting.component.scss'],
-    imports: [
+  selector: 'app-vm-usage-reporting',
+  templateUrl: './vm-usage-reporting.component.html',
+  styleUrls: ['./vm-usage-reporting.component.scss'],
+  imports: [
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
@@ -107,13 +113,17 @@ declare global {
     MatRowDef,
     MatRow,
     MatPaginator,
-    DatePipe
-],
-    providers: [provideNativeDateAdapter()]
+    DatePipe,
+  ],
+  providers: [provideNativeDateAdapter()],
 })
 export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild('formDirective') private formDirective: NgForm;
+  private vmUsageLoggingSessionService = inject(VmUsageLoggingSessionService);
+  private clipboard = inject(Clipboard);
+  private routerQuery = inject(RouterQuery);
+
+  readonly paginator = viewChild(MatPaginator);
+  private readonly formDirective = viewChild<NgForm>('formDirective');
   unsubscribe$: Subject<null> = new Subject<null>();
   dataSource = new MatTableDataSource<VmUsageReport>(
     new Array<VmUsageReport>(),
@@ -133,12 +143,6 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
     start: new UntypedFormControl(),
     end: new UntypedFormControl(),
   });
-
-  constructor(
-    private vmUsageLoggingSessionService: VmUsageLoggingSessionService,
-    private clipboard: Clipboard,
-    private routerQuery: RouterQuery,
-  ) {}
 
   ngAfterViewInit(): void {}
 
@@ -187,7 +191,7 @@ export class VmUsageReportingComponent implements AfterViewInit, OnDestroy {
     this.dataSource = new MatTableDataSource<VmUsageReport>(
       this.sortedVmUsageList,
     );
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.paginator = this.paginator();
   }
 
   blankRepeatValues() {

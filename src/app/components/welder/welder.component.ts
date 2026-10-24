@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { interval, Subject } from 'rxjs';
@@ -11,14 +11,19 @@ import { ThemeService } from '../../services/theme/theme.service';
 import { VmService } from '../../state/vms/vms.service';
 import { MatButton } from '@angular/material/button';
 
-
 @Component({
-    selector: 'app-welder',
-    templateUrl: './welder.component.html',
-    styleUrls: ['./welder.component.scss'],
-    imports: [MatButton]
+  selector: 'app-welder',
+  templateUrl: './welder.component.html',
+  styleUrls: ['./welder.component.scss'],
+  imports: [MatButton],
 })
 export class WelderComponent implements OnInit, OnDestroy {
+  welderService = inject(WelderService);
+  vmService = inject(VmService);
+  private route = inject(ActivatedRoute);
+  private snackBar = inject(MatSnackBar);
+  private themeService = inject(ThemeService);
+
   public showDeployButton = false;
   public deployButtonDisabled = false;
   public readyVMs = new Set();
@@ -26,14 +31,6 @@ export class WelderComponent implements OnInit, OnDestroy {
   private previousWSResults = [0, 0, 0];
 
   private unsubscribe$ = new Subject();
-
-  constructor(
-    public welderService: WelderService,
-    public vmService: VmService,
-    private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
-    private themeService: ThemeService,
-  ) {}
 
   ngOnInit() {
     this.viewName = this.route.snapshot.params['viewName'];

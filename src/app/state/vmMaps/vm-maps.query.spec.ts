@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { VmMap } from '../../generated/vm-api';
 import { recordEmissions } from '../../test-utils/record-emissions';
@@ -22,7 +23,13 @@ function makeMap(id: string, extra: Partial<VmMap> = {}): VmMap {
 
 function createQuery() {
   const store = new VmMapsStore();
-  return { store, query: new VmMapsQuery(store) };
+  const injector = Injector.create({
+    providers: [{ provide: VmMapsStore, useValue: store }],
+  });
+  return {
+    store,
+    query: runInInjectionContext(injector, () => new VmMapsQuery()),
+  };
 }
 
 describe('VmMapsQuery', () => {

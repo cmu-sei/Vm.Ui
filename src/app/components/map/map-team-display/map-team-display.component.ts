@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, OnInit, inject, input, output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,33 +13,31 @@ import { ThemeService } from '../../../services/theme/theme.service';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-map-team-display',
-    templateUrl: './map-team-display.component.html',
-    styleUrls: ['./map-team-display.component.scss'],
-    imports: [AsyncPipe]
+  selector: 'app-map-team-display',
+  templateUrl: './map-team-display.component.html',
+  styleUrls: ['./map-team-display.component.scss'],
+  imports: [AsyncPipe],
 })
 export class MapTeamDisplayComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private vmMapsQuery = inject(VmMapsQuery);
+  private dialog = inject(MatDialog);
+  private themeService = inject(ThemeService);
+
   machines: Observable<Clickpoint[]>;
   id: string;
   mapId: string;
   imageUrl: SafeUrl;
   mapInitialized: boolean;
 
-  @Input() imageUrlInput: string;
-  @Input() mapIdInput: string;
+  readonly imageUrlInput = input<string>(undefined);
+  readonly mapIdInput = input<string>(undefined);
 
-  @Output() mapSwitched = new EventEmitter<string>();
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private vmMapsQuery: VmMapsQuery,
-    private dialog: MatDialog,
-    private themeService: ThemeService,
-  ) {}
+  readonly mapSwitched = output<string>();
 
   ngOnInit() {
-    this.mapId = this.mapIdInput;
+    this.mapId = this.mapIdInput();
     this.machines = this.vmMapsQuery.getMapCoordinates(this.mapId);
 
     this.vmMapsQuery.getById(this.mapId).subscribe((m) => {
@@ -90,7 +88,11 @@ export class MapTeamDisplayComponent implements OnInit {
         // If neither a map or custom url was clicked, it must be a VM. Url is the name of the VM
         this.route.params.subscribe((params) => {
           const viewId = params['viewId'];
-          window.open(this.themeService.addThemeQueryParam(`views/${viewId}/vms/${url}/console`));
+          window.open(
+            this.themeService.addThemeQueryParam(
+              `views/${viewId}/vms/${url}/console`,
+            ),
+          );
         });
       }
     } else {

@@ -3,14 +3,14 @@
 
 import {
   Component,
-  EventEmitter,
-  Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
   TemplateRef,
-  ViewChild,
+  inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
 import { Clickpoint } from '../../models/clickpoint';
 import {
@@ -33,6 +33,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   imports: [AddPointComponent],
 })
 export class MapComponent implements OnInit, OnChanges {
+  private dialog = inject(MatDialog);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private vmMapsService = inject(VmMapsService);
+  private vmMapsQuery = inject(VmMapsQuery);
+  private vmsService = inject(VmsService);
+  private snackBar = inject(MatSnackBar);
+
   machines: Clickpoint[];
   mapInitialzed: boolean;
   teamIDs: string[];
@@ -52,28 +60,19 @@ export class MapComponent implements OnInit, OnChanges {
 
   viewId: string;
 
-  @Input() mapIdInput: string;
+  readonly mapIdInput = input<string>(undefined);
 
-  @Output() mapSaved = new EventEmitter<void>();
-  @Output() initEmitter = new EventEmitter<boolean>();
+  readonly mapSaved = output<void>();
+  readonly initEmitter = output<boolean>();
 
-  @ViewChild('addPointDialog') addPointDialog: TemplateRef<AddPointComponent>;
+  readonly addPointDialog =
+    viewChild<TemplateRef<AddPointComponent>>('addPointDialog');
   private dialogRef: MatDialogRef<AddPointComponent>;
 
   private matDialogConfig: MatDialogConfig = {
     width: '400px',
     maxWidth: '90vw',
   };
-
-  constructor(
-    private dialog: MatDialog,
-    private route: ActivatedRoute,
-    private router: Router,
-    private vmMapsService: VmMapsService,
-    private vmMapsQuery: VmMapsQuery,
-    private vmsService: VmsService,
-    private snackBar: MatSnackBar,
-  ) {}
 
   ngOnInit(): void {
     this.timesSaved = 0;
@@ -95,7 +94,7 @@ export class MapComponent implements OnInit, OnChanges {
 
   initMap(): void {
     // Get map data, put coordinates into machines array
-    this.vmMapsQuery.getById(this.mapIdInput).subscribe((data) => {
+    this.vmMapsQuery.getById(this.mapIdInput()).subscribe((data) => {
       this.name = data.name;
       this.mapId = data.id;
       this.teamIDs = data.teamIds;
@@ -153,7 +152,7 @@ export class MapComponent implements OnInit, OnChanges {
     this.editing = false;
 
     this.dialogRef = this.dialog.open(
-      this.addPointDialog,
+      this.addPointDialog(),
       this.matDialogConfig,
     );
   }
@@ -287,7 +286,7 @@ export class MapComponent implements OnInit, OnChanges {
     this.editing = true;
 
     this.dialogRef = this.dialog.open(
-      this.addPointDialog,
+      this.addPointDialog(),
       this.matDialogConfig,
     );
   }

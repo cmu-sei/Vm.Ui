@@ -7,9 +7,10 @@ import {
   Component,
   ChangeDetectionStrategy,
   Input,
-  ViewChild,
-  Output,
-  EventEmitter,
+  inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
 import {
   MatAccordion,
@@ -40,11 +41,11 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { VmUser } from '../../generated/vm-api';
 
 @Component({
-    selector: 'app-user-list',
-    templateUrl: './user-list.component.html',
-    styleUrls: ['./user-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
+  selector: 'app-user-list',
+  templateUrl: './user-list.component.html',
+  styleUrls: ['./user-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
     MatFormField,
     MatIcon,
     MatPrefix,
@@ -64,13 +65,17 @@ import { VmUser } from '../../generated/vm-api';
     TeamUsersComponent,
     AsyncPipe,
     MatOption,
-    MatSelect
-]
+    MatSelect,
+  ],
 })
 export class UserListComponent {
-  @Input() viewId: string;
+  private signalRService = inject(SignalRService);
+  private vmUsersQuery = inject(VmUsersQuery);
+
+  readonly viewId = input<string>(undefined);
   @Input() set teams(val: Array<VmTeam>) {
-    this._teams = val?.sort((a, b) => a?.name?.localeCompare(b?.name || '') || 0) || [];
+    this._teams =
+      val?.sort((a, b) => a?.name?.localeCompare(b?.name || '') || 0) || [];
     this.userQueryMap.clear();
 
     val?.forEach((t) => {
@@ -88,14 +93,16 @@ export class UserListComponent {
     }
   }
 
-  @Output() openTab = new EventEmitter<{ [name: string]: string }>();
+  readonly openTab = output<{
+    [name: string]: string;
+  }>();
 
   public _teams: Array<VmTeam>;
   public hideInactive = false;
   public recentOnly = false;
   public recentMinutes = 15;
 
-  @ViewChild(MatAccordion) accordion: MatAccordion;
+  readonly accordion = viewChild(MatAccordion);
 
   public searchTerm = '';
   public searchTermSubject = new BehaviorSubject('');
@@ -105,17 +112,12 @@ export class UserListComponent {
 
   public userQueryMap = new Map<string, Observable<Array<VmUser>>>();
 
-  constructor(
-    private signalRService: SignalRService,
-    private vmUsersQuery: VmUsersQuery,
-  ) {}
-
   private setActive(): void {
-    this.signalRService.joinViewUsers(this.viewId);
+    this.signalRService.joinViewUsers(this.viewId());
   }
 
   private setInactive(): void {
-    this.signalRService.leaveViewUsers(this.viewId);
+    this.signalRService.leaveViewUsers(this.viewId());
   }
 
   public applyFilter(filterValue: string) {

@@ -5,11 +5,11 @@ Copyright 2022 Carnegie Mellon University. All Rights Reserved.
 
 import {
   Component,
-  EventEmitter,
-  Input,
   OnInit,
-  Output,
-  ViewChild,
+  inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
 import { ThemeService } from '../../../services/theme/theme.service';
 import {
@@ -22,7 +22,7 @@ import { take } from 'rxjs/operators';
 import { VmService } from '../../../state/vms/vms.service';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIcon } from '@angular/material/icon';
-import { NgTemplateOutlet, NgClass } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 
 export interface Item {
   id: number;
@@ -30,35 +30,33 @@ export interface Item {
 }
 
 @Component({
-    selector: 'vm-item',
-    templateUrl: './vm-item.component.html',
-    styleUrls: ['./vm-item.component.scss'],
-    imports: [
+  selector: 'vm-item',
+  templateUrl: './vm-item.component.html',
+  styleUrls: ['./vm-item.component.scss'],
+  imports: [
     NgTemplateOutlet,
-    NgClass,
     MatIcon,
     MatMenuTrigger,
     MatMenu,
     MatMenuContent,
-    MatCheckbox
-]
+    MatCheckbox,
+  ],
 })
 export class VmItemComponent implements OnInit {
-  @Input() vm: Vm;
-  @Input() ipv4Only: Boolean;
-  @Input() showIps: Boolean;
-  @Input() teamsList: Array<SimpleTeam>;
-  @Input() canManageTeam: Boolean;
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
-  @ViewChild(MatMenuTrigger)
-  contextMenu: MatMenuTrigger;
-  contextMenuPosition = { x: '0px', y: '0px' };
+  themeService = inject(ThemeService);
+  vmsService = inject(VmsService);
+  vmService = inject(VmService);
 
-  constructor(
-    public themeService: ThemeService,
-    public vmsService: VmsService,
-    public vmService: VmService,
-  ) {}
+  readonly vm = input<Vm>(undefined);
+  readonly ipv4Only = input<Boolean>(undefined);
+  readonly showIps = input<Boolean>(undefined);
+  readonly teamsList = input<Array<SimpleTeam>>(undefined);
+  readonly canManageTeam = input<Boolean>(undefined);
+  readonly openVmHere = output<{
+    [name: string]: string;
+  }>();
+  readonly contextMenu = viewChild(MatMenuTrigger);
+  contextMenuPosition = { x: '0px', y: '0px' };
 
   ngOnInit(): void {}
 
@@ -84,8 +82,8 @@ export class VmItemComponent implements OnInit {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menu.focusFirstItem('mouse');
-    this.contextMenu.openMenu();
+    this.contextMenu().menu.focusFirstItem('mouse');
+    this.contextMenu().openMenu();
   }
 
   onTeamSelect(vmId: string, teams: Array<string>, team: string) {
@@ -118,7 +116,7 @@ export class VmItemComponent implements OnInit {
       return [];
     }
 
-    if (this.ipv4Only) {
+    if (this.ipv4Only()) {
       return vm.ipAddresses.filter((x) => !x.includes(':'));
     } else {
       return vm.ipAddresses;

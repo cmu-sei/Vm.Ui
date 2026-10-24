@@ -1,6 +1,6 @@
 <!--
- Copyright 2022 Carnegie Mellon University. All Rights Reserved.
- Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+Copyright 2022 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
 <div class="user-table-viewport" [style.height]="tableHeight">
@@ -26,17 +26,13 @@
         >Virtual Machine</mat-header-cell
       >
       <mat-cell *matCellDef="let element">
-        <div
-          *ngIf="
-            this.vmsQuery.selectEntity(element.activeVmId) | async as vm;
-            else noVm
-          "
-        >
-          {{ vm.name }}
-        </div>
-        <ng-template #noVm>
+        @if (this.vmsQuery.selectEntity(element.activeVmId) | async; as vm) {
+          <div>
+            {{ vm.name }}
+          </div>
+        } @else {
           <div>None</div>
-        </ng-template>
+        }
       </mat-cell>
     </ng-container>
 
@@ -46,21 +42,18 @@
         >Last Virtual Machine</mat-header-cell
       >
       <mat-cell *matCellDef="let element">
-        <a
-          *ngIf="
-            this.vmsQuery.selectEntity(element.lastVmId) | async as vm;
-            else noVm
-          "
-          class="link"
-          (click)="openVmHere($event, vm.url, vm.name)"
-          matTooltip="Open {{ vm.name }}"
-          [attr.href]="getVmUrl(vm.url)"
-        >
-          {{ vm.name }}
-        </a>
-        <ng-template #noVm>
+        @if (this.vmsQuery.selectEntity(element.lastVmId) | async; as vm) {
+          <a
+            class="link"
+            (click)="openVmHere($event, vm.url, vm.name)"
+            matTooltip="Open {{ vm.name }}"
+            [attr.href]="getVmUrl(vm.url)"
+          >
+            {{ vm.name }}
+          </a>
+        } @else {
           <div>None</div>
-        </ng-template>
+        }
       </mat-cell>
     </ng-container>
 
@@ -74,7 +67,7 @@
       </mat-cell>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-header-row *matHeaderRowDef="displayedColumns" />
+    <mat-row *matRowDef="let row; columns: displayedColumns" />
   </mat-table>
 </div>

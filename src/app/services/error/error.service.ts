@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable, Injector, ErrorHandler } from '@angular/core';
+import { Injectable, Injector, ErrorHandler, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SystemMessageService } from '../system-message/system-message.service';
 
@@ -9,24 +9,34 @@ import { SystemMessageService } from '../system-message/system-message.service';
   providedIn: 'root',
 })
 export class ErrorService implements ErrorHandler {
-  constructor(private injector: Injector) {}
+  private injector = inject(Injector);
 
   handleError(err: any) {
     // Suppress SignalR connection errors
-    if (err.message?.includes('Connected') ||
-        err.message?.includes('connection is not') ||
-        err.message?.includes('negotiation') ||
-        err.rejection?.message?.includes('Connected') ||
-        err.rejection?.message?.includes('connection is not') ||
-        err.rejection?.message?.includes('negotiation')) {
-      console.log('SignalR connection error (suppressed):', err.message || err.rejection?.message);
+    if (
+      err.message?.includes('Connected') ||
+      err.message?.includes('connection is not') ||
+      err.message?.includes('negotiation') ||
+      err.rejection?.message?.includes('Connected') ||
+      err.rejection?.message?.includes('connection is not') ||
+      err.rejection?.message?.includes('negotiation')
+    ) {
+      console.log(
+        'SignalR connection error (suppressed):',
+        err.message || err.rejection?.message,
+      );
       return;
     }
 
     // Suppress undefined property access errors (should be handled by optional chaining)
-    if (err.message?.includes('Cannot read properties of undefined') ||
-        err.rejection?.message?.includes('Cannot read properties of undefined')) {
-      console.log('Null reference error (suppressed):', err.message || err.rejection?.message);
+    if (
+      err.message?.includes('Cannot read properties of undefined') ||
+      err.rejection?.message?.includes('Cannot read properties of undefined')
+    ) {
+      console.log(
+        'Null reference error (suppressed):',
+        err.message || err.rejection?.message,
+      );
       return;
     }
 
@@ -55,10 +65,12 @@ export class ErrorService implements ErrorHandler {
           'Identity Server Error',
           'The Identity Server could not be reached for user authentication.',
         );
-      } else if (err.rejection.message?.endsWith('Failed to fetch') ||
-                 err.rejection.message?.includes('Connected') ||
-                 err.rejection.message?.includes('connection is not') ||
-                 err.rejection.message?.includes('negotiation')) {
+      } else if (
+        err.rejection.message?.endsWith('Failed to fetch') ||
+        err.rejection.message?.includes('Connected') ||
+        err.rejection.message?.includes('connection is not') ||
+        err.rejection.message?.includes('negotiation')
+      ) {
         console.log('SignalR connection error: ' + err.rejection.message);
       } else {
         messageService.displayMessage('Error', err.rejection.message);

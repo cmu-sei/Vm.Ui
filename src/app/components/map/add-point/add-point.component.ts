@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, inject, input, output } from '@angular/core';
 import {
   UntypedFormControl,
   UntypedFormGroup,
@@ -28,13 +28,18 @@ import {
   MatAutocomplete,
 } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
+import {
+  MatFormField,
+  MatLabel,
+  MatError,
+  MatHint,
+} from '@angular/material/form-field';
 import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
 
 @Component({
-    selector: 'app-add-point',
-    templateUrl: './add-point.component.html',
-    imports: [
+  selector: 'app-add-point',
+  templateUrl: './add-point.component.html',
+  imports: [
     ...CRUCIBLE_DIALOG_IMPORTS,
     ReactiveFormsModule,
     MatFormField,
@@ -49,19 +54,24 @@ import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
     MatButton,
     AsyncPipe,
     MatError,
-    MatHint
-]
+    MatHint,
+  ],
 })
 export class AddPointComponent implements OnInit {
-  @Input() xPos: number;
-  @Input() yPos: number;
-  @Input() rad: number;
-  @Input() url: string;
-  @Input() id: string;
-  @Input() label: string;
-  @Input() editing: boolean;
+  private route = inject(ActivatedRoute);
+  private vmMapsQuery = inject(VmMapsQuery);
+  private VmAkitaService = inject(VmService);
+  private vmsQuery = inject(VmsQuery);
 
-  @Output() machineEmitter = new EventEmitter<Clickpoint>();
+  readonly xPos = input<number>(undefined);
+  readonly yPos = input<number>(undefined);
+  readonly rad = input<number>(undefined);
+  readonly url = input<string>(undefined);
+  readonly id = input<string>(undefined);
+  readonly label = input<string>(undefined);
+  readonly editing = input<boolean>(undefined);
+
+  readonly machineEmitter = output<Clickpoint>();
 
   form: UntypedFormGroup;
   vmsFiltered: Observable<Vm[]>;
@@ -70,37 +80,35 @@ export class AddPointComponent implements OnInit {
   viewId: string;
   custom: boolean;
 
-  constructor(
-    private route: ActivatedRoute,
-    private vmMapsQuery: VmMapsQuery,
-    private VmAkitaService: VmService,
-    private vmsQuery: VmsQuery,
-  ) {}
-
   ngOnInit() {
     this.custom = false;
     this.control = new UntypedFormControl();
 
     // Default values come from map component
     this.form = new UntypedFormGroup({
-      rad: new UntypedFormControl(
-        { value: this.rad, disabled: false },
-        [Validators.required, Validators.min(0.1)]
-      ),
-      url: new UntypedFormControl({ value: this.url, disabled: false }, [Validators.required]),
-      label: new UntypedFormControl({ value: this.label, disabled: false }),
-      customUrl: new UntypedFormControl({ value: '', disabled: true }, [this.urlValidator]),
+      rad: new UntypedFormControl({ value: this.rad(), disabled: false }, [
+        Validators.required,
+        Validators.min(0.1),
+      ]),
+      url: new UntypedFormControl({ value: this.url(), disabled: false }, [
+        Validators.required,
+      ]),
+      label: new UntypedFormControl({ value: this.label(), disabled: false }),
+      customUrl: new UntypedFormControl({ value: '', disabled: true }, [
+        this.urlValidator,
+      ]),
     });
 
-    if (this.editing && this.url) {
-      const vmMap = this.vmMapsQuery.getEntity(this.url);
+    const url = this.url();
+    if (this.editing() && url) {
+      const vmMap = this.vmMapsQuery.getEntity(url);
       if (vmMap) {
         this.form.get('url').setValue(vmMap);
-      } else if (this.url.includes('://')) {
+      } else if (url.includes('://')) {
         this.custom = true;
         this.form.get('url').disable();
         this.form.get('customUrl').enable();
-        this.form.get('customUrl').setValue(this.url);
+        this.form.get('customUrl').setValue(url);
         this.form.get('url').setValue('');
       }
     }
@@ -161,11 +169,11 @@ export class AddPointComponent implements OnInit {
     }
 
     const point = new Clickpoint(
-      +this.xPos,
-      +this.yPos,
+      +this.xPos(),
+      +this.yPos(),
       +this.form.get('rad').value,
       [],
-      this.id,
+      this.id(),
       this.form.get('label').value,
       query,
       multiple,
@@ -192,7 +200,7 @@ export class AddPointComponent implements OnInit {
   onDelete(): void {
     // Send a clickpoint with fields set to -1 to signal that it should be deleted
     this.machineEmitter.emit(
-      new Clickpoint(-1, -1, -1, [], this.id, '', '', false),
+      new Clickpoint(-1, -1, -1, [], this.id(), '', '', false),
     );
   }
 

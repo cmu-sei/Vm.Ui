@@ -2,13 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  TemplateRef,
-} from '@angular/core';
+import { Component, TemplateRef, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -45,33 +39,33 @@ class TopbarStubComponent {}
 
 @Component({ selector: 'app-page-not-found', template: '' })
 class PageNotFoundStubComponent {
-  @Input() heading: string;
-  @Input() message: string;
+  readonly heading = input<string>(undefined);
+  readonly message = input<string>(undefined);
 }
 
 @Component({ selector: 'app-map-team-display', template: '' })
 class MapTeamDisplayStubComponent {
-  @Input() imageUrlInput: string;
-  @Input() mapIdInput: string;
-  @Output() mapSwitched = new EventEmitter<string>();
+  readonly imageUrlInput = input<string>(undefined);
+  readonly mapIdInput = input<string>(undefined);
+  readonly mapSwitched = output<string>();
 }
 
 @Component({ selector: 'app-map', template: '' })
 class MapStubComponent {
-  @Input() mapIdInput: string;
-  @Output() mapSaved = new EventEmitter<void>();
-  @Output() initEmitter = new EventEmitter<boolean>();
+  readonly mapIdInput = input<string>(undefined);
+  readonly mapSaved = output<void>();
+  readonly initEmitter = output<boolean>();
 }
 
 @Component({ selector: 'app-new-map', template: '' })
 class NewMapStubComponent {
-  @Input() viewId: string;
-  @Input() creating: boolean;
-  @Input() name: string;
-  @Input() url: string;
-  @Input() teamsInput: string[];
-  @Output() mapCreated = new EventEmitter<string>();
-  @Output() propertiesChanged = new EventEmitter<[string, string, string[]]>();
+  readonly viewId = input<string>(undefined);
+  readonly creating = input<boolean>(undefined);
+  readonly name = input<string>(undefined);
+  readonly url = input<string>(undefined);
+  readonly teamsInput = input<string[]>(undefined);
+  readonly mapCreated = output<string>();
+  readonly propertiesChanged = output<[string, string, string[]]>();
 }
 
 function makeMap(id: string, teamIds: string[] | null): VmMap {
@@ -218,7 +212,7 @@ describe('MapMainComponent', () => {
     const display = fixture.debugElement.query(
       By.directive(MapTeamDisplayStubComponent),
     ).componentInstance as MapTeamDisplayStubComponent;
-    expect(display.mapIdInput).toBe('m1');
+    expect(display.mapIdInput()).toBe('m1');
   });
 
   /**

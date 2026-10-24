@@ -9,7 +9,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   @for (row of group().rows; track rowKey(row)) {
     <div class="iso-row">
       @if (isDeleting(row)) {
-        <mat-spinner [diameter]="20"></mat-spinner>
+        <mat-spinner [diameter]="20" />
       } @else if (row.canDelete) {
         <button
           mat-icon-button
@@ -18,10 +18,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           matTooltip="Delete"
           aria-label="Delete"
         >
-          <mat-icon
-            class="mdi-24px"
-            fontIcon="mdi-trash-can-outline"
-          ></mat-icon>
+          <mat-icon class="mdi-24px" fontIcon="mdi-trash-can-outline" />
         </button>
       }
       @if (row.missingProviders?.length) {
@@ -30,7 +27,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           fontIcon="mdi-alert"
           [matTooltip]="missingTooltip(row)"
           [attr.aria-label]="missingTooltip(row)"
-        ></mat-icon>
+        />
       }
       <span class="iso-name">{{ row.filename }}</span>
     </div>

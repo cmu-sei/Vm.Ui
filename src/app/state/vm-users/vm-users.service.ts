@@ -3,13 +3,13 @@
  * Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { VmUsersStore } from './vm-users.store';
 import { VmUser } from '../../generated/vm-api';
 
 @Injectable({ providedIn: 'root' })
 export class VmUsersService {
-  constructor(private vmUsersStore: VmUsersStore) {}
+  private vmUsersStore = inject(VmUsersStore);
 
   set(vmUsers: Array<VmUser>) {
     this.vmUsersStore.set(vmUsers);

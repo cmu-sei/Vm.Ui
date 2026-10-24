@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, inject, input, output } from '@angular/core';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -20,15 +20,20 @@ import { MatOption } from '@angular/material/core';
 
 import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
+import {
+  MatFormField,
+  MatLabel,
+  MatError,
+  MatHint,
+} from '@angular/material/form-field';
 import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
 import { UserPermissionsService } from '../../../services/permissions/user-permissions.service';
 import { MANAGE_MAPS } from '../map-permissions';
 
 @Component({
-    selector: 'app-new-map',
-    templateUrl: './new-map.component.html',
-    imports: [
+  selector: 'app-new-map',
+  templateUrl: './new-map.component.html',
+  imports: [
     ...CRUCIBLE_DIALOG_IMPORTS,
     ReactiveFormsModule,
     MatFormField,
@@ -37,40 +42,38 @@ import { MANAGE_MAPS } from '../map-permissions';
     MatSelect,
     MatOption,
     MatError,
-    MatHint
-]
+    MatHint,
+  ],
 })
 export class NewMapComponent implements OnInit {
+  private vmService = inject(VmsService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private vmMapsService = inject(VmMapsService);
+  private fileService = inject(FileService);
+  private permissionsService = inject(UserPermissionsService);
+
   teams: SimpleTeam[];
   form: UntypedFormGroup;
   images: Image[];
 
-  @Input() viewId: string;
-  @Input() creating: boolean;
-  @Input() name: string;
-  @Input() url: string;
-  @Input() teamsInput: string[];
+  readonly viewId = input<string>(undefined);
+  readonly creating = input<boolean>(undefined);
+  readonly name = input<string>(undefined);
+  readonly url = input<string>(undefined);
+  readonly teamsInput = input<string[]>(undefined);
 
-  @Output() mapCreated = new EventEmitter<string>();
-  @Output() propertiesChanged = new EventEmitter<[string, string, string[]]>();
-
-  constructor(
-    private vmService: VmsService,
-    private formBuilder: UntypedFormBuilder,
-    private vmMapsService: VmMapsService,
-    private fileService: FileService,
-    private permissionsService: UserPermissionsService,
-  ) {}
+  readonly mapCreated = output<string>();
+  readonly propertiesChanged = output<[string, string, string[]]>();
 
   ngOnInit(): void {
     this.getTeams();
     this.getImages();
 
     this.form = this.formBuilder.group({
-      name: [this.name, Validators.required],
-      imageURL: [this.url, this.urlValidator],
+      name: [this.name(), Validators.required],
+      imageURL: [this.url(), this.urlValidator],
       viewImage: [''],
-      teamIDs: [this.teamsInput, Validators.required],
+      teamIDs: [this.teamsInput(), Validators.required],
     });
   }
 
@@ -88,7 +91,7 @@ export class NewMapComponent implements OnInit {
   // management on every team a Map is saved with
   getTeams(): void {
     this.vmService
-      .getTeams(this.viewId)
+      .getTeams(this.viewId())
       .pipe(
         switchMap((teams) =>
           teams.length === 0
@@ -97,7 +100,7 @@ export class NewMapComponent implements OnInit {
                 teams.map((team) =>
                   this.permissionsService
                     .hasEffectivePermissionsForTeams(
-                      this.viewId,
+                      this.viewId(),
                       [team.id],
                       MANAGE_MAPS,
                     )
@@ -116,7 +119,7 @@ export class NewMapComponent implements OnInit {
   getImages(): void {
     this.images = new Array<Image>();
 
-    this.fileService.getViewFiles(this.viewId).subscribe((data) => {
+    this.fileService.getViewFiles(this.viewId()).subscribe((data) => {
       for (let fp of data.filter((f) => this.isImage(f.name))) {
         this.getImageBlob(fp.id).subscribe((blob) => {
           this.images.push(new Image(fp, blob));
@@ -146,7 +149,7 @@ export class NewMapComponent implements OnInit {
     reader.onload = function () {
       const asB64 = reader.result.toString();
 
-      if (self.creating) {
+      if (self.creating()) {
         const urlToSave = selectUsed
           ? asB64
           : (self.form.get('imageURL').value as string);
@@ -164,7 +167,7 @@ export class NewMapComponent implements OnInit {
 
     if (selectUsed) {
       reader.readAsDataURL(selectBlob);
-    } else if (this.creating) {
+    } else if (this.creating()) {
       this.saveMap(
         name,
         this.form.get('imageURL').value as string,
@@ -204,7 +207,7 @@ export class NewMapComponent implements OnInit {
       id: mapId,
     };
 
-    this.vmMapsService.add(this.viewId, payload);
+    this.vmMapsService.add(this.viewId(), payload);
     this.mapCreated.emit(mapId);
   }
 

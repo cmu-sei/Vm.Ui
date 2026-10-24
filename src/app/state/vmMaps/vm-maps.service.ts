@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ID } from '@datorama/akita';
 import { take } from 'rxjs/operators';
 import { VmMap, VmsService } from '../../generated/vm-api';
@@ -9,10 +9,8 @@ import { VmMapsStore } from './vm-maps.store';
 
 @Injectable({ providedIn: 'root' })
 export class VmMapsService {
-  constructor(
-    private vmMapsStore: VmMapsStore,
-    private vmService: VmsService,
-  ) {}
+  private vmMapsStore = inject(VmMapsStore);
+  private vmService = inject(VmsService);
 
   get() {
     this.vmMapsStore.setLoading(true);
@@ -38,7 +36,7 @@ export class VmMapsService {
             // Re-throw other errors
             throw error;
           }
-        }
+        },
       });
   }
 

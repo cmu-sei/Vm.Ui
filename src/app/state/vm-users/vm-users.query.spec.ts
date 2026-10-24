@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { VmUser } from '../../generated/vm-api';
 import { recordEmissions } from '../../test-utils/record-emissions';
@@ -11,10 +12,13 @@ import { VmUsersStore } from './vm-users.store';
 
 function createState() {
   const store = new VmUsersStore();
+  const injector = Injector.create({
+    providers: [{ provide: VmUsersStore, useValue: store }],
+  });
   return {
     store,
-    query: new VmUsersQuery(store),
-    service: new VmUsersService(store),
+    query: runInInjectionContext(injector, () => new VmUsersQuery()),
+    service: runInInjectionContext(injector, () => new VmUsersService()),
   };
 }
 

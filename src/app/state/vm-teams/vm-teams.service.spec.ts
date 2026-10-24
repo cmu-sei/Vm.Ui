@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { recordEmissions } from '../../test-utils/record-emissions';
 import { VmTeam } from './vm-team.model';
@@ -11,10 +12,13 @@ import { VmTeamsStore } from './vm-teams.store';
 
 function createState() {
   const store = new VmTeamsStore();
+  const injector = Injector.create({
+    providers: [{ provide: VmTeamsStore, useValue: store }],
+  });
   return {
     store,
-    query: new VmTeamsQuery(store),
-    service: new VmTeamsService(store),
+    query: runInInjectionContext(injector, () => new VmTeamsQuery()),
+    service: runInInjectionContext(injector, () => new VmTeamsService()),
   };
 }
 

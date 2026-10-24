@@ -60,9 +60,12 @@ async function renderNewMap(
     system?: AppSystemPermission[];
     claims?: TeamPermissionsClaim[];
     teams?: SimpleTeam[];
-    inputs?: Partial<
-      Pick<NewMapComponent, 'creating' | 'name' | 'url' | 'teamsInput'>
-    >;
+    inputs?: {
+      creating?: boolean;
+      name?: string;
+      url?: string;
+      teamsInput?: string[];
+    };
   } = {},
 ) {
   const {

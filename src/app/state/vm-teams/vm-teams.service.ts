@@ -3,13 +3,13 @@
  * Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { VmTeam } from './vm-team.model';
 import { VmTeamsStore } from './vm-teams.store';
 
 @Injectable({ providedIn: 'root' })
 export class VmTeamsService {
-  constructor(private vmTeamsStore: VmTeamsStore) {}
+  private vmTeamsStore = inject(VmTeamsStore);
 
   set(vmTeams: Array<VmTeam>) {
     this.vmTeamsStore.set(vmTeams);

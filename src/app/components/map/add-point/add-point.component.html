@@ -4,7 +4,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <crucible-dialog
-  [dialogTitle]="(editing ? 'Edit' : 'Add') + ' Click Point'"
+  [dialogTitle]="(editing() ? 'Edit' : 'Add') + ' Click Point'"
   [form]="form"
   [submitDisabled]="!form.valid"
   [guardUnsavedWork]="true"
@@ -14,7 +14,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div crucibleDialogContent [formGroup]="form" class="d-flex flex-column">
     <mat-form-field>
       <mat-label>Radius</mat-label>
-      <input type="number" matNativeControl formControlName="rad" min="0.1" step="0.1" />
+      <input
+        type="number"
+        matNativeControl
+        formControlName="rad"
+        min="0.1"
+        step="0.1"
+      />
       @if (form.get('rad')?.invalid && form.get('rad')?.touched) {
         <mat-error>Radius must be at least 0.1</mat-error>
       } @else {
@@ -30,7 +36,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         aria-label="Resource"
         [matAutocomplete]="auto"
         formControlName="url"
-        />
+      />
       @if (form.get('url')?.invalid && form.get('url')?.touched && !custom) {
         <mat-error>Resource is required</mat-error>
       }
@@ -38,34 +44,34 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         #urlSelect
         #auto="matAutocomplete"
         [displayWith]="display"
-        >
+      >
         <mat-optgroup label="VMs">
           @for (vm of vmsFiltered | async; track vm.id) {
-            <mat-option [value]="vm">{{
-              vm.name
-            }}</mat-option>
+            <mat-option [value]="vm">{{ vm.name }}</mat-option>
           }
         </mat-optgroup>
         <mat-optgroup label="Maps">
           @for (m of vmMapsFiltered | async; track m.id) {
-            <mat-option [value]="m">{{
-              m.name
-            }}</mat-option>
+            <mat-option [value]="m">{{ m.name }}</mat-option>
           }
         </mat-optgroup>
       </mat-autocomplete>
     </mat-form-field>
-    <mat-checkbox [(ngModel)]="custom" (ngModelChange)="onCustomToggle($event)" [ngModelOptions]="{ standalone: true }">
+    <mat-checkbox
+      [(ngModel)]="custom"
+      (ngModelChange)="onCustomToggle($event)"
+      [ngModelOptions]="{ standalone: true }"
+    >
       Enter Custom Resource URL
     </mat-checkbox>
     <mat-form-field>
       <mat-label>Custom Resource URL</mat-label>
-      <input
-        matInput
-        formControlName="customUrl"
-        #customUrlField
-        />
-      @if (form.get('customUrl')?.invalid && form.get('customUrl')?.touched && custom) {
+      <input matInput formControlName="customUrl" #customUrlField />
+      @if (
+        form.get('customUrl')?.invalid &&
+        form.get('customUrl')?.touched &&
+        custom
+      ) {
         <mat-error>Please enter a valid URL</mat-error>
       }
     </mat-form-field>
@@ -78,13 +84,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </mat-form-field>
   </div>
 
-  @if (editing) {
+  @if (editing()) {
     <div crucibleDialogActions class="d-flex gap-2">
-      <button
-        type="button"
-        mat-stroked-button
-        (click)="onCancel()"
-      >
+      <button type="button" mat-stroked-button (click)="onCancel()">
         Cancel
       </button>
       <button
@@ -95,12 +97,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       >
         Save
       </button>
-      <button
-        type="button"
-        mat-flat-button
-        color="warn"
-        (click)="onDelete()"
-      >
+      <button type="button" mat-flat-button color="warn" (click)="onDelete()">
         Delete
       </button>
     </div>

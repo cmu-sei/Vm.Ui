@@ -2,19 +2,19 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { HttpClient, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 
 @Injectable()
 export class FileService {
+  private http = inject(HttpClient);
+  private settings = inject(ComnSettingsService);
+  private router = inject(Router);
+
   private viewId: string;
 
-  constructor(
-    private http: HttpClient,
-    private settings: ComnSettingsService,
-    private router: Router,
-  ) {
+  constructor() {
     this.viewId =
       this.router.routerState.snapshot.root.firstChild.params['viewId'];
   }

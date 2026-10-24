@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { combineLatest, Observable, ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import {
@@ -25,16 +25,14 @@ export interface EffectivePermissionRequirements {
   providedIn: 'root',
 })
 export class UserPermissionsService {
+  private permissionsApi = inject(PermissionService);
+  private teamPermissionsApi = inject(TeamPermissionService);
+
   private permissionsSubject = new ReplaySubject<string[]>(1);
   public permissions$ = this.permissionsSubject.asObservable();
 
   private teamPermissionsSubject = new ReplaySubject<TeamPermissionsClaim[]>(1);
   public teamPermissions$ = this.teamPermissionsSubject.asObservable();
-
-  constructor(
-    private permissionsApi: PermissionService,
-    private teamPermissionsApi: TeamPermissionService,
-  ) {}
 
   load(): Observable<string[]> {
     return this.permissionsApi

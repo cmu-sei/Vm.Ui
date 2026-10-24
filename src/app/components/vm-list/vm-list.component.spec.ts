@@ -2,8 +2,9 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { MatPaginator } from '@angular/material/paginator';
 import {
   DragToSelectModule,
   SelectContainerComponent,
@@ -28,12 +29,14 @@ import { VmListComponent } from './vm-list.component';
 
 @Component({ selector: 'vm-item', template: '' })
 class VmItemStubComponent {
-  @Input() vm: Vm;
-  @Input() ipv4Only: boolean;
-  @Input() showIps: boolean;
-  @Input() teamsList: SimpleTeam[];
-  @Input() canManageTeam: boolean;
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
+  readonly vm = input<Vm>(undefined);
+  readonly ipv4Only = input<boolean>(undefined);
+  readonly showIps = input<boolean>(undefined);
+  readonly teamsList = input<SimpleTeam[]>(undefined);
+  readonly canManageTeam = input<boolean>(undefined);
+  readonly openVmHere = output<{
+    [name: string]: string;
+  }>();
 }
 
 const BLUE: SimpleTeam = { id: 'team-1', name: 'Blue' };
@@ -152,7 +155,7 @@ describe('VmListComponent', () => {
 
     expect(vmService.GetViewVms).toHaveBeenCalledExactlyOnceWith(true, false);
     expect(vmsApi.getTeams).toHaveBeenCalledWith('view-1');
-    expect(items().map((i) => i.vm.name)).toEqual(['kali', 'win10']);
+    expect(items().map((i) => i.vm().name)).toEqual(['kali', 'win10']);
   });
 
   describe('read-only gate', () => {
@@ -295,7 +298,7 @@ describe('VmListComponent', () => {
       async (canManageView) => {
         const { items } = await renderVmList({ canManageView });
 
-        expect(items().map((i) => i.canManageTeam)).toEqual([
+        expect(items().map((i) => i.canManageTeam())).toEqual([
           canManageView,
           canManageView,
         ]);
@@ -346,6 +349,59 @@ describe('VmListComponent', () => {
           t.textContent?.trim(),
         ),
       ).toEqual(['Blue', 'Red']);
+    });
+
+    /**
+     * Verifies: each team panel gets the paginator rendered in that panel, so grouped lists are paged.
+     * Interacts with: the Sort by Team checkbox; assignPaginator via the template; the groupPaginators query.
+     * Data: teams Blue and Red, one VM each.
+     */
+    it('gives each team panel its own paginator', async () => {
+      const user = userEvent.setup();
+      const { fixture } = await renderVmList();
+      screen.getByRole('checkbox', { name: 'Sort by Team' }).focus();
+      await user.keyboard(' ');
+      await fixture.whenStable();
+
+      const paginators = fixture.debugElement
+        .queryAll(By.directive(MatPaginator))
+        .map((d) => d.injector.get(MatPaginator));
+      const groups = fixture.componentInstance.groupByTeams;
+      const assigned = groups.map((g) => g.dataSource.paginator);
+      expect(assigned).toHaveLength(2);
+      for (const p of assigned) {
+        expect(paginators.some((rendered) => rendered === p)).toBe(true);
+      }
+      expect(assigned[0]).not.toBe(assigned[1]);
+    });
+
+    /**
+     * Verifies: pressing in another team panel clears the drag selection of the panel used before.
+     * Interacts with: mousedown on the panels' select containers (panelClicked); SelectContainerComponent.clearSelection.
+     * Data: teams Blue and Red; the Blue panel is used first, then Red.
+     */
+    it('clears the previous panel selection when another panel is used', async () => {
+      const user = userEvent.setup();
+      const { fixture } = await renderVmList();
+      screen.getByRole('checkbox', { name: 'Sort by Team' }).focus();
+      await user.keyboard(' ');
+      await fixture.whenStable();
+      const containers = fixture.debugElement
+        .queryAll(By.css('dts-select-container'))
+        .slice(-2);
+      const first = containers[0].injector.get(SelectContainerComponent);
+      const clear = vi.spyOn(first, 'clearSelection');
+
+      containers[0].triggerEventHandler(
+        'mousedown',
+        new MouseEvent('mousedown'),
+      );
+      containers[1].triggerEventHandler(
+        'mousedown',
+        new MouseEvent('mousedown'),
+      );
+
+      expect(clear).toHaveBeenCalledTimes(1);
     });
 
     /**

@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { VmService } from '../../state/vms/vms.service';
 import { ThemeService } from '../../services/theme/theme.service';
@@ -15,15 +15,13 @@ import { PageNotFoundComponent } from '../page-not-found/page-not-found.componen
   imports: [PageNotFoundComponent],
 })
 export class ConsoleComponent implements OnInit {
+  private vmService = inject(VmService);
+  private route = inject(ActivatedRoute);
+  private themeService = inject(ThemeService);
+
   loading = signal(true);
   notFound = signal(false);
   name = signal('');
-
-  constructor(
-    private vmService: VmService,
-    private route: ActivatedRoute,
-    private themeService: ThemeService,
-  ) {}
 
   ngOnInit() {
     const viewId = this.route.snapshot.params['viewId'];

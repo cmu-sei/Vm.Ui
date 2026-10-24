@@ -6,8 +6,14 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  inject,
 } from '@angular/core';
-import { ComnAuthQuery, ComnAuthService, ComnSettingsService, Theme } from '@cmusei/crucible-common';
+import {
+  ComnAuthQuery,
+  ComnAuthService,
+  ComnSettingsService,
+  Theme,
+} from '@cmusei/crucible-common';
 import { User as AuthUser } from 'oidc-client-ts';
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -17,7 +23,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-topbar',
@@ -26,24 +32,22 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    CommonModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    AsyncPipe,
   ],
 })
 export class TopbarComponent implements OnInit, OnDestroy {
+  private authService = inject(ComnAuthService);
+  private authQuery = inject(ComnAuthQuery);
+
   currentUser$: Observable<AuthUser>;
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
-
-  constructor(
-    private authService: ComnAuthService,
-    private authQuery: ComnAuthQuery,
-  ) {}
 
   ngOnInit() {
     this.currentUser$ = this.authService.user$.pipe(

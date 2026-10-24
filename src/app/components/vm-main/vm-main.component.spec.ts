@@ -2,13 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  Provider,
-} from '@angular/core';
+import { Component, Provider, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { screen } from '@testing-library/angular';
@@ -61,25 +55,31 @@ class TopbarStubComponent {}
 
 @Component({ selector: 'app-vm-list', template: '' })
 class VmListStubComponent {
-  @Input() vms: Vm[];
-  @Input() readOnly: boolean;
-  @Input() uiSession: VmUISession;
-  @Input() canManageView: boolean;
-  @Input() canViewView: boolean;
-  @Input() canRevertVms: boolean;
-  @Output() openVmHere = new EventEmitter<{ [name: string]: string }>();
-  @Output() errors = new EventEmitter<{ [key: string]: string }>();
-  @Output() searchValueChanged = new EventEmitter<string>();
-  @Output() showIPsSelectedChanged = new EventEmitter<boolean>();
-  @Output() showIPv4OnlySelectedChanged = new EventEmitter<boolean>();
+  readonly vms = input<Vm[]>(undefined);
+  readonly readOnly = input<boolean>(undefined);
+  readonly uiSession = input<VmUISession>(undefined);
+  readonly canManageView = input<boolean>(undefined);
+  readonly canViewView = input<boolean>(undefined);
+  readonly canRevertVms = input<boolean>(undefined);
+  readonly openVmHere = output<{
+    [name: string]: string;
+  }>();
+  readonly errors = output<{
+    [key: string]: string;
+  }>();
+  readonly searchValueChanged = output<string>();
+  readonly showIPsSelectedChanged = output<boolean>();
+  readonly showIPv4OnlySelectedChanged = output<boolean>();
 }
 
 @Component({ selector: 'app-user-list', template: '' })
 class UserListStubComponent {
-  @Input() viewId: string;
-  @Input() teams: VmTeam[];
-  @Input() isActive: boolean;
-  @Output() openTab = new EventEmitter<{ [name: string]: string }>();
+  readonly viewId = input<string>(undefined);
+  readonly teams = input<VmTeam[]>(undefined);
+  readonly isActive = input<boolean>(undefined);
+  readonly openTab = output<{
+    [name: string]: string;
+  }>();
 }
 
 @Component({ selector: 'app-vm-usage-logging', template: '' })
@@ -87,23 +87,23 @@ class VmUsageLoggingStubComponent {}
 
 @Component({ selector: 'app-network-permissions', template: '' })
 class NetworkPermissionsStubComponent {
-  @Input() canManage: boolean;
+  readonly canManage = input<boolean>(undefined);
 }
 
 @Component({ selector: 'app-iso-list', template: '' })
 class IsoListStubComponent {
-  @Input() viewId: string;
+  readonly viewId = input<string>(undefined);
 }
 
 @Component({ selector: 'app-focused-app', template: '' })
 class FocusedAppStubComponent {
-  @Input() vmUrl: string;
+  readonly vmUrl = input<string>(undefined);
 }
 
 @Component({ selector: 'app-page-not-found', template: '' })
 class PageNotFoundStubComponent {
-  @Input() heading: string;
-  @Input() message: string;
+  readonly heading = input<string>(undefined);
+  readonly message = input<string>(undefined);
 }
 
 function claim(
@@ -285,7 +285,7 @@ describe('VmMainComponent', () => {
         ],
       });
 
-      expect(vmList()?.readOnly).toBe(true);
+      expect(vmList()?.readOnly()).toBe(true);
     });
 
     /**
@@ -298,7 +298,7 @@ describe('VmMainComponent', () => {
         system: [AppSystemPermission.ControlVms],
       });
 
-      expect(vmList()?.readOnly).toBe(false);
+      expect(vmList()?.readOnly()).toBe(false);
     });
 
     /**
@@ -312,7 +312,7 @@ describe('VmMainComponent', () => {
         vms: [makeVm('a', ['team-1'])],
       });
 
-      expect(vmList()?.readOnly).toBe(false);
+      expect(vmList()?.readOnly()).toBe(false);
     });
 
     /**
@@ -326,7 +326,7 @@ describe('VmMainComponent', () => {
         vms: [makeVm('b', ['team-2'])],
       });
 
-      expect(vmList()?.readOnly).toBe(true);
+      expect(vmList()?.readOnly()).toBe(true);
     });
 
     /**
@@ -345,7 +345,7 @@ describe('VmMainComponent', () => {
         vms: [makeVm('b', ['team-2'])],
       });
 
-      expect(vmList()?.readOnly).toBe(false);
+      expect(vmList()?.readOnly()).toBe(false);
     });
 
     /**
@@ -359,7 +359,7 @@ describe('VmMainComponent', () => {
         vms: [],
       });
 
-      expect(vmList()?.readOnly).toBe(true);
+      expect(vmList()?.readOnly()).toBe(true);
     });
 
     /**
@@ -374,7 +374,7 @@ describe('VmMainComponent', () => {
         ],
       });
 
-      expect(vmList()?.canRevertVms).toBe(true);
+      expect(vmList()?.canRevertVms()).toBe(true);
     });
 
     /**
@@ -393,7 +393,7 @@ describe('VmMainComponent', () => {
         ],
       });
 
-      expect(vmList()?.canRevertVms).toBe(false);
+      expect(vmList()?.canRevertVms()).toBe(false);
     });
   });
 
@@ -424,7 +424,10 @@ describe('VmMainComponent', () => {
           ],
         });
 
-        expect(vmList()).toMatchObject(expected);
+        expect({
+          canManageView: vmList()?.canManageView(),
+          canViewView: vmList()?.canViewView(),
+        }).toEqual(expected);
       },
     );
 
@@ -457,10 +460,10 @@ describe('VmMainComponent', () => {
       async ({ claims }) => {
         const { vmList } = await renderVmMain({ claims });
 
-        expect(vmList()).toMatchObject({
-          canManageView: false,
-          canViewView: false,
-        });
+        expect({
+          canManageView: vmList()?.canManageView(),
+          canViewView: vmList()?.canViewView(),
+        }).toEqual({ canManageView: false, canViewView: false });
       },
     );
 
@@ -475,7 +478,7 @@ describe('VmMainComponent', () => {
       });
 
       // Current behavior; see agent-docs/ui-test-bugs/vm.ui.md.
-      expect(vmList()?.canManageView).toBe(false);
+      expect(vmList()?.canManageView()).toBe(false);
     });
   });
 
@@ -505,7 +508,7 @@ describe('VmMainComponent', () => {
 
         await user.click(screen.getByRole('tab', { name: 'Networks' }));
 
-        expect(networkPermissions()?.canManage).toBe(true);
+        expect(networkPermissions()?.canManage()).toBe(true);
       },
     );
 
@@ -527,7 +530,7 @@ describe('VmMainComponent', () => {
 
       await user.click(screen.getByRole('tab', { name: 'Networks' }));
 
-      expect(networkPermissions()?.canManage).toBe(false);
+      expect(networkPermissions()?.canManage()).toBe(false);
     });
 
     /**
@@ -545,7 +548,7 @@ describe('VmMainComponent', () => {
 
       await user.click(screen.getByRole('tab', { name: 'Networks' }));
 
-      expect(networkPermissions()?.canManage).toBe(false);
+      expect(networkPermissions()?.canManage()).toBe(false);
     });
   });
 

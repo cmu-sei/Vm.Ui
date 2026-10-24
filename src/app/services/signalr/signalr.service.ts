@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ComnAuthService } from '@cmusei/crucible-common';
 import * as signalR from '@microsoft/signalr';
 import { BASE_PATH, Vm, VmUser, VmUserTeam } from '../../generated/vm-api';
@@ -14,19 +14,20 @@ import { VmService } from '../../state/vms/vms.service';
   providedIn: 'root',
 })
 export class SignalRService {
+  private authService = inject(ComnAuthService);
+  private vmService = inject(VmService);
+  private vmUsersService = inject(VmUsersService);
+  private vmTeamsService = inject(VmTeamsService);
+
   private hubConnection: signalR.HubConnection;
   private viewId: string;
   private joinUsers = false;
   private connectionPromise: Promise<void>;
   private apiUrl: string;
 
-  constructor(
-    private authService: ComnAuthService,
-    private vmService: VmService,
-    private vmUsersService: VmUsersService,
-    private vmTeamsService: VmTeamsService,
-    @Inject(BASE_PATH) basePath: string,
-  ) {
+  constructor() {
+    const basePath = inject(BASE_PATH);
+
     this.apiUrl = basePath;
 
     this.authService.user$.subscribe(() => {
@@ -53,11 +54,10 @@ export class SignalRService {
     });
 
     this.addHandlers();
-    this.connectionPromise = this.hubConnection.start()
-      .catch((err) => {
-        console.warn('VM Hub connection failed:', err.message);
-        this.connectionPromise = null;
-      });
+    this.connectionPromise = this.hubConnection.start().catch((err) => {
+      console.warn('VM Hub connection failed:', err.message);
+      this.connectionPromise = null;
+    });
     this.connectionPromise?.then(() => this.joinGroups());
 
     return this.connectionPromise;
@@ -66,11 +66,10 @@ export class SignalRService {
   private reconnect() {
     if (this.hubConnection != null) {
       this.hubConnection.stop().then(() => {
-        this.connectionPromise = this.hubConnection.start()
-          .catch((err) => {
-            console.warn('VM Hub reconnection failed:', err.message);
-            this.connectionPromise = null;
-          });
+        this.connectionPromise = this.hubConnection.start().catch((err) => {
+          console.warn('VM Hub reconnection failed:', err.message);
+          this.connectionPromise = null;
+        });
         this.connectionPromise?.then(() => this.joinGroups());
       });
     }

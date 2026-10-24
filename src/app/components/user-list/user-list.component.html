@@ -21,14 +21,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           matTooltip="Clear Search"
           aria-label="Clear Search"
         >
-          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle"></mat-icon>
+          <mat-icon class="mdi-24px" fontIcon="mdi-close-circle" />
         </button>
       }
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="accordion.openAll()">
+    <button mat-raised-button color="primary" (click)="accordion().openAll()">
       Expand All
     </button>
-    <button mat-raised-button color="primary" (click)="accordion.closeAll()">
+    <button mat-raised-button color="primary" (click)="accordion().closeAll()">
       Collapse All
     </button>
     <mat-checkbox
@@ -98,7 +98,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [recentOnly]="recentOnly"
             [recentMinutes]="recentMinutes"
             (openTab)="onOpenTab($event)"
-          ></app-team-users>
+          />
         </mat-expansion-panel>
       }
     }

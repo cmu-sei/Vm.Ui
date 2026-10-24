@@ -7,11 +7,12 @@ import {
   Component,
   ChangeDetectionStrategy,
   Input,
-  Output,
-  EventEmitter,
-  ViewChild,
   AfterViewInit,
   signal,
+  inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 import { ThemeService } from '../../../services/theme/theme.service';
@@ -30,7 +31,7 @@ import {
   MatRowDef,
   MatRow,
 } from '@angular/material/table';
-import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTooltip } from '@angular/material/tooltip';
 import { VmUser } from '../../../generated/vm-api';
@@ -47,7 +48,6 @@ import { VmUser } from '../../../generated/vm-api';
     MatHeaderCell,
     MatCellDef,
     MatCell,
-    NgIf,
     MatHeaderRowDef,
     MatHeaderRow,
     MatRowDef,
@@ -59,7 +59,11 @@ import { VmUser } from '../../../generated/vm-api';
   ],
 })
 export class TeamUsersComponent implements AfterViewInit {
-  @Input() team: VmTeam = null;
+  vmsQuery = inject(VmsQuery);
+  private settingsService = inject(ComnSettingsService);
+  private themeService = inject(ThemeService);
+
+  readonly team = input<VmTeam>(null);
 
   @Input() set hideInactive(val: boolean) {
     this.hideInactiveInternal = val;
@@ -86,7 +90,9 @@ export class TeamUsersComponent implements AfterViewInit {
     this.calculateTableHeight();
   }
 
-  @Output() openTab = new EventEmitter<{ [name: string]: string }>();
+  readonly openTab = output<{
+    [name: string]: string;
+  }>();
 
   private userList: Array<VmUser>;
   private hideInactiveInternal = false;
@@ -106,20 +112,16 @@ export class TeamUsersComponent implements AfterViewInit {
   public tableHeight = '0px';
   public filteredCount = signal(0);
 
-  @ViewChild(MatSort) sort: MatSort;
+  readonly sort = viewChild(MatSort);
 
-  constructor(
-    public vmsQuery: VmsQuery,
-    private settingsService: ComnSettingsService,
-    private themeService: ThemeService,
-  ) {
+  constructor() {
     this.userDatasource.filterPredicate = (data: VmUser, filter: string) => {
       return data.username.toLowerCase().indexOf(filter.toLowerCase()) !== -1;
     };
   }
 
   ngAfterViewInit() {
-    this.userDatasource.sort = this.sort;
+    this.userDatasource.sort = this.sort();
   }
 
   public openUserInTab(user: VmUser) {
@@ -149,7 +151,8 @@ export class TeamUsersComponent implements AfterViewInit {
   }
 
   public getFollowUrl(user: VmUser) {
-    if (!this.team?.id || !this.team?.viewId) {
+    const team = this.team();
+    if (!team?.id || !team?.viewId) {
       return '';
     }
     return this.themeService.addThemeQueryParam(
@@ -157,8 +160,8 @@ export class TeamUsersComponent implements AfterViewInit {
         '{userId}',
         user.userId,
       )
-        .replace('{viewId}', this.team.viewId)
-        .concat(`?teamId=${this.team.id}`),
+        .replace('{viewId}', team.viewId)
+        .concat(`?teamId=${team.id}`),
     );
   }
 

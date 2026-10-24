@@ -6,7 +6,7 @@
 // over stubbed player-api "my permissions" endpoints, so the gate logic under
 // test is the production code, not a re-implementation that can drift from it.
 
-import { inject, Provider } from '@angular/core';
+import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 import { of } from 'rxjs';
 import {
@@ -47,13 +47,10 @@ export function permissionDataProviders(
     { provide: TeamPermissionService, useValue: stubs.teamPermissions },
     {
       provide: UserPermissionsService,
-      // inject() resolves the stubs above (or a test's own override) with the
-      // real types, so the partial stubs need no casts.
+      // The service's inject() calls resolve the stubs above (or a test's own
+      // override), so the partial stubs need no casts.
       useFactory: () => {
-        const service = new UserPermissionsService(
-          inject(PermissionService),
-          inject(TeamPermissionService),
-        );
+        const service = new UserPermissionsService();
         // Seed both streams, so a component that only reads permissions (and
         // never calls load()) still sees the grants. Components that do call
         // load() or loadTeamPermissions() get the same values again.

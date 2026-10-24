@@ -4,17 +4,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <crucible-dialog
-  [dialogTitle]="creating ? 'New Map' : 'Edit Properties'"
+  [dialogTitle]="creating() ? 'New Map' : 'Edit Properties'"
   [form]="form"
   [submitDisabled]="!form.valid || !hasImageSource()"
   [guardUnsavedWork]="true"
   (submit)="submit()"
 >
-  <div
-    crucibleDialogContent
-    [formGroup]="form"
-    class="d-flex flex-column"
-  >
+  <div crucibleDialogContent [formGroup]="form" class="d-flex flex-column">
     <mat-form-field>
       <mat-label>Name</mat-label>
       <input type="string" matInput formControlName="name" />
@@ -26,16 +22,18 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-label>Select Image</mat-label>
       <mat-select matNativeControl formControlName="viewImage">
         @for (img of images; track img.file.id) {
-          <mat-option [value]="img.blob">{{
-            img.file.name
-          }}</mat-option>
+          <mat-option [value]="img.blob">{{ img.file.name }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
     <mat-form-field>
       <mat-label>External Image URL</mat-label>
       <input type="string" matInput formControlName="imageURL" />
-      @if (form.get('imageURL')?.invalid && form.get('imageURL')?.touched && form.get('imageURL')?.value) {
+      @if (
+        form.get('imageURL')?.invalid &&
+        form.get('imageURL')?.touched &&
+        form.get('imageURL')?.value
+      ) {
         <mat-error>Please enter a valid URL</mat-error>
       } @else if (!hasImageSource()) {
         <mat-hint>Either select an image or provide an external URL</mat-hint>
@@ -45,9 +43,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-label>Teams</mat-label>
       <mat-select multiple matNativeControl formControlName="teamIDs">
         @for (team of teams; track team.id) {
-          <mat-option [value]="team.id">{{
-            team.name
-          }}</mat-option>
+          <mat-option [value]="team.id">{{ team.name }}</mat-option>
         }
       </mat-select>
       @if (form.get('teamIDs')?.invalid && form.get('teamIDs')?.touched) {
