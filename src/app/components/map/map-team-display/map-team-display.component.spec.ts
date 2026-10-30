@@ -68,8 +68,8 @@ async function renderDisplay() {
       { provide: ThemeService, useValue: theme },
     ],
   });
-  const showMap = () => {
-    TestBed.inject(VmMapsStore).set([structuredClone(MAP)]);
+  const showMap = (map: VmMap = MAP) => {
+    TestBed.inject(VmMapsStore).set([structuredClone(map)]);
     rendered.detectChanges();
   };
   const clickpoint = (label: string) =>
@@ -121,6 +121,29 @@ describe('MapTeamDisplayComponent', () => {
         t.textContent?.trim(),
       ),
     ).toEqual(['Web', 'Next', 'DBs']);
+  });
+
+  /**
+   * Verifies: a map image uploaded to the view as an SVG is drawn from its data URL as it is, with no blob:
+   * URL, which would carry the app's origin if opened on its own.
+   * Interacts with: real VmMapsStore/Query; URL.createObjectURL spied on.
+   * Data: map m1 whose image is an SVG data URL.
+   */
+  it('draws a view-uploaded SVG map from its data URL', async () => {
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL');
+    try {
+      const imageUrl = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg"/>')}`;
+      const { container, showMap } = await renderDisplay();
+
+      showMap({ ...MAP, imageUrl });
+
+      expect(container.querySelector('image')?.getAttribute('href')).toBe(
+        imageUrl,
+      );
+      expect(createObjectURL).not.toHaveBeenCalled();
+    } finally {
+      createObjectURL.mockRestore();
+    }
   });
 
   /**

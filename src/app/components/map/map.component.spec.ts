@@ -105,6 +105,35 @@ describe('MapComponent', () => {
   });
 
   /**
+   * Verifies: the editor draws a view-uploaded SVG from its data URL as it is, with no blob: URL, and saves
+   * the same data URL back.
+   * Interacts with: real VmMapsStore/Query; URL.createObjectURL spied on; stubbed VmsService.updateMap.
+   * Data: map m1 whose image is an SVG data URL.
+   */
+  it('draws and saves a view-uploaded SVG map as its data URL', async () => {
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL');
+    try {
+      const imageUrl = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg"/>')}`;
+      const { fixture, container, vmsApi, detectChanges } = await renderMap();
+
+      TestBed.inject(VmMapsStore).set([{ ...structuredClone(MAP), imageUrl }]);
+      detectChanges();
+      fixture.componentInstance.save();
+
+      expect(container.querySelector('image')?.getAttribute('href')).toBe(
+        imageUrl,
+      );
+      expect(createObjectURL).not.toHaveBeenCalled();
+      expect(vmsApi.updateMap).toHaveBeenCalledExactlyOnceWith(
+        'm1',
+        expect.objectContaining({ imageUrl }),
+      );
+    } finally {
+      createObjectURL.mockRestore();
+    }
+  });
+
+  /**
    * Verifies: save() sends the map's clickpoints, name, image and teams to the API and stores the map the API returns.
    * Interacts with: real VmMapsService.update and VmMapsStore/Query over a stubbed VmsService.updateMap; MatSnackBar (real).
    * Data: map m1 stored; saved without changes; the API answers with the name 'Network v2'.

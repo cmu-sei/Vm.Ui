@@ -46,7 +46,6 @@ export class MapComponent implements OnInit, OnChanges {
   teamIDs: string[];
   name: string;
   imageURL: string;
-  imageUrlToSave: string;
   mapId: string;
 
   xActual: number;
@@ -99,18 +98,9 @@ export class MapComponent implements OnInit, OnChanges {
       this.mapId = data.id;
       this.teamIDs = data.teamIds;
 
-      // As in display component, need to figure out if the URL is b64 encoded and, if so, convert it to a blob
-      // and then generate an object url
-      const url = data.imageUrl;
-      // Using the same basic check as in display component for whether a string is a url
-      if (!this.isURL(url)) {
-        const asBlob = this.b64ToBlob(url);
-        const objUrl = window.URL.createObjectURL(asBlob);
-        this.imageURL = objUrl;
-      } else {
-        this.imageURL = url;
-      }
-      this.imageUrlToSave = url;
+      // A view image is saved as a data URL, drawn as it is: inside <image> an SVG runs no script, and a
+      // data URL opened on its own has no origin, where a blob: URL would have the app's
+      this.imageURL = data.imageUrl;
 
       if (data.coordinates != null) {
         for (let coord of data.coordinates) {
@@ -260,7 +250,7 @@ export class MapComponent implements OnInit, OnChanges {
     const payload = <VmMap>{
       coordinates: coords,
       name: this.name,
-      imageUrl: this.imageUrlToSave,
+      imageUrl: this.imageURL,
       teamIds: this.teamIDs.length == 0 ? null : this.teamIDs,
     };
 
@@ -293,21 +283,5 @@ export class MapComponent implements OnInit, OnChanges {
 
   calcFontSize(radius: number): number {
     return radius / 3;
-  }
-
-  isURL(str: string): boolean {
-    return str.startsWith('http');
-  }
-
-  b64ToBlob(b64: string): Blob {
-    let byteStr = atob(b64.split(',')[1]);
-    let buffer = new ArrayBuffer(byteStr.length);
-    let byteVals = new Uint8Array(buffer);
-
-    for (let i = 0; i < byteStr.length; i++) {
-      byteVals[i] = byteStr.charCodeAt(i);
-    }
-
-    return new Blob([buffer]);
   }
 }

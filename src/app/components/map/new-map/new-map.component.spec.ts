@@ -9,6 +9,7 @@ import { screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 import {
+  FileModel,
   FileService as PlayerFileService,
   TeamPermissionsClaim,
 } from '../../../generated/player-api';
@@ -60,6 +61,7 @@ async function renderNewMap(
     system?: AppSystemPermission[];
     claims?: TeamPermissionsClaim[];
     teams?: SimpleTeam[];
+    files?: FileModel[];
     inputs?: {
       creating?: boolean;
       name?: string;
@@ -72,6 +74,7 @@ async function renderNewMap(
     system = [],
     claims = [primary('team-1')],
     teams = TEAMS,
+    files = [],
     inputs = { creating: true },
   } = overrides;
 
@@ -79,9 +82,16 @@ async function renderNewMap(
     getTeams: vi.fn(() => of(teams)),
     createMap: vi.fn((_viewId: string, map: VmMap) => of(map)),
   } satisfies ApiStub<VmsService>;
-  // No view files, so the "Select Image" list stays empty and no blobs are downloaded.
+  // Player serves a file it does not know as octet-stream, so the stub does too.
   const filesApi = {
-    getViewFiles: vi.fn(() => of([])),
+    getViewFiles: vi.fn(() => of(files)),
+    download: vi.fn(() =>
+      of(
+        new Blob(['<svg xmlns="http://www.w3.org/2000/svg"/>'], {
+          type: 'application/octet-stream',
+        }),
+      ),
+    ),
   } satisfies ApiStub<PlayerFileService>;
   const mapCreated = vi.fn();
   const propertiesChanged = vi.fn();
@@ -100,6 +110,10 @@ async function renderNewMap(
     TestbedHarnessEnvironment.loader(rendered.fixture).getHarness(
       MatSelectHarness.with({ selector: '[formControlName="teamIDs"]' }),
     );
+  const imageSelect = () =>
+    TestbedHarnessEnvironment.loader(rendered.fixture).getHarness(
+      MatSelectHarness.with({ selector: '[formControlName="viewImage"]' }),
+    );
   const teamOptions = async () => {
     const select = await teamSelect();
     await select.open();
@@ -113,6 +127,7 @@ async function renderNewMap(
     mapCreated,
     propertiesChanged,
     teamSelect,
+    imageSelect,
     teamOptions,
   };
 }
@@ -277,6 +292,55 @@ describe('NewMapComponent', () => {
         ['team-1'],
       ]);
       expect(vmsApi.createMap).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('view images', () => {
+    /**
+     * Verifies: the view's SVG files are offered as Map images alongside raster ones, and other files are not.
+     * Interacts with: stubbed Player getViewFiles/download; MatSelectHarness on Select Image.
+     * Data: view files network.svg, OLD.PNG and notes.txt.
+     */
+    it('offers SVG and raster view files, not other files', async () => {
+      const { imageSelect } = await renderNewMap({
+        system: [AppSystemPermission.ManageMaps],
+        files: [
+          { id: 'f1', name: 'network.svg' },
+          { id: 'f2', name: 'OLD.PNG' },
+          { id: 'f3', name: 'notes.txt' },
+        ],
+      });
+      const select = await imageSelect();
+      await select.open();
+
+      const options = await Promise.all(
+        (await select.getOptions()).map((o) => o.getText()),
+      );
+
+      expect(options.sort()).toEqual(['OLD.PNG', 'network.svg']);
+    });
+
+    /**
+     * Verifies: a Map made from a view's SVG file is saved as an image/svg+xml data URL, though Player served
+     * the file as octet-stream, so the Map can be drawn.
+     * Interacts with: stubbed Player download; FileReader; stubbed VmsService.createMap.
+     * Data: ManageMaps; view file network.svg; name 'Network', team Blue.
+     */
+    it('saves a view SVG as an SVG data URL', async () => {
+      const user = userEvent.setup();
+      const { imageSelect, teamSelect, vmsApi } = await renderNewMap({
+        system: [AppSystemPermission.ManageMaps],
+        files: [{ id: 'f1', name: 'network.svg' }],
+      });
+      await fill(user, 'Name', 'Network');
+      await (await imageSelect()).clickOptions({ text: 'network.svg' });
+      await (await teamSelect()).clickOptions({ text: 'Blue' });
+
+      await user.click(screen.getByRole('button', { name: 'Save' }));
+
+      await vi.waitFor(() => expect(vmsApi.createMap).toHaveBeenCalledOnce());
+      const [, saved] = vmsApi.createMap.mock.calls[0];
+      expect(saved.imageUrl).toMatch(/^data:image\/svg\+xml;base64,/);
     });
   });
 });
