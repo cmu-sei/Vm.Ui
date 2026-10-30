@@ -29,6 +29,7 @@ import {
 import { CRUCIBLE_DIALOG_IMPORTS } from '@cmusei/crucible-common';
 import { UserPermissionsService } from '../../../services/permissions/user-permissions.service';
 import { MANAGE_MAPS } from '../map-permissions';
+import { mapImageType } from '../map-image';
 
 @Component({
   selector: 'app-new-map',
@@ -120,8 +121,8 @@ export class NewMapComponent implements OnInit {
     this.images = new Array<Image>();
 
     this.fileService.getViewFiles(this.viewId()).subscribe((data) => {
-      for (let fp of data.filter((f) => this.isImage(f.name))) {
-        this.getImageBlob(fp.id).subscribe((blob) => {
+      for (let fp of data.filter((f) => mapImageType(f.name))) {
+        this.getImageBlob(fp).subscribe((blob) => {
           this.images.push(new Image(fp, blob));
         });
       }
@@ -183,13 +184,12 @@ export class NewMapComponent implements OnInit {
     }
   }
 
-  // Get the blob representing an image file in this view
-  getImageBlob(id: string): Observable<Blob> {
-    return this.fileService.download(id).pipe(
-      map((data) => {
-        return data;
-      }),
-    );
+  // Get the blob of an image file in this view, typed from its name so the data URL the Map saves says
+  // what the image is
+  getImageBlob(file: FileModel): Observable<Blob> {
+    return this.fileService
+      .download(file.id)
+      .pipe(map((data) => new Blob([data], { type: mapImageType(file.name) })));
   }
 
   saveMap(
@@ -215,16 +215,6 @@ export class NewMapComponent implements OnInit {
     const viewImage = this.form.get('viewImage')?.value;
     const imageURL = this.form.get('imageURL')?.value;
     return !!(viewImage || imageURL);
-  }
-
-  // Returns whether this file is an image. This is determined by the file's extension.
-  private isImage(file: string): boolean {
-    return (
-      file.endsWith('.png') ||
-      file.endsWith('.jpg') ||
-      file.endsWith('.jpeg') ||
-      file.endsWith('.gif')
-    );
   }
 }
 

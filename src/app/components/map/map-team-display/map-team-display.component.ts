@@ -41,18 +41,9 @@ export class MapTeamDisplayComponent implements OnInit {
     this.machines = this.vmMapsQuery.getMapCoordinates(this.mapId);
 
     this.vmMapsQuery.getById(this.mapId).subscribe((m) => {
-      const url = m.imageUrl;
-      // If this is a base64 string, this image was uploaded to the view. Get a blob from the b64 string
-      // and use that to get an object url that will point to the image
-
-      // Simple test for whether the string is an actual url. If not, it is b64 encoded.
-      if (!this.isURL(url)) {
-        const asBlob = this.b64ToBlob(url);
-        const objUrl = window.URL.createObjectURL(asBlob);
-        this.imageUrl = objUrl;
-      } else {
-        this.imageUrl = url;
-      }
+      // A view image is saved as a data URL, drawn as it is: inside <image> an SVG runs no script, and a
+      // data URL opened on its own has no origin, where a blob: URL would have the app's
+      this.imageUrl = m.imageUrl;
       this.mapInitialized = true;
     });
   }
@@ -106,21 +97,5 @@ export class MapTeamDisplayComponent implements OnInit {
 
   calcFontSize(radius: number): number {
     return radius / 3;
-  }
-
-  isURL(str: string): boolean {
-    return str.startsWith('http');
-  }
-
-  b64ToBlob(b64: string): Blob {
-    let byteStr = atob(b64.split(',')[1]);
-    let buffer = new ArrayBuffer(byteStr.length);
-    let byteVals = new Uint8Array(buffer);
-
-    for (let i = 0; i < byteStr.length; i++) {
-      byteVals[i] = byteStr.charCodeAt(i);
-    }
-
-    return new Blob([buffer]);
   }
 }
