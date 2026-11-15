@@ -110,7 +110,7 @@ export class TeamUsersComponent implements AfterViewInit {
   public headerSize = 56;
   public maxSize = this.itemSize * 7;
   public tableHeight = '0px';
-  public filteredCount = signal(0);
+  public readonly filteredCount = signal(0);
 
   readonly sort = viewChild(MatSort);
 

@@ -19,9 +19,9 @@ export class ConsoleComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private themeService = inject(ThemeService);
 
-  loading = signal(true);
-  notFound = signal(false);
-  name = signal('');
+  readonly loading = signal(true);
+  readonly notFound = signal(false);
+  readonly name = signal('');
 
   ngOnInit() {
     const viewId = this.route.snapshot.params['viewId'];

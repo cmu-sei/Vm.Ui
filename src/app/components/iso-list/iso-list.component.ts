@@ -134,7 +134,7 @@ export function isoRowKey(row: IsoRow): string {
   ],
 })
 export class IsoListComponent implements OnInit {
-  viewId = input.required<string>();
+  readonly viewId = input.required<string>();
 
   readonly accordion = viewChild(MatAccordion);
   // All nested View accordions (all-views mode only) so Expand/Collapse-All reaches the whole tree.
