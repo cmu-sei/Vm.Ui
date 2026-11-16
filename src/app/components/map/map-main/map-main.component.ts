@@ -95,8 +95,8 @@ export class MapMainComponent implements OnDestroy, OnInit, AfterViewChecked {
   canCreateMaps$: Observable<boolean>;
   // Editing or deleting takes Map management on every team the selected Map is on.
   canManageSelectedMap$: Observable<boolean>;
-  viewExists = signal(false);
-  loading = signal(true);
+  readonly viewExists = signal(false);
+  readonly loading = signal(true);
 
   constructor() {
     this.hideTopbar = this.inIframe();

@@ -50,8 +50,7 @@ export class AutoDeployComponent implements OnInit, OnDestroy {
                 this.deployButtonDisabled = true;
                 this.showDeployButton = true;
               } else if (result.RoomFull) {
-                // tslint:disable-next-line:max-line-length
-                this.snackBar.open(
+                               this.snackBar.open(
                   "Your team's workstation allocation is full. Please contact an administrator to request additional capacity.",
                 );
                 this.deployButtonDisabled = true;
