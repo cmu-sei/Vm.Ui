@@ -1,7 +1,14 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnInit, inject, input, output, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  input,
+  output,
+  OnChanges,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';

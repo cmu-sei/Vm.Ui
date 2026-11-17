@@ -46,7 +46,10 @@ function bodyStyle(prop: string): string {
  * streams.
  */
 function setup(
-  options: { initialTheme?: Theme; colorSettings?: Record<string, string> } = {},
+  options: {
+    initialTheme?: Theme;
+    colorSettings?: Record<string, string>;
+  } = {},
 ) {
   const userTheme$ = new BehaviorSubject<Theme>(
     options.initialTheme ?? Theme.LIGHT,

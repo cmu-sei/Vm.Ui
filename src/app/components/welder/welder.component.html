@@ -9,7 +9,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       mat-raised-button
       (click)="autoDeploy()"
       [disabled]="deployButtonDisabled"
-      >
+    >
       Request Workstations
     </button>
   }
@@ -17,7 +17,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <h1>Workstations</h1>
   }
   @for (vm of readyVMs; track vm) {
-    <button (click)="openVMConsoleTab(vm)">{{ vm.name }}</button><br
-    />
-}
+    <button (click)="openVMConsoleTab(vm)">{{ vm.name }}</button><br />
+  }
 </div>
