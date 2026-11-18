@@ -116,7 +116,9 @@ export class IsoUploadDialogComponent {
     }
 
     const scope = this.uploadToView() ? 'view' : 'team';
-    const teamIds = this.uploadToView() ? [] : Array.from(this.selectedTeamIds());
+    const teamIds = this.uploadToView()
+      ? []
+      : Array.from(this.selectedTeamIds());
 
     this.uploading.set(true);
     this.progress.set(0);

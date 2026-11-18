@@ -48,9 +48,9 @@ export const routes: Routes = [
   {
     path: 'usage',
     loadComponent: () =>
-      import(
-        './components/vm-usage-reporting/vm-usage-reporting.component'
-      ).then((mod) => mod.VmUsageReportingComponent),
+      import('./components/vm-usage-reporting/vm-usage-reporting.component').then(
+        (mod) => mod.VmUsageReportingComponent,
+      ),
     canActivate: [ComnAuthGuardService],
   },
   {
